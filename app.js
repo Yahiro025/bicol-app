@@ -68,6 +68,7 @@ async function fetchWords() {
             return {
                 bikol: word.bikol || '',
                 english: word.english || '',
+                tagalog: word.tagalog || '',
                 pos: word.pos || '',
                 category: word.category || '',
                 dialect: word.dialect || '',
@@ -155,10 +156,15 @@ var categoryMeta = {
 // ==========================================
 function renderWordCard(word) {
     var isFav = getFavorites().indexOf(word.bikol) !== -1;
+    var tagalogHtml = (word.tagalog && word.tagalog.toLowerCase() !== word.bikol.toLowerCase()) 
+        ? '<div class="mini-tagalog">TL: ' + word.tagalog + '</div>' 
+        : '';
+        
     return '<div class="mini-word-card" onclick="openDetail(\'' + word.bikol + '\')">' +
         '<div class="mini-info">' +
             '<div class="mini-bikol">' + word.bikol + '</div>' +
             '<div class="mini-english">' + word.english + '</div>' +
+            tagalogHtml +
         '</div>' +
         '<div class="mini-actions">' +
             '<button class="action-btn ' + (isFav ? 'active' : '') + '" onclick="event.stopPropagation(); toggleFavorite(\'' + word.bikol + '\')"><i class="fas fa-heart"></i></button>' +
@@ -317,6 +323,29 @@ function openDetail(bikol) {
     
     document.getElementById("modalEnglish").textContent = currentModalWord.english;
     document.getElementById("modalCategory").textContent = currentModalWord.category;
+    
+    // Tagalog Translation Section
+    var tagalogSec = document.getElementById("modalTagalogSection");
+    if (!tagalogSec) {
+        // Create the section if it doesn't exist
+        tagalogSec = document.createElement("div");
+        tagalogSec.id = "modalTagalogSection";
+        tagalogSec.className = "modal-section";
+        var examplesSec = document.getElementById("modalExamplesSection");
+        examplesSec.parentNode.insertBefore(tagalogSec, examplesSec);
+    }
+
+    if (currentModalWord.tagalog) {
+        tagalogSec.style.display = "block";
+        var isSame = currentModalWord.tagalog.toLowerCase() === currentModalWord.bikol.toLowerCase();
+        tagalogSec.innerHTML = '<h4 class="modal-section-title">Tagalog Translation</h4>' +
+            '<div style="font-size: 18px; font-weight: 700; color: #4338CA;">' + 
+            currentModalWord.tagalog + 
+            (isSame ? ' <span style="font-size: 12px; font-weight: normal; color: var(--muted);">(Same as Bikol)</span>' : '') +
+            '</div>';
+    } else {
+        tagalogSec.style.display = "none";
+    }
     
     var exSec = document.getElementById("modalExamplesSection");
     if (currentModalWord.examples && currentModalWord.examples.length > 0) {
