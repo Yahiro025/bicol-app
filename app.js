@@ -18,10 +18,7 @@ var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // This will hold our database words
 var dictionary = []; 
-
-// ==========================================
-// FETCH DATA FROM CLOUD
-// ==========================================
+var currentLangMode = 'en'; // 'en', 'tl', or 'all'
 // 'async' means this function takes time because it talks to the internet
 async function fetchWords() {
     console.log("Fetching words from Supabase...");
@@ -156,15 +153,26 @@ var categoryMeta = {
 // ==========================================
 function renderWordCard(word) {
     var isFav = getFavorites().indexOf(word.bikol) !== -1;
-    var tagalogHtml = word.tagalog 
-        ? '<div class="mini-tagalog">TL: ' + word.tagalog + '</div>' 
-        : '';
+    
+    var mainMeaning = "";
+    var subMeaningHtml = "";
+
+    if (currentLangMode === 'en') {
+        mainMeaning = word.english;
+    } else if (currentLangMode === 'tl') {
+        mainMeaning = word.tagalog || word.english; 
+    } else if (currentLangMode === 'all') {
+        mainMeaning = word.english;
+        if (word.tagalog) {
+            subMeaningHtml = '<div class="mini-tagalog">TL: ' + word.tagalog + '</div>';
+        }
+    }
         
     return '<div class="mini-word-card" onclick="openDetail(\'' + word.bikol + '\')">' +
         '<div class="mini-info">' +
             '<div class="mini-bikol">' + word.bikol + '</div>' +
-            '<div class="mini-english">' + word.english + '</div>' +
-            tagalogHtml +
+            '<div class="mini-english">' + mainMeaning + '</div>' +
+            subMeaningHtml +
         '</div>' +
         '<div class="mini-actions">' +
             '<button class="action-btn ' + (isFav ? 'active' : '') + '" onclick="event.stopPropagation(); toggleFavorite(\'' + word.bikol + '\')"><i class="fas fa-heart"></i></button>' +
@@ -317,35 +325,50 @@ function openDetail(bikol) {
     document.getElementById("modalWord").textContent = currentModalWord.bikol;
     document.getElementById("modalPronunciation").textContent = currentModalWord.pronunciation ? "[ " + currentModalWord.pronunciation + " ]" : "";
     document.getElementById("modalPos").textContent = currentModalWord.pos;
-    
-    // THIS IS THE LINE THAT CRASHED IT - now looking for modalDialect
     document.getElementById("modalDialect").textContent = currentModalWord.dialect; 
     
-    var tagalogText = currentModalWord.tagalog ? " (" + currentModalWord.tagalog + ")" : "";
-    document.getElementById("modalEnglish").textContent = currentModalWord.english + tagalogText;
-    document.getElementById("modalCategory").textContent = currentModalWord.category;
-    
-    // Tagalog Translation Section
-    var tagalogSec = document.getElementById("modalTagalogSection");
-    if (!tagalogSec) {
-        // Create the section if it doesn't exist
-        tagalogSec = document.createElement("div");
-        tagalogSec.id = "modalTagalogSection";
-        tagalogSec.className = "modal-section";
-        var examplesSec = document.getElementById("modalExamplesSection");
-        examplesSec.parentNode.insertBefore(tagalogSec, examplesSec);
+    // Primary and Secondary Translation Logic
+    var primaryText = "";
+    var secondaryHtml = "";
+
+    if (currentLangMode === 'en') {
+        primaryText = currentModalWord.english;
+        if (currentModalWord.tagalog) {
+            secondaryHtml = '<div class="modal-section modal-dynamic-section"><h4 class="modal-section-title">Tagalog Translation</h4>' +
+                '<div style="font-size: 18px; font-weight: 700; color: #4338CA;">' + 
+                currentModalWord.tagalog + 
+                '</div></div>';
+        }
+    } else if (currentLangMode === 'tl') {
+        primaryText = currentModalWord.tagalog || currentModalWord.english;
+        if (currentModalWord.tagalog && currentModalWord.english) {
+            secondaryHtml = '<div class="modal-section modal-dynamic-section"><h4 class="modal-section-title">English Translation</h4>' +
+                '<div style="font-size: 18px; font-weight: 700; color: var(--text);">' + currentModalWord.english + '</div></div>';
+        }
+    } else { // 'all'
+        primaryText = currentModalWord.english;
+        if (currentModalWord.tagalog) {
+            secondaryHtml = '<div class="modal-section modal-dynamic-section"><h4 class="modal-section-title">Tagalog Translation</h4>' +
+                '<div style="font-size: 18px; font-weight: 700; color: #4338CA;">' + currentModalWord.tagalog + '</div></div>';
+        }
     }
 
-    if (currentModalWord.tagalog) {
-        tagalogSec.style.display = "block";
-        var isSame = currentModalWord.tagalog.toLowerCase() === currentModalWord.bikol.toLowerCase();
-        tagalogSec.innerHTML = '<h4 class="modal-section-title">Tagalog Translation</h4>' +
-            '<div style="font-size: 18px; font-weight: 700; color: #4338CA;">' + 
-            currentModalWord.tagalog + 
-            (isSame ? ' <span style="font-size: 12px; font-weight: normal; color: var(--muted);">(Same as Bikol)</span>' : '') +
-            '</div>';
-    } else {
-        tagalogSec.style.display = "none";
+    document.getElementById("modalEnglish").textContent = primaryText;
+    document.getElementById("modalCategory").textContent = currentModalWord.category;
+    
+    // Clear old dynamic sections
+    var oldTagalogSec = document.getElementById("modalTagalogSection");
+    if (oldTagalogSec) oldTagalogSec.remove();
+    var dynamicSecs = document.querySelectorAll(".modal-dynamic-section");
+    dynamicSecs.forEach(function(s) { s.remove(); });
+
+    // Inject secondary translation
+    if (secondaryHtml) {
+        var tempDiv = document.createElement("div");
+        tempDiv.innerHTML = secondaryHtml;
+        var newSec = tempDiv.firstChild;
+        var exSec = document.getElementById("modalExamplesSection");
+        exSec.parentNode.insertBefore(newSec, exSec);
     }
     
     var exSec = document.getElementById("modalExamplesSection");
@@ -479,6 +502,20 @@ function nextFlashcard() {
     var act = document.getElementById("learnActivity");
     var exHtml = (word.examples && word.examples.length > 0) ? '<div class="flashcard-sub">"' + word.examples[0].bikol + '"</div>' : '';
     
+    var mainMeaning = "";
+    var subMeaningHtml = "";
+
+    if (currentLangMode === 'en') {
+        mainMeaning = word.english;
+    } else if (currentLangMode === 'tl') {
+        mainMeaning = word.tagalog || word.english;
+    } else { // all
+        mainMeaning = word.english;
+        if (word.tagalog) {
+            subMeaningHtml = '<div style="font-size: 18px; color: #E0E0E0; margin-top: -5px; margin-bottom: 10px;">' + word.tagalog + '</div>';
+        }
+    }
+
     act.innerHTML = '<div style="text-align:center">' +
         '<p style="color:var(--muted); margin-bottom:20px;">Tap the card to flip it!</p>' +
         '<div class="flashcard-scene"><div class="flashcard" onclick="this.classList.toggle(\'flipped\')">' +
@@ -488,9 +525,9 @@ function nextFlashcard() {
                 '<div class="flashcard-sub">' + word.pos + ' &bull; ' + word.category + '</div>' +
             '</div>' +
             '<div class="flashcard-face flashcard-back">' +
-                '<div class="flashcard-label">English & Tagalog</div>' +
-                '<div class="flashcard-word">' + word.english + '</div>' +
-                (word.tagalog ? '<div style="font-size: 18px; color: #E0E0E0; margin-top: -5px; margin-bottom: 10px;">' + word.tagalog + '</div>' : '') +
+                '<div class="flashcard-label">' + (currentLangMode === 'tl' ? 'Tagalog' : (currentLangMode === 'all' ? 'English & Tagalog' : 'English')) + '</div>' +
+                '<div class="flashcard-word">' + mainMeaning + '</div>' +
+                subMeaningHtml +
                 exHtml +
             '</div>' +
         '</div></div>' +
@@ -511,6 +548,28 @@ function resetLearnMenu() {
 // NAVIGATION & SEARCH
 // ==========================================
 var searchInput = document.getElementById("searchInput");
+
+// Language Toggle Setup
+document.addEventListener("click", function(e) {
+    if (e.target && e.target.classList.contains("lang-btn")) {
+        var btn = e.target;
+        document.querySelectorAll(".lang-btn").forEach(function(b) { b.classList.remove("active"); });
+        btn.classList.add("active");
+        currentLangMode = btn.getAttribute("data-lang");
+        
+        // Refresh Current View
+        var activePage = document.querySelector('.page-view.active');
+        if (activePage) {
+            if (activePage.id === 'page-home') {
+                renderPopularWords();
+            } else if (activePage.id === 'page-browse') {
+                renderBrowseResults();
+            } else if (activePage.id === 'page-favorites') {
+                displayFavorites();
+            }
+        }
+    }
+});
 
 function switchPage(pageName, btnElement) {
     var pages = document.querySelectorAll('.page-view');
@@ -598,8 +657,10 @@ async function init() {
     
     document.getElementById("wotdWord").textContent = wotd.bikol;
     document.getElementById("wotdPos").textContent = wotd.pos;
-    var tagalogText = wotd.tagalog ? " (TL: " + wotd.tagalog + ")" : "";
-    document.getElementById("wotdMeaning").textContent = wotd.english + tagalogText;
+    
+    var wotdMeaning = currentLangMode === 'tl' ? (wotd.tagalog || wotd.english) : wotd.english;
+    var tagalogSuffix = (currentLangMode === 'all' && wotd.tagalog) ? " (TL: " + wotd.tagalog + ")" : "";
+    document.getElementById("wotdMeaning").textContent = wotdMeaning + tagalogSuffix;
     
     // 5. Render the UI
     renderCategories();

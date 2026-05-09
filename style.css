@@ -8,6 +8,32 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
 
 header { position: sticky; top: 0; background: rgba(250,246,240,0.95); backdrop-filter: blur(10px); padding: 12px 20px; display: flex; align-items: center; gap: 16px; border-bottom: 1px solid var(--border); z-index: 100; }
 .logo { font-size: 22px; cursor: pointer; } .logo span { color: var(--accent); }
+
+.lang-toggle {
+    display: flex;
+    background: rgba(0,0,0,0.05);
+    padding: 3px;
+    border-radius: 50px;
+    gap: 2px;
+}
+.lang-btn {
+    border: none;
+    background: transparent;
+    padding: 6px 10px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.lang-btn.active {
+    background: white;
+    color: var(--accent);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    font-weight: 800;
+}
+
 #searchInput { flex: 1; padding: 10px 20px; border: 2px solid var(--border); border-radius: 50px; font-size: 15px; outline: none; background: var(--card); }
 #searchInput:focus { border-color: var(--accent); }
 
