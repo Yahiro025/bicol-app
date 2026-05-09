@@ -156,7 +156,7 @@ var categoryMeta = {
 // ==========================================
 function renderWordCard(word) {
     var isFav = getFavorites().indexOf(word.bikol) !== -1;
-    var tagalogHtml = (word.tagalog && word.tagalog.toLowerCase() !== word.bikol.toLowerCase()) 
+    var tagalogHtml = word.tagalog 
         ? '<div class="mini-tagalog">TL: ' + word.tagalog + '</div>' 
         : '';
         
@@ -321,7 +321,8 @@ function openDetail(bikol) {
     // THIS IS THE LINE THAT CRASHED IT - now looking for modalDialect
     document.getElementById("modalDialect").textContent = currentModalWord.dialect; 
     
-    document.getElementById("modalEnglish").textContent = currentModalWord.english;
+    var tagalogText = currentModalWord.tagalog ? " (" + currentModalWord.tagalog + ")" : "";
+    document.getElementById("modalEnglish").textContent = currentModalWord.english + tagalogText;
     document.getElementById("modalCategory").textContent = currentModalWord.category;
     
     // Tagalog Translation Section
@@ -487,8 +488,9 @@ function nextFlashcard() {
                 '<div class="flashcard-sub">' + word.pos + ' &bull; ' + word.category + '</div>' +
             '</div>' +
             '<div class="flashcard-face flashcard-back">' +
-                '<div class="flashcard-label">English</div>' +
+                '<div class="flashcard-label">English & Tagalog</div>' +
                 '<div class="flashcard-word">' + word.english + '</div>' +
+                (word.tagalog ? '<div style="font-size: 18px; color: #E0E0E0; margin-top: -5px; margin-bottom: 10px;">' + word.tagalog + '</div>' : '') +
                 exHtml +
             '</div>' +
         '</div></div>' +
@@ -551,6 +553,7 @@ searchInput.addEventListener("input", function() {
     var results = searchPool.filter(function(w) {
         return w.bikol.toLowerCase().indexOf(query) !== -1 || 
                w.english.toLowerCase().indexOf(query) !== -1 ||
+               (w.tagalog && w.tagalog.toLowerCase().indexOf(query) !== -1) ||
                w.pos.toLowerCase().indexOf(query) !== -1;
     });
 
@@ -595,7 +598,8 @@ async function init() {
     
     document.getElementById("wotdWord").textContent = wotd.bikol;
     document.getElementById("wotdPos").textContent = wotd.pos;
-    document.getElementById("wotdMeaning").textContent = wotd.english;
+    var tagalogText = wotd.tagalog ? " (TL: " + wotd.tagalog + ")" : "";
+    document.getElementById("wotdMeaning").textContent = wotd.english + tagalogText;
     
     // 5. Render the UI
     renderCategories();
