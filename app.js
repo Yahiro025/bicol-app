@@ -634,10 +634,14 @@ searchInput.addEventListener("input", function() {
     }
 
     var results = searchPool.filter(function(w) {
-        return w.bikol.toLowerCase().indexOf(query) !== -1 || 
-               w.english.toLowerCase().indexOf(query) !== -1 ||
-               (w.tagalog && w.tagalog.toLowerCase().indexOf(query) !== -1) ||
-               w.pos.toLowerCase().indexOf(query) !== -1;
+        var b = (w.bikol || "").toLowerCase();
+        var e = (w.english || "").toLowerCase();
+        var t = (w.tagalog || "").toLowerCase();
+        
+        return b.indexOf(query) !== -1 || 
+               e.indexOf(query) !== -1 ||
+               t.indexOf(query) !== -1 ||
+               (w.pos || "").toLowerCase().indexOf(query) !== -1;
     });
 
     var containerId = "popularWords";
