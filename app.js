@@ -366,7 +366,7 @@ function openDetail(bikol) {
     if (secondaryHtml) {
         var tempDiv = document.createElement("div");
         tempDiv.innerHTML = secondaryHtml;
-        var newSec = tempDiv.firstChild;
+        var newSec = tempDiv.children[0];
         var exSec = document.getElementById("modalExamplesSection");
         exSec.parentNode.insertBefore(newSec, exSec);
     }
@@ -549,25 +549,49 @@ function resetLearnMenu() {
 // ==========================================
 var searchInput = document.getElementById("searchInput");
 
+function updateWotd() {
+    var today = new Date();
+    var dayIndex = today.getDate() % (dictionary.length || 1);
+    var wotd = dictionary[dayIndex];
+    if (!wotd) return;
+
+    document.getElementById("wotdWord").textContent = wotd.bikol;
+    document.getElementById("wotdPos").textContent = wotd.pos;
+    
+    var wotdMeaning = currentLangMode === 'tl' ? (wotd.tagalog || wotd.english) : wotd.english;
+    var tagalogSuffix = (currentLangMode === 'all' && wotd.tagalog) ? " (TL: " + wotd.tagalog + ")" : "";
+    document.getElementById("wotdMeaning").textContent = wotdMeaning + tagalogSuffix;
+}
+
+function refreshUI() {
+    updateWotd();
+    renderCategories();
+    updateHeroStats();
+    
+    // Handle Search if query exists
+    var query = searchInput ? searchInput.value.toLowerCase() : "";
+    if (query) {
+        // Trigger a fake input event to refresh search results
+        searchInput.dispatchEvent(new Event('input'));
+        return; 
+    }
+
+    renderPopularWords();
+    var activePage = document.querySelector('.page-view.active');
+    if (activePage) {
+        if (activePage.id === 'page-browse') renderBrowseResults();
+        else if (activePage.id === 'page-favorites') displayFavorites();
+    }
+}
+
 // Language Toggle Setup
 document.addEventListener("click", function(e) {
-    if (e.target && e.target.classList.contains("lang-btn")) {
-        var btn = e.target;
+    var btn = e.target.closest(".lang-btn");
+    if (btn) {
         document.querySelectorAll(".lang-btn").forEach(function(b) { b.classList.remove("active"); });
         btn.classList.add("active");
         currentLangMode = btn.getAttribute("data-lang");
-        
-        // Refresh Current View
-        var activePage = document.querySelector('.page-view.active');
-        if (activePage) {
-            if (activePage.id === 'page-home') {
-                renderPopularWords();
-            } else if (activePage.id === 'page-browse') {
-                renderBrowseResults();
-            } else if (activePage.id === 'page-favorites') {
-                displayFavorites();
-            }
-        }
+        refreshUI();
     }
 });
 
@@ -650,22 +674,8 @@ async function init() {
         window.speechSynthesis.getVoices();
     }
     
-    // 4. Setup Word of the Day
-    var today = new Date();
-    var dayIndex = today.getDate() % dictionary.length;
-    var wotd = dictionary[dayIndex];
-    
-    document.getElementById("wotdWord").textContent = wotd.bikol;
-    document.getElementById("wotdPos").textContent = wotd.pos;
-    
-    var wotdMeaning = currentLangMode === 'tl' ? (wotd.tagalog || wotd.english) : wotd.english;
-    var tagalogSuffix = (currentLangMode === 'all' && wotd.tagalog) ? " (TL: " + wotd.tagalog + ")" : "";
-    document.getElementById("wotdMeaning").textContent = wotdMeaning + tagalogSuffix;
-    
-    // 5. Render the UI
-    renderCategories();
-    renderPopularWords();
-    updateHeroStats();
+    // 4. Setup Word of the Day & UI
+    refreshUI();
 }
 
 init();
