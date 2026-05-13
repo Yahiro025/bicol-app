@@ -16,6 +16,13 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 // Initialize the Supabase client
 var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+const cleanWordForSort = (word) => {
+  if (!word) return "";
+  // Convert to lowercase and remove ALL punctuation, spaces, hyphens, apostrophes, 
+  // and invisible characters. Keeps only letters, numbers, and 'ñ'.
+  return word.toLowerCase().replace(/[^a-z0-9ñ]/g, '');
+};
+
 // This will hold our database words
 var dictionary = []; 
 var currentLangMode = 'en'; // 'en', 'tl', or 'all'
@@ -23,17 +30,38 @@ var currentLangMode = 'en'; // 'en', 'tl', or 'all'
 async function fetchWords() {
     console.log("Fetching words from Supabase...");
     
-    const { data: words, error } = await supabaseClient
-        .from('words')
-        .select('*');
+    let allWords = [];
+    let from = 0;
+    let to = 999;
+    let hasMore = true;
 
-    if (error) {
-        console.error("Error fetching words:", error);
-        return;
+    while (hasMore) {
+        console.log(`Fetching range ${from} to ${to}...`);
+        const { data: words, error } = await supabaseClient
+            .from('words')
+            .select('*')
+            .range(from, to);
+
+        if (error) {
+            console.error("Error fetching words:", error);
+            break;
+        }
+
+        if (words && words.length > 0) {
+            allWords = allWords.concat(words);
+            if (words.length < 1000) {
+                hasMore = false;
+            } else {
+                from += 1000;
+                to += 1000;
+            }
+        } else {
+            hasMore = false;
+        }
     }
 
-    if (words && words.length > 0) {
-        dictionary = words.map(function(word) {
+    if (allWords.length > 0) {
+        dictionary = allWords.map(function(word) {
             // Build examples
             var examples = [];
             if (word.example_bikol && word.example_bikol.trim() !== '') {
@@ -67,13 +95,22 @@ async function fetchWords() {
                 english: word.english || '',
                 tagalog: word.tagalog || '',
                 pos: word.pos || '',
-                category: word.category || '',
+                category: word.category || 'General',
                 dialect: word.dialect || '',
                 pronunciation: word.pronunciation || '',
                 examples: examples,
                 synonyms: syns
             };
         });
+
+        // Custom client-side sorting
+        dictionary.sort((a, b) => {
+            const cleanA = cleanWordForSort(a.bikol);
+            const cleanB = cleanWordForSort(b.bikol);
+            // Use 'fil' locale for proper Filipino/Bikol alphabetical rules
+            return cleanA.localeCompare(cleanB, 'fil');
+        });
+
         console.log("Loaded " + dictionary.length + " words from cloud!");
     }
 }
@@ -145,7 +182,8 @@ var categoryMeta = {
     "Food & Cooking": { icon: "fa-fire-burner", color: "#F0932B" },
     "Greetings & Expressions": { icon: "fa-comment-dots", color: "#D4572A" },
     "Family & Relationships": { icon: "fa-people-group", color: "#A29BFE" },
-    "Emotions & Feelings": { icon: "fa-heart", color: "#EB4D4B" }
+    "Emotions & Feelings": { icon: "fa-heart", color: "#EB4D4B" },
+    "General": { icon: "fa-book", color: "#6B6259" }
 };
 
 // ==========================================
@@ -279,9 +317,18 @@ function renderBrowseResults() {
     for (var i = 0; i < dictionary.length; i++) {
         var w = dictionary[i];
         var catMatch = currentBrowseFilter === "All" || w.category === currentBrowseFilter;
-        var letterMatch = activeLetter === "All" || w.bikol[0].toUpperCase() === activeLetter;
+        
+        // Use the cleaned word to determine the first letter
+        var cleaned = cleanWordForSort(w.bikol);
+        var letterMatch = activeLetter === "All" || (cleaned.length > 0 && cleaned[0].toUpperCase() === activeLetter);
+        
         if (catMatch && letterMatch) filtered.push(w);
     }
+    
+    // Sort again to ensure perfect order in the results
+    filtered.sort((a, b) => {
+        return cleanWordForSort(a.bikol).localeCompare(cleanWordForSort(b.bikol), 'fil');
+    });
     
     var container = document.getElementById("browseResults");
     if (filtered.length === 0) {
@@ -299,6 +346,12 @@ function displayFavorites() {
     var container = document.getElementById("favoritesContainer");
     if (favs.length === 0) { container.innerHTML = '<p class="empty-msg">No favorites yet. Tap the heart icon to save words!</p>'; return; }
     var favWords = dictionary.filter(function(w) { return favs.indexOf(w.bikol) !== -1; });
+    
+    // Sort the favorites
+    favWords.sort((a, b) => {
+        return cleanWordForSort(a.bikol).localeCompare(cleanWordForSort(b.bikol), 'fil');
+    });
+    
     container.innerHTML = favWords.map(renderWordCard).join("");
 }
 
@@ -642,6 +695,11 @@ searchInput.addEventListener("input", function() {
                e.indexOf(query) !== -1 ||
                t.indexOf(query) !== -1 ||
                (w.pos || "").toLowerCase().indexOf(query) !== -1;
+    });
+
+    // Sort the search results
+    results.sort((a, b) => {
+        return cleanWordForSort(a.bikol).localeCompare(cleanWordForSort(b.bikol), 'fil');
     });
 
     var containerId = "popularWords";
