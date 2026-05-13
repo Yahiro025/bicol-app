@@ -66,7 +66,16 @@
         <div id="page-browse" class="page-view">
             <h3 class="section-title">Browse Dictionary</h3>
             <div id="alphaBar" class="alpha-bar"></div>
-            <div id="browseFilters" class="filter-chips"></div>
+            
+            <button id="categoryToggle" class="category-toggle-btn" onclick="toggleBrowseCategories()">
+                <span><i class="fas fa-filter"></i> Filter by Category</span>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </button>
+            
+            <div id="browseFiltersContainer" class="browse-filters-container">
+                <div id="browseFilters" class="filter-chips"></div>
+            </div>
+
             <div id="browseResults" class="word-list"></div>
         </div>
 

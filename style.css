@@ -112,7 +112,42 @@ main { max-width: 800px; margin: 0 auto; padding: 20px 20px 90px; }
 .alpha-bar { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 16px; background: var(--card); padding: 10px; border-radius: 12px; border: 1px solid var(--border); }
 .alpha-letter { width: 32px; height: 32px; border: none; background: transparent; border-radius: 6px; font-weight: bold; font-size: 13px; cursor: pointer; color: var(--muted); display: flex; align-items: center; justify-content: center; }
 .alpha-letter.active { background: var(--accent); color: white; }
-.filter-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+
+/* CATEGORY TOGGLE */
+.category-toggle-btn {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 18px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.category-toggle-btn:hover { background: rgba(0,0,0,0.02); border-color: var(--accent-light); }
+.category-toggle-btn i.fa-filter { margin-right: 10px; color: var(--accent); }
+.category-toggle-btn.active { color: var(--accent); border-color: var(--accent); background: rgba(212, 87, 42, 0.03); }
+
+.browse-filters-container {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out, margin-bottom 0.3s ease, opacity 0.2s ease;
+    margin-bottom: 0;
+    opacity: 0;
+}
+.browse-filters-container.show {
+    max-height: 600px;
+    margin-bottom: 24px;
+    opacity: 1;
+}
+
+.filter-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 0; padding: 4px; }
 .filter-chip { padding: 6px 16px; border: 2px solid var(--border); background: var(--card); border-radius: 50px; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; }
 .filter-chip.active { background: var(--accent); border-color: var(--accent); color: white; }
 

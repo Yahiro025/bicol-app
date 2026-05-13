@@ -281,6 +281,25 @@ function updateHeroStats() {
 // BROWSE PAGE
 // ==========================================
 var currentBrowseFilter = "All";
+var showBrowseCategories = false;
+
+function toggleBrowseCategories() {
+    showBrowseCategories = !showBrowseCategories;
+    var container = document.getElementById("browseFiltersContainer");
+    var btn = document.getElementById("categoryToggle");
+    var icon = btn.querySelector(".toggle-icon");
+    
+    if (showBrowseCategories) {
+        container.classList.add("show");
+        icon.classList.replace("fa-chevron-down", "fa-chevron-up");
+        btn.classList.add("active");
+    } else {
+        container.classList.remove("show");
+        icon.classList.replace("fa-chevron-up", "fa-chevron-down");
+        btn.classList.remove("active");
+    }
+}
+
 function initBrowse() {
     var alphaBar = document.getElementById("alphaBar");
     var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
