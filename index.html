@@ -18,8 +18,26 @@
             <button class="lang-btn" data-lang="tl">TL</button>
             <button class="lang-btn" data-lang="all">ALL</button>
         </div>
-        <input type="text" id="searchInput" placeholder="Search Bicol or English...">
+        <div class="search-trigger-container" onclick="openSearch()">
+            <i class="fas fa-search"></i>
+            <span>Search Bikol or English...</span>
+        </div>
     </header>
+
+    <!-- SEARCH OVERLAY -->
+    <div id="searchOverlay" class="search-overlay">
+        <div class="search-overlay-header">
+            <div class="search-input-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="overlaySearchInput" placeholder="Search dictionary...">
+                <button id="clearSearch" class="clear-search-btn">&times;</button>
+            </div>
+            <button class="search-cancel-btn" onclick="closeSearch()">Cancel</button>
+        </div>
+        <div id="searchResults" class="search-results-list">
+            <p class="search-hint">Start typing to find words...</p>
+        </div>
+    </div>
 
     <main>
         <!-- HOME PAGE -->

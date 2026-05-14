@@ -134,53 +134,71 @@ function speakWord(text) {
 // CATEGORY META (Icons & Colors)
 // ==========================================
 var categoryMeta = {
-    "Greetings": { icon: "fa-handshake", color: "#D4572A" },
-    "Basic": { icon: "fa-comment-dots", color: "#2D6A4F" },
-    "People": { icon: "fa-users", color: "#6C5CE7" },
+    "Greetings": { icon: "fa-comments", color: "#D4572A" },
+    "Greeting": { icon: "fa-comments", color: "#D4572A" },
+    "Basic": { icon: "fa-star", color: "#2D6A4F" },
+    "People": { icon: "fa-user-group", color: "#6C5CE7" },
     "Family": { icon: "fa-people-roof", color: "#E17055" },
-    "Body": { icon: "fa-hand", color: "#00B894" },
+    "Body": { icon: "fa-child", color: "#00B894" },
     "Food": { icon: "fa-utensils", color: "#FDCB6E" },
-    "Nature": { icon: "fa-leaf", color: "#00B894" },
+    "Nature": { icon: "fa-mountain-sun", color: "#00B894" },
     "Animals": { icon: "fa-paw", color: "#E17055" },
     "Actions": { icon: "fa-person-running", color: "#0984E3" },
-    "Descriptors": { icon: "fa-palette", color: "#6C5CE7" },
-    "Numbers": { icon: "fa-hashtag", color: "#D4572A" },
-    "Colors": { icon: "fa-droplet", color: "#FDCB6E" },
+    "Action": { icon: "fa-person-running", color: "#0984E3" },
+    "Descriptors": { icon: "fa-paint-brush", color: "#6C5CE7" },
+    "Description": { icon: "fa-paint-brush", color: "#6C5CE7" },
+    "Numbers": { icon: "fa-list-ol", color: "#D4572A" },
+    "Colors": { icon: "fa-palette", color: "#FDCB6E" },
     "Time": { icon: "fa-clock", color: "#0984E3" },
-    "Places": { icon: "fa-map-pin", color: "#2D6A4F" },
+    "Places": { icon: "fa-location-dot", color: "#2D6A4F" },
     "Health & Medicine": { icon: "fa-heart-pulse", color: "#EB4D4B" },
-    "Daily Life": { icon: "fa-calendar-day", color: "#636E72" },
-    "Relationships": { icon: "fa-people-group", color: "#A29BFE" },
+    "Daily Life": { icon: "fa-mug-hot", color: "#636E72" },
+    "Relationships": { icon: "fa-heart", color: "#A29BFE" },
     "Weather": { icon: "fa-cloud-sun", color: "#00CEC9" },
     "Clothing": { icon: "fa-shirt", color: "#FAB1A0" },
     "Education": { icon: "fa-graduation-cap", color: "#54A0FF" },
     "Technology": { icon: "fa-microchip", color: "#2D3436" },
     "Sports": { icon: "fa-volleyball", color: "#FF9F43" },
     "Music": { icon: "fa-music", color: "#B2BEC3" },
-    "Travel": { icon: "fa-map-location-dot", color: "#74B9FF" },
+    "Travel": { icon: "fa-plane-departure", color: "#74B9FF" },
     "Shopping": { icon: "fa-cart-shopping", color: "#FFEAA7" },
-    "Emotions": { icon: "fa-face-smile", color: "#E84393" },
-    "House": { icon: "fa-house-chimney", color: "#55E6C1" },
+    "Emotions": { icon: "fa-face-smile-beam", color: "#E84393" },
+    "Emotion": { icon: "fa-face-smile-beam", color: "#E84393" },
+    "House": { icon: "fa-house", color: "#55E6C1" },
     "Work": { icon: "fa-briefcase", color: "#95A5A6" },
     "Culture": { icon: "fa-masks-theater", color: "#F0932B" },
     "Religion": { icon: "fa-place-of-worship", color: "#F1C40F" },
     "Tools": { icon: "fa-screwdriver-wrench", color: "#B33939" },
     "Transportation": { icon: "fa-car", color: "#227093" },
     "Kitchen": { icon: "fa-kitchen-set", color: "#6AB04C" },
-    "Environment": { icon: "fa-earth-asia", color: "#40407A" },
+    "Environment": { icon: "fa-seedling", color: "#40407A" },
+    // ADDITIONAL CATEGORIES FROM USER LIST
+    "Object": { icon: "fa-cube", color: "#636E72" },
+    "Attitude": { icon: "fa-masks-theater", color: "#F0932B" },
+    "Profession": { icon: "fa-user-tie", color: "#95A5A6" },
+    "Law": { icon: "fa-gavel", color: "#B33939" },
+    "Humor": { icon: "fa-face-laugh-squint", color: "#E84393" },
+    "Charity": { icon: "fa-hand-holding-heart", color: "#EB4D4B" },
+    "Social": { icon: "fa-users-rectangle", color: "#A29BFE" },
+    "Grammar": { icon: "fa-spell-check", color: "#54A0FF" },
+    "Location": { icon: "fa-map-location-dot", color: "#2D6A4F" },
+    "Assistance": { icon: "fa-hands-helping", color: "#227093" },
+    "Literature": { icon: "fa-book-open", color: "#6B6259" },
+    "History": { icon: "fa-landmark", color: "#40407A" },
+    "Realization": { icon: "fa-lightbulb", color: "#F1C40F" },
+    "Labor": { icon: "fa-briefcase", color: "#95A5A6" },
     // NEW SCRAPER CATEGORIES (EXACT STRINGS)
     "Days & Time": { icon: "fa-calendar-days", color: "#0984E3" },
     "Home & Family": { icon: "fa-house-user", color: "#E17055" },
-    "Travel & Transportation": { icon: "fa-plane-departure", color: "#74B9FF" },
+    "Travel & Transportation": { icon: "fa-bus", color: "#74B9FF" },
     "Weather & Climate": { icon: "fa-cloud-showers-heavy", color: "#00CEC9" },
-    "Work & School": { icon: "fa-briefcase", color: "#95A5A6" },
-    "Numbers, Counting & Currency": { icon: "fa-money-bill-1-wave", color: "#2D6A4F" },
+    "Work & School": { icon: "fa-book-reader", color: "#95A5A6" },
+    "Numbers, Counting & Currency": { icon: "fa-coins", color: "#2D6A4F" },
     "Food, Drinks & Dining": { icon: "fa-bowl-food", color: "#FDCB6E" },
     "Emotions & Personal Traits": { icon: "fa-face-grin-stars", color: "#E84393" },
-    "Animals & Nature": { icon: "fa-dragon", color: "#00B894" },
-    "Lima sentimos na sana.": { icon: "fa-circle-question", color: "#B2BEC3" },
+    "Animals & Nature": { icon: "fa-leaf", color: "#00B894" },
     "Food & Cooking": { icon: "fa-fire-burner", color: "#F0932B" },
-    "Greetings & Expressions": { icon: "fa-comment-dots", color: "#D4572A" },
+    "Greetings & Expressions": { icon: "fa-message", color: "#D4572A" },
     "Family & Relationships": { icon: "fa-people-group", color: "#A29BFE" },
     "Emotions & Feelings": { icon: "fa-heart", color: "#EB4D4B" },
     "General": { icon: "fa-book", color: "#6B6259" }
@@ -619,7 +637,131 @@ function resetLearnMenu() {
 // ==========================================
 // NAVIGATION & SEARCH
 // ==========================================
-var searchInput = document.getElementById("searchInput");
+var overlaySearchInput = document.getElementById("overlaySearchInput");
+var searchOverlay = document.getElementById("searchOverlay");
+var expandedSearchBikol = null; // Track which word is expanded in search
+
+function openSearch() {
+    searchOverlay.classList.add("active");
+    document.body.style.overflow = "hidden"; // Prevent background scrolling
+    expandedSearchBikol = null;
+    setTimeout(() => overlaySearchInput.focus(), 100);
+}
+
+function closeSearch() {
+    searchOverlay.classList.remove("active");
+    document.body.style.overflow = ""; // Restore scrolling
+    overlaySearchInput.value = "";
+    expandedSearchBikol = null;
+    document.getElementById("searchResults").innerHTML = '<p class="search-hint">Start typing to find words...</p>';
+}
+
+function toggleSearchExpansion(bikol) {
+    expandedSearchBikol = (expandedSearchBikol === bikol) ? null : bikol;
+    renderSearchResults();
+}
+
+function renderSearchResults() {
+    var query = overlaySearchInput.value.toLowerCase();
+    var container = document.getElementById("searchResults");
+
+    if (query === "") {
+        container.innerHTML = '<p class="search-hint">Start typing to find words...</p>';
+        return;
+    }
+
+    // Filter results immediately
+    // NOTE: dictionary is already sorted alphabetically in fetchWords()
+    // so we don't need to sort again here. This makes search much faster.
+    var filtered = dictionary.filter(function(w) {
+        var b = (w.bikol || "").toLowerCase();
+        var e = (w.english || "").toLowerCase();
+        var t = (w.tagalog || "").toLowerCase();
+        var p = (w.pos || "").toLowerCase();
+        
+        return b.indexOf(query) !== -1 || 
+               e.indexOf(query) !== -1 || 
+               t.indexOf(query) !== -1 || 
+               p.indexOf(query) !== -1;
+    });
+
+    // CRITICAL: Limit results to 10 to ensure instant rendering even for broad queries like "a"
+    var results = filtered.slice(0, 10);
+
+    if (results.length === 0) {
+        container.innerHTML = '<div class="search-empty"><i class="fas fa-search"></i><p>No words found for "' + query + '"</p></div>';
+    } else {
+        var resultsHtml = results.map(function(word) {
+            var isExpanded = expandedSearchBikol === word.bikol;
+            var isFav = getFavorites().indexOf(word.bikol) !== -1;
+            
+            var detailsHtml = "";
+            if (isExpanded) {
+                var exHtml = "";
+                if (word.examples && word.examples.length > 0) {
+                    exHtml = '<div class="search-ex-section"><div class="search-inline-label">Examples</div>';
+                    word.examples.forEach(ex => {
+                        exHtml += '<div class="search-ex-item"><strong>' + ex.bikol + '</strong> ' + ex.english + '</div>';
+                    });
+                    exHtml += '</div>';
+                }
+
+                var synHtml = "";
+                if (word.synonyms && word.synonyms.length > 0) {
+                    synHtml = '<div class="search-syn-section"><div class="search-inline-label">Related</div><div class="search-syn-list">' + 
+                        word.synonyms.map(s => '<span class="search-syn-tag">' + s + '</span>').join("") + 
+                        '</div></div>';
+                }
+
+                var tagalogHtml = word.tagalog ? '<div class="search-inline-translation"><strong>Tagalog:</strong> ' + word.tagalog + '</div>' : '';
+
+                detailsHtml = '<div class="search-inline-details">' +
+                    '<div class="search-inline-meta"><span class="pos-tag">' + word.pos + '</span>' + (word.dialect ? '<span class="dialect-tag">' + word.dialect + '</span>' : '') + '</div>' +
+                    tagalogHtml +
+                    '<div class="search-inline-category"><i class="fas fa-folder-open"></i> ' + word.category + '</div>' +
+                    exHtml +
+                    synHtml +
+                '</div>';
+            }
+
+            return '<div class="search-result-card ' + (isExpanded ? 'active' : '') + '" onclick="toggleSearchExpansion(\'' + word.bikol + '\')">' +
+                '<div class="search-result-header">' +
+                    '<div class="search-result-title-group">' +
+                        '<div class="search-result-bikol">' + word.bikol + '</div>' +
+                        '<div class="search-result-english">' + (currentLangMode === 'tl' ? (word.tagalog || word.english) : word.english) + '</div>' +
+                    '</div>' +
+                    '<div class="search-result-actions">' +
+                        '<button class="action-btn ' + (isFav ? 'active' : '') + '" onclick="event.stopPropagation(); toggleFavorite(\'' + word.bikol + '\'); renderSearchResults();"><i class="fas fa-heart"></i></button>' +
+                        '<button class="action-btn" onclick="event.stopPropagation(); speakWord(\'' + word.bikol + '\')"><i class="fas fa-volume-up"></i></button>' +
+                        '<i class="fas fa-chevron-down search-chevron ' + (isExpanded ? 'rotated' : '') + '"></i>' +
+                    '</div>' +
+                '</div>' +
+                detailsHtml +
+            '</div>';
+        }).join("");
+
+        // Show a note if results were capped
+        if (filtered.length > 10) {
+            resultsHtml += '<div class="search-cap-note">Showing first 10 of ' + filtered.length + ' matches. Keep typing...</div>';
+        }
+
+        container.innerHTML = resultsHtml;
+    }
+}
+
+document.getElementById("clearSearch").addEventListener("click", function() {
+    overlaySearchInput.value = "";
+    expandedSearchBikol = null;
+    overlaySearchInput.focus();
+    document.getElementById("searchResults").innerHTML = '<p class="search-hint">Start typing to find words...</p>';
+});
+
+// Escape key to close search
+document.addEventListener("keydown", function(e) {
+    if (e.key === "Escape" && searchOverlay.classList.contains("active")) {
+        closeSearch();
+    }
+});
 
 function updateWotd() {
     var today = new Date();
@@ -640,14 +782,6 @@ function refreshUI() {
     renderCategories();
     updateHeroStats();
     
-    // Handle Search if query exists
-    var query = searchInput ? searchInput.value.toLowerCase() : "";
-    if (query) {
-        // Trigger a fake input event to refresh search results
-        searchInput.dispatchEvent(new Event('input'));
-        return; 
-    }
-
     renderPopularWords();
     var activePage = document.querySelector('.page-view.active');
     if (activePage) {
@@ -680,57 +814,15 @@ function switchPage(pageName, btnElement) {
         if (target) target.classList.add('active');
     }
     
-    if (searchInput) searchInput.value = '';
     if (pageName === 'browse') initBrowse();
     if (pageName === 'favorites') displayFavorites();
     if (pageName === 'learn') resetLearnMenu();
     window.scrollTo(0, 0);
 }
 
-searchInput.addEventListener("input", function() {
-    var query = searchInput.value.toLowerCase();
-    var activePage = document.querySelector('.page-view.active');
-    var pageId = activePage ? activePage.id : 'page-home';
-
-    if (query.length === 0) {
-        if (pageId === 'page-home') renderPopularWords();
-        else if (pageId === 'page-browse') renderBrowseResults();
-        else if (pageId === 'page-favorites') displayFavorites();
-        return;
-    }
-
-    var searchPool = dictionary;
-    if (pageId === 'page-favorites') {
-        var favs = getFavorites();
-        searchPool = dictionary.filter(function(w) { return favs.indexOf(w.bikol) !== -1; });
-    }
-
-    var results = searchPool.filter(function(w) {
-        var b = (w.bikol || "").toLowerCase();
-        var e = (w.english || "").toLowerCase();
-        var t = (w.tagalog || "").toLowerCase();
-        
-        return b.indexOf(query) !== -1 || 
-               e.indexOf(query) !== -1 ||
-               t.indexOf(query) !== -1 ||
-               (w.pos || "").toLowerCase().indexOf(query) !== -1;
-    });
-
-    // Sort the search results
-    results.sort((a, b) => {
-        return cleanWordForSort(a.bikol).localeCompare(cleanWordForSort(b.bikol), 'fil');
-    });
-
-    var containerId = "popularWords";
-    if (pageId === 'page-browse') containerId = "browseResults";
-    else if (pageId === 'page-favorites') containerId = "favoritesContainer";
-
-    var container = document.getElementById(containerId);
-    if (results.length === 0) {
-        container.innerHTML = '<p class="empty-msg">No words found.</p>';
-    } else {
-        container.innerHTML = results.map(renderWordCard).join("");
-    }
+overlaySearchInput.addEventListener("input", function() {
+    expandedSearchBikol = null;
+    renderSearchResults();
 });
 
 // ==========================================
