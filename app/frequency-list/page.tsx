@@ -7,7 +7,7 @@ export default async function FrequencyListPage() {
   try {
     // Using id as a fallback for frequency rank if not present
     words = await prisma.word.findMany({ 
-      orderBy: { id: 'asc' },
+      orderBy: { bikol: 'asc' },
       take: 100 
     });
   } catch (e) {

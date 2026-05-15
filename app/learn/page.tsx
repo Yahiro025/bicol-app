@@ -5,7 +5,9 @@ export const dynamic = 'force-dynamic';
 export default async function LearnPage() {
   let words: any[] = [];
   try {
-    words = await prisma.word.findMany({ take: 10 });
+    words = await prisma.word.findMany({ 
+  orderBy: { bikol: 'asc' },
+  take: 10 });
   } catch (e) {
     console.error(e);
   }
