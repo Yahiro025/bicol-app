@@ -5,8 +5,7 @@ import { useRouter } from 'next/navigation';
 
 export default function AutocompleteSearch() {
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<Array<{ bikol: string; english: string }>>([]);
-  const [isOpen, setIsOpen] = useState(false);
+const [results, setResults] = useState<Array<{ bikol: string; english: string; tagalog?: string | null }>>([]);  const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
