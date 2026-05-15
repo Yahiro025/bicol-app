@@ -4,22 +4,32 @@ export const dynamic = 'force-dynamic';
 
 export default async function FrequencyListPage() {
   let words: any[] = [];
+  let dbError = null;
   try {
-    // Using id as a fallback for frequency rank if not present
     words = await prisma.word.findMany({ 
       orderBy: { bikol: 'asc' },
       take: 100 
     });
-  } catch (e) {
+  } catch (e: any) {
     console.error(e);
+    dbError = e.message;
   }
 
   return (
     <main className="min-h-screen bg-zinc-950 text-white p-8">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold mb-6">Word Frequency List</h1>
-        <p className="text-zinc-400 mb-8">Top 100 most common Bikol words:</p>
         
+        {dbError && (
+          <div className="bg-red-900 text-red-100 p-4 rounded-xl text-sm mb-6">
+            Database Error: {dbError}
+          </div>
+        )}
+
+        {!dbError && words.length === 0 && (
+          <p className="text-zinc-400">No words found in the database.</p>
+        )}
+
         <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
           <ul className="divide-y divide-zinc-800">
             {words.map((word, idx) => (

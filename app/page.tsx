@@ -5,14 +5,22 @@ export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
   let wordCount = 0;
+  let dbError = null;
   try {
     wordCount = await prisma.word.count();
-  } catch (e) {
+  } catch (e: any) {
     console.error(e);
+    dbError = e.message;
   }
 
   return (
     <main className="min-h-screen bg-zinc-950 text-white flex flex-col">
+      {dbError && (
+        <div className="bg-red-900 text-red-100 p-4 text-center text-sm">
+          Database Error: {dbError}
+        </div>
+      )}
+
       {/* Header */}
       <header className="border-b border-zinc-800 px-6 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
@@ -39,7 +47,6 @@ export default async function HomePage() {
             </p>
           </div>
 
-          {/* Replaced Static Search with Dynamic SearchBar */}
           <SearchBar />
 
           {/* Stats */}

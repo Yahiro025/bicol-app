@@ -18,8 +18,8 @@ export async function GET(request: Request) {
       take: 10,
     });
     return NextResponse.json(words);
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
-    return NextResponse.json({ error: 'Search failed' }, { status: 500 });
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
