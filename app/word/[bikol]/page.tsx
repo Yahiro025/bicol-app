@@ -5,10 +5,10 @@ import WordClientPage from './WordClientPage';
 export const dynamic = 'force-dynamic';
 
 // Static site generation for all words in the database
-export async function generateStaticParams() {
-  const words = await prisma.word.findMany({
-    select: { bikol: true },
-  });
+//export async function generateStaticParams() {
+  //const words = await prisma.word.findMany({
+    //select: { bikol: true },
+  //});
 
   return words.map((word) => ({
     bikol: encodeURIComponent(word.bikol),
