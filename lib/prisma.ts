@@ -7,6 +7,11 @@ const connectionString = `${process.env.DATABASE_URL}`;
 const pool = new pg.Pool({ connectionString });
 const adapter = new PrismaPg(pool);
 
+// Polyfill BigInt to allow JSON serialization
+(BigInt.prototype as any).toJSON = function () {
+  return this.toString();
+};
+
 const prismaClientSingleton = () => {
   return new PrismaClient({ adapter });
 };

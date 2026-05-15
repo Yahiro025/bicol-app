@@ -1,7 +1,7 @@
  @import "tailwindcss";
 
 /* Custom theme variables for dark mode */
- @components/ThemeToggle.tsx {
+:root {
   --color-primary: #3b82f6;
   --color-primary-hover: #2563eb;
 }

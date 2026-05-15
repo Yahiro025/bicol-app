@@ -74,26 +74,34 @@ export default function WordClientPage({ word }: { word: any }) {
             )}
           </div>
 
-          {(word.etymology || (word.synonyms && word.synonyms.length > 0)) && (
-            <div className="pt-8 border-t border-zinc-100 dark:border-zinc-800 grid grid-cols-1 md:grid-cols-2 gap-8">
-              {word.etymology && (
-                <div className="space-y-4">
-                  <h3 className="text-sm font-black text-zinc-400 uppercase tracking-widest flex items-center gap-2">Etymology</h3>
-                  <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">{word.etymology}</p>
-                </div>
-              )}
-              {word.synonyms && word.synonyms.length > 0 && (
-                <div className="space-y-4">
-                  <h3 className="text-sm font-black text-zinc-400 uppercase tracking-widest flex items-center gap-2">Synonyms</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {word.synonyms.map((s: string, i: number) => (
-                      <span key={i} className="px-3 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 rounded-lg text-sm font-bold">{s}</span>
-                    ))}
+          {(() => {
+            const synonyms = Array.isArray(word.synonyms) 
+              ? word.synonyms 
+              : typeof word.synonyms === 'string' 
+                ? word.synonyms.split(',').map((s: string) => s.trim()).filter(Boolean)
+                : [];
+            
+            return (word.etymology || synonyms.length > 0) && (
+              <div className="pt-8 border-t border-zinc-100 dark:border-zinc-800 grid grid-cols-1 md:grid-cols-2 gap-8">
+                {word.etymology && (
+                  <div className="space-y-4">
+                    <h3 className="text-sm font-black text-zinc-400 uppercase tracking-widest flex items-center gap-2">Etymology</h3>
+                    <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">{word.etymology}</p>
                   </div>
-                </div>
-              )}
-            </div>
-          )}
+                )}
+                {synonyms.length > 0 && (
+                  <div className="space-y-4">
+                    <h3 className="text-sm font-black text-zinc-400 uppercase tracking-widest flex items-center gap-2">Synonyms</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {synonyms.map((s: string, i: number) => (
+                        <span key={i} className="px-3 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 rounded-lg text-sm font-bold">{s}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
         </section>
       </div>
     </div>

@@ -7,11 +7,8 @@ export async function GET(request: Request) {
 
   try {
     const data = await prisma.word.findMany({
-      where: {
-        frequency_rank: { not: null },
-      },
       orderBy: {
-        frequency_rank: 'asc',
+        id: 'asc',
       },
       take: limit,
     });

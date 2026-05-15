@@ -10,7 +10,7 @@ export async function GET() {
       },
       take: 20,
       orderBy: {
-        frequency_rank: 'asc',
+        id: 'asc',
       },
     });
 

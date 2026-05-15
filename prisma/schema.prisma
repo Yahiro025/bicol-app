@@ -7,44 +7,41 @@ datasource db {
 }
 
 model Word {
-  bikol           String   @id
+  id              BigInt  @id @default(autoincrement())
+  bikol           String? @unique(map: "unique_bikol_word")
   english         String?
-  tagalog         String?
   pos             String?
+  category        String?
   dialect         String?
-  pronunciation   String?
-  etymology       String?
-  category        String?  @default("General")
   example_bikol   String?
   example_english String?
-  synonyms        Json?    @default("[]")
-  confidence      Float    @default(1.0)
+  pronunciation   String?
+  synonyms        String?
+  tagalog         String?
+  confidence      Float?  @default(1.0)
   source_url      String?
-  frequency_rank  Int?
-  audio_url       String?
-  created_at      DateTime @default(now())
 
   @@map("words")
 }
 
 model UserSubmission {
-  id          Int      @id @default(autoincrement())
-  word        String
-  definition  String
-  dialect     String?
-  status      String   @default("pending")
-  created_at  DateTime @default(now())
+  id         Int       @id @default(autoincrement())
+  word       String
+  definition String
+  dialect    String?
+  status     String?   @default("pending")
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
 
   @@map("user_submissions")
 }
 
 model UserFlashcard {
-  id                Int      @id @default(autoincrement())
-  user_id           String?  @db.Uuid
+  id                Int       @id @default(autoincrement())
+  user_id           String?   @db.Uuid
   word_bikol        String
-  proficiency_score Int      @default(0)
-  next_review       DateTime?
-  created_at        DateTime @default(now())
+  proficiency_score Int?      @default(0)
+  next_review       DateTime? @db.Timestamptz(6)
+  created_at        DateTime? @default(now()) @db.Timestamptz(6)
 
   @@map("user_flashcards")
 }

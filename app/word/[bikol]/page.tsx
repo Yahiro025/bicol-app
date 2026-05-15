@@ -29,7 +29,7 @@ export default async function WordDetail({ params }: { params: { bikol: string }
   // Convert Date and Decimal to JSON-safe formats
   const serializedWord = {
     ...word,
-    created_at: word.created_at.toISOString(),
+    id: word.id.toString(),
   };
 
   return <WordClientPage word={serializedWord} />;
