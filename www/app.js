@@ -1,0 +1,882 @@
+// ==========================================
+// LOCAL STORAGE & TTS
+// ==========================================
+function getFavorites() { 
+    try { return JSON.parse(localStorage.getItem("bikolFavs") || "[]"); } 
+    catch(e) { return []; } 
+}
+function saveFavorites(favs) { localStorage.setItem("bikolFavs", JSON.stringify(favs)); }
+
+// ==========================================
+// SUPABASE CONFIGURATION
+// ==========================================
+const SUPABASE_URL = 'https://ayvxqbxnrbcgbffrzbia.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5dnhxYnhucmJjZ2JmZnJ6YmlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyMDkzMDAsImV4cCI6MjA5Mjc4NTMwMH0.pAHi-yBxb1GCEXT78xHQXiYcg7yJfoSpNCXi1Dvugdg';
+
+// Initialize the Supabase client
+var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const cleanWordForSort = (word) => {
+  if (!word) return "";
+  // Convert to lowercase and remove ALL punctuation, spaces, hyphens, apostrophes, 
+  // and invisible characters. Keeps only letters, numbers, and 'ñ'.
+  return word.toLowerCase().replace(/[^a-z0-9ñ]/g, '');
+};
+
+// This will hold our database words
+var dictionary = []; 
+var searchableDictionary = []; 
+var currentLangMode = 'en'; // 'en', 'tl', or 'all'
+// 'async' means this function takes time because it talks to the internet
+async function fetchWords() {
+    console.log("Fetching words from Supabase...");
+    
+    let allWords = [];
+    let from = 0;
+    let to = 999;
+    let hasMore = true;
+
+    while (hasMore) {
+        console.log(`Fetching range ${from} to ${to}...`);
+        const { data: words, error } = await supabaseClient
+            .from('words')
+            .select('*')
+            .range(from, to);
+
+        if (error) {
+            console.error("Error fetching words:", error);
+            break;
+        }
+
+        if (words && words.length > 0) {
+            allWords = allWords.concat(words);
+            if (words.length < 1000) {
+                hasMore = false;
+            } else {
+                from += 1000;
+                to += 1000;
+            }
+        } else {
+            hasMore = false;
+        }
+    }
+
+    if (allWords.length > 0) {
+        dictionary = allWords.map(function(word) {
+            // Build examples
+            var examples = [];
+            if (word.example_bikol && word.example_bikol.trim() !== '') {
+                examples.push({
+                    bikol: word.example_bikol,
+                    english: word.example_english || ''
+                });
+            }
+
+            // BULLETPROOF Synonyms parsing
+            var syns = [];
+            try {
+                if (word.synonyms) {
+                    // Check if it's a string that needs parsing
+                    var parsed = typeof word.synonyms === 'string' ? JSON.parse(word.synonyms) : word.synonyms;
+                    if (Array.isArray(parsed)) {
+                        syns = parsed;
+                    } else if (typeof parsed === 'string' && parsed.trim() !== '') {
+                        syns = [parsed]; // Wrap a single plain text word in an array
+                    }
+                }
+            } catch (e) {
+                // If JSON.parse fails, it's probably just plain text or comma separated
+                if (typeof word.synonyms === 'string' && word.synonyms.trim() !== '') {
+                    syns = word.synonyms.split(',').map(function(s) { return s.trim(); });
+                }
+            }
+
+            return {
+                bikol: word.bikol || '',
+                english: word.english || '',
+                tagalog: word.tagalog || '',
+                pos: word.pos || '',
+                category: word.category || 'General',
+                dialect: word.dialect || '',
+                pronunciation: word.pronunciation || '',
+                examples: examples,
+                synonyms: syns
+            };
+        });
+
+        // Custom client-side sorting
+        dictionary.sort((a, b) => {
+            const cleanA = cleanWordForSort(a.bikol);
+            const cleanB = cleanWordForSort(b.bikol);
+            // Use 'fil' locale for proper Filipino/Bikol alphabetical rules
+            return cleanA.localeCompare(cleanB, 'fil');
+        });
+
+        // Pre-calculate searchable fields for performance
+        searchableDictionary = dictionary.map(function(w) {
+            return {
+                word: w,
+                bikolLower: (w.bikol || "").toLowerCase(),
+                englishLower: (w.english || "").toLowerCase(),
+                tagalogLower: (w.tagalog || "").toLowerCase()
+            };
+        });
+
+        console.log("Loaded " + dictionary.length + " words from cloud!");
+    }
+}
+
+// ==========================================
+// CATEGORY META (Icons & Colors)
+// ==========================================
+var categoryMeta = {
+    "Greetings": { icon: "fa-comments", color: "#D4572A" },
+    "Greeting": { icon: "fa-comments", color: "#D4572A" },
+    "Basic": { icon: "fa-star", color: "#2D6A4F" },
+    "People": { icon: "fa-user-group", color: "#6C5CE7" },
+    "Family": { icon: "fa-people-roof", color: "#E17055" },
+    "Body": { icon: "fa-child", color: "#00B894" },
+    "Food": { icon: "fa-utensils", color: "#FDCB6E" },
+    "Nature": { icon: "fa-mountain-sun", color: "#00B894" },
+    "Animals": { icon: "fa-paw", color: "#E17055" },
+    "Actions": { icon: "fa-person-running", color: "#0984E3" },
+    "Action": { icon: "fa-person-running", color: "#0984E3" },
+    "Descriptors": { icon: "fa-paint-brush", color: "#6C5CE7" },
+    "Description": { icon: "fa-paint-brush", color: "#6C5CE7" },
+    "Numbers": { icon: "fa-list-ol", color: "#D4572A" },
+    "Colors": { icon: "fa-palette", color: "#FDCB6E" },
+    "Time": { icon: "fa-clock", color: "#0984E3" },
+    "Places": { icon: "fa-location-dot", color: "#2D6A4F" },
+    "Health & Medicine": { icon: "fa-heart-pulse", color: "#EB4D4B" },
+    "Daily Life": { icon: "fa-mug-hot", color: "#636E72" },
+    "Relationships": { icon: "fa-heart", color: "#A29BFE" },
+    "Weather": { icon: "fa-cloud-sun", color: "#00CEC9" },
+    "Clothing": { icon: "fa-shirt", color: "#FAB1A0" },
+    "Education": { icon: "fa-graduation-cap", color: "#54A0FF" },
+    "Technology": { icon: "fa-microchip", color: "#2D3436" },
+    "Sports": { icon: "fa-volleyball", color: "#FF9F43" },
+    "Music": { icon: "fa-music", color: "#B2BEC3" },
+    "Travel": { icon: "fa-plane-departure", color: "#74B9FF" },
+    "Shopping": { icon: "fa-cart-shopping", color: "#FFEAA7" },
+    "Emotions": { icon: "fa-face-smile-beam", color: "#E84393" },
+    "Emotion": { icon: "fa-face-smile-beam", color: "#E84393" },
+    "House": { icon: "fa-house", color: "#55E6C1" },
+    "Work": { icon: "fa-briefcase", color: "#95A5A6" },
+    "Culture": { icon: "fa-masks-theater", color: "#F0932B" },
+    "Religion": { icon: "fa-place-of-worship", color: "#F1C40F" },
+    "Tools": { icon: "fa-screwdriver-wrench", color: "#B33939" },
+    "Transportation": { icon: "fa-car", color: "#227093" },
+    "Kitchen": { icon: "fa-kitchen-set", color: "#6AB04C" },
+    "Environment": { icon: "fa-seedling", color: "#40407A" },
+    // ADDITIONAL CATEGORIES FROM USER LIST
+    "Object": { icon: "fa-cube", color: "#636E72" },
+    "Attitude": { icon: "fa-masks-theater", color: "#F0932B" },
+    "Profession": { icon: "fa-user-tie", color: "#95A5A6" },
+    "Law": { icon: "fa-gavel", color: "#B33939" },
+    "Humor": { icon: "fa-face-laugh-squint", color: "#E84393" },
+    "Charity": { icon: "fa-hand-holding-heart", color: "#EB4D4B" },
+    "Social": { icon: "fa-users-rectangle", color: "#A29BFE" },
+    "Grammar": { icon: "fa-spell-check", color: "#54A0FF" },
+    "Location": { icon: "fa-map-location-dot", color: "#2D6A4F" },
+    "Assistance": { icon: "fa-hands-helping", color: "#227093" },
+    "Literature": { icon: "fa-book-open", color: "#6B6259" },
+    "History": { icon: "fa-landmark", color: "#40407A" },
+    "Realization": { icon: "fa-lightbulb", color: "#F1C40F" },
+    "Labor": { icon: "fa-briefcase", color: "#95A5A6" },
+    // NEW SCRAPER CATEGORIES (EXACT STRINGS)
+    "Days & Time": { icon: "fa-calendar-days", color: "#0984E3" },
+    "Home & Family": { icon: "fa-house-user", color: "#E17055" },
+    "Travel & Transportation": { icon: "fa-bus", color: "#74B9FF" },
+    "Weather & Climate": { icon: "fa-cloud-showers-heavy", color: "#00CEC9" },
+    "Work & School": { icon: "fa-book-reader", color: "#95A5A6" },
+    "Numbers, Counting & Currency": { icon: "fa-coins", color: "#2D6A4F" },
+    "Food, Drinks & Dining": { icon: "fa-bowl-food", color: "#FDCB6E" },
+    "Emotions & Personal Traits": { icon: "fa-face-grin-stars", color: "#E84393" },
+    "Animals & Nature": { icon: "fa-leaf", color: "#00B894" },
+    "Food & Cooking": { icon: "fa-fire-burner", color: "#F0932B" },
+    "Greetings & Expressions": { icon: "fa-message", color: "#D4572A" },
+    "Family & Relationships": { icon: "fa-people-group", color: "#A29BFE" },
+    "Emotions & Feelings": { icon: "fa-heart", color: "#EB4D4B" },
+    "General": { icon: "fa-book", color: "#6B6259" }
+};
+
+// ==========================================
+// RENDERING HELPERS
+// ==========================================
+function renderWordCard(word) {
+    var isFav = getFavorites().indexOf(word.bikol) !== -1;
+    
+    var mainMeaning = "";
+    var subMeaningHtml = "";
+
+    if (currentLangMode === 'en') {
+        mainMeaning = word.english;
+    } else if (currentLangMode === 'tl') {
+        mainMeaning = word.tagalog || word.english; 
+    } else if (currentLangMode === 'all') {
+        mainMeaning = word.english;
+        if (word.tagalog) {
+            subMeaningHtml = '<div class="mini-tagalog">TL: ' + word.tagalog + '</div>';
+        }
+    }
+        
+    return '<div class="mini-word-card" onclick="openDetail(\'' + word.bikol.replace(/'/g, "\\'") + '\')">' +
+        '<div class="mini-info">' +
+            '<div class="mini-bikol">' + word.bikol + '</div>' +
+            '<div class="mini-english">' + mainMeaning + '</div>' +
+            subMeaningHtml +
+        '</div>' +
+        '<div class="mini-actions">' +
+            '<button class="action-btn ' + (isFav ? 'active' : '') + '" onclick="event.stopPropagation(); toggleFavorite(\'' + word.bikol.replace(/'/g, "\\'") + '\')"><i class="fas fa-heart"></i></button>' +
+        '</div>' +
+    '</div>';
+}
+
+// ==========================================
+// HOME PAGE
+// ==========================================
+function renderCategories() {
+    var grid = document.getElementById("categoriesGrid");
+    var counts = {};
+    for (var i = 0; i < dictionary.length; i++) {
+        var cat = dictionary[i].category;
+        counts[cat] = (counts[cat] || 0) + 1;
+    }
+    var html = "";
+    for (var category in counts) {
+        var meta = categoryMeta[category] || { icon: "fa-book", color: "#6B6259" };
+        html += '<div class="category-card" style="border-top-color: ' + meta.color + '" onclick="goToCategory(\'' + category + '\')">' +
+            '<div class="category-icon" style="color: ' + meta.color + '"><i class="fas ' + meta.icon + '"></i></div>' +
+            '<div class="category-name">' + category + '</div>' +
+            '<div class="category-count">' + counts[category] + ' words</div>' +
+        '</div>';
+    }
+    grid.innerHTML = html;
+}
+
+function goToCategory(cat) {
+    switchPage('browse');
+    setTimeout(function() { filterBrowseCategory(cat); }, 150);
+}
+
+function renderPopularWords() {
+    var container = document.getElementById("popularWords");
+    var popular = ["Magayon", "Kumusta", "Marhay", "Dakol", "Kakanon", "Harong", "Tawo", "Aldaw", "Salamat", "Aram"];
+    var words = [];
+    for (var i = 0; i < popular.length; i++) {
+        var found = dictionary.find(function(w) { return w.bikol === popular[i]; });
+        if (found) words.push(found);
+    }
+    container.innerHTML = words.map(renderWordCard).join("");
+}
+
+function updateHeroStats() {
+    var wordCount = dictionary.length;
+    var categories = [];
+    var dialects = [];
+
+    for (var i = 0; i < dictionary.length; i++) {
+        var word = dictionary[i];
+        if (word.category && categories.indexOf(word.category) === -1) {
+            categories.push(word.category);
+        }
+        if (word.dialect && dialects.indexOf(word.dialect) === -1) {
+            dialects.push(word.dialect);
+        }
+    }
+
+    document.getElementById("heroWordCount").textContent = wordCount;
+    document.getElementById("heroCatCount").textContent = categories.length;
+    document.getElementById("heroDialectCount").textContent = dialects.length;
+}
+
+// ==========================================
+// BROWSE PAGE
+// ==========================================
+var currentBrowseFilter = "All";
+var showBrowseCategories = false;
+
+function toggleBrowseCategories() {
+    showBrowseCategories = !showBrowseCategories;
+    var container = document.getElementById("browseFiltersContainer");
+    var btn = document.getElementById("categoryToggle");
+    var icon = btn.querySelector(".toggle-icon");
+    
+    if (showBrowseCategories) {
+        container.classList.add("show");
+        icon.classList.replace("fa-chevron-down", "fa-chevron-up");
+        btn.classList.add("active");
+    } else {
+        container.classList.remove("show");
+        icon.classList.replace("fa-chevron-up", "fa-chevron-down");
+        btn.classList.remove("active");
+    }
+}
+
+function initBrowse() {
+    var alphaBar = document.getElementById("alphaBar");
+    var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
+    alphaBar.innerHTML = '<button class="alpha-letter active" onclick="setAlpha(\'All\')">All</button>' + letters.map(function(l) { return '<button class="alpha-letter" onclick="setAlpha(\'' + l + '\')">' + l + '</button>'; }).join("");
+    
+    var filters = document.getElementById("browseFilters");
+    var filterHtml = '<button class="filter-chip active" onclick="filterBrowseCategory(\'All\')">All</button>';
+    for (var cat in categoryMeta) {
+        filterHtml += '<button class="filter-chip" onclick="filterBrowseCategory(\'' + cat + '\')">' + cat + '</button>';
+    }
+    filters.innerHTML = filterHtml;
+    renderBrowseResults();
+}
+
+function setAlpha(letter) {
+    var btns = document.querySelectorAll(".alpha-letter");
+    for (var i = 0; i < btns.length; i++) btns[i].classList.remove("active");
+    event.currentTarget.classList.add("active");
+    renderBrowseResults();
+}
+
+function filterBrowseCategory(cat) {
+    currentBrowseFilter = cat;
+    var btns = document.querySelectorAll(".filter-chip");
+    for (var i = 0; i < btns.length; i++) btns[i].classList.remove("active");
+    if (event && event.currentTarget) event.currentTarget.classList.add("active");
+    renderBrowseResults();
+}
+
+function renderBrowseResults() {
+    var activeLetterBtn = document.querySelector(".alpha-letter.active");
+    var activeLetter = activeLetterBtn ? activeLetterBtn.textContent : "All";
+    var filtered = [];
+    for (var i = 0; i < dictionary.length; i++) {
+        var w = dictionary[i];
+        var catMatch = currentBrowseFilter === "All" || w.category === currentBrowseFilter;
+        
+        // Use the cleaned word to determine the first letter
+        var cleaned = cleanWordForSort(w.bikol);
+        var letterMatch = activeLetter === "All" || (cleaned.length > 0 && cleaned[0].toUpperCase() === activeLetter);
+        
+        if (catMatch && letterMatch) filtered.push(w);
+    }
+    
+    // Sort again to ensure perfect order in the results
+    filtered.sort((a, b) => {
+        return cleanWordForSort(a.bikol).localeCompare(cleanWordForSort(b.bikol), 'fil');
+    });
+    
+    var container = document.getElementById("browseResults");
+    if (filtered.length === 0) {
+        container.innerHTML = '<p class="empty-msg">No words found.</p>';
+    } else {
+        container.innerHTML = filtered.map(renderWordCard).join("");
+    }
+}
+
+// ==========================================
+// FAVORITES
+// ==========================================
+function displayFavorites() {
+    var favs = getFavorites();
+    var container = document.getElementById("favoritesContainer");
+    if (favs.length === 0) { container.innerHTML = '<p class="empty-msg">No favorites yet. Tap the heart icon to save words!</p>'; return; }
+    var favWords = dictionary.filter(function(w) { return favs.indexOf(w.bikol) !== -1; });
+    
+    // Sort the favorites
+    favWords.sort((a, b) => {
+        return cleanWordForSort(a.bikol).localeCompare(cleanWordForSort(b.bikol), 'fil');
+    });
+    
+    container.innerHTML = favWords.map(renderWordCard).join("");
+}
+
+function toggleFavorite(bikol) {
+    var favs = getFavorites();
+    var index = favs.indexOf(bikol);
+    if (index !== -1) {
+        favs.splice(index, 1);
+    } else {
+        favs.push(bikol);
+    }
+    saveFavorites(favs);
+    renderPopularWords(); displayFavorites(); renderBrowseResults(); updateModalFavBtn();
+}
+
+// ==========================================
+// DETAIL MODAL
+// ==========================================
+var currentModalWord = null;
+function openDetail(bikol) {
+    currentModalWord = dictionary.find(function(w) { return w.bikol === bikol; });
+    if (!currentModalWord) return;
+    
+    document.getElementById("modalWord").textContent = currentModalWord.bikol;
+    document.getElementById("modalPronunciation").textContent = currentModalWord.pronunciation ? "[ " + currentModalWord.pronunciation + " ]" : "";
+    document.getElementById("modalPos").textContent = currentModalWord.pos;
+    document.getElementById("modalDialect").textContent = currentModalWord.dialect; 
+    
+    // Primary and Secondary Translation Logic
+    var primaryText = "";
+    var secondaryHtml = "";
+
+    if (currentLangMode === 'en') {
+        primaryText = currentModalWord.english;
+        if (currentModalWord.tagalog) {
+            secondaryHtml = '<div class="modal-section modal-dynamic-section"><h4 class="modal-section-title">Tagalog Translation</h4>' +
+                '<div style="font-size: 18px; font-weight: 700; color: #4338CA;">' + 
+                currentModalWord.tagalog + 
+                '</div></div>';
+        }
+    } else if (currentLangMode === 'tl') {
+        primaryText = currentModalWord.tagalog || currentModalWord.english;
+        if (currentModalWord.tagalog && currentModalWord.english) {
+            secondaryHtml = '<div class="modal-section modal-dynamic-section"><h4 class="modal-section-title">English Translation</h4>' +
+                '<div style="font-size: 18px; font-weight: 700; color: var(--text);">' + currentModalWord.english + '</div></div>';
+        }
+    } else { // 'all'
+        primaryText = currentModalWord.english;
+        if (currentModalWord.tagalog) {
+            secondaryHtml = '<div class="modal-section modal-dynamic-section"><h4 class="modal-section-title">Tagalog Translation</h4>' +
+                '<div style="font-size: 18px; font-weight: 700; color: #4338CA;">' + currentModalWord.tagalog + '</div></div>';
+        }
+    }
+
+    document.getElementById("modalEnglish").textContent = primaryText;
+    document.getElementById("modalCategory").textContent = currentModalWord.category;
+    
+    // Clear old dynamic sections
+    var oldTagalogSec = document.getElementById("modalTagalogSection");
+    if (oldTagalogSec) oldTagalogSec.remove();
+    var dynamicSecs = document.querySelectorAll(".modal-dynamic-section");
+    dynamicSecs.forEach(function(s) { s.remove(); });
+
+    // Inject secondary translation
+    if (secondaryHtml) {
+        var tempDiv = document.createElement("div");
+        tempDiv.innerHTML = secondaryHtml;
+        var newSec = tempDiv.children[0];
+        var exSec = document.getElementById("modalExamplesSection");
+        exSec.parentNode.insertBefore(newSec, exSec);
+    }
+    
+    var exSec = document.getElementById("modalExamplesSection");
+    if (currentModalWord.examples && currentModalWord.examples.length > 0) {
+        exSec.style.display = "block";
+        var exHtml = "";
+        for (var i = 0; i < currentModalWord.examples.length; i++) {
+            var ex = currentModalWord.examples[i];
+            exHtml += '<div class="example-box"><div class="example-bikol">' + ex.bikol + '</div><div class="example-eng">' + ex.english + '</div></div>';
+        }
+        document.getElementById("modalExamples").innerHTML = exHtml;
+    } else {
+        exSec.style.display = "none";
+    }
+
+    var synSec = document.getElementById("modalSynonymsSection");
+    if (currentModalWord.synonyms && currentModalWord.synonyms.length > 0) {
+        synSec.style.display = "block";
+        var synHtml = "";
+        for (var j = 0; j < currentModalWord.synonyms.length; j++) {
+            synHtml += '<span class="synonym-tag">' + currentModalWord.synonyms[j] + '</span>';
+        }
+        document.getElementById("modalSynonyms").innerHTML = synHtml;
+    } else {
+        synSec.style.display = "none";
+    }
+
+    updateModalFavBtn();
+    document.getElementById("modal").classList.add("active");
+}
+
+function openWotdDetail() {
+    var wotdText = document.getElementById("wotdWord").textContent;
+    if(wotdText && wotdText !== "Loading...") openDetail(wotdText);
+}
+
+function closeModal() { document.getElementById("modal").classList.remove("active"); }
+document.getElementById("modalClose").addEventListener("click", closeModal);
+document.getElementById("modal").addEventListener("click", function(e) { if (e.target.id === "modal") closeModal(); });
+document.getElementById("modalSpeakBtn").addEventListener("click", function() { if(currentModalWord) speakWord(currentModalWord.bikol); });
+
+function toggleModalFav() { if(currentModalWord) toggleFavorite(currentModalWord.bikol); }
+function updateModalFavBtn() {
+    var btn = document.getElementById("modalFavBtn");
+    if (!btn) return;
+    if (currentModalWord && getFavorites().indexOf(currentModalWord.bikol) !== -1) {
+        btn.innerHTML = '<i class="fas fa-heart"></i>'; 
+        btn.classList.add("active");
+    } else {
+        btn.innerHTML = '<i class="far fa-heart"></i>'; 
+        btn.classList.remove("active");
+    }
+}
+
+// ==========================================
+// LEARN PAGE
+// ==========================================
+var quizState = { questions: [], current: 0, correct: 0, wrong: 0, answered: false, type: 'bikol' };
+
+function startQuiz(type) {
+    quizState = { questions: getRandomQuestions(10), current: 0, correct: 0, wrong: 0, answered: false, type: type };
+    document.getElementById("learnMenu").style.display = "none";
+    renderQuiz();
+}
+
+function getRandomQuestions(count) {
+    var shuffled = dictionary.slice().sort(function() { return Math.random() - 0.5; });
+    var selected = shuffled.slice(0, count);
+    var questions = [];
+    for (var i = 0; i < selected.length; i++) {
+        var word = selected[i];
+        var wrong = dictionary.filter(function(w) { return w.bikol !== word.bikol; }).sort(function() { return Math.random() - 0.5; }).slice(0, 3);
+        var options = wrong.concat([word]).sort(function() { return Math.random() - 0.5; });
+        questions.push({ word: word, options: options, correct: word.bikol });
+    }
+    return questions;
+}
+
+function renderQuiz() {
+    var act = document.getElementById("learnActivity");
+    if (quizState.current >= quizState.questions.length) {
+        var pct = Math.round((quizState.correct / quizState.questions.length) * 100);
+        act.innerHTML = '<div class="quiz-container" style="text-align:center">' +
+            '<h2 style="margin-bottom:10px;">Quiz Complete!</h2>' +
+            '<div style="font-size:48px; font-weight:900; color: ' + (pct >= 70 ? 'var(--green)' : 'var(--accent)') + '; margin:20px 0;">' + pct + '%</div>' +
+            '<p style="margin-bottom:24px;">' + quizState.correct + ' out of ' + quizState.questions.length + ' correct</p>' +
+            '<button class="control-btn" style="background: var(--muted);" onclick="resetLearnMenu()">Back to Menu</button>' +
+        '</div>';
+        return;
+    }
+    var q = quizState.questions[quizState.current];
+    var progress = ((quizState.current) / quizState.questions.length) * 100;
+    var isBikolQuiz = quizState.type === 'bikol';
+    var promptWord = isBikolQuiz ? q.word.bikol : q.word.english;
+    var optionsHtml = q.options.map(function(opt) {
+        var val = isBikolQuiz ? opt.english : opt.bikol;
+        return '<button class="quiz-option" data-val="' + opt.bikol + '" onclick="answerQuiz(this, \'' + opt.bikol + '\')">' + val + '</button>';
+    }).join("");
+
+    act.innerHTML = '<div class="quiz-container">' +
+        '<div class="quiz-progress"><div class="quiz-progress-fill" style="width:' + progress + '%"></div></div>' +
+        '<div class="quiz-score"><span class="score-item score-correct"><i class="fas fa-check"></i> ' + quizState.correct + '</span><span class="score-item score-wrong"><i class="fas fa-times"></i> ' + quizState.wrong + '</span></div>' +
+        '<div class="quiz-question"><div class="quiz-prompt">What does this mean?</div><div class="quiz-word">' + promptWord + '</div></div>' +
+        '<div class="quiz-options">' + optionsHtml + '</div>' +
+    '</div>';
+}
+
+function answerQuiz(btn, selectedBikol) {
+    if (quizState.answered) return;
+    quizState.answered = true;
+    var q = quizState.questions[quizState.current];
+    var isCorrect = selectedBikol === q.correct;
+    if (isCorrect) quizState.correct++; else quizState.wrong++;
+    var allBtns = document.querySelectorAll(".quiz-option");
+    for (var i = 0; i < allBtns.length; i++) {
+        var b = allBtns[i];
+        if (b.getAttribute("data-val") === q.correct) b.classList.add("correct");
+        else if (b === btn && !isCorrect) b.classList.add("wrong");
+        b.classList.add("disabled");
+    }
+    setTimeout(function() { quizState.current++; quizState.answered = false; renderQuiz(); }, 1200);
+}
+
+function startFlashcards() {
+    document.getElementById("learnMenu").style.display = "none";
+    nextFlashcard();
+}
+
+function nextFlashcard() {
+    var word = dictionary[Math.floor(Math.random() * dictionary.length)];
+    var act = document.getElementById("learnActivity");
+    var exHtml = (word.examples && word.examples.length > 0) ? '<div class="flashcard-sub">"' + word.examples[0].bikol + '"</div>' : '';
+    
+    var mainMeaning = "";
+    var subMeaningHtml = "";
+
+    if (currentLangMode === 'en') {
+        mainMeaning = word.english;
+    } else if (currentLangMode === 'tl') {
+        mainMeaning = word.tagalog || word.english;
+    } else { // all
+        mainMeaning = word.english;
+        if (word.tagalog) {
+            subMeaningHtml = '<div style="font-size: 18px; color: #E0E0E0; margin-top: -5px; margin-bottom: 10px;">' + word.tagalog + '</div>';
+        }
+    }
+
+    act.innerHTML = '<div style="text-align:center">' +
+        '<p style="color:var(--muted); margin-bottom:20px;">Tap the card to flip it!</p>' +
+        '<div class="flashcard-scene"><div class="flashcard" onclick="this.classList.toggle(\'flipped\')">' +
+            '<div class="flashcard-face flashcard-front">' +
+                '<div class="flashcard-label">Bikol</div>' +
+                '<div class="flashcard-word">' + word.bikol + '</div>' +
+                '<div class="flashcard-sub">' + word.pos + ' &bull; ' + word.category + '</div>' +
+            '</div>' +
+            '<div class="flashcard-face flashcard-back">' +
+                '<div class="flashcard-label">' + (currentLangMode === 'tl' ? 'Tagalog' : (currentLangMode === 'all' ? 'English & Tagalog' : 'English')) + '</div>' +
+                '<div class="flashcard-word">' + mainMeaning + '</div>' +
+                subMeaningHtml +
+                exHtml +
+            '</div>' +
+        '</div></div>' +
+        '<div class="fc-btns">' +
+            '<button class="control-btn" style="background: var(--accent);" onclick="nextFlashcard()"><i class="fas fa-times"></i> Don\'t Know</button>' +
+            '<button class="control-btn" style="background: var(--green);" onclick="nextFlashcard()"><i class="fas fa-check"></i> Know It</button>' +
+        '</div>' +
+        '<button class="control-btn" onclick="resetLearnMenu()" style="margin-top:15px; background: var(--muted);">Back to Menu</button>' +
+    '</div>';
+}
+
+function resetLearnMenu() {
+    document.getElementById("learnMenu").style.display = "grid";
+    document.getElementById("learnActivity").innerHTML = "";
+}
+
+// ==========================================
+// NAVIGATION & SEARCH
+// ==========================================
+var overlaySearchInput = document.getElementById("overlaySearchInput");
+var searchOverlay = document.getElementById("searchOverlay");
+var expandedSearchBikol = null; // Track which word is expanded in search
+
+function openSearch() {
+    searchOverlay.classList.add("active");
+    document.body.style.overflow = "hidden"; // Prevent background scrolling
+    expandedSearchBikol = null;
+    setTimeout(() => overlaySearchInput.focus(), 100);
+}
+
+function closeSearch() {
+    searchOverlay.classList.remove("active");
+    document.body.style.overflow = ""; // Restore scrolling
+    overlaySearchInput.value = "";
+    expandedSearchBikol = null;
+    document.getElementById("searchResults").innerHTML = '<p class="search-hint">Start typing to find words...</p>';
+}
+
+function toggleSearchExpansion(bikol) {
+    expandedSearchBikol = (expandedSearchBikol === bikol) ? null : bikol;
+    renderSearchResults();
+}
+
+function renderSearchResults() {
+    var query = overlaySearchInput.value.toLowerCase().trim();
+    var container = document.getElementById("searchResults");
+
+    if (query === "") {
+        container.innerHTML = '<p class="search-hint">Start typing to find words...</p>';
+        return;
+    }
+
+    // 1. Filter and Score for Ranking using pre-calculated fields
+    var scored = [];
+    for (var i = 0; i < searchableDictionary.length; i++) {
+        var item = searchableDictionary[i];
+        var b = item.bikolLower;
+        var e = item.englishLower;
+        var t = item.tagalogLower;
+        
+        var score = 0;
+        if (b === query) score += 100;
+        else if (b.indexOf(query) === 0) score += 50;
+        else if (b.indexOf(query) !== -1) score += 10;
+
+        if (e === query) score += 80;
+        else if (e.indexOf(query) === 0) score += 40;
+        else if (e.indexOf(query) !== -1) score += 5;
+
+        if (t === query) score += 80;
+        else if (t.indexOf(query) === 0) score += 40;
+        else if (t.indexOf(query) !== -1) score += 5;
+
+        if (score > 0) {
+            scored.push({ word: item.word, score: score });
+        }
+    }
+
+    // 2. Sort by score (descending)
+    scored.sort(function(a, b) {
+        return b.score - a.score;
+    });
+
+    // Keep search extremely focused by always showing top 5 results
+    var limit = 5;
+    var results = scored.slice(0, limit).map(function(s) { return s.word; });
+
+    if (results.length === 0) {
+        container.innerHTML = '<div class="search-empty"><i class="fas fa-search"></i><p>No words found for "' + query + '"</p></div>';
+    } else {
+        var resultsHtml = results.map(function(word) {
+            var isExpanded = expandedSearchBikol === word.bikol;
+            var isFav = getFavorites().indexOf(word.bikol) !== -1;
+            
+            var mainMeaning = "";
+            var subMeaningHtml = "";
+
+            if (currentLangMode === 'en') {
+                mainMeaning = word.english;
+            } else if (currentLangMode === 'tl') {
+                mainMeaning = word.tagalog || word.english;
+            } else if (currentLangMode === 'all') {
+                mainMeaning = word.english;
+                if (word.tagalog) {
+                    subMeaningHtml = '<div class="search-result-tagalog">TL: ' + word.tagalog + '</div>';
+                }
+            }
+
+            var detailsHtml = "";
+            if (isExpanded) {
+                var exHtml = "";
+                if (word.examples && word.examples.length > 0) {
+                    exHtml = '<div class="search-ex-section"><div class="search-inline-label">Examples</div>';
+                    word.examples.forEach(ex => {
+                        exHtml += '<div class="search-ex-item"><strong>' + ex.bikol + '</strong> ' + ex.english + '</div>';
+                    });
+                    exHtml += '</div>';
+                }
+
+                var synHtml = "";
+                if (word.synonyms && word.synonyms.length > 0) {
+                    synHtml = '<div class="search-syn-section"><div class="search-inline-label">Related</div><div class="search-syn-list">' + 
+                        word.synonyms.map(s => '<span class="search-syn-tag">' + s + '</span>').join("") + 
+                        '</div></div>';
+                }
+
+                // Only show Tagalog in details if it's NOT already shown in the header
+                var tagalogDetails = (currentLangMode !== 'tl' && currentLangMode !== 'all' && word.tagalog) 
+                    ? '<div class="search-inline-translation"><strong>Tagalog:</strong> ' + word.tagalog + '</div>' 
+                    : '';
+
+                detailsHtml = '<div class="search-inline-details" onclick="event.stopPropagation()">' +
+                    '<div class="search-inline-meta"><span class="pos-tag">' + word.pos + '</span>' + (word.dialect ? '<span class="dialect-tag">' + word.dialect + '</span>' : '') + '</div>' +
+                    tagalogDetails +
+                    '<div class="search-inline-category"><i class="fas fa-folder-open"></i> ' + word.category + '</div>' +
+                    exHtml +
+                    synHtml +
+                '</div>';
+            }
+
+            return '<div class="search-result-card ' + (isExpanded ? 'active' : '') + '" onclick="toggleSearchExpansion(\'' + word.bikol.replace(/'/g, "\\'") + '\')">' +
+                '<div class="search-result-header">' +
+                    '<div class="search-result-title-group">' +
+                        '<div class="search-result-bikol">' + word.bikol + '</div>' +
+                        '<div class="search-result-english">' + mainMeaning + '</div>' +
+                        subMeaningHtml +
+                    '</div>' +
+                    '<div class="search-result-actions">' +
+                        '<button class="action-btn ' + (isFav ? 'active' : '') + '" onclick="event.stopPropagation(); toggleFavorite(\'' + word.bikol.replace(/'/g, "\\'") + '\'); renderSearchResults();"><i class="fas fa-heart"></i></button>' +
+                        '<i class="fas fa-chevron-down search-chevron ' + (isExpanded ? 'rotated' : '') + '"></i>' +
+                    '</div>' +
+                '</div>' +
+                detailsHtml +
+            '</div>';
+        }).join("");
+
+        if (scored.length > limit) {
+            resultsHtml += '<div class="search-cap-note">Showing first ' + limit + ' of ' + scored.length + ' matches. Keep typing to narrow down...</div>';
+        }
+
+        container.innerHTML = resultsHtml;
+    }
+}
+
+document.getElementById("clearSearch").addEventListener("click", function() {
+    overlaySearchInput.value = "";
+    expandedSearchBikol = null;
+    overlaySearchInput.focus();
+    document.getElementById("searchResults").innerHTML = '<p class="search-hint">Start typing to find words...</p>';
+});
+
+// Escape key to close search
+document.addEventListener("keydown", function(e) {
+    if (e.key === "Escape" && searchOverlay.classList.contains("active")) {
+        closeSearch();
+    }
+});
+
+function updateWotd() {
+    var today = new Date();
+    var dayIndex = today.getDate() % (dictionary.length || 1);
+    var wotd = dictionary[dayIndex];
+    if (!wotd) return;
+
+    document.getElementById("wotdWord").textContent = wotd.bikol;
+    document.getElementById("wotdPos").textContent = wotd.pos;
+    
+    var wotdMeaning = currentLangMode === 'tl' ? (wotd.tagalog || wotd.english) : wotd.english;
+    var tagalogSuffix = (currentLangMode === 'all' && wotd.tagalog) ? " (TL: " + wotd.tagalog + ")" : "";
+    document.getElementById("wotdMeaning").textContent = wotdMeaning + tagalogSuffix;
+}
+
+function refreshUI() {
+    updateWotd();
+    renderCategories();
+    updateHeroStats();
+    
+    renderPopularWords();
+    var activePage = document.querySelector('.page-view.active');
+    if (activePage) {
+        if (activePage.id === 'page-browse') renderBrowseResults();
+        else if (activePage.id === 'page-favorites') displayFavorites();
+    }
+}
+
+// Language Toggle Setup
+document.addEventListener("click", function(e) {
+    var btn = e.target.closest(".lang-btn");
+    if (btn) {
+        document.querySelectorAll(".lang-btn").forEach(function(b) { b.classList.remove("active"); });
+        btn.classList.add("active");
+        currentLangMode = btn.getAttribute("data-lang");
+        refreshUI();
+    }
+});
+
+function switchPage(pageName, btnElement) {
+    var pages = document.querySelectorAll('.page-view');
+    for (var i = 0; i < pages.length; i++) pages[i].classList.remove('active');
+    document.getElementById('page-' + pageName).classList.add('active');
+    
+    var navBtns = document.querySelectorAll('.nav-btn');
+    for (var j = 0; j < navBtns.length; j++) navBtns[j].classList.remove('active');
+    if (btnElement) btnElement.classList.add('active');
+    else {
+        var target = document.querySelector('.nav-btn[onclick*="' + pageName + '"]');
+        if (target) target.classList.add('active');
+    }
+    
+    if (pageName === 'browse') initBrowse();
+    if (pageName === 'favorites') displayFavorites();
+    if (pageName === 'learn') resetLearnMenu();
+    window.scrollTo(0, 0);
+}
+
+overlaySearchInput.addEventListener("input", function() {
+    expandedSearchBikol = null;
+    renderSearchResults();
+});
+
+// ==========================================
+// INIT
+// ==========================================
+async function init() {
+    // Show a loading state
+    document.getElementById("wotdWord").textContent = "Connecting to cloud...";
+    
+    // 1. Fetch the data first!
+    await fetchWords();
+    
+    // 2. If the database is empty, fallback gracefully
+    if (dictionary.length === 0) {
+        document.getElementById("wotdWord").textContent = "No words found";
+        document.getElementById("wotdMeaning").textContent = "Add words in Supabase";
+        return;
+    }
+
+    // 3. Safe check for Speech API
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.getVoices();
+    }
+    
+    // 4. Setup Word of the Day & UI
+    refreshUI();
+}
+
+init();

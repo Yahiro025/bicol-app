@@ -1,0 +1,10 @@
+pyproject.toml
+bikoldict.egg-info/PKG-INFO
+bikoldict.egg-info/SOURCES.txt
+bikoldict.egg-info/dependency_links.txt
+bikoldict.egg-info/requires.txt
+bikoldict.egg-info/top_level.txt
+scripts/audit_data.py
+tests/test_integration.py
+tests/test_scrapers.py
+tests/test_utils.py

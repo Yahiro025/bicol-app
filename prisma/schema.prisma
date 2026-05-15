@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Word {
+  bikol           String   @id
+  english         String?
+  tagalog         String?
+  pos             String?
+  dialect         String?
+  pronunciation   String?
+  etymology       String?
+  category        String?  @default("General")
+  example_bikol   String?
+  example_english String?
+  synonyms        Json?    @default("[]")
+  confidence      Float    @default(1.0)
+  source_url      String?
+  frequency_rank  Int?
+  audio_url       String?
+  created_at      DateTime @default(now())
+
+  @@map("words")
+}
+
+model UserSubmission {
+  id          Int      @id @default(autoincrement())
+  word        String
+  definition  String
+  dialect     String?
+  status      String   @default("pending")
+  created_at  DateTime @default(now())
+
+  @@map("user_submissions")
+}
+
+model UserFlashcard {
+  id                Int      @id @default(autoincrement())
+  user_id           String?  @db.Uuid
+  word_bikol        String
+  proficiency_score Int      @default(0)
+  next_review       DateTime?
+  created_at        DateTime @default(now())
+
+  @@map("user_flashcards")
+}
