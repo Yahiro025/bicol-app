@@ -1,103 +1,73 @@
-"use client";
-import React, { useState, useEffect } from 'react';
-import AutocompleteSearch from '@/components/AutocompleteSearch';
-import { Search, GraduationCap, PlusCircle, LayoutGrid } from 'lucide-react';
-import Flashcards from '@/components/Flashcards';
-import UserSubmissionForm from '@/components/UserSubmissionForm';
-import { getHistory } from '@/lib/offline';
+import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
 
-export default function App() {
-  const [activeTab, setActiveTab] = useState<'search' | 'learn' | 'contribute'>('search');
-  const [history, setHistory] = useState<any[]>([]);
-  const [learnWords, setLearnWords] = useState<any[]>([]);
-
-  useEffect(() => {
-    getHistory().then(setHistory);
-  }, [activeTab]);
-
-  useEffect(() => {
-    if (activeTab === 'learn' && learnWords.length === 0) {
-      fetch('/api/learn')
-        .then(res => res.json())
-        .then(setLearnWords);
-    }
-  }, [activeTab, learnWords.length]);
+export default async function HomePage() {
+  let wordCount = 0;
+  try {
+    wordCount = await prisma.word.count();
+  } catch (e) {
+    console.error(e);
+  }
 
   return (
-    <div className="selection:bg-primary/30">
-      <main className="max-w-7xl mx-auto px-4 py-8 pb-24">
-        {activeTab === 'search' && (
-          <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <section className="text-center space-y-4">
-              <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-none">
-                Master the <span className="text-primary italic">Bikol</span> language.
-              </h2>
-              <p className="text-zinc-500 dark:text-zinc-400 max-w-2xl mx-auto font-medium">
-                Search thousands of words across 5+ dialects with AI-enriched translations and offline support.
-              </p>
-            </section>
+    <main className="min-h-screen bg-zinc-950 text-white flex flex-col">
+      {/* Header */}
+      <header className="border-b border-zinc-800 px-6 py-4">
+        <div className="max-w-6xl mx-auto flex items-center justify-between">
+          <h1 className="text-2xl font-bold tracking-tight">
+            <span className="text-blue-500">BIKOL</span>DICT
+          </h1>
+          <nav className="flex gap-6 text-sm">
+            <a href="/" className="text-zinc-400 hover:text-white transition">Home</a>
+            <a href="/learn" className="text-zinc-400 hover:text-white transition">Learn</a>
+            <a href="/frequency-list" className="text-zinc-400 hover:text-white transition">Frequency</a>
+          </nav>
+        </div>
+      </header>
 
-            <AutocompleteSearch />
-
-            {history.length > 0 && (
-              <section className="space-y-6">
-                <div className="flex items-center gap-2 text-zinc-400">
-                  <LayoutGrid className="h-4 w-4" />
-                  <span className="text-sm font-bold uppercase tracking-wider">Recently Viewed</span>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {history.slice(0, 6).map((item, idx) => (
-                    <div key={idx} className="p-6 bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-3xl hover:border-primary/50 transition-all group">
-                      <h3 className="text-xl font-black group-hover:text-primary transition-colors">{item.bikol}</h3>
-                      <p className="text-zinc-500 mt-2 text-sm line-clamp-2">{item.english}</p>
-                    </div>
-                  ))}
-                </div>
-              </section>
-            )}
+      {/* Hero Section */}
+      <div className="flex-1 flex items-center justify-center px-6">
+        <div className="max-w-2xl mx-auto text-center space-y-8">
+          <div className="space-y-4">
+            <h2 className="text-5xl font-bold tracking-tight">
+              Master the <span className="text-blue-500">Bikol</span> Language
+            </h2>
+            <p className="text-xl text-zinc-400 leading-relaxed">
+              Search thousands of words across 5+ dialects with AI-enhanced translations and offline support.
+            </p>
           </div>
-        )}
 
-        {activeTab === 'learn' && (
-          <div className="animate-in zoom-in-95 duration-500">
-            <Flashcards words={learnWords} />
+          {/* Search Box */}
+          <div className="relative max-w-lg mx-auto">
+            <input
+              type="text"
+              placeholder="Search a Bikol or English word..."
+              className="w-full px-6 py-4 bg-zinc-900 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
+            />
+            <button className="absolute right-2 top-1/2 -translate-y-1/2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition">
+              Search
+            </button>
           </div>
-        )}
 
-        {activeTab === 'contribute' && (
-          <div className="animate-in fade-in slide-in-from-bottom-4">
-            <UserSubmissionForm />
+          {/* Stats */}
+          <div className="flex justify-center gap-8 text-sm text-zinc-500">
+            <span>{wordCount.toLocaleString()}+ Words</span>
+            <span>5+ Dialects</span>
+            <span>AI Enhanced</span>
           </div>
-        )}
-      </main>
 
-      {/* Navigation Bar */}
-      <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 px-2 py-2 rounded-3xl shadow-2xl flex items-center gap-1 z-50">
-        <button 
-          onClick={() => setActiveTab('search')}
-          className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-bold transition-all ${activeTab === 'search' ? 'bg-primary text-white shadow-lg shadow-primary/30' : 'text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800'}`}
-        >
-          <Search className="h-5 w-5" />
-          <span className="hidden md:inline">Search</span>
-        </button>
-        <button 
-          onClick={() => setActiveTab('learn')}
-          className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-bold transition-all ${activeTab === 'learn' ? 'bg-primary text-white shadow-lg shadow-primary/30' : 'text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800'}`}
-        >
-          <GraduationCap className="h-5 w-5" />
-          <span className="hidden md:inline">Learn</span>
-        </button>
-        <button 
-          onClick={() => setActiveTab('contribute')}
-          className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-bold transition-all ${activeTab === 'contribute' ? 'bg-primary text-white shadow-lg shadow-primary/30' : 'text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800'}`}
-        >
-          <PlusCircle className="h-5 w-5" />
-          <span className="hidden md:inline">Contribute</span>
-        </button>
-      </nav>
-    </div>
+          {/* CTA Buttons */}
+          <div className="flex justify-center gap-4">
+            <a href="/learn" className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition">
+              Start Learning
+            </a>
+            <a href="/frequency-list" className="px-6 py-3 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl font-semibold transition border border-zinc-700">
+              Word Frequency List
+            </a>
+          </div>
+        </div>
+      </div>
+    </main>
   );
 }
-

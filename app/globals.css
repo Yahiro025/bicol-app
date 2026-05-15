@@ -1,18 +1,12 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+ @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Custom theme variables for dark mode */
+ @components/ThemeToggle.tsx {
+  --color-primary: #3b82f6;
+  --color-primary-hover: #2563eb;
 }
 
-.dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
-}
-
+/* Base styles */
 body {
-  color: var(--foreground);
-  background: var(--background);
+  @apply bg-zinc-950 text-white antialiased;
 }
