@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Your existing configurations:
-  output: 'export',
+  // Only use static export for Mobile(capacitor)
+  output: process.env.NEXT_PUBLIC_PLATFORM === 'mobile' ? 'export' : undefined,
   images: {
     unoptimized: true,
   },
