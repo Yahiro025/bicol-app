@@ -8,7 +8,7 @@ export default function AutocompleteSearch() {
   const [results, setResults] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
-  const debounceTimer = useRef(null);
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (query.length < 2) {
