@@ -1,12 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Only use static export for Mobile(capacitor)
+  // Only use static export for Capacitor mobile builds
   output: process.env.NEXT_PUBLIC_PLATFORM === 'mobile' ? 'export' : undefined,
+  
   images: {
     unoptimized: true,
   },
   
-  // ADD THIS LINE RIGHT HERE:
   turbopack: {},
 };
 
