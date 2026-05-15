@@ -6,11 +6,10 @@ export async function GET() {
     const words = await prisma.word.findMany({
       where: {
         confidence: { gte: 0.8 },
-        english: { not: null },
       },
       take: 20,
       orderBy: {
-        id: 'asc',
+        bikol: 'asc',
       },
     });
 

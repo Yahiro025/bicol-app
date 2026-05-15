@@ -7,9 +7,9 @@ datasource db {
 }
 
 model Word {
-  id              BigInt  @id @default(autoincrement())
-  bikol           String? @unique(map: "unique_bikol_word")
-  english         String?
+  bikol           String   @id
+  english         String
+  tagalog         String?
   pos             String?
   category        String?
   dialect         String?
@@ -17,8 +17,7 @@ model Word {
   example_english String?
   pronunciation   String?
   synonyms        String?
-  tagalog         String?
-  confidence      Float?  @default(1.0)
+  confidence      Float    @default(1.0)
   source_url      String?
 
   @@map("words")
