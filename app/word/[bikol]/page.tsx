@@ -10,10 +10,10 @@ export const dynamic = 'force-dynamic';
     //select: { bikol: true },
   //});
 
-  return words.map((word) => ({
-    bikol: encodeURIComponent(word.bikol),
-  }));
-}
+  //return words.map((word) => ({
+    //bikol: encodeURIComponent(word.bikol),
+  //}));
+//}
 
 export default async function WordDetail({ params }: { params: { bikol: string } }) {
   const bikol = decodeURIComponent(params.bikol);
