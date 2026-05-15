@@ -1,3 +1,17 @@
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  // Your existing configurations:
+  output: 'export',
+  images: {
+    unoptimized: true,
+  },
+  
+  // ADD THIS LINE RIGHT HERE:
+  turbopack: {},
+};
+
+module.exports = nextConfig;
+
 const withPWA = require('next-pwa')({
   dest: 'public',
   disable: process.env.NODE_ENV === 'development',
