@@ -4,19 +4,35 @@ import pg from 'pg';
 
 const connectionString = process.env.DATABASE_URL;
 
-const pool = new pg.Pool({ connectionString });
-const adapter = new PrismaPg(pool);
-
-const prismaClientSingleton = () => {
-  return new PrismaClient({ adapter });
-};
-
-type PrismaClientSingleton = ReturnType<typeof prismaClientSingleton>;
-
 const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClientSingleton | undefined;
+  prisma: PrismaClient | undefined;
+  pgPool: pg.Pool | undefined;
 };
 
-export const prisma = globalForPrisma.prisma ?? prismaClientSingleton();
+const getPool = () => {
+  if (!globalForPrisma.pgPool) {
+    if (!connectionString) {
+      console.error('DATABASE_URL is not defined');
+    }
+    globalForPrisma.pgPool = new pg.Pool({ connectionString });
+    console.log('Created new pg Pool');
+  }
+  return globalForPrisma.pgPool;
+};
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+const getPrisma = () => {
+  if (!globalForPrisma.prisma) {
+    const pool = getPool();
+    const adapter = new PrismaPg(pool);
+    globalForPrisma.prisma = new PrismaClient({ adapter });
+    console.log('Created new PrismaClient instance');
+  }
+  return globalForPrisma.prisma;
+};
+
+export const prisma = getPrisma();
+
+if (process.env.NODE_ENV !== 'production') {
+  globalForPrisma.prisma = prisma;
+  globalForPrisma.pgPool = getPool();
+}
