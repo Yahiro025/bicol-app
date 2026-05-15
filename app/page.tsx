@@ -6,6 +6,8 @@ import Flashcards from '@/components/Flashcards';
 import UserSubmissionForm from '@/components/UserSubmissionForm';
 import { getHistory } from '@/lib/offline';
 
+export const dynamic = 'force-dynamic';
+
 export default function App() {
   const [activeTab, setActiveTab] = useState<'search' | 'learn' | 'contribute'>('search');
   const [history, setHistory] = useState<any[]>([]);

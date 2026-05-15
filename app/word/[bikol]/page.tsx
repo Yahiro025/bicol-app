@@ -2,6 +2,8 @@ import React from 'react';
 import { prisma } from '@/lib/prisma';
 import WordClientPage from './WordClientPage';
 
+export const dynamic = 'force-dynamic';
+
 // Static site generation for all words in the database
 export async function generateStaticParams() {
   const words = await prisma.word.findMany({
