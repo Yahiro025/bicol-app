@@ -10,7 +10,7 @@ const nextConfig = {
   turbopack: {},
 };
 
-module.exports = nextConfig;
+export default nextConfig; // Changed from module.exports
 
 //const withPWA = require('next-pwa')({
   //dest: 'public',
