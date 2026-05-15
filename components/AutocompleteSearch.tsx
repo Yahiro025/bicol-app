@@ -16,7 +16,7 @@ export default function AutocompleteSearch() {
       return;
     }
 
-    if (debounceTimer.current) clearTimeout(debounceTimer.timer);
+    if (debounceTimer.current) clearTimeout(debounceTimer.current);
     debounceTimer.current = setTimeout(async () => {
       const res = await fetch(`/api/search?q=${query}`);
       const data = await res.json();
