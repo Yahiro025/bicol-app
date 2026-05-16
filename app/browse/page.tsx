@@ -6,15 +6,16 @@ import Link from 'next/link';
 export const dynamic = 'force-dynamic';
 
 interface BrowsePageProps {
-  searchParams: {
+  searchParams: Promise<{
     letter?: string;
     category?: string;
-  };
+  }>;
 }
 
 export default async function BrowsePage({ searchParams }: BrowsePageProps) {
-  const activeLetter = searchParams.letter?.toUpperCase() || 'ALL';
-  const activeCategory = searchParams.category || 'ALL';
+  const { letter, category } = await searchParams;
+  const activeLetter = letter?.toUpperCase() || 'ALL';
+  const activeCategory = category || 'ALL';
 
   const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 

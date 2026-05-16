@@ -1,9 +1,12 @@
 import { prisma } from '@/lib/prisma';
+import WordClientPage from './WordClientPage';
+import { notFound } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 
-export default async function WordDetail({ params }: { params: { bikol: string } }) {
-  const bikolWord = decodeURIComponent(params.bikol);
+export default async function WordDetail({ params }: { params: Promise<{ bikol: string }> }) {
+  const { bikol } = await params;
+  const bikolWord = decodeURIComponent(bikol);
 
   try {
     const word = await prisma.word.findUnique({
@@ -11,58 +14,19 @@ export default async function WordDetail({ params }: { params: { bikol: string }
     });
 
     if (!word) {
-      return <div className="p-8 text-center text-red-500">Word not found</div>;
+      return notFound();
     }
 
+    return <WordClientPage word={word} />;
+  } catch (e: any) {
+    console.error(e);
     return (
-      <main className="min-h-screen bg-zinc-950 text-white p-8">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl font-bold mb-4 text-blue-500">{word.bikol}</h1>
-          <p className="text-xl text-zinc-300 mb-6">{word.english}</p>
-          
-          {word.tagalog && (
-            <div className="mb-4">
-              <span className="font-semibold">Tagalog:</span> {word.tagalog}
-            </div>
-          )}
-
-          {word.pos && (
-            <div className="mb-4">
-              <span className="font-semibold">Part of Speech:</span> {word.pos}
-            </div>
-          )}
-
-          {word.dialect && (
-            <div className="mb-4">
-              <span className="font-semibold">Dialect:</span> {word.dialect}
-            </div>
-          )}
-
-          {word.pronunciation && (
-            <div className="mb-4">
-              <span className="font-semibold">Pronunciation:</span> {word.pronunciation}
-            </div>
-          )}
-
-          {/* Handle Synonyms as comma-separated string */}
-          {word.synonyms && (
-            <div className="mb-4">
-              <span className="font-semibold">Synonyms:</span> {word.synonyms}
-            </div>
-          )}
-
-          {word.example_bikol && (
-            <div className="mt-8 p-6 bg-zinc-900 rounded-xl border border-zinc-800">
-              <h3 className="text-sm font-bold text-zinc-500 uppercase mb-2">Example</h3>
-              <p className="text-lg italic">"{word.example_bikol}"</p>
-              {word.example_english && <p className="text-zinc-400 mt-1">— {word.example_english}</p>}
-            </div>
-          )}
+      <main className="min-h-screen bg-zinc-950 text-white p-8 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="text-red-500 text-xl font-bold">Error loading word</div>
+          <p className="text-zinc-400">{e.message}</p>
         </div>
       </main>
     );
-  } catch (e: any) {
-    console.error(e);
-    return <div className="p-8 text-center text-red-500">Error loading word: {e.message}</div>;
   }
 }

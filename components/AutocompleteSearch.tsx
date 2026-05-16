@@ -45,7 +45,7 @@ const [results, setResults] = useState<Array<{ bikol: string; english: string; t
             <li 
               key={idx}
               onClick={() => {
-                router.push(`/word/${item.bikol}`);
+                router.push(`/word/${encodeURIComponent(item.bikol)}`);
                 setIsOpen(false);
               }}
               className="px-4 py-3 hover:bg-zinc-50 dark:hover:bg-zinc-800 cursor-pointer border-b last:border-0 border-zinc-100 dark:border-zinc-800 flex justify-between items-center"
