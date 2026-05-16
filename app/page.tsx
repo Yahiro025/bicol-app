@@ -19,7 +19,7 @@ export default async function HomePage() {
     wordCount = await prisma.word.count();
     
     // 2. Category Counts
-    categoryCounts = await prisma.word.groupBy({
+    categoryCounts = await (prisma.word.groupBy as any)({
       by: ['category'],
       _count: {
         bikol: true
