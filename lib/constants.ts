@@ -6,8 +6,9 @@ import {
   Theater, Church, Hammer, Car, Soup, Sprout, Box, Gavel, 
   Laugh, HelpingHand, SpellCheck, BookOpen, Landmark, Lightbulb, 
   CalendarDays, Bus, CloudRain, BookOpenCheck, Coins, Flame, 
-  Book, LucideIcon 
+  Book
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 
 export interface CategoryMeta {
   icon: LucideIcon;
