@@ -1,12 +1,28 @@
 "use client";
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Share2, Info, Book } from 'lucide-react';
 import { saveToHistory } from '@/lib/offline';
 import AudioPlayer from '@/components/AudioPlayer';
+import type { LanguageMode } from '@/components/LanguageToggle';
 
 export default function WordClientPage({ word }: { word: any }) {
   const router = useRouter();
+  const [langMode, setLangMode] = useState<LanguageMode>('en');
+
+  useEffect(() => {
+    // Load initial preference
+    const saved = localStorage.getItem('bikoldict-lang-mode') as LanguageMode;
+    if (saved) setLangMode(saved);
+
+    // Listen for changes
+    const handleLangChange = (e: any) => {
+      setLangMode(e.detail);
+    };
+
+    window.addEventListener('lang-mode-change', handleLangChange);
+    return () => window.removeEventListener('lang-mode-change', handleLangChange);
+  }, []);
 
   useEffect(() => {
     if (word && word.bikol) {
@@ -50,14 +66,22 @@ export default function WordClientPage({ word }: { word: any }) {
             <div className="space-y-4">
               <h3 className="text-sm font-black text-zinc-400 uppercase tracking-widest flex items-center gap-2"><Info className="h-4 w-4" /> Definitions</h3>
               <div className="space-y-4">
-                <div>
-                  <p className="text-sm text-zinc-500 font-bold">ENGLISH</p>
-                  <p className="text-2xl font-bold leading-tight">{word.english}</p>
-                </div>
-                {word.tagalog && (
+                {(langMode === 'en' || langMode === 'all') && (
+                  <div>
+                    <p className="text-sm text-zinc-500 font-bold">ENGLISH</p>
+                    <p className="text-2xl font-bold leading-tight">{word.english}</p>
+                  </div>
+                )}
+                {(langMode === 'tl' || langMode === 'all') && word.tagalog && (
                   <div>
                     <p className="text-sm text-zinc-500 font-bold">TAGALOG</p>
                     <p className="text-2xl font-bold text-primary leading-tight">{word.tagalog}</p>
+                  </div>
+                )}
+                {langMode === 'tl' && !word.tagalog && (
+                  <div>
+                    <p className="text-sm text-zinc-500 font-bold">ENGLISH (Fallback)</p>
+                    <p className="text-2xl font-bold leading-tight">{word.english}</p>
                   </div>
                 )}
               </div>

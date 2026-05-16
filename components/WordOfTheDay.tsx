@@ -1,11 +1,15 @@
-import React from 'react';
+"use client";
+
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Star, ArrowRight } from 'lucide-react';
+import type { LanguageMode } from './LanguageToggle';
 
 interface WordOfTheDayProps {
   word: {
     bikol: string;
     english: string;
+    tagalog?: string | null;
     pos?: string | null;
     example_bikol?: string | null;
     example_english?: string | null;
@@ -13,6 +17,22 @@ interface WordOfTheDayProps {
 }
 
 export default function WordOfTheDay({ word }: WordOfTheDayProps) {
+  const [langMode, setLangMode] = useState<LanguageMode>('en');
+
+  useEffect(() => {
+    const saved = localStorage.getItem('bikoldict-lang-mode') as LanguageMode;
+    if (saved) setLangMode(saved);
+
+    const handleLangChange = (e: any) => setLangMode(e.detail);
+    window.addEventListener('lang-mode-change', handleLangChange);
+    return () => window.removeEventListener('lang-mode-change', handleLangChange);
+  }, []);
+
+  const displayTranslation = () => {
+    if (langMode === 'tl' && word.tagalog) return word.tagalog;
+    return word.english;
+  };
+
   return (
     <Link
       href={`/word/${encodeURIComponent(word.bikol)}`}
@@ -32,15 +52,22 @@ export default function WordOfTheDay({ word }: WordOfTheDayProps) {
           <h2 className="text-4xl md:text-5xl font-black text-white tracking-tight mb-2">
             {word.bikol}
           </h2>
-          <div className="flex items-center gap-3">
-            {word.pos && (
-              <span className="px-2 py-0.5 bg-white/20 rounded text-[10px] font-bold text-blue-100 uppercase tracking-widest">
-                {word.pos}
-              </span>
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-3">
+              {word.pos && (
+                <span className="px-2 py-0.5 bg-white/20 rounded text-[10px] font-bold text-blue-100 uppercase tracking-widest">
+                  {word.pos}
+                </span>
+              )}
+              <p className="text-xl md:text-2xl text-blue-50 font-medium line-clamp-2">
+                {displayTranslation()}
+              </p>
+            </div>
+            {langMode === 'all' && word.tagalog && (
+              <p className="text-sm text-blue-100/60 italic ml-0 md:ml-0">
+                TL: {word.tagalog}
+              </p>
             )}
-            <p className="text-xl md:text-2xl text-blue-50 font-medium line-clamp-2">
-              {word.english}
-            </p>
           </div>
         </div>
 

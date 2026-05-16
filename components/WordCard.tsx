@@ -1,6 +1,9 @@
-import React from 'react';
+"use client";
+
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
+import type { LanguageMode } from './LanguageToggle';
 
 interface WordCardProps {
   word: {
@@ -12,6 +15,22 @@ interface WordCardProps {
 }
 
 export default function WordCard({ word }: WordCardProps) {
+  const [langMode, setLangMode] = useState<LanguageMode>('en');
+
+  useEffect(() => {
+    const saved = localStorage.getItem('bikoldict-lang-mode') as LanguageMode;
+    if (saved) setLangMode(saved);
+
+    const handleLangChange = (e: any) => setLangMode(e.detail);
+    window.addEventListener('lang-mode-change', handleLangChange);
+    return () => window.removeEventListener('lang-mode-change', handleLangChange);
+  }, []);
+
+  const displayTranslation = () => {
+    if (langMode === 'tl' && word.tagalog) return word.tagalog;
+    return word.english;
+  };
+
   return (
     <Link 
       href={`/word/${encodeURIComponent(word.bikol)}`}
@@ -29,8 +48,8 @@ export default function WordCard({ word }: WordCardProps) {
               </span>
             )}
           </div>
-          <p className="text-zinc-300 line-clamp-1">{word.english}</p>
-          {word.tagalog && (
+          <p className="text-zinc-300 line-clamp-1">{displayTranslation()}</p>
+          {langMode === 'all' && word.tagalog && (
             <p className="text-xs text-zinc-500 italic">TL: {word.tagalog}</p>
           )}
         </div>
