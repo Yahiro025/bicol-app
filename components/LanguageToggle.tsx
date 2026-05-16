@@ -9,7 +9,7 @@ export default function LanguageToggle() {
   const [mode, setMode] = useState<LanguageMode>('en');
 
   useEffect(() => {
-    const saved = localStorage.getItem('bikoldict-lang-mode') as LanguageMode;
+    const saved = localStorage.getItem('bikol-lang-mode') as LanguageMode;
     if (saved) setMode(saved);
   }, []);
 

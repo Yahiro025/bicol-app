@@ -1,5 +1,5 @@
 Metadata-Version: 2.4
-Name: bikoldict
+Name: bikol
 Version: 0.1.0
 Summary: A Bikol dictionary application with AI enrichment and Wiktionary scraping.
 Requires-Dist: requests

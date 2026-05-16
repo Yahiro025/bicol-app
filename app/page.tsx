@@ -3,6 +3,7 @@ import SearchBar from '@/components/SearchBar';
 import WordOfTheDay from '@/components/WordOfTheDay';
 import CategoryGrid from '@/components/CategoryGrid';
 import WordCard from '@/components/WordCard';
+import { ArrowRightOutside } from 'lucide-react';
 import { POPULAR_WORDS } from '@/lib/constants';
 
 export const dynamic = 'force-dynamic';
@@ -58,7 +59,7 @@ export default async function HomePage() {
   }
 
   return (
-    <main className="min-h-screen bg-zinc-950 text-white flex flex-col pb-20">
+    <main className="min-h-screen bg-zinc-950 text-white">
       {dbError && (
         <div className="bg-red-900 text-red-100 p-4 text-center text-sm">
           Database Error: {dbError}
@@ -66,73 +67,109 @@ export default async function HomePage() {
       )}
 
       {/* Hero Section */}
-      <section className="px-6 py-16 md:py-24 bg-gradient-to-b from-blue-900/10 to-transparent">
-        <div className="max-w-4xl mx-auto text-center space-y-8">
-          <div className="space-y-4">
-            <h2 className="text-5xl md:text-7xl font-black tracking-tight leading-tight">
-              Master the <span className="text-blue-500">Bikol</span> Language
-            </h2>
-            <p className="text-lg md:text-xl text-zinc-400 leading-relaxed max-w-2xl mx-auto">
-              Search thousands of words across 5+ dialects with AI-enhanced translations and offline support.
-            </p>
-          </div>
-
-          <div className="max-w-2xl mx-auto">
-            <SearchBar />
-          </div>
-
-          {/* Stats */}
-          <div className="flex flex-wrap justify-center gap-8 text-sm">
-            <div className="flex flex-col items-center">
-              <span className="text-2xl font-bold text-white">{wordCount.toLocaleString()}+</span>
-              <span className="text-zinc-500 uppercase tracking-widest text-[10px] font-black">Words</span>
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="w-full h-full bg-gradient-to-br from-blue-950/20 to-zinc-950/40 backdrop-blur-sm"></div>
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1440 320%22><path fill=%22%231e293b%22 opacity=%220.15%22 d=%22M0,160L48,155.4C96,151,192,141,288,125.3C384,110,480,89,576,90.7C672,92,768,117,864,128C960,139,1056,134,1152,117.3C1248,101,1344,73,1392,58.7L1440,48L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z%22></path></svg>')"></div>
+        </div>
+        <div className="relative px-6 py-20 md:py-28">
+          <div className="max-w-5xl mx-auto text-center space-y-6">
+            <div className="space-y-3">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-black tracking-tighter leading-none bg-clip-text text-transparent bg-gradient-to-r from-primary-400 to-secondary-400">
+                BIKOL
+              </h1>
+              <p className="text-xl md:text-2xl text-muted/90 max-w-3xl mx-auto">
+                Discover the richness of the Bikol language with comprehensive definitions, examples, and audio pronunciations.
+              </p>
             </div>
-            <div className="flex flex-col items-center border-l border-zinc-800 pl-8">
-              <span className="text-2xl font-bold text-white">5+</span>
-              <span className="text-zinc-500 uppercase tracking-widest text-[10px] font-black">Dialects</span>
+            
+            <div className="mt-8">
+              <SearchBar className="mx-auto w-full max-w-2xl" />
             </div>
-            <div className="flex flex-col items-center border-l border-zinc-800 pl-8">
-              <span className="text-2xl font-bold text-white">AI</span>
-              <span className="text-zinc-500 uppercase tracking-widest text-[10px] font-black">Enhanced</span>
+            
+            {/* Stats */}
+            <div className="mt-12 flex flex-wrap justify-center gap-8 text-center">
+              <div className="flex flex-col items-center space-y-2">
+                <span className="text-3xl font-bold text-white">{wordCount.toLocaleString()}</span>
+                <span className="text-muted/70 font-medium">Words</span>
+              </div>
+              <div className="flex flex-col items-center space-y-2 border-l border-zinc-800 pl-6">
+                <span className="text-3xl font-bold text-white">5+</span>
+                <span className="text-muted/70 font-medium">Dialects</span>
+              </div>
+              <div className="flex flex-col items-center space-y-2 border-l border-zinc-800 pl-6">
+                <span className="text-3xl font-bold text-white">AI</span>
+                <span className="text-muted/70 font-medium">Enhanced</span>
+              </div>
+              <div className="flex flex-col items-center space-y-2 border-l border-zinc-800 pl-6">
+                <span className="text-3xl font-bold text-white">Offline</span>
+                <span className="text-muted/70 font-medium">Available</span>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <div className="max-w-6xl mx-auto px-6 w-full space-y-20">
-        {/* Word of the Day */}
-        {wotd && (
-          <section className="space-y-6">
-            <WordOfTheDay word={wotd} />
-          </section>
-        )}
-
-        {/* Categories */}
-        <section className="space-y-8">
-          <div className="flex items-end justify-between">
-            <div>
-              <h3 className="text-2xl font-bold tracking-tight">Browse by Category</h3>
-              <p className="text-zinc-500">Explore words grouped by topic and usage.</p>
+      <div className="relative py-20">
+        <div className="absolute inset-0 -z-10">
+          <div className="w-full h-full bg-[url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1440 320%22><path fill=%22%230f172a%22 opacity=%220.03%22 d=%22M0,224L60,208C120,192,240,160,360,138.7C480,117,600,107,720,125.3C840,143,960,187,1080,202.7C1200,219,1320,208,1380,202.7L1440,197.3L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z%22></path></svg>')"></div>
+        </div>
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid gap-16">
+            {/* Word of the Day */}
+            {wotd && (
+              <div className="space-y-8">
+                <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                  <span className="width: 24px; height: 24px;">📅</span>
+                  Word of the Day
+                </h2>
+                <WordOfTheDay word={wotd} className="max-w-xl mx-auto" />
+              </div>
+            )}
+            
+            {/* Categories */}
+            <div className="space-y-8">
+              <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                <span className="width: 24px; height: 24px;">📚</span>
+                Browse by Category
+              </h2>
+              <div className="flex items-end justify-between">
+                <div>
+                  <h3 className="text-xl font-semibold text-white">Explore words by topic</h3>
+                  <p className="text-muted/60">Organized collections for easy learning</p>
+                </div>
+                <Link href="/browse" className="flex items-center gap-2 text-primary-400 hover:text-primary-300 font-medium transition-colors">
+                  View All Categories
+                  <ArrowRightOutside className="h-4 w-4" />
+                </Link>
+              </div>
+              <CategoryGrid categoryCounts={categoryCounts} className="grid gap-6" />
             </div>
-            <a href="/browse" className="text-blue-500 font-bold text-sm hover:underline">View All</a>
-          </div>
-          <CategoryGrid categoryCounts={categoryCounts} />
-        </section>
-
-        {/* Popular Words */}
-        <section className="space-y-8">
-          <div className="flex items-end justify-between">
-            <div>
-              <h3 className="text-2xl font-bold tracking-tight">Popular Words</h3>
-              <p className="text-zinc-500">Most commonly searched and used Bikol words.</p>
+            
+            {/* Popular Words */}
+            <div className="space-y-8">
+              <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                <span className="width: 24px; height: 24px;">🔥</span>
+                Popular Words
+              </h2>
+              <div className="flex items-end justify-between">
+                <div>
+                  <h3 className="text-xl font-semibold text-white">Frequently searched</h3>
+                  <p className="text-muted/60">Most looked-up Bikol words</p>
+                </div>
+                <Link href="/browse?sort=popular" className="flex items-center gap-2 text-primary-400 hover:text-primary-300 font-medium transition-colors">
+                  See All Popular
+                  <ArrowRightOutside className="h-4 w-4" />
+                </Link>
+              </div>
+              <div className="grid gap-6">
+                {popularWords.map((word) => (
+                  <WordCard key={word.bikol} word={word} className="hover:scale-[1.02] transition-transform" />
+                ))}
+              </div>
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {popularWords.map((word) => (
-              <WordCard key={word.bikol} word={word} />
-            ))}
-          </div>
-        </section>
+        </div>
       </div>
     </main>
   );

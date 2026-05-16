@@ -4,9 +4,97 @@
 :root {
   --color-primary: #3b82f6;
   --color-primary-hover: #2563eb;
+  --color-secondary: #f97316;
+  --color-secondary-hover: #ea580c;
+  --color-accent: #0ea5e9;
+  --color-accent-hover: #0284c7;
+  --color-background: #0f172a;
+  --color-background-hover: #1e293b;
+  --color-muted: #64748b;
+  --color-muted-hover: #475569;
+  --color-border: #334155;
+  --color-border-hover: #475569;
 }
 
 /* Base styles */
 body {
   @apply bg-zinc-950 text-white antialiased;
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-zinc-900;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-zinc-700 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-zinc-600;
+}
+
+/* Glass effect for modals and overlays */
+.glass-effect {
+  @apply bg-zinc-900/50 backdrop-blur-md border border-zinc-800/50;
+}
+
+/* Animation utilities */
+.animation-delay-2000 {
+  animation-delay: 2000ms;
+}
+
+.animation-delay-3000 {
+  animation-delay: 3000ms;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4000ms;
+}
+
+/* Hover utilities */
+.hover-lift {
+  @apply transition-transform duration-300 hover:-translate-y-1;
+}
+
+.hover-scale {
+  @apply transition-transform duration-300 hover:scale-105;
+}
+
+/* Focus utilities */
+.focus-ring {
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2;
+}
+
+/* Typography enhancements */
+.text-balance {
+  text-wrap: balance;
+}
+
+/* Image utilities */
+.image-hover-zoom {
+  @apply transition-transform duration-500 hover:scale-105 overflow-hidden;
+}
+
+.image-hover-zoom img {
+  @apply transition-transform duration-500;
+}
+
+.image-hover-zoom:hover img {
+  @apply scale-105;
+}
+
+/* Card utilities */
+.card-hover {
+  @apply transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1;
 }

@@ -1,11 +1,11 @@
 {
-  "name": "BikolDict",
-  "short_name": "BikolDict",
+  "name": "BIKOL",
+  "short_name": "BIKOL",
   "description": "Bikol Language Dictionary & Learning App",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#4338CA",
+  "theme_color": "#3b82f6",
   "icons": [
     {
       "src": "/icons/icon-192x192.png",

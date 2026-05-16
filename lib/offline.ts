@@ -1,6 +1,6 @@
 import { openDB } from 'idb';
 
-const DB_NAME = 'bikoldict-offline';
+const DB_NAME = 'bikol-offline';
 const STORE_NAME = 'history';
 
 export const initDB = async () => {

@@ -20,7 +20,7 @@ export default function WordOfTheDay({ word }: WordOfTheDayProps) {
   const [langMode, setLangMode] = useState<LanguageMode>('en');
 
   useEffect(() => {
-    const saved = localStorage.getItem('bikoldict-lang-mode') as LanguageMode;
+    const saved = localStorage.getItem('bikol-lang-mode') as LanguageMode;
     if (saved) setLangMode(saved);
 
     const handleLangChange = (e: any) => setLangMode(e.detail);
