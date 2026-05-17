@@ -76,10 +76,10 @@ export default async function HomePage() {
         <div className="relative px-6 py-20 md:py-28">
           <div className="max-w-5xl mx-auto text-center space-y-6">
             <div className="space-y-3">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-black tracking-tighter leading-none bg-clip-text text-transparent bg-gradient-to-r from-primary-400 to-secondary-400">
+              <h1 className="text-6xl md:text-8xl lg:text-9xl font-display font-black tracking-tighter leading-none bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-blue-400 to-purple-500 py-2">
                 BIKOL
               </h1>
-              <p className="text-xl md:text-2xl text-muted/90 max-w-3xl mx-auto">
+              <p className="text-xl md:text-2xl text-zinc-400 max-w-3xl mx-auto text-balance">
                 Discover the richness of the Bikol language with comprehensive definitions, examples, and audio pronunciations.
               </p>
             </div>
@@ -89,22 +89,22 @@ export default async function HomePage() {
             </div>
             
             {/* Stats */}
-            <div className="mt-12 flex flex-wrap justify-center gap-8 text-center">
-              <div className="flex flex-col items-center space-y-2">
-                <span className="text-3xl font-bold text-white">{wordCount.toLocaleString()}</span>
-                <span className="text-muted/70 font-medium">Words</span>
+            <div className="mt-16 flex flex-wrap justify-center gap-12 text-center">
+              <div className="flex flex-col items-center space-y-1">
+                <span className="text-4xl font-bold text-white tracking-tight">{wordCount.toLocaleString()}</span>
+                <span className="text-zinc-500 text-xs uppercase tracking-widest font-bold">Words</span>
               </div>
-              <div className="flex flex-col items-center space-y-2 border-l border-zinc-800 pl-6">
-                <span className="text-3xl font-bold text-white">5+</span>
-                <span className="text-muted/70 font-medium">Dialects</span>
+              <div className="flex flex-col items-center space-y-1 md:border-l border-zinc-800 md:pl-12">
+                <span className="text-4xl font-bold text-white tracking-tight">5+</span>
+                <span className="text-zinc-500 text-xs uppercase tracking-widest font-bold">Dialects</span>
               </div>
-              <div className="flex flex-col items-center space-y-2 border-l border-zinc-800 pl-6">
-                <span className="text-3xl font-bold text-white">AI</span>
-                <span className="text-muted/70 font-medium">Enhanced</span>
+              <div className="flex flex-col items-center space-y-1 md:border-l border-zinc-800 md:pl-12">
+                <span className="text-4xl font-bold text-white tracking-tight">AI</span>
+                <span className="text-zinc-500 text-xs uppercase tracking-widest font-bold">Enhanced</span>
               </div>
-              <div className="flex flex-col items-center space-y-2 border-l border-zinc-800 pl-6">
-                <span className="text-3xl font-bold text-white">Offline</span>
-                <span className="text-muted/70 font-medium">Available</span>
+              <div className="flex flex-col items-center space-y-1 md:border-l border-zinc-800 md:pl-12">
+                <span className="text-4xl font-bold text-white tracking-tight">Offline</span>
+                <span className="text-zinc-500 text-xs uppercase tracking-widest font-bold">Available</span>
               </div>
             </div>
           </div>
@@ -129,38 +129,30 @@ export default async function HomePage() {
             )}
             
             {/* Categories */}
-            <div className="space-y-8">
-              <h2 className="text-2xl font-bold text-white flex items-center gap-3">
-                <span className="width: 24px; height: 24px;">📚</span>
-                Browse by Category
-              </h2>
-              <div className="flex items-end justify-between">
+            <div className="space-y-10">
+              <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                  <h3 className="text-xl font-semibold text-white">Explore words by topic</h3>
-                  <p className="text-muted/60">Organized collections for easy learning</p>
+                  <h2 className="text-3xl font-display font-bold text-white tracking-tight">Browse by Category</h2>
+                  <p className="text-zinc-500 mt-1">Explore words by topic, organized for easy learning</p>
                 </div>
-<Link href="/browse" className="flex items-center gap-2 text-primary-400 hover:text-primary-300 font-medium transition-colors">
+<Link href="/browse" className="flex items-center gap-2 text-blue-400 hover:text-blue-300 font-semibold transition-colors group">
   View All Categories
-  <ArrowRight className="h-4 w-4" />
+  <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
 </Link>
               </div>
               <CategoryGrid categoryCounts={categoryCounts} className="grid gap-6" />
             </div>
             
             {/* Popular Words */}
-            <div className="space-y-8">
-              <h2 className="text-2xl font-bold text-white flex items-center gap-3">
-                <span className="width: 24px; height: 24px;">🔥</span>
-                Popular Words
-              </h2>
-              <div className="flex items-end justify-between">
+            <div className="space-y-10">
+              <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                  <h3 className="text-xl font-semibold text-white">Frequently searched</h3>
-                  <p className="text-muted/60">Most looked-up Bikol words</p>
+                  <h2 className="text-3xl font-display font-bold text-white tracking-tight">Popular Words</h2>
+                  <p className="text-zinc-500 mt-1">Frequently searched and most looked-up Bikol words</p>
                 </div>
-<Link href="/browse?sort=popular" className="flex items-center gap-2 text-primary-400 hover:text-primary-300 font-medium transition-colors">
+<Link href="/browse?sort=popular" className="flex items-center gap-2 text-blue-400 hover:text-blue-300 font-semibold transition-colors group">
   See All Popular
-  <ArrowRight className="h-4 w-4" />
+  <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
 </Link>
               </div>
               <div className="grid gap-6">

@@ -15,17 +15,17 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
-      <body className="min-h-screen bg-zinc-950 text-white">
-        <header className="border-b border-zinc-800 px-6 py-4 sticky top-0 bg-zinc-950/80 backdrop-blur-md z-50">
+      <body className="min-h-screen bg-[#09090b] text-[#fafafa] selection:bg-blue-500/30">
+        <header className="border-b border-zinc-800/50 px-6 py-4 sticky top-0 bg-[#09090b]/80 backdrop-blur-xl z-50">
           <div className="max-w-6xl mx-auto flex items-center justify-between">
-<h1 className="text-2xl font-bold tracking-tight">
-  <a href="/">BIKOL</a>
+<h1 className="text-2xl font-display font-black tracking-tighter hover:scale-105 transition-transform active:scale-95">
+  <a href="/" className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500">BIKOL</a>
 </h1>
             <div className="flex items-center gap-6">
-              <nav className="hidden md:flex gap-6 text-sm font-medium">
-                <a href="/" className="text-zinc-400 hover:text-white transition">Home</a>
-                <a href="/browse" className="text-zinc-400 hover:text-white transition">Browse</a>
-                <a href="/learn" className="text-zinc-400 hover:text-white transition">Learn</a>
+              <nav className="hidden md:flex gap-8 text-xs font-bold uppercase tracking-widest">
+                <a href="/" className="text-zinc-500 hover:text-white transition-colors">Home</a>
+                <a href="/browse" className="text-zinc-500 hover:text-white transition-colors">Browse</a>
+                <a href="/learn" className="text-zinc-500 hover:text-white transition-colors">Learn</a>
               </nav>
               <LanguageToggle />
             </div>

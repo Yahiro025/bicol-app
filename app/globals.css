@@ -2,23 +2,24 @@
 
 /* Custom theme variables for dark mode */
 :root {
-  --color-primary: #3b82f6;
+  --color-primary: #3b82f6; /* Bicolano Sea Blue */
   --color-primary-hover: #2563eb;
-  --color-secondary: #f97316;
-  --color-secondary-hover: #ea580c;
+  --color-secondary: #a855f7; /* Community Purple */
+  --color-secondary-hover: #9333ea;
   --color-accent: #0ea5e9;
   --color-accent-hover: #0284c7;
-  --color-background: #0f172a;
-  --color-background-hover: #1e293b;
-  --color-muted: #64748b;
-  --color-muted-hover: #475569;
-  --color-border: #334155;
-  --color-border-hover: #475569;
+  --color-background: #09090b; /* Foundation Deep */
+  --color-surface: #18181b; /* Surface Zinc */
+  --color-border: #27272a; /* Border Zinc */
+  --color-text-main: #fafafa;
+  --color-text-muted: #a1a1aa;
 }
 
 /* Base styles */
 body {
-  @apply bg-zinc-950 text-white antialiased;
+  background-color: var(--color-background);
+  color: var(--color-text-main);
+  @apply antialiased selection:bg-blue-500/30;
 }
 
 /* Smooth scroll behavior */
@@ -33,47 +34,35 @@ html {
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-zinc-900;
+  background-color: var(--color-background);
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-zinc-700 rounded-full;
+  @apply bg-zinc-800 rounded-full border-2 border-zinc-950;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-zinc-600;
+  @apply bg-zinc-700;
 }
 
-/* Glass effect for modals and overlays */
+/* Glass effect for cards and overlays */
 .glass-effect {
   @apply bg-zinc-900/50 backdrop-blur-md border border-zinc-800/50;
 }
 
-/* Animation utilities */
-.animation-delay-2000 {
-  animation-delay: 2000ms;
+/* Responsive Bloom Elevation */
+.responsive-bloom {
+  @apply transition-all duration-300;
 }
 
-.animation-delay-3000 {
-  animation-delay: 3000ms;
-}
-
-.animation-delay-4000 {
-  animation-delay: 4000ms;
-}
-
-/* Hover utilities */
-.hover-lift {
-  @apply transition-transform duration-300 hover:-translate-y-1;
-}
-
-.hover-scale {
-  @apply transition-transform duration-300 hover:scale-105;
+.responsive-bloom:hover {
+  box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.1);
+  @apply -translate-y-1 border-blue-500/30;
 }
 
 /* Focus utilities */
 .focus-ring {
-  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2;
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950;
 }
 
 /* Typography enhancements */
@@ -81,20 +70,17 @@ html {
   text-wrap: balance;
 }
 
-/* Image utilities */
-.image-hover-zoom {
-  @apply transition-transform duration-500 hover:scale-105 overflow-hidden;
+/* Card utilities - Resting Precision */
+.card-resting {
+  background-color: rgba(24, 24, 27, 0.5);
+  border: 1px solid var(--color-border);
+  @apply rounded-2xl transition-all duration-300;
 }
 
-.image-hover-zoom img {
-  @apply transition-transform duration-500;
+.card-resting:hover {
+  background-color: rgba(39, 39, 42, 0.5);
+  border-color: rgba(59, 130, 246, 0.3);
+  box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.1);
+  @apply -translate-y-1;
 }
 
-.image-hover-zoom:hover img {
-  @apply scale-105;
-}
-
-/* Card utilities */
-.card-hover {
-  @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
-}

@@ -58,24 +58,21 @@ export default function CategoryGrid({ categoryCounts, className }: CategoryGrid
           <motion.div key={category} variants={itemVariants}>
             <Link
               href={`/browse?category=${encodeURIComponent(category)}`}
-              className="group p-4 bg-zinc-900 border border-zinc-800 rounded-2xl hover:border-blue-500/50 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-500/5 active:scale-95 transition-all duration-300 flex flex-col items-center text-center space-y-3 relative overflow-hidden"
-              style={{ borderTop: `4px solid ${meta.color}` }}
+              className="group p-6 bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-2xl hover:border-blue-500/30 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/10 active:scale-[0.98] transition-all duration-300 flex flex-col items-center text-center space-y-4 relative overflow-hidden"
             >
               <div 
-                className="p-3 rounded-xl bg-zinc-800 group-hover:scale-110 transition-transform duration-300 shadow-inner"
-                style={{ color: meta.color }}
+                className="p-4 rounded-2xl bg-zinc-800/50 text-blue-500 group-hover:bg-blue-500/10 group-hover:scale-110 transition-all duration-300 shadow-inner border border-zinc-700/50 group-hover:border-blue-500/20"
               >
-                <Icon size={28} />
+                <Icon size={32} />
               </div>
               <div>
-                <h3 className="font-bold text-sm md:text-base text-zinc-100 group-hover:text-white transition-colors">{category}</h3>
-                <p className="text-xs text-zinc-500">{_count.bikol} words</p>
+                <h3 className="font-display font-bold text-lg text-white group-hover:text-blue-400 transition-colors tracking-tight">{category}</h3>
+                <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest mt-1">{_count.bikol} words</p>
               </div>
               
               {/* Subtle background glow on hover */}
               <div 
-                className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity pointer-events-none"
-                style={{ background: `radial-gradient(circle at center, ${meta.color}, transparent 70%)` }}
+                className="absolute inset-0 opacity-0 group-hover:opacity-5 transition-opacity pointer-events-none bg-radial-gradient from-blue-500 to-transparent"
               />
             </Link>
           </motion.div>

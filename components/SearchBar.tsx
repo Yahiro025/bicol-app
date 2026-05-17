@@ -130,14 +130,14 @@ export default function SearchBar() {
           }}
           onBlur={() => setIsFocused(false)}
           placeholder="Search a Bikol or English word..."
-          className={`w-full px-6 py-4 bg-zinc-900 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent text-lg shadow-2xl transition-all duration-300 ${
-            isFocused ? 'scale-[1.02] shadow-blue-500/10' : ''
+          className={`w-full px-8 py-4 bg-zinc-900 border border-zinc-800 rounded-full text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-950 text-lg transition-all duration-300 ${
+            isFocused ? 'scale-[1.01] bg-zinc-800/50' : ''
           }`}
           autoComplete="off"
         />
         <button 
           type="submit" 
-          className="absolute right-2 top-1/2 -translate-y-1/2 px-5 py-2 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white rounded-lg font-medium transition-all duration-100"
+          className="absolute right-2 top-1/2 -translate-y-1/2 px-6 py-2.5 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white rounded-full font-semibold transition-all duration-200 shadow-lg shadow-blue-500/20"
         >
           Search
         </button>
