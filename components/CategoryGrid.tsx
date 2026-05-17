@@ -12,6 +12,7 @@ interface CategoryCount {
 
 interface CategoryGridProps {
   categoryCounts: CategoryCount[];
+  className?: string;
 }
 
 export default function CategoryGrid({ categoryCounts }: CategoryGridProps) {
