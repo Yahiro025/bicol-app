@@ -56,7 +56,7 @@ export default function BrowseClient({
   };
 
   const handleFilterClick = (type: 'letter' | 'category', value: string) => {
-    const newLetter = type === 'letter' ? (initialLetter === value ? '' : value) : initialLetter;
+    const newLetter = type === 'letter' ? (initialLetter === value && value !== '' ? '' : value) : initialLetter;
     const newCategory = type === 'category' ? (initialCategory === value ? '' : value) : initialCategory;
     updateSearch(query, newLetter, newCategory);
   };
@@ -139,6 +139,16 @@ export default function BrowseClient({
           {/* Letter Grid */}
           <h3 className="text-sm font-semibold text-zinc-400 mb-3 uppercase tracking-wider">Starts with</h3>
           <div className="flex flex-wrap gap-2 mb-6">
+            <button
+              onClick={() => handleFilterClick('letter', '')}
+              className={`px-4 h-10 rounded-lg flex items-center justify-center text-sm font-medium transition ${
+                !initialLetter 
+                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' 
+                  : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700 border border-zinc-700'
+              }`}
+            >
+              ALL
+            </button>
             {ALPHABET.map((l) => (
               <button
                 key={l}
