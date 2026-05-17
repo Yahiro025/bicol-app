@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Share2, Info, Book } from 'lucide-react';
 import { saveToHistory } from '@/lib/offline';
@@ -8,7 +7,6 @@ import AudioPlayer from '@/components/AudioPlayer';
 import type { LanguageMode } from '@/components/LanguageToggle';
 
 export default function WordClientPage({ word }: { word: any }) {
-  const router = useRouter();
   const [langMode, setLangMode] = useState<LanguageMode>('en');
 
   useEffect(() => {
@@ -34,9 +32,9 @@ export default function WordClientPage({ word }: { word: any }) {
   return (
     <div className="min-h-screen bg-background p-4 md:p-8 animate-in fade-in slide-in-from-bottom-2">
       <div className="max-w-4xl mx-auto space-y-8">
-        <button onClick={() => router.back()} className="flex items-center gap-2 text-zinc-500 hover:text-primary font-bold transition-colors">
+        <Link href="/" className="flex items-center gap-2 text-zinc-500 hover:text-primary font-bold transition-colors">
           <ArrowLeft className="h-5 w-5" /> Back to Search
-        </button>
+        </Link>
 
         <section className="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-[40px] p-8 md:p-12 shadow-sm space-y-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
