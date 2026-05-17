@@ -31,9 +31,9 @@ const itemVariants = {
 export default function BrowseClient({
   initialWords,
   initialCategories,
-  initialLetter,
-  initialCategory,
-  initialQuery,
+  initialLetter: defaultLetter,
+  initialCategory: defaultCategory,
+  initialQuery: defaultQuery,
 }: {
   initialWords: Word[];
   initialCategories: string[];
@@ -43,40 +43,58 @@ export default function BrowseClient({
 }) {
   const router = useRouter();
   
-  const [query, setQuery] = useState(initialQuery);
-  const [words, setWords] = useState(initialWords);
+  const [query, setQuery] = useState(defaultQuery);
+  const [selectedLetter, setSelectedLetter] = useState(defaultLetter);
+  const [selectedCategory, setSelectedCategory] = useState(defaultCategory);
+  const [filteredWords, setFilteredWords] = useState(initialWords);
   const [areFiltersVisible, setAreFiltersVisible] = useState(false);
 
-  // Debounced search function
-  const updateSearch = useCallback(
-    debounce((q: string, letter: string, category: string) => {
-      const params = new URLSearchParams();
-      if (q) params.set('q', q);
-      if (letter) params.set('letter', letter);
-      if (category) params.set('category', category);
-      router.push(`/browse?${params.toString()}`);
-    }, 300),
-    [router]
-  );
-
+  // Client-side filtering logic
   useEffect(() => {
-    setWords(initialWords);
-  }, [initialWords]);
+    const filtered = initialWords.filter((word) => {
+      const matchesQuery = !query || 
+        word.bikol.toLowerCase().includes(query.toLowerCase()) ||
+        word.english.toLowerCase().includes(query.toLowerCase()) ||
+        (word.tagalog && word.tagalog.toLowerCase().includes(query.toLowerCase()));
+      
+      const matchesLetter = !selectedLetter || 
+        word.bikol.toLowerCase().startsWith(selectedLetter.toLowerCase());
+      
+      const matchesCategory = !selectedCategory || 
+        word.category === selectedCategory;
+
+      return matchesQuery && matchesLetter && matchesCategory;
+    });
+    setFilteredWords(filtered);
+
+    // Sync URL params without triggering a full server re-render if possible
+    // We use router.replace with { scroll: false } which is the Next.js way, 
+    // but to avoid the server component re-running we could also use window.history
+    const params = new URLSearchParams();
+    if (query) params.set('q', query);
+    if (selectedLetter) params.set('letter', selectedLetter);
+    if (selectedCategory) params.set('category', selectedCategory);
+    
+    const newUrl = `/browse${params.toString() ? `?${params.toString()}` : ''}`;
+    window.history.replaceState({ ...window.history.state, as: newUrl, url: newUrl }, '', newUrl);
+  }, [query, selectedLetter, selectedCategory, initialWords]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newVal = e.target.value;
-    setQuery(newVal);
-    updateSearch(newVal, initialLetter, initialCategory);
+    setQuery(e.target.value);
   };
 
   const handleFilterClick = (type: 'letter' | 'category', value: string) => {
-    const newLetter = type === 'letter' ? (initialLetter === value && value !== '' ? '' : value) : initialLetter;
-    const newCategory = type === 'category' ? (initialCategory === value ? '' : value) : initialCategory;
-    updateSearch(query, newLetter, newCategory);
+    if (type === 'letter') {
+      setSelectedLetter(prev => prev === value ? '' : value);
+    } else {
+      setSelectedCategory(prev => prev === value ? '' : value);
+    }
   };
 
   const clearFilters = () => {
-    updateSearch(query, '', '');
+    setSelectedLetter('');
+    setSelectedCategory('');
+    setQuery('');
   };
 
   const highlightText = (text: string) => {
@@ -93,7 +111,7 @@ export default function BrowseClient({
     );
   };
 
-  const hasActiveFilters = !!(initialLetter || initialCategory);
+  const hasActiveFilters = !!(selectedLetter || selectedCategory);
 
   return (
     <div>
@@ -107,7 +125,7 @@ export default function BrowseClient({
         />
         {query && (
           <button 
-            onClick={() => { setQuery(''); updateSearch('', initialLetter, initialCategory); }}
+            onClick={() => setQuery('')}
             className="absolute right-6 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white transition-colors p-1"
           >
             ✕
@@ -126,16 +144,16 @@ export default function BrowseClient({
         </button>
 
         <div className="flex items-center gap-2 flex-wrap">
-          {initialLetter && (
+          {selectedLetter && (
             <span className="px-4 py-1.5 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-full text-xs font-bold flex items-center gap-2">
-              Letter: {initialLetter} 
-              <button onClick={() => handleFilterClick('letter', initialLetter)} className="hover:text-white transition-colors">✕</button>
+              Letter: {selectedLetter} 
+              <button onClick={() => handleFilterClick('letter', selectedLetter)} className="hover:text-white transition-colors">✕</button>
             </span>
           )}
-          {initialCategory && (
+          {selectedCategory && (
             <span className="px-4 py-1.5 bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded-full text-xs font-bold flex items-center gap-2">
-              {initialCategory} 
-              <button onClick={() => handleFilterClick('category', initialCategory)} className="hover:text-white transition-colors">✕</button>
+              {selectedCategory} 
+              <button onClick={() => handleFilterClick('category', selectedCategory)} className="hover:text-white transition-colors">✕</button>
             </span>
           )}
           {hasActiveFilters && (
@@ -162,7 +180,7 @@ export default function BrowseClient({
                 <button
                   onClick={() => handleFilterClick('letter', '')}
                   className={`px-5 h-10 rounded-xl flex items-center justify-center text-sm font-bold transition-all duration-200 active:scale-95 ${
-                    !initialLetter 
+                    !selectedLetter 
                       ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' 
                       : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200 border border-zinc-700'
                   }`}
@@ -174,7 +192,7 @@ export default function BrowseClient({
                     key={l}
                     onClick={() => handleFilterClick('letter', l)}
                     className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold transition-all duration-200 active:scale-95 ${
-                      initialLetter === l 
+                      selectedLetter === l 
                         ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' 
                         : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200 border border-zinc-700'
                     }`}
@@ -192,7 +210,7 @@ export default function BrowseClient({
                     key={cat}
                     onClick={() => handleFilterClick('category', cat)}
                     className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 active:scale-95 ${
-                      initialCategory === cat 
+                      selectedCategory === cat 
                         ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/30' 
                         : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200 border border-zinc-700'
                     }`}
@@ -209,27 +227,31 @@ export default function BrowseClient({
       {/* 4. RESULTS COUNT & LIST */}
       <div className="text-sm font-medium text-zinc-500 mb-6 flex items-center gap-2">
         <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-        Found {words.length} result{words.length !== 1 ? 's' : ''}
+        Found {filteredWords.length} result{filteredWords.length !== 1 ? 's' : ''}
       </div>
 
       <motion.div 
         variants={listVariants}
         initial="hidden"
         animate="visible"
-        key={`${initialLetter}-${initialCategory}-${query}`}
+        key={`${selectedLetter}-${selectedCategory}`}
         className="space-y-4"
       >
-        {words.map((word) => (
-          <motion.div key={word.bikol} variants={itemVariants}>
-            <Link 
-              href={`/word/${encodeURIComponent(word.bikol)}`}
-              className="block bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 p-6 rounded-2xl hover:border-blue-500/30 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 group"
-            >
-              <div className="flex justify-between items-start">
-                <div>
-                  <h2 className="text-2xl font-display font-bold text-blue-500 group-hover:text-blue-400 transition-colors">
-                    {highlightText(word.bikol)}
-                  </h2>
+        {filteredWords.map((word) => {
+          const wordUrl = `/word/${encodeURIComponent(word.bikol)}`;
+          return (
+            <motion.div key={word.bikol} variants={itemVariants}>
+              <Link 
+                href={wordUrl}
+                prefetch={false}
+                onMouseEnter={() => router.prefetch(wordUrl)}
+                className="block bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 p-6 rounded-2xl hover:border-blue-500/30 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 group"
+              >
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h2 className="text-2xl font-display font-bold text-blue-500 group-hover:text-blue-400 transition-colors">
+                      {highlightText(word.bikol)}
+                    </h2>
                   <p className="text-zinc-100 mt-1 font-medium">{highlightText(word.english)}</p>
                   {word.tagalog && (
                     <p className="text-zinc-500 text-xs mt-2 italic">Tagalog: {highlightText(word.tagalog)}</p>
@@ -248,7 +270,7 @@ export default function BrowseClient({
           </motion.div>
         ))}
 
-        {words.length === 0 && (
+        {filteredWords.length === 0 && (
            <motion.div variants={itemVariants} className="text-center text-zinc-500 py-12">
              {query || hasActiveFilters ? `No matches found. Try adjusting your search or filters.` : `No words found.`}
            </motion.div>
@@ -257,6 +279,7 @@ export default function BrowseClient({
     </div>
   );
 }
+
 
 // Debounce utility function
 function debounce<T extends (...args: any[]) => any>(func: T, wait: number): (...args: Parameters<T>) => void {

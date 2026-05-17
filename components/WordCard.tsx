@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { LanguageMode } from './LanguageToggle';
@@ -30,6 +31,7 @@ const itemVariants = {
 } as const;
 
 export default function WordCard({ word, className }: WordCardProps) {
+  const router = useRouter();
   const [langMode, setLangMode] = useState<LanguageMode>('all');
 
   useEffect(() => {
@@ -46,6 +48,8 @@ export default function WordCard({ word, className }: WordCardProps) {
     return word.english;
   };
 
+  const wordUrl = `/word/${encodeURIComponent(word.bikol)}`;
+
   return (
     <motion.div 
       variants={itemVariants}
@@ -54,7 +58,9 @@ export default function WordCard({ word, className }: WordCardProps) {
       viewport={{ once: true, margin: "-20px" }}
     >
       <Link 
-        href={`/word/${encodeURIComponent(word.bikol)}`}
+        href={wordUrl}
+        prefetch={false}
+        onMouseEnter={() => router.prefetch(wordUrl)}
         className={`group block p-6 bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-2xl hover:border-blue-500/30 hover:bg-zinc-800/50 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/10 active:scale-[0.98] transition-all duration-300 ${className}`}
       >
         <div className="flex justify-between items-start">

@@ -44,6 +44,7 @@ const [results, setResults] = useState<Array<{ bikol: string; english: string; t
           {results.map((item, idx) => (
             <li 
               key={idx}
+              onMouseEnter={() => router.prefetch(`/word/${encodeURIComponent(item.bikol)}`)}
               onClick={() => {
                 router.push(`/word/${encodeURIComponent(item.bikol)}`);
                 setIsOpen(false);

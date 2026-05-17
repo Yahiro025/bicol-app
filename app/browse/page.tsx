@@ -32,12 +32,18 @@ export default async function BrowsePage({
   let dbError = null;
 
   try {
-    // Fetch words
+    // Fetch a larger set of words for client-side filtering
+    // We still apply initial filters if they exist to keep the first paint relevant
+    // but we'll fetch more words than before (1000 instead of 100)
     words = await prisma.word.findMany({
       where: whereClause,
       orderBy: { bikol: 'asc' },
-      take: 100,
+      take: 1000,
     });
+
+    // If we have filters but didn't get many results, or even if we did, 
+    // for a better client-side experience we might want to fetch ALL words 
+    // if the total count is small. For now, 1000 is a good compromise.
 
     // Fetch distinct categories for the filter buttons
     const result = await prisma.word.findMany({
