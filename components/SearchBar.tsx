@@ -70,15 +70,41 @@ export default function SearchBar({ initialDictionary = [] }: SearchBarProps) {
       return;
     }
 
-    // 1. Instant Local Filtering
+    // 1. Weighted Local Filtering & Sorting
     const normalizedQuery = query.toLowerCase().trim();
-    const localMatches = initialDictionary.filter(item => 
-      item.bikol.toLowerCase().startsWith(normalizedQuery) ||
-      item.english.toLowerCase().startsWith(normalizedQuery) ||
-      (item.tagalog && item.tagalog.toLowerCase().startsWith(normalizedQuery)) ||
+    
+    // First, find all potential matches
+    const allMatches = initialDictionary.filter(item => 
       item.bikol.toLowerCase().includes(normalizedQuery) ||
-      item.english.toLowerCase().includes(normalizedQuery)
-    ).slice(0, 6);
+      item.english.toLowerCase().includes(normalizedQuery) ||
+      (item.tagalog && item.tagalog.toLowerCase().includes(normalizedQuery))
+    );
+
+    // Score and sort matches
+    const localMatches = allMatches
+      .map(item => {
+        let score = 0;
+        const bikolLower = item.bikol.toLowerCase();
+        const englishLower = item.english.toLowerCase();
+        const tagalogLower = item.tagalog?.toLowerCase() || '';
+
+        if (bikolLower.startsWith(normalizedQuery)) {
+          score = 100; // Highest priority: Bikol starts with query
+        } else if (englishLower.startsWith(normalizedQuery)) {
+          score = 80;  // High priority: English starts with query
+        } else if (tagalogLower.startsWith(normalizedQuery)) {
+          score = 70;  // Medium-high: Tagalog starts with query
+        } else if (bikolLower.includes(normalizedQuery)) {
+          score = 50;  // Medium: Bikol contains query
+        } else {
+          score = 30;  // Low: English/Tagalog contains query
+        }
+
+        return { item, score };
+      })
+      .sort((a, b) => b.score - a.score) // Sort by highest score first
+      .map(scored => scored.item)
+      .slice(0, 6);
 
     setResults(localMatches);
     setIsOpen(true);
