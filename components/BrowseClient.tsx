@@ -25,16 +25,8 @@ const listVariants = {
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { 
-    opacity: 1, 
-    y: 0,
-    transition: {
-      type: 'spring',
-      stiffness: 300,
-      damping: 30
-    }
-  }
-};
+  visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 30 } }
+} as const; // <--- ADD 'as const' HERE
 
 export default function BrowseClient({
   initialWords,
