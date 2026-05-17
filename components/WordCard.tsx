@@ -27,7 +27,7 @@ const itemVariants = {
       damping: 30
     }
   }
-};
+} as const;
 
 export default function WordCard({ word, className }: WordCardProps) {
   const [langMode, setLangMode] = useState<LanguageMode>('all');
