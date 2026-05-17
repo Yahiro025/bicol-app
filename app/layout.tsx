@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import LanguageToggle from "@/components/LanguageToggle";
+import { AnimatePresence } from "framer-motion";
 
 export const metadata: Metadata = {
   title: "BIKOL - Master the Bikol Language",
@@ -30,7 +31,9 @@ export default function RootLayout({
             </div>
           </div>
         </header>
-        {children}
+        <AnimatePresence mode="wait">
+          {children}
+        </AnimatePresence>
       </body>
     </html>
   );
