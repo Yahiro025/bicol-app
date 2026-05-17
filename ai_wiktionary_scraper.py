@@ -7,7 +7,8 @@ import aiohttp
 from aiolimiter import AsyncLimiter
 from python_utils import (
     logger, api_retry, wiktionary_breaker, groq_breaker, supabase_breaker,
-    ExternalServiceError, ScrapedWord, EnrichedData, DictionaryEntry, async_cached
+    ExternalServiceError, ScrapedWord, EnrichedData, DictionaryEntry, async_cached,
+    GROQ_MODEL
 )
 from groq import AsyncGroq
 from supabase import create_client, Client
@@ -156,7 +157,7 @@ async def scrape_word_details(word: str) -> ScrapedWord | None:
                     found_bikol_section = False
                     
                     etymology = ""
-                    synonyms = []
+                    synonyms = None
                     results: list[dict] = []
                     
                     # Extract Etymology (Level 3 or 4)
@@ -168,7 +169,8 @@ async def scrape_word_details(word: str) -> ScrapedWord | None:
                     syn_match = re.search(r'===\s*Synonyms\s*===\n(.*?)\n\n', wikitext, re.DOTALL | re.IGNORECASE)
                     if syn_match:
                         syn_block = syn_match.group(1)
-                        synonyms = [clean_wiki_markup(s.lstrip('* ')) for s in syn_block.split('\n') if s.strip().startswith('*')]
+                        syn_list = [clean_wiki_markup(s.lstrip('* ')) for s in syn_block.split('\n') if s.strip().startswith('*')]
+                        synonyms = syn_list if syn_list else None
 
                     pronunciation = ""
                     audio_url = ""
@@ -238,25 +240,13 @@ async def scrape_word_details(word: str) -> ScrapedWord | None:
 @async_cached(ttl=604800)
 async def enrich_with_ai(data: ScrapedWord) -> EnrichedData:
     """Uses Groq API (Qwen model) with JSON mode to enrich word data with confidence scores."""
-    system_prompt = "You are a specialized dictionary data generator for Bikol languages. You MUST output ONLY raw JSON. No markdown. Your output must perfectly match the requested schema."
+    system_prompt = (
+        "You are an expert Bikol linguist. Output STRICTLY in Bikol. Do NOT mix Tagalog/English. "
+        "Return JSON: {\"tagalog\": \"...\", \"dialect\": \"...\", \"category\": \"...\", \"synonyms\": [], \"example_bikol\": \"...\", \"example_english\": \"...\", \"confidence\": 0.0-1.0} "
+        "If unsure, set confidence <0.5. For synonyms, provide a list of Central Bikol equivalents."
+    )
 
-    user_prompt = f"""
-    Enrich this dictionary entry:
-    Bikol: {data.bikol}
-    English: {data.english}
-    POS: {data.pos}
-    Wiktionary Header: {data.wiktionary_dialect}
-
-    Required JSON keys:
-    1. "tagalog": Translate the English definition into Tagalog. Be precise.
-    2. "dialect": Map "{data.wiktionary_dialect}" to the best match in: ["Central Bikol (Naga)", "Central Bikol (Albay)", "Rinconada Bikol", "Northern Catanduanes Bikol", "Southern Catanduanes Bikol", "Masbateño", "Northern Sorsogon Bikol", "Southern Sorsogon Bikol", "General Bikol"].
-    3. "category": Best fit in: ["Greetings", "Basic", "People", "Family", "Body", "Food", "Nature", "Animals", "Actions", "Descriptors", "Numbers", "Colors", "Time", "Places", "Health & Medicine", "Daily Life", "Relationships", "Weather", "Clothing", "Education", "Technology", "Sports", "Music", "Travel", "Shopping", "Emotions", "House", "Work", "Culture", "Religion", "Tools", "Transportation", "Kitchen", "Environment"].
-    4. "example_bikol": A short, natural sentence in Bikol using the word.
-    5. "example_english": The English translation of the Bikol sentence.
-    6. "confidence": A float from 0.0 to 1.0 representing your confidence in this translation and enrichment. If the input is ambiguous or technical, lower the score.
-
-    Format: {{"tagalog": "...", "dialect": "...", "category": "...", "example_bikol": "...", "example_english": "...", "confidence": 0.0}}
-    """
+    user_prompt = f"Enrich: {data.bikol} | {data.english} | {data.pos} | {data.wiktionary_dialect}"
 
     fallback = EnrichedData()
 
@@ -264,7 +254,7 @@ async def enrich_with_ai(data: ScrapedWord) -> EnrichedData:
         try:
             # Respect rate limits for Groq
             completion = await groq_client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
+                model=GROQ_MODEL,
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt}
@@ -307,6 +297,15 @@ async def process_word(word: str) -> dict | None:
 
         enriched_info = await enrich_with_ai(scraped_data)
 
+        # Merge synonyms from Wiktionary and AI
+        all_synonyms = set()
+        if scraped_data.synonyms:
+            all_synonyms.update(scraped_data.synonyms)
+        if enriched_info.synonyms:
+            all_synonyms.update(enriched_info.synonyms)
+        
+        final_synonyms = list(all_synonyms) if all_synonyms else None
+
         # Combine and validate with Pydantic
         entry = DictionaryEntry(
             bikol=scraped_data.bikol,
@@ -317,12 +316,20 @@ async def process_word(word: str) -> dict | None:
             pronunciation=scraped_data.pronunciation,
             audio_url=scraped_data.audio_url,
             category=enriched_info.category,
+            etymology=scraped_data.etymology,
+            synonyms=final_synonyms,
             example_bikol=enriched_info.example_bikol,
             example_english=enriched_info.example_english,
             confidence=enriched_info.confidence,
             source_url=scraped_data.source_url
         )
-        return entry.model_dump()
+        
+        word_data = entry.model_dump()
+        # Ensure empty synonyms are saved as None (null in Supabase)
+        if not word_data.get('synonyms') or word_data['synonyms'] == []:
+            word_data['synonyms'] = None
+            
+        return word_data
 
     except Exception as e:
         logger.error(f"  [!] Error processing {word}: {e}")
@@ -362,6 +369,10 @@ async def main() -> None:
         if valid_results:
             logger.info(f"  [↑] Upserting batch of {len(valid_results)}...")
             await upsert_batch(valid_results)
+        
+        # Pause for 3 seconds between chunks to let the rate limit window reset
+        if i + batch_size < len(words_to_process):
+            await asyncio.sleep(3)
 
 if __name__ == "__main__":
     asyncio.run(main())

@@ -102,10 +102,6 @@ export default async function HomePage() {
                 <span className="text-4xl font-bold text-white tracking-tight">AI</span>
                 <span className="text-zinc-500 text-xs uppercase tracking-widest font-bold">Enhanced</span>
               </div>
-              <div className="flex flex-col items-center space-y-1 md:border-l border-zinc-800 md:pl-12">
-                <span className="text-4xl font-bold text-white tracking-tight">Offline</span>
-                <span className="text-zinc-500 text-xs uppercase tracking-widest font-bold">Available</span>
-              </div>
             </div>
           </div>
         </div>
@@ -121,7 +117,7 @@ export default async function HomePage() {
             {wotd && (
               <div className="space-y-8">
                 <h2 className="text-2xl font-bold text-white flex items-center gap-3">
-                  <span className="width: 24px; height: 24px;">📅</span>
+                  <span className="w-6 h-6 flex items-center justify-center text-xl">📅</span>
                   Word of the Day
                 </h2>
                 <WordOfTheDay word={wotd} className="max-w-xl mx-auto" />

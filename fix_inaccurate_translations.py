@@ -4,7 +4,8 @@ import json
 import logging
 from groq import Groq
 from python_utils import (
-    logger, api_retry, groq_breaker, supabase_breaker, ExternalServiceError
+    logger, api_retry, groq_breaker, supabase_breaker, ExternalServiceError,
+    GROQ_MODEL
 )
 from supabase import create_client, Client
 
@@ -36,8 +37,18 @@ def fix_translation(bikol: str, english: str, pos: str) -> str | None:
     """
     try:
         completion = groq_client.chat.completions.create(
-            messages=[{"role": "user", "content": prompt}],
-            model="llama-3.3-70b-versatile",
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "You are an expert Bikol linguist. Output STRICTLY in Bikol. Do NOT mix Tagalog/English. "
+                        "Return JSON: {\"tagalog\": \"...\", \"confidence\": 0.0-1.0} "
+                        "If unsure, set confidence <0.5."
+                    )
+                },
+                {"role": "user", "content": prompt}
+            ],
+            model=GROQ_MODEL,
             timeout=20
         )
         content = completion.choices[0].message.content

@@ -4,7 +4,8 @@ import asyncio
 from typing import Any
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field, field_validator
-from tenacity import retry, stop_after_attempt, wait_exponential
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
+from groq import RateLimitError
 import pybreaker
 from aiocache import cached, Cache
 from aiocache.serializers import JsonSerializer, NullSerializer
@@ -41,12 +42,17 @@ groq_breaker = pybreaker.CircuitBreaker(fail_max=5, reset_timeout=30)
 wiktionary_breaker = pybreaker.CircuitBreaker(fail_max=5, reset_timeout=30)
 
 # --- RETRY DECORATOR ---
-# Max 3 attempts, exponential backoff (1-10 seconds)
+# Optimized for Groq's RateLimitError (429)
+# Try up to 5 times, exponential backoff starting at 4s up to 60s
 api_retry = retry(
-    stop=stop_after_attempt(3),
-    wait=wait_exponential(multiplier=1, min=1, max=10),
+    stop=stop_after_attempt(5),
+    wait=wait_exponential(multiplier=1, min=4, max=60),
+    retry=retry_if_exception_type(RateLimitError),
     reraise=True
 )
+
+# Global model config
+GROQ_MODEL = "qwen/qwen3-32b"
 from aiocache import cached, Cache
 from aiocache.serializers import JsonSerializer, NullSerializer
 from aiocache.backends.memory import SimpleMemoryCache
@@ -89,7 +95,7 @@ class DictionaryEntry(BaseModel):
     category: str | None = "General"
     example_bikol: str | None = None
     example_english: str | None = None
-    synonyms: list[str] | None = []
+    synonyms: list[str] | None = None
     confidence: float = Field(default=1.0, ge=0.0, le=1.0)
     source_url: str | None = None
     audio_url: str | None = None
@@ -102,6 +108,13 @@ class DictionaryEntry(BaseModel):
             raise ValueError('Bikol word cannot be empty')
         return v.strip()
 
+    @field_validator('synonyms', mode='before')
+    @classmethod
+    def empty_list_to_none(cls, v: Any) -> Any:
+        if v == []:
+            return None
+        return v
+
 class ScrapedWord(BaseModel):
     bikol: str
     english: str
@@ -109,9 +122,16 @@ class ScrapedWord(BaseModel):
     wiktionary_dialect: str
     pronunciation: str | None = ""
     etymology: str | None = None
-    synonyms: list[str] = []
+    synonyms: list[str] | None = None
     audio_url: str | None = None
     source_url: str
+
+    @field_validator('synonyms', mode='before')
+    @classmethod
+    def empty_list_to_none(cls, v: Any) -> Any:
+        if v == []:
+            return None
+        return v
 
 
 class EnrichedData(BaseModel):
@@ -120,4 +140,12 @@ class EnrichedData(BaseModel):
     category: str = "General"
     example_bikol: str = ""
     example_english: str = ""
+    synonyms: list[str] | None = None
     confidence: float = Field(default=1.0, ge=0.0, le=1.0)
+
+    @field_validator('synonyms', mode='before')
+    @classmethod
+    def empty_list_to_none(cls, v: Any) -> Any:
+        if v == []:
+            return None
+        return v
