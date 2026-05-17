@@ -26,7 +26,7 @@ const containerVariants = {
       staggerChildren: 0.05
     }
   }
-};
+} as const;
 
 const itemVariants = {
   hidden: { opacity: 0, scale: 0.95 },
@@ -39,7 +39,7 @@ const itemVariants = {
       damping: 25
     }
   }
-};
+} as const;
 
 export default function CategoryGrid({ categoryCounts, className }: CategoryGridProps) {
   return (
