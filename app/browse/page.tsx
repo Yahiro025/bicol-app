@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma';
-import WordCard from '@/components/WordCard';
+import BrowseClient from '@/components/BrowseClient';
 import { CATEGORY_META } from '@/lib/constants';
 import Link from 'next/link';
 
@@ -9,124 +9,125 @@ interface BrowsePageProps {
   searchParams: Promise<{
     letter?: string;
     category?: string;
+    q?: string;
   }>;
 }
 
 export default async function BrowsePage({ searchParams }: BrowsePageProps) {
-  const { letter, category } = await searchParams;
-  const activeLetter = letter?.toUpperCase() || 'ALL';
-  const activeCategory = category || 'ALL';
+  const { letter, category, q } = await searchParams;
+  
+  const activeLetter = letter?.toUpperCase() || '';
+  const activeCategory = category || '';
+  const query = q || '';
 
   const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
-  // Construct filter
-  const where: any = {};
-  if (activeLetter !== 'ALL') {
-    where.bikol = {
-      startsWith: activeLetter,
-      mode: 'insensitive'
-    };
-  }
-  if (activeCategory !== 'ALL') {
-    where.category = activeCategory;
-  }
+  // Build the dynamic Prisma where clause
+  const where: any = {
+    AND: [
+      activeLetter ? { bikol: { startsWith: activeLetter, mode: 'insensitive' } } : {},
+      activeCategory ? { category: { equals: activeCategory, mode: 'insensitive' } } : {},
+      query ? {
+        OR: [
+          { bikol: { contains: query, mode: 'insensitive' } },
+          { english: { contains: query, mode: 'insensitive' } },
+          { tagalog: { contains: query, mode: 'insensitive' } },
+        ],
+      } : {},
+    ],
+  };
 
-  const words = await prisma.word.findMany({
-    where,
-    orderBy: { bikol: 'asc' },
-    take: 100 // Limit for performance, can add pagination later
-  });
+  let words: any[] = [];
+  let dbError = null;
+
+  try {
+    words = await prisma.word.findMany({
+      where,
+      orderBy: { bikol: 'asc' },
+      take: 100,
+    });
+  } catch (e: any) {
+    console.error(e);
+    dbError = e.message;
+  }
 
   return (
     <main className="min-h-screen bg-zinc-950 text-white p-6 md:p-12">
       <div className="max-w-6xl mx-auto space-y-10">
         <div>
           <h1 className="text-4xl font-black tracking-tight mb-2">Browse Dictionary</h1>
-          <p className="text-zinc-400">Explore the rich vocabulary of the Bikol language.</p>
+          <p className="text-zinc-400">Explore and search the Bikol language.</p>
         </div>
 
-        {/* Alphabetical Filter */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold uppercase tracking-wider text-zinc-500">Filter by Letter</h3>
-            <Link 
-              href="/browse" 
-              className={`text-xs font-bold px-3 py-1 rounded-full transition-all ${
-                activeLetter === 'ALL' ? 'bg-blue-600 text-white' : 'text-zinc-500 hover:text-white'
-              }`}
-            >
-              ALL
-            </Link>
+        {dbError && (
+          <div className="bg-red-900 text-red-100 p-4 rounded-xl text-sm">
+            Database Error: {dbError}
           </div>
-          <div className="flex flex-wrap gap-2">
-            {letters.map((l) => (
-              <Link
-                key={l}
-                href={`/browse?letter=${l}${activeCategory !== 'ALL' ? `&category=${encodeURIComponent(activeCategory)}` : ''}`}
-                className={`w-10 h-10 flex items-center justify-center rounded-xl font-bold transition-all border ${
-                  activeLetter === l 
-                    ? 'bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-900/40' 
-                    : 'bg-zinc-900 border-zinc-800 text-zinc-500 hover:border-zinc-700 hover:text-white'
-                }`}
-              >
-                {l}
-              </Link>
-            ))}
-          </div>
-        </div>
+        )}
 
-        {/* Category Filter */}
-        <div className="space-y-4">
-          <h3 className="text-sm font-bold uppercase tracking-wider text-zinc-500">Filter by Category</h3>
-          <div className="flex flex-wrap gap-2">
-            <Link
-              href={`/browse${activeLetter !== 'ALL' ? `?letter=${activeLetter}` : ''}`}
-              className={`px-4 py-2 rounded-xl text-sm font-bold transition-all border ${
-                activeCategory === 'ALL' 
-                  ? 'bg-zinc-100 border-white text-zinc-950' 
-                  : 'bg-zinc-900 border-zinc-800 text-zinc-500 hover:border-zinc-700 hover:text-white'
-              }`}
-            >
-              All Categories
-            </Link>
-            {Object.keys(CATEGORY_META).filter((cat, index, self) => self.indexOf(cat) === index).map((cat) => (
-              <Link
-                key={cat}
-                href={`/browse?category=${encodeURIComponent(cat)}${activeLetter !== 'ALL' ? `&letter=${activeLetter}` : ''}`}
-                className={`px-4 py-2 rounded-xl text-sm font-bold transition-all border ${
-                  activeCategory === cat 
-                    ? 'bg-zinc-100 border-white text-zinc-950' 
-                    : 'bg-zinc-900 border-zinc-800 text-zinc-500 hover:border-zinc-700 hover:text-white'
-                }`}
-              >
-                {cat}
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* Results */}
-        <div className="space-y-6">
-          <div className="flex items-center justify-between border-b border-zinc-800 pb-4">
-            <h2 className="text-xl font-bold">
-              {words.length} {words.length === 1 ? 'Word' : 'Words'} Found
-            </h2>
-          </div>
-
-          {words.length === 0 ? (
-            <div className="text-center py-20 bg-zinc-900/50 border border-zinc-800 border-dashed rounded-3xl">
-              <p className="text-zinc-500 font-medium">No words found for these filters.</p>
-              <Link href="/browse" className="text-blue-500 hover:underline text-sm mt-2 inline-block">
-                Clear all filters
-              </Link>
+        {/* Filters Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          <div className="lg:col-span-1 space-y-8">
+            {/* Alphabetical Filter */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-zinc-500">Letter</h3>
+                {activeLetter && (
+                  <Link href={`/browse?${new URLSearchParams({ ...(activeCategory && { category: activeCategory }), ...(query && { q: query }) })}`} className="text-xs text-blue-500 hover:underline">Clear</Link>
+                )}
+              </div>
+              <div className="grid grid-cols-6 gap-1">
+                {letters.map((l) => (
+                  <Link
+                    key={l}
+                    href={`/browse?${new URLSearchParams({ letter: l, ...(activeCategory && { category: activeCategory }), ...(query && { q: query }) })}`}
+                    className={`h-8 flex items-center justify-center rounded text-xs font-bold transition-all border ${
+                      activeLetter === l 
+                        ? 'bg-blue-600 border-blue-500 text-white' 
+                        : 'bg-zinc-900 border-zinc-800 text-zinc-500 hover:border-zinc-700 hover:text-white'
+                    }`}
+                  >
+                    {l}
+                  </Link>
+                ))}
+              </div>
             </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {words.map((word) => (
-                <WordCard key={word.bikol} word={word} />
-              ))}
+
+            {/* Category Filter */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-zinc-500">Category</h3>
+                {activeCategory && (
+                  <Link href={`/browse?${new URLSearchParams({ ...(activeLetter && { letter: activeLetter }), ...(query && { q: query }) })}`} className="text-xs text-blue-500 hover:underline">Clear</Link>
+                )}
+              </div>
+              <div className="flex flex-col gap-1">
+                {Object.keys(CATEGORY_META).map((cat) => (
+                  <Link
+                    key={cat}
+                    href={`/browse?${new URLSearchParams({ category: cat, ...(activeLetter && { letter: activeLetter }), ...(query && { q: query }) })}`}
+                    className={`px-3 py-2 rounded text-xs font-bold transition-all border text-left ${
+                      activeCategory === cat 
+                        ? 'bg-zinc-100 border-white text-zinc-950' 
+                        : 'bg-zinc-900 border-zinc-800 text-zinc-500 hover:border-zinc-700 hover:text-white'
+                    }`}
+                  >
+                    {cat}
+                  </Link>
+                ))}
+              </div>
             </div>
-          )}
+          </div>
+
+          {/* Search and Results */}
+          <div className="lg:col-span-3">
+            <BrowseClient 
+              initialWords={words} 
+              initialLetter={activeLetter} 
+              initialCategory={activeCategory} 
+              initialQuery={query} 
+            />
+          </div>
         </div>
       </div>
     </main>
