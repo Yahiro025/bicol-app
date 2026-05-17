@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { ArrowLeft, Share2, Info, Book } from 'lucide-react';
 import { saveToHistory } from '@/lib/offline';
 import AudioPlayer from '@/components/AudioPlayer';
@@ -118,7 +119,13 @@ export default function WordClientPage({ word }: { word: any }) {
                     <h3 className="text-sm font-black text-zinc-400 uppercase tracking-widest flex items-center gap-2">Synonyms</h3>
                     <div className="flex flex-wrap gap-2">
                       {synonyms.map((s: string, i: number) => (
-                        <span key={i} className="px-3 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 rounded-lg text-sm font-bold">{s}</span>
+                        <Link 
+                          key={i} 
+                          href={`/word/${encodeURIComponent(s)}`}
+                          className="px-3 py-1 bg-zinc-100 dark:bg-zinc-800 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 border border-transparent hover:border-blue-200 dark:hover:border-blue-800 rounded-lg text-sm font-bold transition-all"
+                        >
+                          {s}
+                        </Link>
                       ))}
                     </div>
                   </div>
