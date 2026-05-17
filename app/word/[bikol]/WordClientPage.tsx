@@ -7,7 +7,7 @@ import AudioPlayer from '@/components/AudioPlayer';
 import type { LanguageMode } from '@/components/LanguageToggle';
 
 export default function WordClientPage({ word }: { word: any }) {
-  const [langMode, setLangMode] = useState<LanguageMode>('en');
+  const [langMode, setLangMode] = useState<LanguageMode>('all');
 
   useEffect(() => {
     // Load initial preference

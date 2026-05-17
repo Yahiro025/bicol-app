@@ -6,10 +6,10 @@ import { Languages } from 'lucide-react';
 export type LanguageMode = 'en' | 'tl' | 'all';
 
 export default function LanguageToggle() {
-  const [mode, setMode] = useState<LanguageMode>('en');
+  const [mode, setMode] = useState<LanguageMode>('all');
 
   useEffect(() => {
-    const saved = localStorage.getItem('bikol-lang-mode') as LanguageMode;
+    const saved = localStorage.getItem('bikoldict-lang-mode') as LanguageMode;
     if (saved) setMode(saved);
   }, []);
 
