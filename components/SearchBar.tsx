@@ -11,22 +11,28 @@ type SearchResult = {
   tagalog?: string | null;
 };
 
+interface SearchBarProps {
+  initialDictionary?: SearchResult[];
+}
+
 const containerVariants = {
-  hidden: { opacity: 0, y: -10 },
+  hidden: { opacity: 0, scale: 0.98, y: -10 },
   visible: { 
     opacity: 1, 
+    scale: 1,
     y: 0,
     transition: {
       type: 'spring',
-      stiffness: 300,
-      damping: 30,
+      stiffness: 400,
+      damping: 25,
       staggerChildren: 0.05
     }
   },
   exit: { 
     opacity: 0, 
+    scale: 0.98,
     y: -10,
-    transition: { duration: 0.2, ease: 'easeIn' }
+    transition: { duration: 0.15, ease: 'easeOut' }
   }
 } as const;
 
@@ -35,13 +41,14 @@ const itemVariants = {
   visible: { opacity: 1, x: 0 }
 } as const;
 
-export default function SearchBar() {
+export default function SearchBar({ initialDictionary = [] }: SearchBarProps) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
   const router = useRouter();
 
   // Close dropdown when clicking outside
@@ -55,7 +62,7 @@ export default function SearchBar() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Debounced fetch effect
+  // Optimistic & Debounced Search
   useEffect(() => {
     if (!query.trim()) {
       setResults([]);
@@ -63,28 +70,64 @@ export default function SearchBar() {
       return;
     }
 
+    // 1. Instant Local Filtering
+    const normalizedQuery = query.toLowerCase().trim();
+    const localMatches = initialDictionary.filter(item => 
+      item.bikol.toLowerCase().startsWith(normalizedQuery) ||
+      item.english.toLowerCase().startsWith(normalizedQuery) ||
+      (item.tagalog && item.tagalog.toLowerCase().startsWith(normalizedQuery)) ||
+      item.bikol.toLowerCase().includes(normalizedQuery) ||
+      item.english.toLowerCase().includes(normalizedQuery)
+    ).slice(0, 6);
+
+    setResults(localMatches);
+    setIsOpen(true);
+
+    // 2. Background exhaustive fetch if local results are insufficient
+    if (localMatches.length >= 4) {
+      setIsLoading(false);
+      return;
+    }
+
     setIsLoading(true);
+    
+    // Cancel previous request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    abortControllerRef.current = new AbortController();
+
     const timeoutId = setTimeout(async () => {
       try {
-        const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+        const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`, {
+          signal: abortControllerRef.current?.signal
+        });
         const data = await res.json();
         
         if (Array.isArray(data)) {
-          setResults(data);
-          setIsOpen(true);
-        } else {
-          setResults([]);
+          // Merge local results with remote results, avoiding duplicates
+          setResults(prev => {
+            const existingBikol = new Set(prev.map(r => r.bikol.toLowerCase()));
+            const newResults = data.filter(r => !existingBikol.has(r.bikol.toLowerCase()));
+            return [...prev, ...newResults].slice(0, 10);
+          });
         }
-      } catch (error) {
-        console.error(error);
-        setResults([]);
+      } catch (error: any) {
+        if (error.name !== 'AbortError') {
+          console.error('Search error:', error);
+        }
       } finally {
         setIsLoading(false);
       }
-    }, 150); // Fast debounce for instant feel
+    }, 400); // Wait a bit longer to see if user keeps typing
 
-    return () => clearTimeout(timeoutId);
-  }, [query]);
+    return () => {
+      clearTimeout(timeoutId);
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, [query, initialDictionary]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -119,25 +162,38 @@ export default function SearchBar() {
 
   return (
     <div ref={wrapperRef} className="relative w-full max-w-lg mx-auto">
-      <form onSubmit={handleSubmit} className="relative">
+      <form onSubmit={handleSubmit} className="relative group">
+        <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-5 pointer-events-none">
+          {isLoading ? (
+            <motion.div 
+              animate={{ opacity: [0.4, 1, 0.4] }}
+              transition={{ repeat: Infinity, duration: 1.5 }}
+              className="w-2 h-2 bg-blue-500 rounded-full"
+            />
+          ) : (
+            <svg className="w-5 h-5 text-zinc-500 group-focus-within:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          )}
+        </div>
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => {
             setIsFocused(true);
-            results.length > 0 && setIsOpen(true);
+            (results.length > 0 || query.length > 0) && setIsOpen(true);
           }}
           onBlur={() => setIsFocused(false)}
           placeholder="Search a Bikol or English word..."
-          className={`w-full px-8 py-4 bg-zinc-900 border border-zinc-800 rounded-full text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-950 text-lg transition-all duration-300 ${
-            isFocused ? 'scale-[1.01] bg-zinc-800/50' : ''
+          className={`w-full pl-12 pr-28 py-4 bg-zinc-900 border border-zinc-800 rounded-2xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 text-lg transition-all duration-300 ${
+            isFocused ? 'bg-zinc-800/50 shadow-[0_0_20px_rgba(59,130,246,0.1)]' : ''
           }`}
           autoComplete="off"
         />
         <button 
           type="submit" 
-          className="absolute right-2 top-1/2 -translate-y-1/2 px-6 py-2.5 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white rounded-full font-semibold transition-all duration-200 shadow-lg shadow-blue-500/20"
+          className="absolute right-2 top-1/2 -translate-y-1/2 px-6 py-2 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white rounded-xl font-semibold transition-all duration-200 shadow-lg shadow-blue-500/20"
         >
           Search
         </button>
@@ -151,13 +207,9 @@ export default function SearchBar() {
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="absolute mt-2 w-full bg-zinc-900/80 backdrop-blur-xl border border-white/5 rounded-xl shadow-2xl z-50 overflow-hidden"
+            className="absolute mt-3 w-full bg-zinc-900/95 backdrop-blur-xl border border-zinc-800 rounded-2xl shadow-2xl z-50 overflow-hidden"
           >
-            {isLoading && (
-              <div className="px-6 py-4 text-sm text-zinc-400 text-center">Searching...</div>
-            )}
-
-            {!isLoading && results.length > 0 && (
+            {results.length > 0 ? (
               <ul className="py-2">
                 {results.map((item) => (
                   <motion.li key={item.bikol} variants={itemVariants}>
@@ -179,20 +231,18 @@ export default function SearchBar() {
                   </motion.li>
                 ))}
               </ul>
-            )}
-
-            {!isLoading && results.length === 0 && query.trim().length > 0 && (
-              <div className="px-6 py-4 text-sm text-zinc-500 text-center">
-                No words found starting with "{query}"
+            ) : !isLoading && query.trim().length > 0 ? (
+              <div className="px-6 py-8 text-sm text-zinc-500 text-center">
+                No words found for <span className="text-zinc-300">"{query}"</span>
               </div>
-            )}
+            ) : null}
 
             {/* Footer Link to Browse Page */}
             {results.length > 0 && (
               <motion.div variants={itemVariants} className="border-t border-white/5 bg-white/5">
                 <button 
                   onClick={() => { setIsOpen(false); router.push(`/browse?q=${encodeURIComponent(query)}`); }} 
-                  className="w-full text-center py-3 text-sm text-blue-400 hover:text-blue-300 font-medium transition"
+                  className="w-full text-center py-4 text-sm text-blue-400 hover:text-blue-300 font-medium transition"
                 >
                   View all results for "{query}"
                 </button>

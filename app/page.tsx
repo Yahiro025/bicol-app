@@ -54,39 +54,44 @@ export default async function HomePage() {
     });
     wotd = wotdList[0];
 
-  } catch (e: any) {
-    console.error(e);
-    dbError = e.message;
-  }
+    // 5. Fetch initial dictionary for optimistic search
+    const initialDictionary = await prisma.word.findMany({
+      select: { bikol: true, english: true, tagalog: true },
+      take: 5000,
+      orderBy: [
+        { frequency_rank: 'asc' },
+        { bikol: 'asc' }
+      ]
+    });
 
-  return (
-    <main className="min-h-screen bg-zinc-950 text-white">
-      {dbError && (
-        <div className="bg-red-900 text-red-100 p-4 text-center text-sm">
-          Database Error: {dbError}
-        </div>
-      )}
+    return (
+      <main className="min-h-screen bg-zinc-950 text-white">
+        {dbError && (
+          <div className="bg-red-900 text-red-100 p-4 text-center text-sm">
+            Database Error: {dbError}
+          </div>
+        )}
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0">
-          <div className="w-full h-full bg-gradient-to-br from-blue-950/20 to-zinc-950/40 backdrop-blur-sm"></div>
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1440 320%22><path fill=%22%231e293b%22 opacity=%220.15%22 d=%22M0,160L48,155.4C96,151,192,141,288,125.3C384,110,480,89,576,90.7C672,92,768,117,864,128C960,139,1056,134,1152,117.3C1248,101,1344,73,1392,58.7L1440,48L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z%22></path></svg>')"></div>
-        </div>
-        <div className="relative px-6 py-20 md:py-28">
-          <div className="max-w-5xl mx-auto text-center space-y-6">
-            <div className="space-y-3">
-              <h1 className="text-6xl md:text-8xl lg:text-9xl font-display font-black tracking-tighter leading-none bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-blue-400 to-purple-500 py-2">
-                BIKOL
-              </h1>
-              <p className="text-xl md:text-2xl text-zinc-400 max-w-3xl mx-auto text-balance">
-                Discover the richness of the Bikol language with comprehensive definitions, examples, and audio pronunciations.
-              </p>
-            </div>
-            
-            <div className="mt-8 mx-auto w-full max-w-2xl">
-              <SearchBar />
-            </div>
+        {/* Hero Section */}
+        <section className="relative overflow-hidden">
+          <div className="absolute inset-0">
+            <div className="w-full h-full bg-gradient-to-br from-blue-950/20 to-zinc-950/40 backdrop-blur-sm"></div>
+            <div className="absolute inset-0 bg-[url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1440 320%22><path fill=%22%231e293b%22 opacity=%220.15%22 d=%22M0,160L48,155.4C96,151,192,141,288,125.3C384,110,480,89,576,90.7C672,92,768,117,864,128C960,139,1056,134,1152,117.3C1248,101,1344,73,1392,58.7L1440,48L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z%22></path></svg>')"></div>
+          </div>
+          <div className="relative px-6 py-20 md:py-28">
+            <div className="max-w-5xl mx-auto text-center space-y-6">
+              <div className="space-y-3">
+                <h1 className="text-6xl md:text-8xl lg:text-9xl font-display font-black tracking-tighter leading-none bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-blue-400 to-purple-500 py-2">
+                  BIKOL
+                </h1>
+                <p className="text-xl md:text-2xl text-zinc-400 max-w-3xl mx-auto text-balance">
+                  Discover the richness of the Bikol language with comprehensive definitions, examples, and audio pronunciations.
+                </p>
+              </div>
+              
+              <div className="mt-8 mx-auto w-full max-w-2xl">
+                <SearchBar initialDictionary={initialDictionary} />
+              </div>
             
             {/* Stats */}
             <div className="mt-16 flex flex-wrap justify-center gap-12 text-center">

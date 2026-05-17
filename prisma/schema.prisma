@@ -19,6 +19,7 @@ model Word {
   tagalog         String?
   confidence      Float    @default(1.0)
   source_url      String?
+  frequency_rank  Int?
 
   @@map("words")
 }
