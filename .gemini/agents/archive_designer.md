@@ -20,3 +20,4 @@ Rules:
 4. Resting UI must be flat (borders only). Shadows (`shadow-xl`) only appear on `hover:` or `focus:`.
 5. Check `app/globals.css` for WCAG AA contrast compliance (especially zinc-400/500 on zinc-950).
 \n- **LEARNED RULE**: Always verify JSX tag balancing and bracket closure during refactors, especially in mapping functions with complex nested components. Use implicit returns for single-component map results to reduce syntax overhead.
+\n- **LEARNED RULE**: When wrapping Page components in try-catch blocks for data fetching, ensure the closing braces for both the try block and the function body are correctly placed at the end of the file. Always verify JSX tag nesting depth to prevent early function termination.
