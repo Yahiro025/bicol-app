@@ -237,21 +237,19 @@ export default function BrowseClient({
         key={`${selectedLetter}-${selectedCategory}`}
         className="space-y-4"
       >
-        {filteredWords.map((word) => {
-          const wordUrl = `/word/${encodeURIComponent(word.bikol)}`;
-          return (
-            <motion.div key={word.bikol} variants={itemVariants}>
-              <Link 
-                href={wordUrl}
-                prefetch={false}
-                onMouseEnter={() => router.prefetch(wordUrl)}
-                className="block bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 p-6 rounded-2xl hover:border-blue-500/30 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 group"
-              >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h2 className="text-2xl font-display font-bold text-blue-500 group-hover:text-blue-400 transition-colors">
-                      {highlightText(word.bikol)}
-                    </h2>
+        {filteredWords.map((word) => (
+          <motion.div key={word.bikol} variants={itemVariants}>
+            <Link
+              href={`/word/${encodeURIComponent(word.bikol)}`}
+              prefetch={false}
+              onMouseEnter={() => router.prefetch(`/word/${encodeURIComponent(word.bikol)}`)}
+              className="block bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 p-6 rounded-2xl hover:border-blue-500/30 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 group"
+            >
+              <div className="flex justify-between items-start">
+                <div>
+                  <h2 className="text-2xl font-display font-bold text-blue-500 group-hover:text-blue-400 transition-colors">
+                    {highlightText(word.bikol)}
+                  </h2>
                   <p className="text-zinc-100 mt-1 font-medium">{highlightText(word.english)}</p>
                   {word.tagalog && (
                     <p className="text-zinc-500 text-xs mt-2 italic">Tagalog: {highlightText(word.tagalog)}</p>
@@ -269,7 +267,6 @@ export default function BrowseClient({
             </Link>
           </motion.div>
         ))}
-
         {filteredWords.length === 0 && (
            <motion.div variants={itemVariants} className="text-center text-zinc-500 py-12">
              {query || hasActiveFilters ? `No matches found. Try adjusting your search or filters.` : `No words found.`}
