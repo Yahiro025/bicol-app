@@ -43,7 +43,7 @@ export default function UserSubmissionForm() {
             required
             value={formData.word}
             onChange={(e) => setFormData({ ...formData, word: e.target.value })}
-            className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="e.g. Oragon"
           />
         </div>
@@ -54,7 +54,7 @@ export default function UserSubmissionForm() {
             required
             value={formData.definition}
             onChange={(e) => setFormData({ ...formData, definition: e.target.value })}
-            className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary min-h-[100px]"
+            className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]"
             placeholder="What does it mean?"
           />
         </div>
@@ -64,7 +64,7 @@ export default function UserSubmissionForm() {
           <select
             value={formData.dialect}
             onChange={(e) => setFormData({ ...formData, dialect: e.target.value })}
-            className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary appearance-none"
+            className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
           >
             <option>General Bikol</option>
             <option>Central Bikol (Naga)</option>

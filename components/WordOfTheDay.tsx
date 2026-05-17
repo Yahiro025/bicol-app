@@ -14,9 +14,10 @@ interface WordOfTheDayProps {
     example_bikol?: string | null;
     example_english?: string | null;
   };
+  className?: string;
 }
 
-export default function WordOfTheDay({ word }: WordOfTheDayProps) {
+export default function WordOfTheDay({ word, className }: WordOfTheDayProps) {
   const [langMode, setLangMode] = useState<LanguageMode>('en');
 
   useEffect(() => {
@@ -33,11 +34,11 @@ export default function WordOfTheDay({ word }: WordOfTheDayProps) {
     return word.english;
   };
 
-  return (
-    <Link
-      href={`/word/${encodeURIComponent(word.bikol)}`}
-      className="group relative overflow-hidden p-8 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl shadow-xl shadow-blue-900/20 hover:scale-[1.01] transition-all duration-300 block"
-    >
+   return (
+     <Link
+       href={`/word/${encodeURIComponent(word.bikol)}`}
+       className={`group relative overflow-hidden p-8 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl shadow-xl shadow-blue-900/20 hover:scale-[1.01] transition-all duration-300 block ${className ?? ''}`}
+     >
       <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 group-hover:opacity-20 transition-all duration-500">
         <Star size={120} fill="white" />
       </div>

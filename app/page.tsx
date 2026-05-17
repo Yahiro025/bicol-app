@@ -3,7 +3,7 @@ import SearchBar from '@/components/SearchBar';
 import WordOfTheDay from '@/components/WordOfTheDay';
 import CategoryGrid from '@/components/CategoryGrid';
 import WordCard from '@/components/WordCard';
-import { ArrowRightOutside } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { POPULAR_WORDS } from '@/lib/constants';
 
 export const dynamic = 'force-dynamic';
@@ -83,8 +83,8 @@ export default async function HomePage() {
               </p>
             </div>
             
-            <div className="mt-8">
-              <SearchBar className="mx-auto w-full max-w-2xl" />
+            <div className="mt-8 mx-auto w-full max-w-2xl">
+              <SearchBar />
             </div>
             
             {/* Stats */}
@@ -138,10 +138,10 @@ export default async function HomePage() {
                   <h3 className="text-xl font-semibold text-white">Explore words by topic</h3>
                   <p className="text-muted/60">Organized collections for easy learning</p>
                 </div>
-                <Link href="/browse" className="flex items-center gap-2 text-primary-400 hover:text-primary-300 font-medium transition-colors">
-                  View All Categories
-                  <ArrowRightOutside className="h-4 w-4" />
-                </Link>
+<Link href="/browse" className="flex items-center gap-2 text-primary-400 hover:text-primary-300 font-medium transition-colors">
+  View All Categories
+  <ArrowRight className="h-4 w-4" />
+</Link>
               </div>
               <CategoryGrid categoryCounts={categoryCounts} className="grid gap-6" />
             </div>
@@ -157,10 +157,10 @@ export default async function HomePage() {
                   <h3 className="text-xl font-semibold text-white">Frequently searched</h3>
                   <p className="text-muted/60">Most looked-up Bikol words</p>
                 </div>
-                <Link href="/browse?sort=popular" className="flex items-center gap-2 text-primary-400 hover:text-primary-300 font-medium transition-colors">
-                  See All Popular
-                  <ArrowRightOutside className="h-4 w-4" />
-                </Link>
+<Link href="/browse?sort=popular" className="flex items-center gap-2 text-primary-400 hover:text-primary-300 font-medium transition-colors">
+  See All Popular
+  <ArrowRight className="h-4 w-4" />
+</Link>
               </div>
               <div className="grid gap-6">
                 {popularWords.map((word) => (

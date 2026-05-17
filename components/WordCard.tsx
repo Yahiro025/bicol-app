@@ -12,9 +12,10 @@ interface WordCardProps {
     tagalog?: string | null;
     pos?: string | null;
   };
+  className?: string;
 }
 
-export default function WordCard({ word }: WordCardProps) {
+export default function WordCard({ word, className }: WordCardProps) {
   const [langMode, setLangMode] = useState<LanguageMode>('en');
 
   useEffect(() => {

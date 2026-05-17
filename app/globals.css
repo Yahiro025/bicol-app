@@ -73,7 +73,7 @@ html {
 
 /* Focus utilities */
 .focus-ring {
-  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2;
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2;
 }
 
 /* Typography enhancements */
@@ -96,5 +96,5 @@ html {
 
 /* Card utilities */
 .card-hover {
-  @apply transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1;
+  @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
 }
