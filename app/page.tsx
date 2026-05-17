@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import Link from 'next/link';
 import SearchBar from '@/components/SearchBar';
 import WordOfTheDay from '@/components/WordOfTheDay';
 import CategoryGrid from '@/components/CategoryGrid';
