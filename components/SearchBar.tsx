@@ -28,12 +28,12 @@ const containerVariants = {
     y: -10,
     transition: { duration: 0.2, ease: 'easeIn' }
   }
-};
+} as const;
 
 const itemVariants = {
   hidden: { opacity: 0, x: -5 },
   visible: { opacity: 1, x: 0 }
-};
+} as const;
 
 export default function SearchBar() {
   const [query, setQuery] = useState('');
