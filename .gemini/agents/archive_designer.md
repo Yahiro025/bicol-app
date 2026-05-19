@@ -27,6 +27,7 @@ Rules:
 - **LEARNED RULE**: Ensure data passed to components (like `SearchBar`) matches the expected TypeScript interface; use explicit casting or mapping if Prisma's inferred types are more permissive (e.g., nullable vs non-nullable).
 - **LEARNED RULE**: Add safety guards (`if (!obj) return null;`) when accessing items from an array via index (e.g., `drills[currentIndex]`) to handle potential `undefined` states in strict TypeScript mode.
 - **LEARNED RULE**: Handle potentially undefined string indices (e.g., `str[0]`) by checking for existence or using fallbacks before passing to functions like `includes`.
+- **LEARNED RULE**: Ensure all interactive "exit", "completion", or "skip" buttons in interactive modules have defined destinations (e.g., via `onComplete` callbacks) and meaningful state transitions (e.g., Success screens) to prevent "dead" UI.
 
 ### 🧠 SKILL INTEGRATION
 Before generating code or design decisions, ALWAYS check installed Gemini CLI skills (impeccable, kowalski, vercel-labs, etc.). Defer to the rules defined in DESIGN.md and the Global Skill Utilization Directive in GEMINI.md over generic AI knowledge.
