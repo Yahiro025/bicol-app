@@ -32,18 +32,19 @@ const MOCK_DRILLS: DrillType[] = [
   },
   {
     id: "4",
-    baseSentence: "Nagbakál ako nin kakanon.",
+    baseSentence: "Nagbakal ako nin kakanon.",
     cue: "tinapay",
-    expectedAnswer: "Nagbakál ako nin tinapay.",
+    expectedAnswer: "Nagbakal ako nin tinapay.",
     explanation: "Objects of actor-focus verbs are marked with 'nin'.",
   },
   {
     id: "5",
-    baseSentence: "Nagbakál ako nin tinapay.",
+    baseSentence: "Nagbakal ako nin tinapay.",
     cue: "sira",
-    expectedAnswer: "Nagbakál ako nin sira.",
+    expectedAnswer: "Nagbakal ako nin sira.",
     explanation: "'Sira' (fish) is a common object in Bikol cuisine.",
   }
+
 ];
 
 export default function LearnPage() {

@@ -7,7 +7,7 @@ export interface ConjugationResult {
 /**
  * Extracts the first CV (Consonant-Vowel) pattern for reduplication.
  * Handling cases like: 
- * 'bakál' -> 'ba'
+ * 'bakal' -> 'ba'
  * 'abot' -> 'a'
  * 'trabaho' -> 'ta' (Standard Bikol reduplication often drops the second consonant in a cluster)
  */
