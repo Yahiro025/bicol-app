@@ -133,19 +133,19 @@ export function VerbConjugator({ rootWord, affixGroups }: VerbConjugatorProps) {
               return (
                 <motion.div
                   key={tenseKey}
-                  whileHover={{ y: -2, backgroundColor: "rgba(39, 39, 42, 0.4)" }}
+                  whileHover={{ backgroundColor: "rgba(39, 39, 42, 0.3)" }}
                   className={cn(
                     "group flex flex-col md:flex-row md:items-center justify-between p-5 transition-all duration-300",
-                    "hover:shadow-[0_20px_25px_-5px_rgba(59,130,246,0.12)] hover:border-blue-500/20 z-10 relative cursor-default"
+                    "border-zinc-800/50 z-10 relative cursor-default"
                   )}
                 >
                   <dt className="flex flex-col">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 group-hover:text-blue-400/80 transition-colors">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 group-hover:text-blue-400/60 transition-colors">
                       {TENSE_LABELS[tenseKey]}
                     </span>
                   </dt>
                   <dd className="mt-1.5 md:mt-0">
-                    <span className="text-2xl font-medium text-zinc-100 font-display italic tracking-tight">
+                    <span className="text-2xl font-medium text-zinc-100 font-display italic tracking-tight group-hover:text-white transition-colors">
                       {conj?.form || '—'}
                     </span>
                   </dd>

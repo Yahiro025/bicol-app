@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import WordClientPage from './WordClientPage';
 import { notFound } from 'next/navigation';
+import { conjugateBikolVerb } from '@/lib/conjugator';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,7 +29,27 @@ export default async function WordDetail({ params }: { params: Promise<{ bikol: 
     });
 
     if (root) {
-      return <WordClientPage word={root} isNormalized={true} />;
+      // 1b. Fallback: If verb has affixPair but no conjugations, generate them on-the-fly
+      const enrichedDefinitions = root.definitions.map(def => {
+        if (def.affixPair && def.affixPair !== 'UNKNOWN' && (!def.conjugations || def.conjugations.length === 0)) {
+          const generated = conjugateBikolVerb(root.bikol, def.affixPair, def.focusType || undefined);
+          return {
+            ...def,
+            conjugations: generated.map(c => ({
+              id: `temp-${c.tense}-${c.focus}`,
+              tense: c.tense,
+              focus: c.focus,
+              form: c.form,
+              definitionId: def.id,
+              createdAt: new Date(),
+              updatedAt: new Date()
+            }))
+          };
+        }
+        return def;
+      });
+
+      return <WordClientPage word={{ ...root, definitions: enrichedDefinitions }} isNormalized={true} />;
     }
 
     // 2. Fallback to the legacy words table

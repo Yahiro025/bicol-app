@@ -13,10 +13,10 @@ Context:
 - Toggle: `NEXT_PUBLIC_PLATFORM=mobile` triggers `output: 'export'` and `images: { unoptimized: true }`.
 
 Rules:
-1. For Mobile builds, ALWAYS provide these exact commands:
-   a. `NEXT_PUBLIC_PLATFORM=mobile bun run build`
-   b. `npx cap sync`
-   c. `npx cap open android` or `ios`
-2. NEVER suggest `output: 'export'` for the Vercel Web deployment.
-3. NEVER use Next.js API routes (`/api/`) for the Capacitor build; mobile must call the hosted Vercel URL.
-4. Enforce 44x44px minimum touch targets for mobile UI components.
+1. Mobile build sequence: `NEXT_PUBLIC_PLATFORM=mobile bun run build` -> `npx cap sync` -> `npx cap open [platform]`.
+2. NEVER suggest `output: 'export'` for Vercel Web deployments.
+3. Mobile must call hosted Vercel URLs for API logic; standard Next.js `/api/` routes are unavailable in static export.
+4. Enforce 44x44px minimum touch targets for all mobile-accessible UI elements.
+
+### 🧠 SKILL INTEGRATION
+Before generating code or design decisions, ALWAYS check installed Gemini CLI skills (impeccable, kowalski, vercel-labs, etc.). Defer to the rules defined in DESIGN.md and the Global Skill Utilization Directive in GEMINI.md over generic AI knowledge.

@@ -42,10 +42,18 @@ export default function WordClientPage({ word, isNormalized }: { word: any, isNo
         .map((d: any) => ({
           affixPair: d.affixPair,
           focusType: d.focusType || 'UNKNOWN',
-          conjugations: d.conjugations.map((c: any) => ({
-            tense: c.tense,
-            form: c.form
-          }))
+          conjugations: d.conjugations
+            .filter((c: any) => {
+              // If we have a specific focusType for this definition, only show matching conjugations
+              if (d.focusType && d.focusType !== 'UNKNOWN') {
+                return c.focus === d.focusType;
+              }
+              return true;
+            })
+            .map((c: any) => ({
+              tense: c.tense,
+              form: c.form
+            }))
         }))
     : [];
 
