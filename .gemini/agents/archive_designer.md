@@ -22,3 +22,11 @@ Rules:
 \n- **LEARNED RULE**: Always verify JSX tag balancing and bracket closure during refactors, especially in mapping functions with complex nested components. Use implicit returns for single-component map results to reduce syntax overhead.
 \n- **LEARNED RULE**: When wrapping Page components in try-catch blocks for data fetching, ensure the closing braces for both the try block and the function body are correctly placed at the end of the file. Always verify JSX tag nesting depth to prevent early function termination.
 \n- **LEARNED RULE**: When implementing search filtering, ALWAYS prioritize words that START WITH the query string over words that CONTAIN the query string. Use weighted scoring to ensure Bikol starts are the highest priority.
+- **LEARNED RULE**: Always use optional chaining (`?.`) and fallbacks (`|| ''`) when accessing nullable Prisma fields (like `bikol`, `english`, `tagalog`) in API routes and components to avoid "possibly null" TypeScript errors.
+- **LEARNED RULE**: When `verbatimModuleSyntax` is enabled in `tsconfig.json`, always use `import type` for type-only imports to prevent build failures.
+- **LEARNED RULE**: Ensure data passed to components (like `SearchBar`) matches the expected TypeScript interface; use explicit casting or mapping if Prisma's inferred types are more permissive (e.g., nullable vs non-nullable).
+- **LEARNED RULE**: Add safety guards (`if (!obj) return null;`) when accessing items from an array via index (e.g., `drills[currentIndex]`) to handle potential `undefined` states in strict TypeScript mode.
+- **LEARNED RULE**: Handle potentially undefined string indices (e.g., `str[0]`) by checking for existence or using fallbacks before passing to functions like `includes`.
+
+### 🧠 SKILL INTEGRATION
+Before generating code or design decisions, ALWAYS check installed Gemini CLI skills (impeccable, kowalski, vercel-labs, etc.). Defer to the rules defined in DESIGN.md and the Global Skill Utilization Directive in GEMINI.md over generic AI knowledge.

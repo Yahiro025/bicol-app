@@ -25,8 +25,8 @@ export async function GET(request: Request) {
     // Score and sort results
     const scoredWords = words.map(word => {
       let score = 0;
-      const bikolLower = word.bikol.toLowerCase();
-      const englishLower = word.english.toLowerCase();
+      const bikolLower = word.bikol?.toLowerCase() || '';
+      const englishLower = word.english?.toLowerCase() || '';
       const tagalogLower = word.tagalog?.toLowerCase() || '';
 
       if (bikolLower.startsWith(qLower)) {
@@ -43,7 +43,7 @@ export async function GET(request: Request) {
 
       return { word, score };
     })
-    .sort((a, b) => b.score - a.score || a.word.bikol.localeCompare(b.word.bikol))
+    .sort((a, b) => b.score - a.score || (a.word.bikol || '').localeCompare(b.word.bikol || ''))
     .map(sw => sw.word)
     .slice(0, 10);
 

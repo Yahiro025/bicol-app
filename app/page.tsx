@@ -55,7 +55,11 @@ export default async function HomePage() {
     wotd = wotdList[0];
 
     // 5. Fetch initial dictionary for optimistic search
-    const initialDictionary = await prisma.word.findMany({
+    const initialDictionaryRaw = await prisma.word.findMany({
+      where: {
+        bikol: { not: null },
+        english: { not: null }
+      },
       select: { bikol: true, english: true, tagalog: true },
       take: 5000,
       orderBy: [
@@ -63,6 +67,12 @@ export default async function HomePage() {
         { bikol: 'asc' }
       ]
     });
+
+    const initialDictionary = initialDictionaryRaw.map(w => ({
+      bikol: w.bikol as string,
+      english: w.english as string,
+      tagalog: w.tagalog
+    }));
 
     return (
       <main className="min-h-screen bg-zinc-950 text-white">

@@ -188,7 +188,7 @@ export default function WordClientPage({ word, isNormalized }: { word: any, isNo
               const syns = getSynonyms(def.synonyms);
               return [...acc, ...syns];
             }, []);
-            const uniqueSynonyms = Array.from(new Set(allSynonyms));
+            const uniqueSynonyms = Array.from(new Set(allSynonyms)) as string[];
             
             return (etymology || uniqueSynonyms.length > 0) && (
               <div className="pt-8 border-t border-white/5 grid grid-cols-1 md:grid-cols-2 gap-12 relative z-10">

@@ -30,6 +30,7 @@ export default function SubstitutionDrillComponent({
   };
 
   const handleCheck = () => {
+    if (!currentDrill) return;
     const normalizedInput = normalize(userInput);
     const normalizedExpected = normalize(currentDrill.expectedAnswer);
 

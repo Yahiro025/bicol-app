@@ -17,14 +17,16 @@ function getReduplication(root: string): string {
   const vowels = ['a', 'e', 'i', 'o', 'u', 'á', 'é', 'í', 'ó', 'ú'];
   
   // If starts with vowel, reduplicate just the vowel
-  if (vowels.includes(normalized[0])) {
-    return normalized[0];
+  const firstChar = normalized[0];
+  if (firstChar && vowels.includes(firstChar)) {
+    return firstChar;
   }
 
   // Find the first vowel to capture the CV pattern
   let firstVowelIndex = -1;
   for (let i = 0; i < normalized.length; i++) {
-    if (vowels.includes(normalized[i])) {
+    const char = normalized[i];
+    if (char && vowels.includes(char)) {
       firstVowelIndex = i;
       break;
     }
@@ -33,10 +35,10 @@ function getReduplication(root: string): string {
   if (firstVowelIndex !== -1) {
     // Return the first consonant and the first vowel
     // For clusters like 'tr', it takes the 't' and the first vowel
-    return normalized[0] + normalized[firstVowelIndex];
+    return (normalized[0] || '') + (normalized[firstVowelIndex] || '');
   }
 
-  return normalized[0];
+  return normalized[0] || '';
 }
 
 /**
@@ -50,7 +52,8 @@ export function conjugateBikolVerb(root: string, affixPair: string): Conjugation
   const results: ConjugationResult[] = [];
 
   const vowels = ['a', 'e', 'i', 'o', 'u', 'á', 'é', 'í', 'ó', 'ú'];
-  const isVowelEnding = vowels.includes(normalizedRoot[normalizedRoot.length - 1]);
+  const lastChar = normalizedRoot[normalizedRoot.length - 1];
+  const isVowelEnding = lastChar ? vowels.includes(lastChar) : false;
 
   // Actor Focus (MAG- series)
   if (normalizedAffix.includes('MAG-')) {
@@ -71,18 +74,21 @@ export function conjugateBikolVerb(root: string, affixPair: string): Conjugation
     let pastForm = '';
     let progressiveForm = '';
 
-    if (vowels.includes(normalizedRoot[0])) {
+    const firstChar = normalizedRoot[0];
+    if (firstChar && vowels.includes(firstChar)) {
       pastForm = `in${normalizedRoot}`;
       progressiveForm = `in${r}${normalizedRoot}`;
-    } else {
+    } else if (firstChar) {
       // Consonant starting: insert -in- after first consonant
-      const firstC = normalizedRoot[0];
       const restOfRoot = normalizedRoot.substring(1);
-      pastForm = `${firstC}in${restOfRoot}`;
+      pastForm = `${firstChar}in${restOfRoot}`;
       
       // Progressive: infix -in- into the reduplicated form
       // e.g., 'bakal' -> 'ba' -> 'binabakal'
-      progressiveForm = `${firstC}in${r.substring(1)}${normalizedRoot}`;
+      progressiveForm = `${firstChar}in${r.substring(1)}${normalizedRoot}`;
+    } else {
+      pastForm = normalizedRoot;
+      progressiveForm = normalizedRoot;
     }
 
     results.push(

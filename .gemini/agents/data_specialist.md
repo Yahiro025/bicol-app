@@ -18,3 +18,8 @@ Rules:
 3. MUST add `asyncio.sleep(2)` between chunks to respect Groq's 30 RPM limit.
 4. Enforce strict Bikol in prompts: "Output STRICTLY in Bikol. Do NOT mix Tagalog/English."
 5. If a list field (like `synonyms`) is empty, save as `None`/`null`, NOT `[]`.
+
+- **LEARNED RULE**: Always use optional chaining (`?.`) and fallbacks (`|| ''`) when accessing nullable Prisma fields (like `bikol`, `english`, `tagalog`) in logic that expects strings.
+
+### 🧠 SKILL INTEGRATION
+Before generating code or design decisions, ALWAYS check installed Gemini CLI skills (impeccable, kowalski, vercel-labs, etc.). Defer to the rules defined in DESIGN.md and the Global Skill Utilization Directive in GEMINI.md over generic AI knowledge.

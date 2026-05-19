@@ -1,5 +1,5 @@
 import SubstitutionDrill from "@/components/learn/SubstitutionDrill";
-import { SubstitutionDrill as DrillType } from "@/lib/types/learn";
+import type { SubstitutionDrill as DrillType } from "@/lib/types/learn";
 
 export const dynamic = 'force-dynamic';
 

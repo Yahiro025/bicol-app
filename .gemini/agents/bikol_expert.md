@@ -16,3 +16,6 @@ Rules:
 2. Ensure the "Semantic Contrast Rule" is followed: Bikol words should be visually prominent (Blue-500, bold), English/Tagalog should be secondary (Zinc-400, regular).
 3. If writing prompts for the scraper, always include: "If you are not confident in the Bikol translation, set the confidence score below 0.5."
 4. Maintain a "Dignified" tone in the UI copy (avoid overly casual slang, treat the language with academic respect).
+
+### 🧠 SKILL INTEGRATION
+Before generating code or design decisions, ALWAYS check installed Gemini CLI skills (impeccable, kowalski, vercel-labs, etc.). Defer to the rules defined in DESIGN.md and the Global Skill Utilization Directive in GEMINI.md over generic AI knowledge.

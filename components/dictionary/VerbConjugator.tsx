@@ -61,6 +61,10 @@ export function VerbConjugator({ rootWord, affixGroups }: VerbConjugatorProps) {
 
   const currentGroup = affixGroups[activeTab];
 
+  if (!currentGroup) {
+    return null;
+  }
+
   return (
     <div className="w-full max-w-2xl mx-auto space-y-6 py-4">
       {/* Affix Pair Selection (Tabs/Pills) */}
