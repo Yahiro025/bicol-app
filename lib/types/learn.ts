@@ -17,7 +17,15 @@ export type QuizQuestion = {
   word: string; // The Bikol word being tested
 };
 
-export type LearnMode = 'quiz' | 'flashcards';
+export type LearnMode = 'quiz' | 'flashcards' | 'drill';
+
+export type SubstitutionDrill = {
+  id: string;
+  baseSentence: string;
+  cue: string;
+  expectedAnswer: string;
+  explanation?: string;
+};
 
 export type QuizSession = {
   questions: QuizQuestion[];

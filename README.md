@@ -1,43 +1,101 @@
-# 🌋 Bikol Dictionary & Learning App
+# 🌋 Bikol Dictionary: The Living Archive
 
-A professional, full-stack Bikol dictionary platform featuring AI-powered enrichment, multi-dialect support, and cross-platform accessibility (Web, Android, iOS).
+A professional, full-stack dictionary and learning platform for the Bikol language, bridging academic precision with modern accessibility. This project serves as a "Living Archive," preserving cultural heritage through AI-enriched data, multi-dialect support, and cross-platform utility.
 
-## ✨ Key Features
-- **🔍 Intelligent Search**: Fuzzy matching across Bikol, English, and Tagalog using `pg_trgm`.
-- **🤖 AI-Powered Enrichment**: Automatic Tagalog translations, example sentences, and confidence scoring via Groq AI.
-- **🔊 Pronunciation**: Audio support extracted from Wiktionary with a built-in player.
-- **📱 True Cross-Platform**: Next.js App Router frontend compiled to native mobile apps via Capacitor.
-- **🌐 Offline-First**: PWA support with IndexedDB caching for recently viewed words.
-- **🎓 Learning Module**: Spaced-repetition flashcards for vocabulary building.
+---
 
-## 🚀 Deployment
+## ✨ Core Pillars
 
-### Web (Vercel)
-The web version is optimized for Vercel with full support for API routes and SSR.
-1. Connect your repository to Vercel.
-2. Configure environment variables (see `.env.example`).
-3. Deploy!
+### 🏛️ Academic Authority
+Data is treated with the reverence of an archive. We source core lemmas from authoritative sources like Wiktionary, ensuring high-contrast, precisely gridded presentation of linguistic data.
 
-### Mobile (Capacitor)
-To generate the static bundle for native apps:
-```bash
-# Export as static site
-NEXT_PUBLIC_PLATFORM=mobile bun run build
-npx cap sync
-```
+### 🤖 AI-Powered Enrichment
+Leveraging Groq AI (Llama 3.3 / Qwen), the platform automatically generates Tagalog translations, natural example sentences, and confidence scores to provide a rich context for every word.
 
-### Data Automation (GitHub Actions)
-The project includes a `data-pipeline` workflow that runs weekly to:
-- Scrape new Bikol lemmas from Wiktionary.
-- Enrich data with Groq AI.
-- Audit database quality.
+### 🤝 Community & Growth
+Beyond a static database, the app features a **Learning Module** with spaced-repetition flashcards and a **Submission System** for users to contribute new words and regional dialects.
+
+### 📱 Modern Accessibility
+Built for the diaspora and local learners alike.
+- **Web**: Optimized for speed and SEO on Vercel.
+- **PWA**: Installable on any device with offline-first caching via IndexedDB.
+- **Native Mobile**: Compiled to Android and iOS via Capacitor.
+
+---
 
 ## 🛠 Tech Stack
-- **Frontend**: Next.js (App Router), TypeScript, TailwindCSS, Lucide.
-- **Mobile**: Capacitor.
-- **Backend**: Python (Scrapers, Audit Tools).
-- **Database**: Supabase (PostgreSQL) + Prisma ORM.
-- **AI**: Groq (Llama 3.3 / Qwen).
+
+### Frontend & Mobile
+- **Framework**: Next.js 16 (App Router)
+- **Library**: React 19
+- **Styling**: Tailwind CSS v4 (Vanilla CSS philosophy)
+- **Motion**: Framer Motion (Responsive Bloom effects)
+- **Bridge**: Capacitor (Native Mobile)
+
+### Backend & Data
+- **Database**: Supabase (PostgreSQL)
+- **ORM**: Prisma
+- **AI**: Groq SDK (Llama 3.3 / Qwen)
+- **Pipeline**: Python 3.10+ (BeautifulSoup4, Scrapy)
+- **Runtime**: Bun (Primary recommendation)
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- [Bun](https://bun.sh/) (Primary package manager/runtime)
+- [Python 3.10+](https://www.python.org/)
+- [Supabase](https://supabase.com/) account and project
+- [Groq AI](https://groq.com/) API Key
+
+### 1. Web Development
+```bash
+# Install dependencies
+bun install
+
+# Configure environment
+cp .env.example .env
+
+# Initialize database
+bunx prisma generate
+bunx prisma db push
+
+# Run development server
+bun dev
+```
+
+### 2. Data Pipeline
+The scrapers and audit tools are located in the root and `/scripts`.
+```bash
+# Setup Python environment
+python -m venv venv
+source venv/bin/activate # or venv\Scripts\activate on Windows
+pip install -r requirements.txt
+
+# Run a scraper
+python wiktionary_scraper.py
+```
+
+### 3. Mobile Deployment
+```bash
+# Export static bundle
+NEXT_PUBLIC_PLATFORM=mobile bun run build
+
+# Sync with Capacitor
+bunx cap sync android
+bunx cap open android
+```
+
+---
+
+## 🎨 Design Philosophy: The Living Archive
+
+This system balances **Resting Rigor** with **Responsive Bloom**.
+- **Resting Rigor**: Surfaces at rest use clean 1px borders and zinc-based neutrals. Shadows are prohibited to maintain a structured, authoritative feel.
+- **Responsive Bloom**: Interactive elements come alive on hover with blue-tinted shadows ("Bicolano Sea Blue") and subtle lifts, inviting community interaction.
+
+---
 
 ## 📄 License
-MIT
+This project is licensed under the MIT License.

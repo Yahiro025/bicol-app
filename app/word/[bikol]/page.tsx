@@ -9,6 +9,29 @@ export default async function WordDetail({ params }: { params: Promise<{ bikol: 
   const bikolWord = decodeURIComponent(bikol);
 
   try {
+    // 1. Try to find in the normalized Root table (Mintz)
+    const root = await prisma.root.findFirst({
+      where: { 
+        bikol: {
+          equals: bikolWord,
+          mode: 'insensitive'
+        }
+      },
+      include: {
+        definitions: {
+          include: {
+            conjugations: true,
+            exampleSentences: true
+          }
+        }
+      }
+    });
+
+    if (root) {
+      return <WordClientPage word={root} isNormalized={true} />;
+    }
+
+    // 2. Fallback to the legacy words table
     const word = await prisma.word.findUnique({
       where: { bikol: bikolWord } 
     });
@@ -17,9 +40,9 @@ export default async function WordDetail({ params }: { params: Promise<{ bikol: 
       return notFound();
     }
 
-    return <WordClientPage word={word} />;
+    return <WordClientPage word={word} isNormalized={false} />;
   } catch (e: any) {
-    console.error(e);
+    console.error('Error fetching word:', e);
     return (
       <main className="min-h-screen bg-zinc-950 text-white p-8 flex items-center justify-center">
         <div className="text-center space-y-4">

@@ -6,9 +6,11 @@ datasource db {
   provider = "postgresql"
 }
 
+// Legacy table for migration
 model Word {
-  bikol           String   @id
-  english         String
+  id              BigInt    @id @default(autoincrement())
+  bikol           String?   @unique(map: "unique_bikol_word")
+  english         String?
   pos             String?
   category        String?
   dialect         String?
@@ -17,13 +19,84 @@ model Word {
   pronunciation   String?
   synonyms        String?
   tagalog         String?
-  confidence      Float    @default(1.0)
+  confidence      Float?    @default(1.0)
   source_url      String?
+  audio_url       String?
+  etymology       String?
   frequency_rank  Int?
+  created_at      DateTime? @default(now()) @db.Timestamptz(6)
 
   @@map("words")
 }
 
+// Normalized Mintz Models
+model Root {
+  id             String       @id @default(cuid())
+  bikol          String
+  pos            String?
+  category       String?
+  pronunciation  String?
+  etymology      String?
+  frequency_rank Int?
+  audio_url      String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  definitions    Definition[]
+
+  @@map("roots")
+}
+
+model Definition {
+  id               String            @id @default(cuid())
+  rootId           String
+  root             Root              @relation(fields: [rootId], references: [id], onDelete: Cascade)
+  english          String?
+  dialect          String?
+  synonyms         String?
+  tagalog          String?
+  aiConfidence     Float?            @default(1.0)
+  source_url       String?
+  affixPair        String?           @default("UNKNOWN")
+  focusType        String?           @default("UNKNOWN")
+  series           String?           @default("REGULAR")
+  isVerified       Boolean?          @default(false)
+  notes            String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  conjugations     Conjugation[]
+  exampleSentences ExampleSentence[]
+
+  @@map("definitions")
+}
+
+model Conjugation {
+  id           String     @id @default(cuid())
+  definitionId String
+  definition   Definition @relation(fields: [definitionId], references: [id], onDelete: Cascade)
+  tense        String?
+  focus        String?
+  form         String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@unique([definitionId, tense, focus])
+  @@map("conjugations")
+}
+
+model ExampleSentence {
+  id           String     @id @default(cuid())
+  definitionId String
+  definition   Definition @relation(fields: [definitionId], references: [id], onDelete: Cascade)
+  bikol        String?
+  english      String?
+  source       String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@map("example_sentences")
+}
+
+// Existing tables preserved
 model UserSubmission {
   id         Int       @id @default(autoincrement())
   word       String
