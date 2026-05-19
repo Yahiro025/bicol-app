@@ -96,6 +96,39 @@ export default async function HomePage() {
               <div className="mt-8 mx-auto w-full max-w-2xl">
                 <SearchBar initialDictionary={initialDictionary} />
               </div>
+
+              {/* Quick Navigation Hub */}
+              <div className="pt-12 grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
+                <Link href="/learn" className="group p-6 bg-white/5 hover:bg-white/10 border border-white/10 rounded-3xl transition-all hover:-translate-y-1 active:scale-[0.98] text-left">
+                  <div className="w-12 h-12 bg-blue-500/20 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <span className="text-2xl">🎯</span>
+                  </div>
+                  <h3 className="text-lg font-bold text-white mb-1">Interactive Drills</h3>
+                  <p className="text-zinc-400 text-sm">Master sentence patterns through rapid substitution drills.</p>
+                </Link>
+
+                <Link href="/word/bakál" className="group p-6 bg-white/5 hover:bg-white/10 border border-white/10 rounded-3xl transition-all hover:-translate-y-1 active:scale-[0.98] text-left">
+                  <div className="w-12 h-12 bg-purple-500/20 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <span className="text-2xl">🔄</span>
+                  </div>
+                  <h3 className="text-lg font-bold text-white mb-1">Verb Conjugator</h3>
+                  <p className="text-zinc-400 text-sm">See how verbs like <span className="text-purple-400 italic">bakál</span> change across tenses.</p>
+                </Link>
+
+                <div className="group p-6 bg-white/5 border border-white/10 rounded-3xl text-left relative overflow-hidden">
+                  <div className="w-12 h-12 bg-emerald-500/20 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <span className="text-2xl">🎨</span>
+                  </div>
+                  <h3 className="text-lg font-bold text-white mb-1">Visual Grammar</h3>
+                  <div className="space-y-2">
+                    <p className="text-zinc-400 text-sm">Our smart markers help you parse structure:</p>
+                    <div className="flex flex-wrap gap-2">
+                      <span className="px-2 py-0.5 bg-blue-500/10 text-blue-500 text-[10px] font-black uppercase rounded border border-blue-500/20">SI (ACTOR)</span>
+                      <span className="px-2 py-0.5 bg-orange-500/10 text-orange-500 text-[10px] font-black uppercase rounded border border-orange-500/20">NI (OBJECT)</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             
               {/* Stats */}
               <div className="mt-16 flex flex-wrap justify-center gap-12 text-center">

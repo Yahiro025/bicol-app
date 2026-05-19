@@ -29,6 +29,20 @@ const MOCK_DRILLS: DrillType[] = [
     cue: "dakula",
     expectedAnswer: "Dakula an saiyang harong.",
     explanation: "Sentences often start with the adjective (Predicate-Initial order).",
+  },
+  {
+    id: "4",
+    baseSentence: "Nagbakál ako nin kakanon.",
+    cue: "tinapay",
+    expectedAnswer: "Nagbakál ako nin tinapay.",
+    explanation: "Objects of actor-focus verbs are marked with 'nin'.",
+  },
+  {
+    id: "5",
+    baseSentence: "Nagbakál ako nin tinapay.",
+    cue: "sira",
+    expectedAnswer: "Nagbakál ako nin sira.",
+    explanation: "'Sira' (fish) is a common object in Bikol cuisine.",
   }
 ];
 
@@ -124,6 +138,36 @@ export default function LearnPage() {
           <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-blue-500/5 rounded-full blur-[120px] -z-10" />
           
           <SubstitutionDrill drills={MOCK_DRILLS} onComplete={handleComplete} />
+        </section>
+
+        {/* Phase Roadmap */}
+        <section className="space-y-8 pt-20">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+              <h2 className="text-3xl font-display font-bold text-white tracking-tight">Curriculum Path</h2>
+              <p className="text-zinc-500 mt-1">Our 3-Phase approach to Bikol fluency</p>
+            </div>
+          </div>
+          
+          <div className="grid gap-6 md:grid-cols-3">
+            <div className="p-8 bg-blue-500/10 border border-blue-500/20 rounded-[32px] space-y-4">
+              <div className="w-10 h-10 bg-blue-500 text-white rounded-full flex items-center justify-center font-black">1</div>
+              <h3 className="text-xl font-bold text-white">Substitution</h3>
+              <p className="text-zinc-400 text-sm leading-relaxed">Master core sentence structures by swapping key components. (Current)</p>
+            </div>
+            
+            <div className="p-8 bg-zinc-900/50 border border-white/5 rounded-[32px] space-y-4 opacity-70">
+              <div className="w-10 h-10 bg-zinc-800 text-zinc-500 rounded-full flex items-center justify-center font-black">2</div>
+              <h3 className="text-xl font-bold text-white">Transformation</h3>
+              <p className="text-zinc-400 text-sm leading-relaxed">Change tenses and focus patterns (Actor vs Object) dynamically. (Coming Soon)</p>
+            </div>
+            
+            <div className="p-8 bg-zinc-900/50 border border-white/5 rounded-[32px] space-y-4 opacity-70">
+              <div className="w-10 h-10 bg-zinc-800 text-zinc-500 rounded-full flex items-center justify-center font-black">3</div>
+              <h3 className="text-xl font-bold text-white">Response</h3>
+              <p className="text-zinc-400 text-sm leading-relaxed">Engage in functional dialogue based on visual cues and prompts. (Coming Soon)</p>
+            </div>
+          </div>
         </section>
 
         <section className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 pt-12">
