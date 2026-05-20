@@ -3,7 +3,7 @@ import { prisma } from './lib/prisma';
 
 async function main() {
   const root = await prisma.root.findFirst({
-    where: { bikol: { equals: 'kaakboy', mode: 'insensitive' } },
+    where: { bikol: { equals: 'bakal', mode: 'insensitive' } },
     include: {
       definitions: {
         include: {
