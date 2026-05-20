@@ -1,9 +1,9 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
-import { ReactNode } from "react";
+import { motion, AnimatePresence, type HTMLMotionProps } from "framer-motion";
+import { type ReactNode } from "react";
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends HTMLMotionProps<"button"> {
   children: ReactNode;
   variant?: "primary" | "secondary" | "outline" | "ghost";
   isLoading?: boolean;

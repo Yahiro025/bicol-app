@@ -6,7 +6,28 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import Button from './ui/Button';
 
-// ... (Word type and variants)
+type Word = {
+  bikol: string;
+  english: string;
+  tagalog?: string | null;
+  category?: string | null;
+  pos?: string | null;
+};
+
+const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+
+const listVariants = {
+  visible: {
+    transition: {
+      staggerChildren: 0.05
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 30 } }
+} as const;
 
 export default function BrowseClient({
   initialWords,
@@ -49,8 +70,6 @@ export default function BrowseClient({
       });
       setFilteredWords(filtered);
     });
-
-    // ... (rest of useEffect)
 
     // Sync URL params without triggering a full server re-render if possible
     // We use router.replace with { scroll: false } which is the Next.js way, 
