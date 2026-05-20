@@ -190,8 +190,8 @@ export default function SearchBar({ initialDictionary = [] }: SearchBarProps) {
 
   return (
     <div ref={wrapperRef} className="relative w-full max-w-lg mx-auto">
-      <form onSubmit={handleSubmit} className="relative group">
-        <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-5 pointer-events-none">
+      <form onSubmit={handleSubmit} className="relative flex items-center w-full group">
+        <div className="absolute left-4 z-10 flex items-center justify-center w-5 h-5 pointer-events-none">
           {isLoading ? (
             <motion.div 
               animate={{ opacity: [0.4, 1, 0.4] }}
@@ -214,7 +214,7 @@ export default function SearchBar({ initialDictionary = [] }: SearchBarProps) {
           }}
           onBlur={() => setIsFocused(false)}
           placeholder="Search a Bikol or English word..."
-          className={`w-full pl-12 pr-28 py-4 bg-zinc-900 border border-zinc-800 rounded-2xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 text-lg transition-all duration-300 ${
+          className={`w-full pl-12 pr-32 py-4 bg-zinc-900 border border-zinc-800 rounded-2xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 text-lg transition-all duration-300 ${
             isFocused ? 'bg-zinc-800/50 shadow-[0_0_20px_rgba(59,130,246,0.1)]' : ''
           }`}
           autoComplete="off"
@@ -222,7 +222,7 @@ export default function SearchBar({ initialDictionary = [] }: SearchBarProps) {
         <Button 
           type="submit" 
           isLoading={isLoading}
-          className="absolute right-1.5 top-1.5 bottom-1.5 px-6 rounded-xl text-sm"
+          className="absolute right-1.5 h-[calc(100%-12px)] px-6 rounded-xl text-sm"
         >
           Search
         </Button>

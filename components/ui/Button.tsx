@@ -34,7 +34,7 @@ export default function Button({
       whileTap={{ scale: 0.96 }}
       disabled={isLoading || disabled}
       className={`
-        relative flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl font-semibold 
+        flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl font-semibold 
         transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed
         ${variants[variant]}
         ${className}
