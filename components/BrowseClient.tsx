@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
+import Button from './ui/Button';
 
 type Word = {
   bikol: string;
@@ -135,13 +136,14 @@ export default function BrowseClient({
 
       {/* 2. TOGGLE FILTER BUTTON & ACTIVE FILTER PILLS */}
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
-        <button 
+        <Button 
+          variant="secondary"
           onClick={() => setAreFiltersVisible(!areFiltersVisible)}
-          className="flex items-center gap-2 px-6 py-2.5 bg-zinc-900 hover:bg-zinc-800 active:scale-95 border border-zinc-800 rounded-xl text-sm font-semibold transition-all duration-200"
+          className="flex items-center gap-2"
         >
           <svg className={`w-4 h-4 transition-transform duration-300 ${areFiltersVisible ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
           {areFiltersVisible ? 'Hide Filters' : 'Show Filters'}
-        </button>
+        </Button>
 
         <div className="flex items-center gap-2 flex-wrap">
           {selectedLetter && (

@@ -140,6 +140,59 @@ async function main() {
           // Case 2: Redundant definition. Merge unique child records (conjugations and examples).
           console.log(`  - Redundant definition: "${defUpper.english}". Merging child records...`);
 
+          // Merge definition fields when they are redundant
+          let mergedDialect = matchingDefLower.dialect;
+          if (defUpper.dialect && matchingDefLower.dialect !== defUpper.dialect) {
+            if (!matchingDefLower.dialect) {
+              mergedDialect = defUpper.dialect;
+            } else if (!matchingDefLower.dialect.includes(defUpper.dialect) && !defUpper.dialect.includes(matchingDefLower.dialect)) {
+              mergedDialect = `${matchingDefLower.dialect} / ${defUpper.dialect}`;
+            }
+          }
+
+          let mergedSynonyms = matchingDefLower.synonyms;
+          if (defUpper.synonyms && defUpper.synonyms.trim() !== '') {
+            if (!matchingDefLower.synonyms || matchingDefLower.synonyms.trim() === '') {
+              mergedSynonyms = defUpper.synonyms;
+            } else if (matchingDefLower.synonyms.toLowerCase() !== defUpper.synonyms.toLowerCase()) {
+              const partsKeep = matchingDefLower.synonyms.split(/[\/;,\.]+/).map(p => p.trim()).filter(Boolean);
+              const partsMerge = defUpper.synonyms.split(/[\/;,\.]+/).map(p => p.trim()).filter(Boolean);
+              const allParts = Array.from(new Set([...partsKeep, ...partsMerge]));
+              mergedSynonyms = allParts.join('; ');
+            }
+          }
+
+          let mergedTagalog = matchingDefLower.tagalog;
+          if (defUpper.tagalog && defUpper.tagalog.trim() !== '') {
+            if (!matchingDefLower.tagalog || matchingDefLower.tagalog.trim() === '') {
+              mergedTagalog = defUpper.tagalog;
+            } else if (matchingDefLower.tagalog.toLowerCase() !== defUpper.tagalog.toLowerCase()) {
+              const partsKeep = matchingDefLower.tagalog.split(/[\/;,\.]+/).map(p => p.trim()).filter(Boolean);
+              const partsMerge = defUpper.tagalog.split(/[\/;,\.]+/).map(p => p.trim()).filter(Boolean);
+              const allParts = Array.from(new Set([...partsKeep, ...partsMerge]));
+              mergedTagalog = allParts.join('; ');
+            }
+          }
+
+          let mergedNotes = matchingDefLower.notes;
+          if (defUpper.notes && defUpper.notes.trim() !== '') {
+            if (!matchingDefLower.notes || matchingDefLower.notes.trim() === '') {
+              mergedNotes = defUpper.notes;
+            } else if (matchingDefLower.notes.toLowerCase() !== defUpper.notes.toLowerCase()) {
+              mergedNotes = `${matchingDefLower.notes.trim()}; ${defUpper.notes.trim()}`;
+            }
+          }
+
+          await prisma.definition.update({
+            where: { id: matchingDefLower.id },
+            data: {
+              dialect: mergedDialect,
+              synonyms: mergedSynonyms,
+              tagalog: mergedTagalog,
+              notes: mergedNotes
+            }
+          });
+
           // 1. Merge example sentences
           for (const exUpper of defUpper.exampleSentences) {
             const hasIdenticalExample = matchingDefLower.exampleSentences.some(ex => 
@@ -156,15 +209,45 @@ async function main() {
 
           // 2. Merge conjugations (unique on definitionId, tense, focus)
           for (const conjUpper of defUpper.conjugations) {
-            const hasIdenticalConjugation = matchingDefLower.conjugations.some(c => 
+            const matchingConjLower = matchingDefLower.conjugations.find(c => 
               matchLower(c.tense, conjUpper.tense) && matchLower(c.focus, conjUpper.focus)
             );
 
-            if (!hasIdenticalConjugation) {
+            if (!matchingConjLower) {
               console.log(`    * Re-linking unique conjugation: tense="${conjUpper.tense}", focus="${conjUpper.focus}"`);
               await prisma.conjugation.update({
                 where: { id: conjUpper.id },
                 data: { definitionId: matchingDefLower.id }
+              });
+              matchingDefLower.conjugations.push(conjUpper);
+            } else {
+              const formKeep = (matchingConjLower.form || '').trim();
+              const formMerge = (conjUpper.form || '').trim();
+
+              if (formKeep.toLowerCase() !== formMerge.toLowerCase() && formMerge !== '') {
+                let mergedForm = formKeep;
+                if (!formKeep) {
+                  mergedForm = formMerge;
+                } else {
+                  const partsKeep = formKeep.split(/[\/;,\.]+/).map(p => p.trim()).filter(Boolean);
+                  const partsMerge = formMerge.split(/[\/;,\.]+/).map(p => p.trim()).filter(Boolean);
+                  const allParts = Array.from(new Set([...partsKeep, ...partsMerge]));
+                  mergedForm = allParts.join('; ');
+                }
+
+                await prisma.conjugation.update({
+                  where: { id: matchingConjLower.id },
+                  data: { form: mergedForm }
+                });
+                matchingConjLower.form = mergedForm;
+                console.log(`    * Merged conjugation forms side-by-side: "${formKeep}" + "${formMerge}" ➡️ "${mergedForm}"`);
+              } else {
+                console.log(`    * Removed redundant duplicate conjugation with identical form: "${formKeep}"`);
+              }
+
+              // Always delete the redundant conjugation to satisfy constraint
+              await prisma.conjugation.delete({
+                where: { id: conjUpper.id }
               });
             }
           }

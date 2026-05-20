@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
+import Button from './ui/Button';
 
 type SearchResult = {
   bikol: string;
@@ -158,6 +159,7 @@ export default function SearchBar({ initialDictionary = [] }: SearchBarProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
+      setIsLoading(true);
       setIsOpen(false);
       router.push(`/browse?q=${encodeURIComponent(query)}`);
     }
@@ -217,12 +219,13 @@ export default function SearchBar({ initialDictionary = [] }: SearchBarProps) {
           }`}
           autoComplete="off"
         />
-        <button 
+        <Button 
           type="submit" 
-          className="absolute right-2 top-1/2 -translate-y-1/2 px-6 py-2 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white rounded-xl font-semibold transition-all duration-200 shadow-lg shadow-blue-500/20"
+          isLoading={isLoading}
+          className="absolute right-2 top-1/2 -translate-y-1/2 rounded-xl h-[calc(100%-1rem)]"
         >
           Search
-        </button>
+        </Button>
       </form>
 
       {/* Autocomplete Dropdown */}

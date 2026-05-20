@@ -1,3 +1,8 @@
+import { fileURLToPath } from 'node:url';
+import { dirname, resolve } from 'node:path';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Only use static export for Capacitor mobile builds
@@ -7,7 +12,9 @@ const nextConfig = {
     unoptimized: true,
   },
   
-  turbopack: {},
+  turbopack: {
+    root: resolve(__dirname, '.'),
+  },
 };
 
 export default nextConfig; // Changed from module.exports

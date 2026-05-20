@@ -52,7 +52,7 @@ Built for the diaspora and local learners alike.
 
 ## 🤖 Agentic Architecture
 
-This repository is maintained and governed by specialized AI subagents (located in `.antigravitycli/agents/`):
+This repository is maintained and governed by specialized AI subagents (located in `.gemini/agents/`):
 - **Archive Designer:** Enforces the "Living Archive" design system, Tailwind v4, and WCAG AA compliance.
 - **Data Specialist:** Manages Python scrapers, async rate-limiting (Tenacity/aiolimiter), and Qwen enrichment prompts.
 - **Bikol Expert:** Ensures linguistic integrity, semantic contrast, and a dignified tone.
