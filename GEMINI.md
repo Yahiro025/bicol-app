@@ -1,5 +1,9 @@
 
 ---
+### 🤖 SUBAGENT COMMANDS
+This repository uses specific slash commands to trigger specialized subagents. You MUST delegate to the appropriate agent when these commands are used:
+- `\learn [prompt]`: Activates the **learn** agent. Use this for vague bugs, weird behavior, or when the system makes a mistake. The agent will attempt to reproduce, fix, and learn from the issue.
+---
 ### 🌐 GLOBAL SKILL UTILIZATION DIRECTIVE
 Whenever you, or any invoked subagent (\`/command\`), are generating code, designing UI, or making architectural decisions, you MUST:
 1. **Check Installed Skills First**: Before using generic knowledge, query your available Gemini CLI skills/extensions (e.g., impeccable, kowalski, vercel-labs). 
