@@ -222,7 +222,7 @@ export default function SearchBar({ initialDictionary = [] }: SearchBarProps) {
         <Button 
           type="submit" 
           isLoading={isLoading}
-          className="absolute right-2 top-1/2 -translate-y-1/2 rounded-xl h-[calc(100%-1rem)]"
+          className="absolute right-1.5 top-1.5 bottom-1.5 px-6 rounded-xl text-sm"
         >
           Search
         </Button>
