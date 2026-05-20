@@ -1,7 +1,20 @@
 export default function BrowseLoading() {
   return (
-    <main className="min-h-screen bg-zinc-950 text-white p-8">
-      <div className="max-w-6xl mx-auto">
+    <main className="min-h-screen bg-zinc-950 text-white p-8 relative">
+      {/* Explicit Loading Indicator */}
+      <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative">
+            <div className="w-12 h-12 border-4 border-blue-500/20 rounded-full animate-pulse" />
+            <div className="absolute inset-0 w-12 h-12 border-t-4 border-blue-500 rounded-full animate-spin" />
+          </div>
+          <p className="text-zinc-500 text-xs font-black uppercase tracking-[0.2em] animate-pulse">
+            Accessing Archive...
+          </p>
+        </div>
+      </div>
+
+      <div className="max-w-6xl mx-auto opacity-50 blur-[2px]">
         {/* Title Skeleton */}
         <div className="h-9 w-64 bg-zinc-900 rounded-lg animate-pulse mb-6" />
         
@@ -33,10 +46,6 @@ export default function BrowseLoading() {
                   <div className="h-7 w-48 bg-zinc-800 rounded-md" />
                   <div className="h-5 w-64 bg-zinc-800/50 rounded-md" />
                   <div className="h-3 w-32 bg-zinc-800/30 rounded-md mt-2" />
-                </div>
-                <div className="space-y-2">
-                  <div className="h-5 w-16 bg-zinc-800 rounded ml-auto" />
-                  <div className="h-5 w-20 bg-zinc-800/50 rounded ml-auto" />
                 </div>
               </div>
             </div>

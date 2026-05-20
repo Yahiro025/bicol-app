@@ -1,33 +1,12 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useTransition } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import Button from './ui/Button';
 
-type Word = {
-  bikol: string;
-  english: string;
-  tagalog?: string | null;
-  category?: string | null;
-  pos?: string | null;
-};
-
-const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-
-const listVariants = {
-  visible: {
-    transition: {
-      staggerChildren: 0.05
-    }
-  }
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 30 } }
-} as const; // <--- ADD 'as const' HERE
+// ... (Word type and variants)
 
 export default function BrowseClient({
   initialWords,
@@ -43,6 +22,7 @@ export default function BrowseClient({
   initialQuery: string;
 }) {
   const router = useRouter();
+  const [isPending, startTransition] = useTransition();
   
   const [query, setQuery] = useState(defaultQuery);
   const [selectedLetter, setSelectedLetter] = useState(defaultLetter);
@@ -52,21 +32,25 @@ export default function BrowseClient({
 
   // Client-side filtering logic
   useEffect(() => {
-    const filtered = initialWords.filter((word) => {
-      const matchesQuery = !query || 
-        word.bikol.toLowerCase().includes(query.toLowerCase()) ||
-        word.english.toLowerCase().includes(query.toLowerCase()) ||
-        (word.tagalog && word.tagalog.toLowerCase().includes(query.toLowerCase()));
-      
-      const matchesLetter = !selectedLetter || 
-        word.bikol.toLowerCase().startsWith(selectedLetter.toLowerCase());
-      
-      const matchesCategory = !selectedCategory || 
-        word.category === selectedCategory;
+    startTransition(() => {
+      const filtered = initialWords.filter((word) => {
+        const matchesQuery = !query || 
+          word.bikol.toLowerCase().includes(query.toLowerCase()) ||
+          word.english.toLowerCase().includes(query.toLowerCase()) ||
+          (word.tagalog && word.tagalog.toLowerCase().includes(query.toLowerCase()));
+        
+        const matchesLetter = !selectedLetter || 
+          word.bikol.toLowerCase().startsWith(selectedLetter.toLowerCase());
+        
+        const matchesCategory = !selectedCategory || 
+          word.category === selectedCategory;
 
-      return matchesQuery && matchesLetter && matchesCategory;
+        return matchesQuery && matchesLetter && matchesCategory;
+      });
+      setFilteredWords(filtered);
     });
-    setFilteredWords(filtered);
+
+    // ... (rest of useEffect)
 
     // Sync URL params without triggering a full server re-render if possible
     // We use router.replace with { scroll: false } which is the Next.js way, 
@@ -116,7 +100,7 @@ export default function BrowseClient({
 
   return (
     <div>
-      <div className="mb-8 relative max-w-2xl">
+      <div className="mb-8 relative max-w-2xl group">
         <input
           type="text"
           value={query}
@@ -124,14 +108,19 @@ export default function BrowseClient({
           placeholder={`Search dictionary...`}
           className="w-full px-8 py-4 bg-zinc-900 border border-zinc-800 rounded-full text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-950 text-lg transition-all duration-300 focus:bg-zinc-800/50"
         />
-        {query && (
-          <button 
-            onClick={() => setQuery('')}
-            className="absolute right-6 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white transition-colors p-1"
-          >
-            ✕
-          </button>
-        )}
+        <div className="absolute right-6 top-1/2 -translate-y-1/2 flex items-center gap-3">
+          {isPending && (
+            <div className="w-4 h-4 border-2 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
+          )}
+          {query && (
+            <button 
+              onClick={() => setQuery('')}
+              className="text-zinc-500 hover:text-white transition-colors p-1"
+            >
+              ✕
+            </button>
+          )}
+        </div>
       </div>
 
       {/* 2. TOGGLE FILTER BUTTON & ACTIVE FILTER PILLS */}
@@ -227,18 +216,38 @@ export default function BrowseClient({
       </AnimatePresence>
 
       {/* 4. RESULTS COUNT & LIST */}
-      <div className="text-sm font-medium text-zinc-500 mb-6 flex items-center gap-2">
-        <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-        Found {filteredWords.length} result{filteredWords.length !== 1 ? 's' : ''}
-      </div>
+      <div className="relative min-h-[400px]">
+        <AnimatePresence>
+          {isPending && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 z-50 bg-zinc-950/40 backdrop-blur-[2px] flex flex-col items-center pt-20"
+            >
+              <div className="relative">
+                <div className="w-12 h-12 border-4 border-blue-500/20 rounded-full animate-pulse" />
+                <div className="absolute inset-0 w-12 h-12 border-t-4 border-blue-500 rounded-full animate-spin" />
+              </div>
+              <p className="mt-4 text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] animate-pulse">
+                Filtering Archive...
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-      <motion.div 
-        variants={listVariants}
-        initial="hidden"
-        animate="visible"
-        key={`${selectedLetter}-${selectedCategory}`}
-        className="space-y-4"
-      >
+        <div className="text-sm font-medium text-zinc-500 mb-6 flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+          Found {filteredWords.length} result{filteredWords.length !== 1 ? 's' : ''}
+        </div>
+
+        <motion.div 
+          variants={listVariants}
+          initial="hidden"
+          animate="visible"
+          key={`${selectedLetter}-${selectedCategory}`}
+          className="space-y-4"
+        >
         {filteredWords.map((word) => (
           <motion.div key={word.bikol} variants={itemVariants}>
             <Link
@@ -275,6 +284,7 @@ export default function BrowseClient({
            </motion.div>
         )}
       </motion.div>
+      </div>
     </div>
   );
 }
