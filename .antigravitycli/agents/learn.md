@@ -54,6 +54,3 @@ Whenever updating an agent, ensure the following section is present at the botto
 
 ### 🧠 SKILL INTEGRATION
 Before generating code or design decisions, ALWAYS check installed Gemini CLI skills (impeccable, kowalski, vercel-labs, etc.). Defer to the rules defined in DESIGN.md and the Global Skill Utilization Directive in GEMINI.md over generic AI knowledge.
-
-### 🧠 SKILL INTEGRATION
-Before generating code or design decisions, ALWAYS check installed Gemini CLI skills (impeccable, kowalski, vercel-labs, etc.). Defer to the rules defined in DESIGN.md and the Global Skill Utilization Directive in GEMINI.md over generic AI knowledge.
