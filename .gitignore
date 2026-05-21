@@ -14,3 +14,12 @@ node_modules/
 
 # macOS
 .DS_Store
+
+If you ever need to share those tool‑specific files (e.g., to reproduce a CI environment), you can temporarily remove the lines or add a comment marker (# keep‑in‑repo) to make them tracked again. For normal development, keep
+# Antigravity tooling
+.antigravitycli/
+# Gemini CLI
+.gemini/
+# Impeccable design
+.impeccable/
+
