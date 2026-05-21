@@ -48,32 +48,70 @@ export default function BrowseClient({
   const [query, setQuery] = useState(defaultQuery);
   const [selectedLetter, setSelectedLetter] = useState(defaultLetter);
   const [selectedCategory, setSelectedCategory] = useState(defaultCategory);
-  const [filteredWords, setFilteredWords] = useState(initialWords);
+  const [words, setWords] = useState<Word[]>(initialWords);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(initialWords.length === 50);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [areFiltersVisible, setAreFiltersVisible] = useState(false);
 
-  // Client-side filtering logic
-  useEffect(() => {
-    startTransition(() => {
-      const filtered = initialWords.filter((word) => {
-        const matchesQuery = !query || 
-          word.bikol.toLowerCase().includes(query.toLowerCase()) ||
-          word.english.toLowerCase().includes(query.toLowerCase()) ||
-          (word.tagalog && word.tagalog.toLowerCase().includes(query.toLowerCase()));
-        
-        const matchesLetter = !selectedLetter || 
-          word.bikol.toLowerCase().startsWith(selectedLetter.toLowerCase());
-        
-        const matchesCategory = !selectedCategory || 
-          word.category === selectedCategory;
+  // Intersection Observer for infinite scroll
+  const observerTarget = useCallback((node: HTMLDivElement | null) => {
+    if (!node || isLoadingMore || !hasMore) return;
 
-        return matchesQuery && matchesLetter && matchesCategory;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          fetchMoreWords();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [isLoadingMore, hasMore]);
+
+  const fetchMoreWords = async (isReset = false) => {
+    const currentPage = isReset ? 0 : page;
+    const limit = 50;
+    
+    setIsLoadingMore(true);
+    try {
+      const params = new URLSearchParams({
+        page: currentPage.toString(),
+        limit: limit.toString(),
       });
-      setFilteredWords(filtered);
-    });
+      if (query) params.set('q', query);
+      if (selectedLetter) params.set('letter', selectedLetter);
+      if (selectedCategory) params.set('category', selectedCategory);
 
-    // Sync URL params without triggering a full server re-render if possible
-    // We use router.replace with { scroll: false } which is the Next.js way, 
-    // but to avoid the server component re-running we could also use window.history
+      const response = await fetch(`/api/browse?${params.toString()}`);
+      const newWords = await response.json();
+
+      if (isReset) {
+        setWords(newWords);
+        setPage(1);
+      } else {
+        setWords(prev => [...prev, ...newWords]);
+        setPage(prev => prev + 1);
+      }
+      
+      setHasMore(newWords.length === limit);
+    } catch (error) {
+      console.error('Error fetching more words:', error);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
+
+  // Reset and fetch when filters change
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      startTransition(() => {
+        fetchMoreWords(true);
+      });
+    }, 300); // Debounce search
+
     const params = new URLSearchParams();
     if (query) params.set('q', query);
     if (selectedLetter) params.set('letter', selectedLetter);
@@ -81,7 +119,9 @@ export default function BrowseClient({
     
     const newUrl = `/browse${params.toString() ? `?${params.toString()}` : ''}`;
     window.history.replaceState({ ...window.history.state, as: newUrl, url: newUrl }, '', newUrl);
-  }, [query, selectedLetter, selectedCategory, initialWords]);
+
+    return () => clearTimeout(timer);
+  }, [query, selectedLetter, selectedCategory]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
@@ -257,7 +297,7 @@ export default function BrowseClient({
 
         <div className="text-sm font-medium text-zinc-500 mb-6 flex items-center gap-2">
           <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-          Found {filteredWords.length} result{filteredWords.length !== 1 ? 's' : ''}
+          Found {words.length} result{words.length !== 1 ? 's' : ''}
         </div>
 
         <motion.div 
@@ -267,7 +307,7 @@ export default function BrowseClient({
           key={`${selectedLetter}-${selectedCategory}`}
           className="space-y-4"
         >
-        {filteredWords.map((word) => (
+        {words.map((word) => (
           <motion.div key={word.bikol} variants={itemVariants}>
             <Link
               href={`/word/${encodeURIComponent(word.bikol)}`}
@@ -297,7 +337,21 @@ export default function BrowseClient({
             </Link>
           </motion.div>
         ))}
-        {filteredWords.length === 0 && (
+        
+        {/* Infinite Scroll Trigger */}
+        <div ref={observerTarget} className="h-20 flex items-center justify-center">
+          {isLoadingMore && (
+            <div className="flex flex-col items-center gap-2">
+              <div className="w-6 h-6 border-2 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
+              <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Loading more...</p>
+            </div>
+          )}
+          {!hasMore && words.length > 0 && (
+            <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">End of Archive</p>
+          )}
+        </div>
+
+        {words.length === 0 && !isLoadingMore && (
            <motion.div variants={itemVariants} className="text-center text-zinc-500 py-12">
              {query || hasActiveFilters ? `No matches found. Try adjusting your search or filters.` : `No words found.`}
            </motion.div>
