@@ -28,14 +28,22 @@ export const GrammarHighlight: React.FC<GrammarHighlightProps> = ({ text }) => {
         const lowerPart = part.toLowerCase();
         if (lowerPart === 'si') {
           return (
-            <strong key={index} className="text-blue-500 font-bold">
+            <strong 
+              key={index} 
+              className="text-blue-500 font-black cursor-help hover:bg-blue-500/10 rounded px-0.5 transition-colors"
+              title="Actor Marker (Si): Indicates the doer or the topic of the sentence."
+            >
               {part}
             </strong>
           );
         }
         if (lowerPart === 'ni') {
           return (
-            <strong key={index} className="text-orange-500 font-bold">
+            <strong 
+              key={index} 
+              className="text-orange-500 font-black cursor-help hover:bg-orange-500/10 rounded px-0.5 transition-colors"
+              title="Object/Possessive Marker (Ni): Indicates the object of the action or possession."
+            >
               {part}
             </strong>
           );

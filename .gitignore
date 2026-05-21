@@ -26,3 +26,4 @@ If you ever need to share those tool‑specific files (e.g., to reproduce a CI e
 # Scrapers
 ai_wiktionary_scraper.py
 wiktionary_scraper.py
+

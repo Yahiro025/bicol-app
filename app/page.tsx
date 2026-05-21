@@ -115,7 +115,7 @@ export default async function HomePage() {
                   <p className="text-zinc-400 text-sm">See how verbs like <span className="text-purple-400 italic">bakal</span> change across tenses.</p>
                 </Link>
 
-                <div className="group p-6 bg-white/5 hover:bg-white/10 border border-white/10 rounded-3xl transition-all hover:-translate-y-1 active:scale-[0.98] text-left cursor-pointer">
+                <Link href="/word/bakal" className="group p-6 bg-white/5 hover:bg-white/10 border border-white/10 rounded-3xl transition-all hover:-translate-y-1 active:scale-[0.98] text-left">
                   <div className="w-12 h-12 bg-emerald-500/20 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                     <span className="text-2xl">🎨</span>
                   </div>
@@ -127,7 +127,7 @@ export default async function HomePage() {
                       <span className="px-2 py-0.5 bg-orange-500/10 text-orange-500 text-[10px] font-black uppercase rounded border border-orange-500/20">NI (OBJECT)</span>
                     </div>
                   </div>
-                </div>
+                </Link>
               </div>
             
               {/* Stats */}
