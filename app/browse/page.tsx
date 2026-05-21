@@ -34,11 +34,17 @@ export default async function BrowsePage({
   try {
     // Initial fetch of words for SSR (SEO and fast first paint)
     // We only fetch 50 to keep the initial HTML small and fast
-    words = await prisma.word.findMany({
+    const rawWords = await prisma.word.findMany({
       where: whereClause,
       orderBy: { bikol: 'asc' },
       take: 50,
     });
+
+    // BigInt serialization fix for Next.js
+    words = rawWords.map(w => ({
+      ...w,
+      id: Number(w.id)
+    }));
 
     // Fetch distinct categories for the filter buttons
     const result = await prisma.word.findMany({

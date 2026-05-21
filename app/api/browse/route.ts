@@ -33,7 +33,13 @@ export async function GET(request: Request) {
       take: limit,
     });
 
-    return NextResponse.json(words);
+    // BigInt serialization fix
+    const serializedWords = words.map(w => ({
+      ...w,
+      id: Number(w.id)
+    }));
+
+    return NextResponse.json(serializedWords);
   } catch (error: any) {
     console.error('Browse API Error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
