@@ -60,7 +60,7 @@ export default function BrowseClient({
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore) {
+        if (entries[0]?.isIntersecting && hasMore) {
           fetchMoreWords();
         }
       },
