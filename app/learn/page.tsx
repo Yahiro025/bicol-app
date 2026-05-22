@@ -10,7 +10,41 @@ import type { SubstitutionDrill as DrillType } from "@/lib/types/learn";
 import Link from "next/link";
 
 const MOCK_DRILLS: DrillType[] = [
-  // ... (mock drills stay same)
+  {
+    id: "1",
+    baseSentence: "An payong nasa irarom kan lamisa.",
+    cue: "tukawan",
+    expectedAnswer: "An payong nasa irarom kan tukawan.",
+    explanation: "In Bikol, location phrases follow the structure [Subject] [Linker] [Location Word] [Noun].",
+  },
+  {
+    id: "2",
+    baseSentence: "Nagduduman si Pedro sa saod.",
+    cue: "Maria",
+    expectedAnswer: "Nagduduman si Maria sa saod.",
+    explanation: "Proper names are preceded by the personal marker 'si'.",
+  },
+  {
+    id: "3",
+    baseSentence: "Magayon an saiyang harong.",
+    cue: "dakula",
+    expectedAnswer: "Dakula an saiyang harong.",
+    explanation: "Sentences often start with the adjective (Predicate-Initial order).",
+  },
+  {
+    id: "4",
+    baseSentence: "Nagbakal ako nin kakanon.",
+    cue: "tinapay",
+    expectedAnswer: "Nagbakal ako nin tinapay.",
+    explanation: "Objects of actor-focus verbs are marked with 'nin'.",
+  },
+  {
+    id: "5",
+    baseSentence: "Nagbakal ako nin tinapay.",
+    cue: "sira",
+    expectedAnswer: "Nagbakal ako nin sira.",
+    explanation: "'Sira' (fish) is a common object in Bikol cuisine.",
+  }
 ];
 
 export default function LearnPage() {
