@@ -11,22 +11,28 @@ export default async function WordDetail({ params }: { params: Promise<{ bikol: 
 
   try {
     // 1. Try to find in the normalized Root table (Mintz)
-    const root = await prisma.root.findFirst({
-      where: { 
-        bikol: {
-          equals: bikolWord,
-          mode: 'insensitive'
-        }
-      },
-      include: {
-        definitions: {
-          include: {
-            conjugations: true,
-            exampleSentences: true
+    let root = null;
+    try {
+      root = await prisma.root.findFirst({
+        where: { 
+          bikol: {
+            equals: bikolWord,
+            mode: 'insensitive'
+          }
+        },
+        include: {
+          definitions: {
+            include: {
+              conjugations: true,
+              exampleSentences: true
+            }
           }
         }
-      }
-    });
+      });
+    } catch (dbError) {
+      console.error('Mintz Root table not ready or schema mismatch:', dbError);
+      // Proceed to fallback
+    }
 
     if (root) {
       // 1b. Fallback: If verb has affixPair but no conjugations, generate them on-the-fly
