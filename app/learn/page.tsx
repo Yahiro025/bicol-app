@@ -152,8 +152,10 @@ export default function LearnPage() {
           
           {activePhase === 1 ? (
             <SubstitutionDrill drills={MOCK_DRILLS} onComplete={handlePhase1Complete} />
-          ) : (
+          ) : activePhase === 2 ? (
             <TransformationChallenge onComplete={handlePhase2Complete} />
+          ) : (
+            <AppliedFluency onComplete={handlePhase3Complete} />
           )}
         </section>
 
@@ -197,11 +199,20 @@ export default function LearnPage() {
               <p className="text-zinc-400 text-sm leading-relaxed">Change tenses and focus patterns (Actor vs Object) dynamically.</p>
             </button>
             
-            <div className="p-8 bg-zinc-900/50 border border-white/5 rounded-[32px] space-y-4 opacity-70">
-              <div className="w-10 h-10 bg-zinc-800 text-zinc-500 rounded-full flex items-center justify-center font-black">3</div>
+            <button 
+              onClick={() => setActivePhase(3)}
+              className={`text-left p-8 border rounded-[32px] space-y-4 transition-all ${
+                activePhase === 3 
+                ? 'bg-blue-500/10 border-blue-500/40' 
+                : 'bg-zinc-900/50 border-white/5 hover:border-white/10'
+              }`}
+            >
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black ${
+                activePhase === 3 ? 'bg-blue-500 text-white' : 'bg-zinc-800 text-zinc-500'
+              }`}>3</div>
               <h3 className="text-xl font-bold text-white">Response</h3>
               <p className="text-zinc-400 text-sm leading-relaxed">Engage in functional dialogue based on visual cues and prompts.</p>
-            </div>
+            </button>
           </div>
         </section>
 

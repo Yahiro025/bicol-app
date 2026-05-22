@@ -27,6 +27,37 @@ export type SubstitutionDrill = {
   explanation?: string;
 };
 
+export type DialogueMessage = {
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  timestamp: number;
+};
+
+export type DialogueScenario = {
+  id: string;
+  title: string;
+  description: string;
+  goal: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  visualCue: string; // Icon name from lucide-react
+  vocabulary: string[]; // Specific words to encourage using
+};
+
+export type DialogueSession = {
+  id: string;
+  scenarioId: string;
+  messages: DialogueMessage[];
+  status: 'active' | 'completed';
+  goalAchieved: boolean;
+};
+
+export type LinguisticAudit = {
+  comprehension: string;
+  focus: string;
+  particles: string;
+  score: number; // 1-100
+};
+
 export type QuizSession = {
   questions: QuizQuestion[];
 };

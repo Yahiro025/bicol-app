@@ -1,5 +1,5 @@
 import Groq from 'groq-sdk';
-import type { Word, QuizQuestion } from './types/learn';
+import type { Word, QuizQuestion, DialogueMessage, DialogueScenario, LinguisticAudit } from './types/learn';
 
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
@@ -118,6 +118,95 @@ export async function generateSubstitutionDrill(sentence: string) {
     return JSON.parse(content);
   } catch (error) {
     console.error('Substitution Drill generation error:', error);
+    throw error;
+  }
+}
+
+/**
+ * Processes a dialogue message for Phase 3: Applied Fluency.
+ */
+export async function processDialogue(
+  scenario: DialogueScenario,
+  messages: DialogueMessage[]
+): Promise<{ message: string; goalAchieved: boolean }> {
+  const systemPrompt = `
+    You are a patient and fluent speaker of Central Bikol. We are participating in a conversation practice.
+    
+    SCENARIO: ${scenario.title}
+    DESCRIPTION: ${scenario.description}
+    GOAL: ${scenario.goal}
+    VOCABULARY TO ENCOURAGE: ${scenario.vocabulary.join(', ')}
+    
+    CONSTRAINTS:
+    1. Respond naturally in Central Bikol. Use a formal and dignified tone.
+    2. Do NOT offer grammatical corrections or translations during the flow of conversation.
+    3. If the user makes a mistake that prevents comprehension, ask for clarification in Bikol.
+    4. Keep your responses concise and functional, as if you are the other person in the scenario.
+    5. Assess if the user has achieved the GOAL.
+    
+    Output JSON format:
+    {
+      "message": "Your response in Bikol",
+      "goalAchieved": boolean
+    }
+  `;
+
+  try {
+    const content = await getCompletion([
+      { role: 'system', content: systemPrompt },
+      ...messages.map(m => ({ role: m.role, content: m.content })),
+    ], true); // true for JSON mode
+
+    if (!content) throw new Error('Failed to process dialogue');
+    return JSON.parse(content);
+  } catch (error) {
+    console.error('Process Dialogue error:', error);
+    throw error;
+  }
+}
+
+/**
+ * Performs a post-session Linguistic Audit.
+ */
+export async function evaluateDialogue(
+  scenario: DialogueScenario,
+  messages: DialogueMessage[]
+): Promise<LinguisticAudit> {
+  const prompt = `
+    Perform a 'Linguistic Audit' on the following Bikol dialogue session.
+    
+    SCENARIO: ${scenario.title}
+    GOAL: ${scenario.goal}
+    
+    TRANSCRIPT:
+    ${messages.map(m => `${m.role.toUpperCase()}: ${m.content}`).join('\n')}
+    
+    CRITERIA:
+    1. COMPREHENSION: Was the intended message successfully conveyed?
+    2. FOCUS: Did the user correctly use Bikol focus affixes (e.g., Mag-, -on, -an) based on Mintz's grammar?
+    3. PARTICLES: Were the case markers and particles (e.g., si, ni, ki, nin) used appropriately?
+    
+    Return a detailed JSON report with a score from 1-100.
+    
+    JSON SCHEMA:
+    {
+      "comprehension": "string",
+      "focus": "string",
+      "particles": "string",
+      "score": number
+    }
+  `;
+
+  try {
+    const content = await getCompletion([
+      { role: 'system', content: 'You are a Bicolano Lexicographer and Language Tutor. Provide critical but constructive feedback.' },
+      { role: 'user', content: prompt },
+    ], true); // true for JSON mode
+
+    if (!content) throw new Error('Failed to evaluate dialogue');
+    return JSON.parse(content);
+  } catch (error) {
+    console.error('Evaluate Dialogue error:', error);
     throw error;
   }
 }

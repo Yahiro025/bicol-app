@@ -128,3 +128,17 @@ model UserFlashcard {
 
   @@map("user_flashcards")
 }
+
+model DialogueScenario {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  goal        String
+  difficulty  String   @default("beginner")
+  visualCue   String
+  vocabulary  String[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("dialogue_scenarios")
+}
