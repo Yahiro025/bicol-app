@@ -5,13 +5,18 @@ import type { DialogueMessage, DialogueScenario } from '@/lib/types/learn';
 
 export async function GET() {
   try {
+    // Check if table exists/is accessible
     const scenarios = await prisma.dialogueScenario.findMany({
       orderBy: { createdAt: 'desc' },
+    }).catch(e => {
+      console.error('Prisma DialogueScenario error:', e);
+      return []; // Return empty array to trigger mock fallback in frontend
     });
-    return NextResponse.json(scenarios);
+    
+    return NextResponse.json(scenarios || []);
   } catch (error: any) {
-    console.error('Fetch Scenarios error:', error);
-    return NextResponse.json({ error: 'Failed to fetch scenarios' }, { status: 500 });
+    console.error('Fetch Scenarios global error:', error);
+    return NextResponse.json([], { status: 200 }); // Graceful fallback
   }
 }
 

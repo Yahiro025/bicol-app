@@ -40,9 +40,13 @@ export default function AppliedFluency({ onComplete }: { onComplete: () => void 
   const fetchScenarios = async () => {
     try {
       const res = await fetch("/api/learn/dialogue");
+      if (!res.ok) {
+        throw new Error(`API error: ${res.status}`);
+      }
       const data = await res.json();
-      // If no scenarios in DB, provide mocks for now
-      if (data.length === 0) {
+      
+      // If no scenarios in DB, provide mocks
+      if (!data || data.length === 0) {
         setScenarios([
           {
             id: "mock-1",
@@ -67,7 +71,19 @@ export default function AppliedFluency({ onComplete }: { onComplete: () => void 
         setScenarios(data);
       }
     } catch (error) {
-      console.error("Failed to fetch scenarios:", error);
+      console.error("Failed to fetch scenarios, using defaults:", error);
+      // Fallback to mocks on error to prevent total page failure
+      setScenarios([
+        {
+          id: "mock-1",
+          title: "Sa Saod (At the Market)",
+          description: "You are at the local market in Naga. Your goal is to buy fresh fish (sira) and vegetables (gulay).",
+          goal: "Successfully purchase fish and vegetables after asking for the price.",
+          difficulty: "beginner",
+          visualCue: "ShoppingBag",
+          vocabulary: ["pira", "bakal", "sira", "gulay", "mahal", "barato"]
+        }
+      ]);
     }
   };
 
