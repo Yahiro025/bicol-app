@@ -33,10 +33,19 @@ export default function WordClientPage({ word, isNormalized }: { word: any, isNo
   // Check if we should show VerbConjugator
   const isVerb = pos?.toUpperCase() === 'VERB';
   const hasAffixPair = isNormalized && word.definitions.some((d: any) => d.affixPair && d.affixPair !== 'UNKNOWN');
-  const showConjugator = isVerb || hasAffixPair;
+  
+  // Defensive check for legacy words: if it ends in -on, -an, or starts with mag- and has no POS, treat as potential verb
+  const looksLikeVerb = !isNormalized && (
+    bikol.toLowerCase().endsWith('on') || 
+    bikol.toLowerCase().endsWith('an') || 
+    bikol.toLowerCase().startsWith('mag') ||
+    isVerb
+  );
+
+  const showConjugator = isVerb || hasAffixPair || looksLikeVerb;
 
   // Prepare affix groups for VerbConjugator
-  const affixGroups = isNormalized 
+  let affixGroups = isNormalized 
     ? word.definitions
         .filter((d: any) => d.affixPair && d.affixPair !== 'UNKNOWN')
         .map((d: any) => ({
@@ -56,6 +65,31 @@ export default function WordClientPage({ word, isNormalized }: { word: any, isNo
             }))
         }))
     : [];
+
+  // Fallback for legacy verbs like "bataon"
+  if (affixGroups.length === 0 && looksLikeVerb) {
+    let inferredAffix = "UNKNOWN";
+    let inferredFocus = "UNKNOWN";
+
+    if (bikol.toLowerCase().endsWith('on')) {
+      inferredAffix = "-ON / MAG-";
+      inferredFocus = "OBJECT";
+    } else if (bikol.toLowerCase().endsWith('an')) {
+      inferredAffix = "-AN / MAG-";
+      inferredFocus = "REFERENTIAL";
+    } else if (bikol.toLowerCase().startsWith('mag')) {
+      inferredAffix = "MAG- / -ON";
+      inferredFocus = "ACTOR";
+    }
+
+    if (inferredAffix !== "UNKNOWN") {
+      affixGroups = [{
+        affixPair: inferredAffix,
+        focusType: inferredFocus,
+        conjugations: [] // VerbConjugator will handle generation if empty
+      }];
+    }
+  }
 
   useEffect(() => {
     // Load initial preference
