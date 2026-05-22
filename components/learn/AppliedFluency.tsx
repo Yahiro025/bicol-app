@@ -76,7 +76,7 @@ export default function AppliedFluency({ onComplete }: { onComplete: () => void 
     setMessages([
       {
         role: "assistant",
-        content: `Marhay na aldaw! Yaon ako sa ${(scenario.title ?? "").split('(')[0].trim()}. Ano an maitatabang ko saimo?`,
+        content: `Marhay na aldaw! Yaon ako sa ${(scenario?.title ?? "").split('(')[0]?.trim() ?? ""}. Ano an maitatabang ko saimo?`,
         timestamp: Date.now()
       }
     ]);
