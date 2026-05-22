@@ -62,29 +62,30 @@ export default function TransformationChallenge({ onComplete }: TransformationCh
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (showAnswer) return;
+    if (showAnswer || !userInput.trim()) return;
 
+    console.log('Validating answer for index:', currentIdx, 'Input:', userInput);
+    
     const normalizedInput = userInput.toLowerCase().trim().replace(/[.!?]$/, '');
     const normalizedAnswer = challenge.answer.toLowerCase().trim();
     const normalizedSentence = challenge.sentence.toLowerCase().trim().replace(/[.!?]$/, '');
     
     if (normalizedInput === normalizedAnswer || normalizedInput === normalizedSentence) {
+      console.log('Success at index:', currentIdx);
       setIsCorrect(true);
       setShowAnswer(true);
     } else {
+      console.log('Failure at index:', currentIdx);
       setIsCorrect(false);
-      setTimeout(() => setIsCorrect(false), 10);
     }
   };
 
   const nextChallenge = () => {
+    console.log('Next challenge triggered. Current index:', currentIdx);
     if (currentIdx + 1 < SAMPLE_CHALLENGES.length) {
-      // Reset all interactive states first
       setIsCorrect(null);
       setShowAnswer(false);
       setUserInput('');
-      
-      // Then move to next index
       setCurrentIdx((prev) => prev + 1);
     } else if (onComplete) {
       onComplete();
@@ -107,6 +108,7 @@ export default function TransformationChallenge({ onComplete }: TransformationCh
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
+          key={`input-${currentIdx}`}
           type="text"
           value={userInput}
           onChange={(e) => {
@@ -121,24 +123,27 @@ export default function TransformationChallenge({ onComplete }: TransformationCh
           autoFocus
         />
         
-        <div className="flex gap-3">
-          {!showAnswer ? (
-            <button
-              type="submit"
-              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-transform active:scale-95 shadow-lg shadow-blue-500/10"
-            >
-              Check Answer
-            </button>
-          ) : (
-            <button
-              onClick={nextChallenge}
-              className="flex-1 bg-zinc-100 hover:bg-white text-zinc-950 font-bold py-3 rounded-xl transition-transform active:scale-95"
-            >
-              {currentIdx + 1 < SAMPLE_CHALLENGES.length ? "Next Challenge" : "Finish Lesson"}
-            </button>
-          )}
-        </div>
+        {!showAnswer && (
+          <button
+            type="submit"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-transform active:scale-95 shadow-lg shadow-blue-500/10"
+          >
+            Check Answer
+          </button>
+        )}
       </form>
+
+      {showAnswer && (
+        <div className="mt-4">
+          <button
+            type="button"
+            onClick={nextChallenge}
+            className="w-full bg-zinc-100 hover:bg-white text-zinc-950 font-bold py-3 rounded-xl transition-transform active:scale-95 shadow-lg"
+          >
+            {currentIdx + 1 < SAMPLE_CHALLENGES.length ? "Next Challenge" : "Finish Lesson"}
+          </button>
+        </div>
+      )}
 
       <div className="h-20">
         <AnimatePresence mode="wait">
