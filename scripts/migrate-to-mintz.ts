@@ -1,6 +1,7 @@
 import { prisma } from '../lib/prisma';
 import fs from 'fs';
 import path from 'path';
+import { extractRoot, conjugateBikolVerb } from '../lib/conjugator';
 
 const JSON_PATH = path.join(process.cwd(), 'data/mintz_verbs_extracted.json');
 
@@ -8,6 +9,7 @@ const JSON_PATH = path.join(process.cwd(), 'data/mintz_verbs_extracted.json');
  * Normalizes a string by removing Bikol accents/diacritics for insensitive matching.
  */
 function normalizeBikol(str: string): string {
+  if (!str) return '';
   return str.toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
@@ -49,15 +51,19 @@ async function main() {
     }
 
     try {
-      // Find matching extracted data (Accent-insensitive)
-      const enrichment = enrichmentMap.get(normalizeBikol(word.bikol));
+      // 2.5 Identify if it's a verb and extract the root
+      const isVerb = word.pos?.trim().toUpperCase() === 'VERB';
+      const extractedRoot = isVerb ? extractRoot(word.bikol) : word.bikol;
+
+      // Find matching extracted data (Accent-insensitive) using the root
+      const enrichment = enrichmentMap.get(normalizeBikol(extractedRoot));
+      
+      // Use the enrichment headword if found (to preserve accents/metadata)
+      const finalRootBikol = enrichment?.headword || extractedRoot;
 
       // 3. Upsert Root (Idempotency check by 'bikol')
-      // Note: We use upsert to prevent duplicates if script is re-run.
-      // We search by 'bikol' string as it's our primary anchor.
-      
       const existingRoot = await prisma.root.findFirst({
-        where: { bikol: word.bikol }
+        where: { bikol: finalRootBikol }
       });
 
       let rootId: string;
@@ -65,7 +71,7 @@ async function main() {
       if (!existingRoot) {
         const root = await prisma.root.create({
           data: {
-            bikol: word.bikol,
+            bikol: finalRootBikol,
             pos: word.pos,
             category: word.category,
             pronunciation: word.pronunciation,
@@ -79,8 +85,15 @@ async function main() {
         rootId = existingRoot.id;
       }
 
-      // 4. Create Definition
-      // Definitions are always created for each legacy Word entry
+      // 4. Generate Conjugations
+      const affixPair = enrichment?.affixPair || 'UNKNOWN';
+      const focusType = enrichment?.focusType || 'UNKNOWN';
+      
+      const generatedConjugations = (affixPair !== 'UNKNOWN')
+        ? conjugateBikolVerb(finalRootBikol, affixPair, focusType)
+        : [];
+
+      // 5. Create Definition with Conjugations
       await prisma.definition.create({
         data: {
           rootId: rootId,
@@ -90,9 +103,16 @@ async function main() {
           tagalog: word.tagalog,
           aiConfidence: word.confidence || 1.0,
           source_url: word.source_url,
-          affixPair: enrichment?.affixPair || 'UNKNOWN',
-          focusType: enrichment?.focusType || 'UNKNOWN',
+          affixPair,
+          focusType,
           series: enrichment?.series || 'REGULAR',
+          conjugations: {
+            create: generatedConjugations.map(c => ({
+              tense: c.tense,
+              focus: c.focus,
+              form: c.form
+            }))
+          },
           exampleSentences: word.example_bikol ? {
             create: {
               bikol: word.example_bikol,

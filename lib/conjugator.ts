@@ -154,6 +154,64 @@ export function conjugateBikolVerb(root: string, affixPair: string, preferredFoc
 }
 
 /**
+ * Heuristic to extract the root from a potentially conjugated Bikol verb.
+ * This is the inverse of the conjugation rules.
+ */
+export function extractRoot(verb: string): string {
+  let root = verb.toLowerCase().trim();
+  const vowels = ['a', 'e', 'i', 'o', 'u', 'á', 'é', 'í', 'ó', 'ú'];
+
+  // 1. Remove common prefixes (mag-, nag-, ma-, na-, mang-, nang-, i-)
+  if (root.startsWith('mag')) root = root.substring(3);
+  else if (root.startsWith('nag')) root = root.substring(3);
+  else if (root.startsWith('mang')) root = root.substring(4);
+  else if (root.startsWith('nang')) root = root.substring(4);
+  else if (root.startsWith('ma')) root = root.substring(2);
+  else if (root.startsWith('na')) root = root.substring(2);
+  else if (root.startsWith('i') && root.length > 3) root = root.substring(1);
+
+  // 2. Remove suffixes (-on, -an)
+  // Note: if word ends in vowel, 'h' might have been inserted.
+  if (root.endsWith('on')) {
+    root = root.substring(0, root.length - 2);
+    if (root.endsWith('h') && vowels.includes(root[root.length - 2])) {
+      root = root.substring(0, root.length - 1);
+    }
+  } else if (root.endsWith('an')) {
+    root = root.substring(0, root.length - 2);
+    if (root.endsWith('h') && vowels.includes(root[root.length - 2])) {
+      root = root.substring(0, root.length - 1);
+    }
+  }
+
+  // 3. Remove infixes (-in-)
+  // Infixes occur after the first consonant
+  if (root.length > 3 && !vowels.includes(root[0])) {
+    if (root.substring(1, 3) === 'in') {
+      root = root[0] + root.substring(3);
+    }
+  } else if (root.startsWith('in') && root.length > 2 && vowels.includes(root[2])) {
+    // If root starts with vowel, infix becomes prefix 'in-'
+    root = root.substring(2);
+  }
+
+  // 4. Remove reduplication (CV-)
+  // If first 2 chars match next 2 chars, it might be reduplication (e.g., babakal -> bakal)
+  if (root.length >= 4) {
+    const cv = root.substring(0, 2);
+    if (root.substring(2, 4) === cv) {
+      root = root.substring(2);
+    }
+  }
+  // Vowel reduplication (e.g., aalis -> alis)
+  if (root.length >= 2 && vowels.includes(root[0]) && root[1] === root[0]) {
+    root = root.substring(1);
+  }
+
+  return root;
+}
+
+/**
  * Maps legacy affix pair strings (e.g., "MAG-, -ON") to Mintz FocusClasses.
  */
 function mapAffixToFocusClass(affixPair: string): FocusClass {
