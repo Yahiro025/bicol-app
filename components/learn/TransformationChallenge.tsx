@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { conjugateVerbMintz, type FocusClass, type ConjugationForms } from '@/lib/conjugator';
+import { type FocusClass, type ConjugationForms } from '@/lib/conjugator';
 
 interface Challenge {
   root: string;
@@ -44,7 +44,11 @@ const SAMPLE_CHALLENGES: Challenge[] = [
   }
 ];
 
-export default function TransformationChallenge() {
+interface TransformationChallengeProps {
+  onComplete?: () => void;
+}
+
+export default function TransformationChallenge({ onComplete }: TransformationChallengeProps) {
   const [currentIdx, setCurrentIdx] = useState(0);
   const [userInput, setUserInput] = useState('');
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
@@ -74,10 +78,14 @@ export default function TransformationChallenge() {
   };
 
   const nextChallenge = () => {
-    setCurrentIdx((prev) => (prev + 1) % SAMPLE_CHALLENGES.length);
-    setUserInput('');
-    setIsCorrect(null);
-    setShowAnswer(false);
+    if (currentIdx + 1 < SAMPLE_CHALLENGES.length) {
+      setCurrentIdx((prev) => prev + 1);
+      setUserInput('');
+      setIsCorrect(null);
+      setShowAnswer(false);
+    } else if (onComplete) {
+      onComplete();
+    }
   };
 
   return (
@@ -121,9 +129,9 @@ export default function TransformationChallenge() {
           ) : (
             <button
               onClick={nextChallenge}
-              className="flex-1 bg-zinc-100 hover:bg-white text-zinc-900 font-bold py-3 rounded-xl transition-transform active:scale-95"
+              className="flex-1 bg-zinc-100 hover:bg-white text-zinc-950 font-bold py-3 rounded-xl transition-transform active:scale-95"
             >
-              Next Challenge
+              {currentIdx + 1 < SAMPLE_CHALLENGES.length ? "Next Challenge" : "Finish Lesson"}
             </button>
           )}
         </div>

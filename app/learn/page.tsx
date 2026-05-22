@@ -52,12 +52,69 @@ export default function LearnPage() {
   const [activePhase, setActivePhase] = useState<1 | 2>(1);
   const router = useRouter();
 
-  const handleComplete = () => {
+  const handlePhase1Complete = () => {
+    setActivePhase(2);
+    // Scroll to top to ensure user sees the new challenge
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handlePhase2Complete = () => {
     setIsFinished(true);
   };
 
   if (isFinished) {
-    // ... (finished state stays same)
+    return (
+      <main className="min-h-screen flex items-center justify-center p-6 bg-zinc-950">
+        <div className="absolute inset-0 overflow-hidden -z-10">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[120px]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-purple-500/10 rounded-full blur-[100px]" />
+        </div>
+
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="max-w-md w-full text-center space-y-10"
+        >
+          <div className="space-y-6">
+            <motion.div 
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", damping: 12, delay: 0.2 }}
+              className="w-24 h-24 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto border border-emerald-500/20 shadow-[0_0_50px_-12px_rgba(16,185,129,0.3)]"
+            >
+              <CheckCircle2 className="w-12 h-12 text-emerald-500" />
+            </motion.div>
+            
+            <div className="space-y-2">
+              <h1 className="text-5xl font-display font-black text-white tracking-tight">Well Done!</h1>
+              <p className="text-zinc-400 text-lg leading-relaxed">
+                You've mastered the substitution patterns and transformation challenges. Your Bikol fluency is reaching a new level.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid gap-4">
+            <button 
+              onClick={() => router.push("/")}
+              className="w-full py-5 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-2xl transition-all active:scale-[0.98] flex items-center justify-center gap-3 shadow-lg shadow-blue-500/20"
+            >
+              <Home className="w-5 h-5" />
+              Return to Archive
+            </button>
+            <button 
+              onClick={() => {
+                setIsFinished(false);
+                setActivePhase(1);
+              }}
+              className="w-full py-5 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold rounded-2xl transition-all active:scale-[0.98] flex items-center justify-center gap-3 border border-zinc-800"
+            >
+              <RefreshCw className="w-5 h-5" />
+              Practice Again
+            </button>
+          </div>
+        </motion.div>
+      </main>
+    );
   }
 
   return (
@@ -94,9 +151,9 @@ export default function LearnPage() {
           <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-blue-500/5 rounded-full blur-[120px] -z-10" />
           
           {activePhase === 1 ? (
-            <SubstitutionDrill drills={MOCK_DRILLS} onComplete={handleComplete} />
+            <SubstitutionDrill drills={MOCK_DRILLS} onComplete={handlePhase1Complete} />
           ) : (
-            <TransformationChallenge />
+            <TransformationChallenge onComplete={handlePhase2Complete} />
           )}
         </section>
 
