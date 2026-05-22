@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { CheckCircle2, Home, RefreshCw, ArrowLeft } from "lucide-react";
 import SubstitutionDrill from "@/components/learn/SubstitutionDrill";
 import TransformationChallenge from "@/components/learn/TransformationChallenge";
+import AppliedFluency from "@/components/learn/AppliedFluency";
 import type { SubstitutionDrill as DrillType } from "@/lib/types/learn";
 import Link from "next/link";
 
@@ -49,16 +50,20 @@ const MOCK_DRILLS: DrillType[] = [
 
 export default function LearnPage() {
   const [isFinished, setIsFinished] = useState(false);
-  const [activePhase, setActivePhase] = useState<1 | 2>(1);
+  const [activePhase, setActivePhase] = useState<1 | 2 | 3>(1);
   const router = useRouter();
 
   const handlePhase1Complete = () => {
     setActivePhase(2);
-    // Scroll to top to ensure user sees the new challenge
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handlePhase2Complete = () => {
+    setActivePhase(3);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handlePhase3Complete = () => {
     setIsFinished(true);
   };
 
@@ -135,12 +140,16 @@ export default function LearnPage() {
               <span className="text-purple-500 text-xs font-bold uppercase tracking-[0.3em]">Learning Module</span>
             </div>
             <h1 className="text-5xl font-display font-black tracking-tight text-white md:text-7xl">
-              Mintz Drills: <span className="text-zinc-500">{activePhase === 1 ? 'Lesson 1' : 'Transformation'}</span>
+              Mintz Drills: <span className="text-zinc-500">
+                {activePhase === 1 ? 'Lesson 1' : activePhase === 2 ? 'Transformation' : 'Response'}
+              </span>
             </h1>
             <p className="text-zinc-400 text-lg max-w-xl leading-relaxed text-balance">
               {activePhase === 1 
                 ? "Master sentence structure through rapid substitution. Based on Malcolm Mintz's functional fluency course."
-                : "Develop instinctual grammar recall by shifting tenses and focus patterns dynamically."}
+                : activePhase === 2
+                ? "Develop instinctual grammar recall by shifting tenses and focus patterns dynamically."
+                : "Engage in functional dialogue based on visual cues and prompts to build communicative competence."}
             </p>
           </div>
         </header>
