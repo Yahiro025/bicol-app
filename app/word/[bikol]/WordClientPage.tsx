@@ -31,11 +31,11 @@ export default function WordClientPage({ word, isNormalized }: { word: any, isNo
       }];
 
   // Check if we should show VerbConjugator
-  const isVerb = pos?.toUpperCase() === 'VERB';
+  const isVerb = pos?.trim().toUpperCase() === 'VERB';
   const hasAffixPair = isNormalized && word.definitions.some((d: any) => d.affixPair && d.affixPair !== 'UNKNOWN');
   
   // Defensive check for legacy words: if it ends in -on, -an, or starts with mag- and has no POS, treat as potential verb
-  const looksLikeVerb = !isNormalized && (
+  const looksLikeVerb = (
     bikol.toLowerCase().endsWith('on') || 
     bikol.toLowerCase().endsWith('an') || 
     bikol.toLowerCase().startsWith('mag') ||
@@ -66,8 +66,8 @@ export default function WordClientPage({ word, isNormalized }: { word: any, isNo
         }))
     : [];
 
-  // Fallback for legacy verbs like "bataon"
-  if (affixGroups.length === 0 && looksLikeVerb) {
+  // Unified fallback for any verb (normalized or legacy) that lacks affix metadata
+  if (affixGroups.length === 0 && (looksLikeVerb || isVerb)) {
     let inferredAffix = "UNKNOWN";
     let inferredFocus = "UNKNOWN";
 
@@ -87,6 +87,13 @@ export default function WordClientPage({ word, isNormalized }: { word: any, isNo
         affixPair: inferredAffix,
         focusType: inferredFocus,
         conjugations: [] // VerbConjugator will handle generation if empty
+      }];
+    } else if (isVerb) {
+      // Default to MAG- if it's explicitly tagged but the form is ambiguous (e.g. root)
+      affixGroups = [{
+        affixPair: "MAG- / -ON",
+        focusType: "ACTOR",
+        conjugations: []
       }];
     }
   }
