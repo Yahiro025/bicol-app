@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { conjugateBikolVerb } from '@/lib/conjugator';
 
 /**
  * Utility to merge tailwind classes
@@ -126,9 +127,19 @@ export function VerbConjugator({ rootWord, affixGroups }: VerbConjugatorProps) {
             className="divide-y divide-zinc-800/50"
           >
             {TENSE_ORDER.map((tenseKey) => {
-              const conj = currentGroup.conjugations.find(
+              // 1. Try to find pre-stored conjugation
+              let conj = currentGroup.conjugations.find(
                 c => c.tense.toLowerCase().includes(tenseKey)
               );
+
+              // 2. Fallback: Generate dynamically if missing
+              if (!conj) {
+                const generated = conjugateBikolVerb(rootWord, currentGroup.affixPair, currentGroup.focusType);
+                const match = generated.find(g => g.tense.toLowerCase().includes(tenseKey));
+                if (match) {
+                  conj = { tense: match.tense, form: match.form };
+                }
+              }
               
               return (
                 <motion.div
