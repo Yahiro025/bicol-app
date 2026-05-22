@@ -79,10 +79,13 @@ export default function TransformationChallenge({ onComplete }: TransformationCh
 
   const nextChallenge = () => {
     if (currentIdx + 1 < SAMPLE_CHALLENGES.length) {
-      setCurrentIdx((prev) => prev + 1);
-      setUserInput('');
+      // Reset all interactive states first
       setIsCorrect(null);
       setShowAnswer(false);
+      setUserInput('');
+      
+      // Then move to next index
+      setCurrentIdx((prev) => prev + 1);
     } else if (onComplete) {
       onComplete();
     }
