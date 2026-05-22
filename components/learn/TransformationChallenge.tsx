@@ -58,12 +58,18 @@ export default function TransformationChallenge() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (showAnswer) return;
+
     const normalizedInput = userInput.toLowerCase().trim();
-    if (normalizedInput === challenge.answer.toLowerCase()) {
+    const normalizedAnswer = challenge.answer.toLowerCase().trim();
+    
+    if (normalizedInput === normalizedAnswer) {
       setIsCorrect(true);
       setShowAnswer(true);
     } else {
       setIsCorrect(false);
+      // Brief timeout to re-trigger animation if user types again
+      setTimeout(() => setIsCorrect(false), 10);
     }
   };
 
@@ -77,7 +83,10 @@ export default function TransformationChallenge() {
   return (
     <div className="max-w-2xl mx-auto p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl backdrop-blur-sm">
       <div className="mb-8">
-        <h3 className="text-blue-500 font-bold uppercase tracking-widest text-xs mb-2">Phase 2: Transformation</h3>
+        <div className="flex justify-between items-start mb-2">
+          <h3 className="text-blue-500 font-bold uppercase tracking-widest text-xs">Phase 2: Transformation</h3>
+          <span className="text-zinc-600 text-xs font-mono">{currentIdx + 1} / {SAMPLE_CHALLENGES.length}</span>
+        </div>
         <h2 className="text-2xl font-bold text-zinc-100 mb-4">{challenge.prompt}</h2>
         <div className="p-4 bg-zinc-950 rounded-xl border border-zinc-800">
           <p className="text-lg italic text-zinc-400">"{challenge.sentence.replace(challenge.answer, '____')}"</p>
@@ -88,10 +97,16 @@ export default function TransformationChallenge() {
         <input
           type="text"
           value={userInput}
-          onChange={(e) => setUserInput(e.target.value)}
+          onChange={(e) => {
+            setUserInput(e.target.value);
+            if (isCorrect === false) setIsCorrect(null);
+          }}
           placeholder="Type the Bikol transformation..."
-          className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-zinc-100 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+          className={`w-full bg-zinc-950 border rounded-xl px-4 py-3 text-zinc-100 focus:ring-2 outline-none transition-all ${
+            isCorrect === false ? 'border-red-500/50 ring-1 ring-red-500/20' : 'border-zinc-800 focus:ring-blue-500'
+          }`}
           disabled={showAnswer}
+          autoFocus
         />
         
         <div className="flex gap-3">
@@ -113,26 +128,32 @@ export default function TransformationChallenge() {
         </div>
       </form>
 
-      <AnimatePresence>
-        {isCorrect === true && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mt-6 p-4 bg-green-900/20 border border-green-800/50 rounded-xl text-green-400 text-center"
-          >
-            Matíyag! (Correct) — <strong>{challenge.answer}</strong>
-          </motion.div>
-        )}
-        {isCorrect === false && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mt-6 p-4 bg-red-900/20 border border-red-800/50 rounded-xl text-red-400 text-center"
-          >
-            Puwede pa mapakarhay. Try again!
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <div className="h-20">
+        <AnimatePresence mode="wait">
+          {isCorrect === true && (
+            <motion.div
+              key="correct"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="mt-6 p-4 bg-green-900/20 border border-green-800/50 rounded-xl text-green-400 text-center"
+            >
+              Matíyag! (Correct) — <strong>{challenge.answer}</strong>
+            </motion.div>
+          )}
+          {isCorrect === false && (
+            <motion.div
+              key="incorrect"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 10 }}
+              className="mt-6 p-4 bg-red-900/20 border border-red-800/50 rounded-xl text-red-400 text-center"
+            >
+              Puwede pa mapakarhay. Try again!
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
       <div className="mt-8 pt-6 border-t border-zinc-800 flex justify-between items-center text-zinc-500 text-sm">
         <span>Root: <span className="text-blue-400 font-mono">{challenge.root}</span></span>
