@@ -29,6 +29,14 @@ model Word {
   @@map("words")
 }
 
+enum FocusClass {
+  ON_CLASS
+  I_CLASS
+  AN_CLASS
+  MAG_INTRANSITIVE
+  UNKNOWN
+}
+
 // Normalized Mintz Models
 model Root {
   id             String       @id @default(cuid())
@@ -39,6 +47,8 @@ model Root {
   etymology      String?
   frequency_rank Int?
   audio_url      String?
+  focusClass     FocusClass   @default(UNKNOWN)
+  isTransitive   Boolean      @default(false)
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
   definitions    Definition[]
