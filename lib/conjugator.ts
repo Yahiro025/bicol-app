@@ -174,25 +174,31 @@ export function extractRoot(verb: string): string {
   // Note: if word ends in vowel, 'h' might have been inserted.
   if (root.endsWith('on')) {
     root = root.substring(0, root.length - 2);
-    if (root.endsWith('h') && vowels.includes(root[root.length - 2])) {
+    const penult = root[root.length - 2];
+    if (root.endsWith('h') && penult && vowels.includes(penult)) {
       root = root.substring(0, root.length - 1);
     }
   } else if (root.endsWith('an')) {
     root = root.substring(0, root.length - 2);
-    if (root.endsWith('h') && vowels.includes(root[root.length - 2])) {
+    const penult = root[root.length - 2];
+    if (root.endsWith('h') && penult && vowels.includes(penult)) {
       root = root.substring(0, root.length - 1);
     }
   }
 
   // 3. Remove infixes (-in-)
   // Infixes occur after the first consonant
-  if (root.length > 3 && !vowels.includes(root[0])) {
+  const firstChar = root[0];
+  if (root.length > 3 && firstChar && !vowels.includes(firstChar)) {
     if (root.substring(1, 3) === 'in') {
-      root = root[0] + root.substring(3);
+      root = firstChar + root.substring(3);
     }
-  } else if (root.startsWith('in') && root.length > 2 && vowels.includes(root[2])) {
-    // If root starts with vowel, infix becomes prefix 'in-'
-    root = root.substring(2);
+  } else if (root.startsWith('in') && root.length > 2) {
+    const thirdChar = root[2];
+    if (thirdChar && vowels.includes(thirdChar)) {
+      // If root starts with vowel, infix becomes prefix 'in-'
+      root = root.substring(2);
+    }
   }
 
   // 4. Remove reduplication (CV-)
@@ -204,7 +210,8 @@ export function extractRoot(verb: string): string {
     }
   }
   // Vowel reduplication (e.g., aalis -> alis)
-  if (root.length >= 2 && vowels.includes(root[0]) && root[1] === root[0]) {
+  const char0 = root[0];
+  if (root.length >= 2 && char0 && vowels.includes(char0) && root[1] === char0) {
     root = root.substring(1);
   }
 
