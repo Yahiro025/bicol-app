@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { conjugateVerbMintz, FocusClass, ConjugationForms } from '@/lib/conjugator';
+import { conjugateVerbMintz, type FocusClass, type ConjugationForms } from '@/lib/conjugator';
 
 interface Challenge {
   root: string;
@@ -51,6 +51,10 @@ export default function TransformationChallenge() {
   const [showAnswer, setShowAnswer] = useState(false);
 
   const challenge = SAMPLE_CHALLENGES[currentIdx];
+
+  if (!challenge) {
+    return null;
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

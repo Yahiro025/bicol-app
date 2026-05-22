@@ -21,14 +21,18 @@ function getReduplication(root: string): string {
   const vowels = ['a', 'e', 'i', 'o', 'u', 'á', 'é', 'í', 'ó', 'ú'];
   const normalized = root.toLowerCase();
   
-  if (vowels.includes(normalized[0])) {
-    return normalized[0];
+  if (!normalized) return '';
+
+  const firstChar = normalized[0] || '';
+  if (vowels.includes(firstChar)) {
+    return firstChar;
   }
 
   // Find first vowel for CV pattern
   let firstVowelIndex = -1;
   for (let i = 0; i < normalized.length; i++) {
-    if (vowels.includes(normalized[i])) {
+    const char = normalized[i] || '';
+    if (vowels.includes(char)) {
       firstVowelIndex = i;
       break;
     }
@@ -38,7 +42,7 @@ function getReduplication(root: string): string {
     return normalized.substring(0, firstVowelIndex + 1);
   }
 
-  return normalized[0] || '';
+  return firstChar;
 }
 
 /**
@@ -46,8 +50,9 @@ function getReduplication(root: string): string {
  * insert 'h' before adding suffixes like -on or -an.
  */
 function applyVowelRule(base: string): string {
+  if (!base) return '';
   const vowels = ['a', 'e', 'i', 'o', 'u', 'á', 'é', 'í', 'ó', 'ú'];
-  const lastChar = base[base.length - 1];
+  const lastChar = base[base.length - 1] || '';
   return vowels.includes(lastChar) ? base + 'h' : base;
 }
 
@@ -104,11 +109,59 @@ export function conjugateVerbMintz(root: string, focusClass: FocusClass): Conjug
 
   // Special case for vowel-starting roots in past/progressive infixation
   const vowels = ['a', 'e', 'i', 'o', 'u', 'á', 'é', 'í', 'ó', 'ú'];
-  if (vowels.includes(normalized[0]) && (focusClass === 'ON' || focusClass === 'AN')) {
+  const firstChar = normalized[0] || '';
+  if (vowels.includes(firstChar) && (focusClass === 'ON' || focusClass === 'AN')) {
     object.past = `in${normalized}`;
     object.progressive = `in${r}${normalized}`;
   }
 
   return { actorFocus: actor, objectFocus: object };
+}
+
+/**
+ * Legacy wrapper for conjugateVerbMintz to maintain compatibility with 
+ * existing call sites while leveraging the new Mintz-based logic.
+ */
+export function conjugateBikolVerb(root: string, affixPair: string, preferredFocus?: string) {
+  const focusClass = mapAffixToFocusClass(affixPair);
+  const set = conjugateVerbMintz(root, focusClass);
+
+  const results: { tense: string; focus: string; form: string }[] = [];
+
+  // Determine which focus to include. 
+  // If no preference is given, we include both to allow the UI to decide.
+  const isActorPref = preferredFocus?.toUpperCase() === 'ACTOR';
+  const isObjectPref = preferredFocus?.toUpperCase() === 'OBJECT';
+  
+  const includeActor = !preferredFocus || isActorPref;
+  const includeObject = (!preferredFocus || isObjectPref) && focusClass !== 'MAG';
+
+  if (includeActor) {
+    results.push({ tense: 'Infinitive', focus: 'Actor', form: set.actorFocus.infinitive });
+    results.push({ tense: 'Past', focus: 'Actor', form: set.actorFocus.past });
+    results.push({ tense: 'Progressive', focus: 'Actor', form: set.actorFocus.progressive });
+    results.push({ tense: 'Future', focus: 'Actor', form: set.actorFocus.future });
+  }
+
+  if (includeObject) {
+    results.push({ tense: 'Infinitive', focus: 'Object', form: set.objectFocus.infinitive });
+    results.push({ tense: 'Past', focus: 'Object', form: set.objectFocus.past });
+    results.push({ tense: 'Progressive', focus: 'Object', form: set.objectFocus.progressive });
+    results.push({ tense: 'Future', focus: 'Object', form: set.objectFocus.future });
+  }
+
+  return results;
+}
+
+/**
+ * Maps legacy affix pair strings (e.g., "MAG-, -ON") to Mintz FocusClasses.
+ */
+function mapAffixToFocusClass(affixPair: string): FocusClass {
+  const upper = affixPair.toUpperCase();
+  if (upper.includes('-ON')) return 'ON';
+  if (upper.includes('I-') || upper.includes('I+')) return 'I';
+  if (upper.includes('-AN')) return 'AN';
+  if (upper.includes('MAG-') || upper.includes('MANG-') || upper.includes('MA-')) return 'MAG';
+  return 'MAG'; // Fallback
 }
 
