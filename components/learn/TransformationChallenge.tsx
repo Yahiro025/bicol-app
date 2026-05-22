@@ -60,15 +60,15 @@ export default function TransformationChallenge() {
     e.preventDefault();
     if (showAnswer) return;
 
-    const normalizedInput = userInput.toLowerCase().trim();
+    const normalizedInput = userInput.toLowerCase().trim().replace(/[.!?]$/, '');
     const normalizedAnswer = challenge.answer.toLowerCase().trim();
+    const normalizedSentence = challenge.sentence.toLowerCase().trim().replace(/[.!?]$/, '');
     
-    if (normalizedInput === normalizedAnswer) {
+    if (normalizedInput === normalizedAnswer || normalizedInput === normalizedSentence) {
       setIsCorrect(true);
       setShowAnswer(true);
     } else {
       setIsCorrect(false);
-      // Brief timeout to re-trigger animation if user types again
       setTimeout(() => setIsCorrect(false), 10);
     }
   };
@@ -89,6 +89,7 @@ export default function TransformationChallenge() {
         </div>
         <h2 className="text-2xl font-bold text-zinc-100 mb-4">{challenge.prompt}</h2>
         <div className="p-4 bg-zinc-950 rounded-xl border border-zinc-800">
+          <p className="text-sm text-zinc-500 mb-2 uppercase tracking-tighter font-bold">Target Pattern:</p>
           <p className="text-lg italic text-zinc-400">"{challenge.sentence.replace(challenge.answer, '____')}"</p>
         </div>
       </div>
@@ -101,7 +102,7 @@ export default function TransformationChallenge() {
             setUserInput(e.target.value);
             if (isCorrect === false) setIsCorrect(null);
           }}
-          placeholder="Type the Bikol transformation..."
+          placeholder="Type the verb or the full sentence..."
           className={`w-full bg-zinc-950 border rounded-xl px-4 py-3 text-zinc-100 focus:ring-2 outline-none transition-all ${
             isCorrect === false ? 'border-red-500/50 ring-1 ring-red-500/20' : 'border-zinc-800 focus:ring-blue-500'
           }`}
