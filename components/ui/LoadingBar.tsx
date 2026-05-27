@@ -1,60 +1,31 @@
-"use client";
+import React from "react";
+import { cn } from "@/lib/utils";
 
-import { useEffect, useState } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+interface LoadingBarProps {
+  progress: number;
+  className?: string;
+}
 
-export default function LoadingBar() {
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const [isAnimating, setIsAnimating] = useState(false);
-
-  useEffect(() => {
-    // When path or search changes, it means navigation completed
-    setIsAnimating(false);
-  }, [pathname, searchParams]);
-
-  // We need a way to trigger the "start" of loading.
-  // Since we can't easily hook into Next.js router transitions from here,
-  // we'll listen for any click on <a> or <button> that might trigger a navigation.
-  useEffect(() => {
-    const handleAnchorClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      const anchor = target.closest("a");
-      
-      if (anchor && anchor.href && !anchor.href.includes("#") && anchor.target !== "_blank") {
-        // It's a internal navigation link
-        const currentUrl = window.location.href;
-        const newUrl = anchor.href;
-        
-        if (currentUrl !== newUrl) {
-          setIsAnimating(true);
-        }
-      }
-    };
-
-    document.addEventListener("click", handleAnchorClick);
-    return () => document.removeEventListener("click", handleAnchorClick);
-  }, []);
+export function LoadingBar({ progress, className }: LoadingBarProps) {
+  const clamped = Math.max(0, Math.min(100, progress));
 
   return (
-    <AnimatePresence>
-      {isAnimating && (
-        <motion.div
-          initial={{ width: "0%", opacity: 0 }}
-          animate={{ 
-            width: "70%", 
-            opacity: 1,
-            transition: { duration: 2, ease: "easeOut" } 
-          }}
-          exit={{ 
-            width: "100%", 
-            opacity: 0,
-            transition: { duration: 0.3, ease: "easeIn" }
-          }}
-          className="fixed top-0 left-0 h-[3px] bg-gradient-to-r from-blue-500 to-purple-500 z-[100] shadow-[0_0_10px_rgba(59,130,246,0.5)]"
-        />
+    <div
+      role="progressbar"
+      aria-valuenow={clamped}
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-label="Loading progress"
+      aria-live="polite"
+      className={cn(
+        "w-full h-2 bg-zinc-200 dark:bg-zinc-700 rounded-full overflow-hidden",
+        className
       )}
-    </AnimatePresence>
+    >
+      <div
+        className="h-full bg-blue-500 rounded-full transition-all duration-150 ease-out"
+        style={{ width: `${clamped}%` }}
+      />
+    </div>
   );
 }
