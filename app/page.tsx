@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
+import dynamicImport from 'next/dynamic';
 import SearchBar from '@/components/SearchBar';
 import WordOfTheDay from '@/components/WordOfTheDay';
 import CategoryGrid from '@/components/CategoryGrid';
@@ -8,13 +9,27 @@ import HomeVerbDemo from '@/components/HomeVerbDemo';
 import { ArrowRight, Zap, BookOpen } from 'lucide-react';
 import { POPULAR_WORDS } from '@/lib/constants';
 
+const UserSubmissionForm = dynamicImport(() => import('@/components/UserSubmissionForm'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full max-w-lg mx-auto bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-8 shadow-sm animate-pulse">
+      <div className="h-6 bg-zinc-100 dark:bg-zinc-800 rounded w-1/2 mb-4" />
+      <div className="space-y-4">
+        <div className="h-10 bg-zinc-100 dark:bg-zinc-800 rounded-xl" />
+        <div className="h-20 bg-zinc-100 dark:bg-zinc-800 rounded-xl" />
+        <div className="h-10 bg-zinc-100 dark:bg-zinc-800 rounded-xl" />
+      </div>
+    </div>
+  ),
+});
+
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
   let wordCount = 0;
-  let categoryCounts: any[] = [];
-  let popularWords: any[] = [];
-  let wotd: any = null;
+  let categoryCounts: { category: string; _count: { bikol: number } }[] = [];
+  let popularWords: { bikol: string; english: string; tagalog: string | null; pos: string | null; dialect: string | null; pronunciation: string | null }[] = [];
+  let wotd: typeof popularWords[number] | null = null;
   let dbError = null;
 
   try {
@@ -22,27 +37,32 @@ export default async function HomePage() {
     wordCount = await prisma.word.count();
     
     // 2. Category Counts
-    categoryCounts = await (prisma.word.groupBy as any)({
+    const rawCategoryCounts = await (prisma.word.groupBy as any)({
       by: ['category'],
-      _count: {
-        bikol: true
-      },
-      orderBy: {
-        _count: {
-          bikol: 'desc'
-        }
-      },
-      take: 12
-    });
+      _count: { bikol: true },
+      orderBy: { _count: { bikol: 'desc' } },
+      take: 12,
+    }) as { category: string | null; _count: { bikol: number } }[];
+    categoryCounts = rawCategoryCounts
+      .filter((c): c is { category: string; _count: { bikol: number } } => c.category !== null)
+      .map(c => c);
 
     // 3. Popular Words
-    popularWords = await prisma.word.findMany({
+    const rawPopularWords = await prisma.word.findMany({
       where: {
         bikol: {
           in: POPULAR_WORDS
         }
       }
     });
+    popularWords = rawPopularWords.map(w => ({
+      bikol: w.bikol!,
+      english: w.english!,
+      tagalog: w.tagalog,
+      pos: w.pos,
+      dialect: w.dialect,
+      pronunciation: w.pronunciation,
+    }));
 
     // 4. Word of the Day (Deterministic based on date)
     const today = new Date();
@@ -53,7 +73,15 @@ export default async function HomePage() {
       take: 1,
       skip: skip
     });
-    wotd = wotdList[0];
+    const rawWotd = wotdList[0];
+    wotd = rawWotd ? {
+      bikol: rawWotd.bikol!,
+      english: rawWotd.english!,
+      tagalog: rawWotd.tagalog,
+      pos: rawWotd.pos,
+      dialect: rawWotd.dialect,
+      pronunciation: rawWotd.pronunciation,
+    } : null;
 
     // 5. Fetch initial dictionary for optimistic search
     const initialDictionaryRaw = await prisma.word.findMany({
@@ -200,16 +228,25 @@ export default async function HomePage() {
                 </div>
                 <div className="grid gap-6">
                   {popularWords.map((word) => (
-                    <WordCard key={word.bikol} word={word} className="hover:scale-[1.02] transition-transform" />
+                    <WordCard key={word.bikol!} word={word} className="hover:scale-[1.02] transition-transform" />
                   ))}
                 </div>
+              </div>
+
+              {/* Contribute Section */}
+              <div className="space-y-10 pt-8 border-t border-white/10">
+                <div className="text-center space-y-2">
+                  <h2 className="text-3xl font-display font-bold text-white tracking-tight">Contribute a Word</h2>
+                  <p className="text-zinc-500">Help us document and preserve the Bikol language. All submissions are reviewed by moderators.</p>
+                </div>
+                <UserSubmissionForm />
               </div>
             </div>
           </div>
         </div>
       </main>
     );
-  } catch (e: any) {
+  } catch (e: unknown) {
     return (
       <main className="min-h-screen bg-zinc-950 text-white flex items-center justify-center p-6">
         <div className="bg-red-900/10 border border-red-900/20 p-8 rounded-3xl max-w-md w-full text-center space-y-4">
@@ -220,7 +257,7 @@ export default async function HomePage() {
           </p>
           {process.env.NODE_ENV === 'development' && (
             <div className="text-xs font-mono bg-red-950/50 p-3 rounded-lg text-red-500/70 text-left overflow-auto max-h-32">
-              {e.message}
+              {e instanceof Error ? e.message : String(e)}
             </div>
           )}
         </div>

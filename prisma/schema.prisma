@@ -109,12 +109,19 @@ model ExampleSentence {
 
 // Existing tables preserved
 model UserSubmission {
-  id         Int       @id @default(autoincrement())
-  word       String
-  definition String
-  dialect    String?
-  status     String?   @default("pending")
-  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  id              Int       @id @default(autoincrement())
+  word            String
+  definition      String
+  pos             String?
+  dialect         String?
+  pronunciation   String?
+  example_bikol   String?
+  example_english String?
+  source          String?
+  status          String?   @default("pending")
+  target_table    String?   @default("legacy")
+  admin_notes     String?
+  created_at      DateTime? @default(now()) @db.Timestamptz(6)
 
   @@map("user_submissions")
 }
