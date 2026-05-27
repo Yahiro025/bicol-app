@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -8,35 +9,41 @@ export async function GET(request: Request) {
   const q = searchParams.get('q');
   const page = parseInt(searchParams.get('page') || '0');
   const limit = parseInt(searchParams.get('limit') || '50');
+  const sort = searchParams.get('sort');
 
   try {
-    const whereClause: any = {
-      AND: [
-        letter ? { bikol: { startsWith: letter, mode: 'insensitive' } } : {},
-        category ? { category: { equals: category, mode: 'insensitive' } } : {},
-        q
-          ? {
-              OR: [
-                { bikol: { contains: q, mode: 'insensitive' } },
-                { english: { contains: q, mode: 'insensitive' } },
-                { tagalog: { contains: q, mode: 'insensitive' } },
-              ],
-            }
-          : {},
-      ],
-    };
+    // Build WHERE conditions as Prisma.Sql fragments for safe parameterization
+    const conditions: Prisma.Sql[] = [];
 
-    const sort = searchParams.get('sort');
-    const sortOrder = sort === 'frequency'
-      ? [{ frequency_rank: { sort: 'asc' as const, nulls: 'last' as const } }, { bikol: 'asc' as const }]
-      : [{ bikol: 'asc' as const }];
+    if (letter) {
+      conditions.push(Prisma.sql`LOWER("bikol") LIKE LOWER(${letter + '%'})`);
+    }
+    if (category) {
+      conditions.push(Prisma.sql`LOWER("category") = LOWER(${category})`);
+    }
+    if (q) {
+      conditions.push(Prisma.sql`(
+        LOWER("bikol") LIKE LOWER(${'%' + q + '%'}) OR
+        LOWER("english") LIKE LOWER(${'%' + q + '%'}) OR
+        LOWER("tagalog") LIKE LOWER(${'%' + q + '%'})
+      )`);
+    }
 
-    const words = await prisma.word.findMany({
-      where: whereClause,
-      orderBy: sortOrder,
-      skip: page * limit,
-      take: limit,
-    });
+    const whereClause = conditions.length > 0
+      ? Prisma.sql`WHERE ${Prisma.join(conditions, ' AND ')}`
+      : Prisma.empty;
+
+    // Case-insensitive sort: LOWER(bikol) ensures Adwana sorts among adwana, not before all lowercase
+    const orderByClause = sort === 'frequency'
+      ? Prisma.sql`ORDER BY "frequency_rank" ASC NULLS LAST, LOWER("bikol") ASC`
+      : Prisma.sql`ORDER BY LOWER("bikol") ASC`;
+
+    const words: any[] = await prisma.$queryRaw`
+      SELECT * FROM "words"
+      ${whereClause}
+      ${orderByClause}
+      LIMIT ${limit} OFFSET ${page * limit}
+    `;
 
     // BigInt serialization fix
     const serializedWords = words.map(w => ({
