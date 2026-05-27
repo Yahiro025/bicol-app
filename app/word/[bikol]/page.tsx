@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma';
 import WordClientPage from './WordClientPage';
 import { notFound } from 'next/navigation';
 import { conjugateBikolVerb } from '@/lib/conjugator';
+import type { WordDisplayData } from '@/lib/types/word';
 import type { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';
@@ -126,14 +127,16 @@ export default async function WordDetail({ params }: { params: Promise<{ bikol: 
       return notFound();
     }
 
-    return <WordClientPage word={word} isNormalized={false} />;
-  } catch (e: any) {
+    const displayWord: WordDisplayData = { ...word, bikol: word.bikol!, definitions: [] };
+    return <WordClientPage word={displayWord} isNormalized={false} />;
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : 'An unexpected error occurred';
     console.error('Error fetching word:', e);
     return (
       <main className="min-h-screen bg-zinc-950 text-white p-8 flex items-center justify-center">
         <div className="text-center space-y-4">
           <div className="text-red-500 text-xl font-bold">Error loading word</div>
-          <p className="text-zinc-400">{e.message}</p>
+          <p className="text-zinc-400">{message}</p>
         </div>
       </main>
     );

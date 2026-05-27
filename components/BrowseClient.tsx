@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback, useTransition } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import Button from './ui/Button';
-import type { LanguageMode } from './LanguageToggle';
+import { useLanguageMode } from '@/hooks/useLanguageMode';
 import { normalizePOS } from '@/lib/lexicography';
 
 type Word = {
@@ -58,7 +58,7 @@ export default function BrowseClient({
   const [hasMore, setHasMore] = useState(initialWords.length === 50);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [areFiltersVisible, setAreFiltersVisible] = useState(false);
-  const [langMode, setLangMode] = useState<LanguageMode>('all');
+  const langMode = useLanguageMode();
 
   // Intersection Observer for infinite scroll
   const observerTarget = useCallback((node: HTMLDivElement | null) => {
@@ -76,16 +76,6 @@ export default function BrowseClient({
     observer.observe(node);
     return () => observer.disconnect();
   }, [isLoadingMore, hasMore]);
-
-  // Sync language mode
-  useEffect(() => {
-    const saved = localStorage.getItem('bikoldict-lang-mode') as LanguageMode;
-    if (saved) setLangMode(saved);
-
-    const handleLangChange = (e: Event) => setLangMode((e as CustomEvent).detail);
-    window.addEventListener('lang-mode-change', handleLangChange);
-    return () => window.removeEventListener('lang-mode-change', handleLangChange);
-  }, []);
 
   const displayTranslation = (word: Word) => {
     if (langMode === 'tl' && word.tagalog) return word.tagalog;
@@ -409,15 +399,5 @@ export default function BrowseClient({
       </div>
     </div>
   );
-}
-
-
-// Debounce utility function
-function debounce<T extends (...args: any[]) => any>(func: T, wait: number): (...args: Parameters<T>) => void {
-  let timeout: NodeJS.Timeout;
-  return (...args: Parameters<T>) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func(...args), wait);
-  };
 }
 

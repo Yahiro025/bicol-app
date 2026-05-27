@@ -13,7 +13,7 @@ export const initDB = async () => {
   });
 };
 
-export const saveToHistory = async (word: any) => {
+export const saveToHistory = async (word: Record<string, unknown> & { bikol: string }) => {
   const db = await initDB();
   await db.put(STORE_NAME, { ...word, timestamp: Date.now() });
 };

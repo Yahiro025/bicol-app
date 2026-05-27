@@ -14,7 +14,11 @@ const getPool = () => {
     if (!connectionString) {
       console.error('DATABASE_URL is not defined');
     }
-    globalForPrisma.pgPool = new pg.Pool({ connectionString });
+    const isSupabase = connectionString?.includes('supabase.co');
+    globalForPrisma.pgPool = new pg.Pool({
+      connectionString,
+      ...(isSupabase ? { ssl: { rejectUnauthorized: false } } : {}),
+    });
   }
   return globalForPrisma.pgPool;
 };

@@ -2,7 +2,7 @@ import { prisma } from '@/lib/prisma';
 import BrowseClient from '@/components/BrowseClient';
 import Link from 'next/link';
 import { BookOpen } from 'lucide-react';
-import { Prisma } from '@prisma/client';
+import { buildBrowseConditions, buildBrowseOrderBy } from '@/lib/browse-query';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,31 +18,8 @@ export default async function BrowsePage({
   let dbError = null;
 
   try {
-    // Build WHERE conditions as Prisma.Sql fragments for safe parameterization
-    const conditions: Prisma.Sql[] = [];
-
-    if (letter) {
-      conditions.push(Prisma.sql`LOWER("bikol") LIKE LOWER(${letter + '%'})`);
-    }
-    if (category) {
-      conditions.push(Prisma.sql`LOWER("category") = LOWER(${category})`);
-    }
-    if (q) {
-      conditions.push(Prisma.sql`(
-        LOWER("bikol") LIKE LOWER(${'%' + q + '%'}) OR
-        LOWER("english") LIKE LOWER(${'%' + q + '%'}) OR
-        LOWER("tagalog") LIKE LOWER(${'%' + q + '%'})
-      )`);
-    }
-
-    const whereClause = conditions.length > 0
-      ? Prisma.sql`WHERE ${Prisma.join(conditions, ' AND ')}`
-      : Prisma.empty;
-
-    // Case-insensitive sort: LOWER(bikol) ensures Adwana sorts among adwana, not before all lowercase
-    const orderByClause = sort === 'frequency'
-      ? Prisma.sql`ORDER BY "frequency_rank" ASC NULLS LAST, LOWER("bikol") ASC`
-      : Prisma.sql`ORDER BY LOWER("bikol") ASC`;
+    const whereClause = buildBrowseConditions({ letter, category, q });
+    const orderByClause = buildBrowseOrderBy(sort);
 
     const rawWords: any[] = await prisma.$queryRaw`
       SELECT * FROM "words"
