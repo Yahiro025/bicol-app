@@ -4,7 +4,8 @@ import SearchBar from '@/components/SearchBar';
 import WordOfTheDay from '@/components/WordOfTheDay';
 import CategoryGrid from '@/components/CategoryGrid';
 import WordCard from '@/components/WordCard';
-import { ArrowRight } from 'lucide-react';
+import HomeVerbDemo from '@/components/HomeVerbDemo';
+import { ArrowRight, Zap, BookOpen } from 'lucide-react';
 import { POPULAR_WORDS } from '@/lib/constants';
 
 export const dynamic = 'force-dynamic';
@@ -97,53 +98,57 @@ export default async function HomePage() {
                 <SearchBar initialDictionary={initialDictionary} />
               </div>
 
-              {/* Quick Navigation Hub */}
-              <div className="pt-12 grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
-                <Link href="/learn" className="group p-6 bg-white/5 hover:bg-white/10 border border-white/10 rounded-3xl transition-all hover:-translate-y-1 active:scale-[0.98] text-left">
-                  <div className="w-12 h-12 bg-blue-500/20 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                    <span className="text-2xl">🎯</span>
-                  </div>
-                  <h3 className="text-lg font-bold text-white mb-1">Interactive Drills</h3>
-                  <p className="text-zinc-400 text-sm">Master sentence patterns through rapid substitution drills.</p>
+              {/* Primary CTA */}
+              <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
+                <Link 
+                  href="/learn" 
+                  className="px-8 py-4 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2 text-lg"
+                >
+                  <Zap className="w-5 h-5" />
+                  Start Learning Bikol
                 </Link>
-
-                <Link href="/word/bakal" className="group p-6 bg-white/5 hover:bg-white/10 border border-white/10 rounded-3xl transition-all hover:-translate-y-1 active:scale-[0.98] text-left">
-                  <div className="w-12 h-12 bg-purple-500/20 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                    <span className="text-2xl">🔄</span>
-                  </div>
-                  <h3 className="text-lg font-bold text-white mb-1">Verb Conjugator</h3>
-                  <p className="text-zinc-400 text-sm">See how verbs like <span className="text-purple-400 italic">bakal</span> change across tenses.</p>
-                </Link>
-
-                <Link href="/word/bakal" className="group p-6 bg-white/5 hover:bg-white/10 border border-white/10 rounded-3xl transition-all hover:-translate-y-1 active:scale-[0.98] text-left">
-                  <div className="w-12 h-12 bg-emerald-500/20 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                    <span className="text-2xl">🎨</span>
-                  </div>
-                  <h3 className="text-lg font-bold text-white mb-1">Visual Grammar</h3>
-                  <div className="space-y-2">
-                    <p className="text-zinc-400 text-sm">Our smart markers help you parse structure:</p>
-                    <div className="flex flex-wrap gap-2">
-                      <span className="px-2 py-0.5 bg-blue-500/10 text-blue-500 text-[10px] font-black uppercase rounded border border-blue-500/20">SI (ACTOR)</span>
-                      <span className="px-2 py-0.5 bg-orange-500/10 text-orange-500 text-[10px] font-black uppercase rounded border border-orange-500/20">NI (OBJECT)</span>
-                    </div>
-                  </div>
+                <Link 
+                  href="/browse" 
+                  className="px-8 py-4 bg-white/10 hover:bg-white/15 text-white font-bold rounded-2xl transition-all active:scale-[0.98] border border-white/10 flex items-center justify-center gap-2 text-lg"
+                >
+                  <BookOpen className="w-5 h-5" />
+                  Browse Dictionary
                 </Link>
               </div>
-            
-              {/* Stats */}
-              <div className="mt-16 flex flex-wrap justify-center gap-12 text-center">
-                <div className="flex flex-col items-center space-y-1">
-                  <span className="text-4xl font-bold text-white tracking-tight">{wordCount.toLocaleString()}</span>
-                  <span className="text-zinc-500 text-xs uppercase tracking-widest font-bold">Words</span>
+
+              {/* Social Proof Stats */}
+              <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
+                <div className="p-4 bg-white/5 border border-white/10 rounded-2xl text-center group hover:bg-white/10 transition-colors">
+                  <div className="text-2xl font-black text-white">{wordCount.toLocaleString()}+</div>
+                  <div className="text-xs text-zinc-500 font-bold uppercase tracking-wider mt-1">Words</div>
                 </div>
-                <div className="flex flex-col items-center space-y-1 md:border-l border-zinc-800 md:pl-12">
-                  <span className="text-4xl font-bold text-white tracking-tight">5+</span>
-                  <span className="text-zinc-500 text-xs uppercase tracking-widest font-bold">Dialects</span>
+                <div className="p-4 bg-white/5 border border-white/10 rounded-2xl text-center group hover:bg-white/10 transition-colors">
+                  <div className="text-2xl font-black text-white">5+</div>
+                  <div className="text-xs text-zinc-500 font-bold uppercase tracking-wider mt-1">Dialects</div>
                 </div>
-                <div className="flex flex-col items-center space-y-1 md:border-l border-zinc-800 md:pl-12">
-                  <span className="text-4xl font-bold text-white tracking-tight">AI</span>
-                  <span className="text-zinc-500 text-xs uppercase tracking-widest font-bold">Enhanced</span>
+                <div className="p-4 bg-white/5 border border-white/10 rounded-2xl text-center group hover:bg-white/10 transition-colors">
+                  <div className="text-2xl font-black text-white">AI</div>
+                  <div className="text-xs text-zinc-500 font-bold uppercase tracking-wider mt-1">Enhanced</div>
                 </div>
+                <div className="p-4 bg-white/5 border border-white/10 rounded-2xl text-center group hover:bg-white/10 transition-colors">
+                  <div className="text-2xl font-black text-white">Free</div>
+                  <div className="text-xs text-zinc-500 font-bold uppercase tracking-wider mt-1">Forever</div>
+                </div>
+              </div>
+
+              {/* Verb Conjugator Demo */}
+              <div className="space-y-10">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                  <div>
+                    <h2 className="text-3xl font-display font-bold text-white tracking-tight">Verb Conjugator</h2>
+                    <p className="text-zinc-500 mt-1">Instantly see how Bikol verbs transform across tenses and focus types</p>
+                  </div>
+                  <Link href="/word/bakal" className="flex items-center gap-2 text-blue-400 hover:text-blue-300 font-semibold transition-colors group">
+                    Explore More Verbs
+                    <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                </div>
+                <HomeVerbDemo />
               </div>
             </div>
           </div>

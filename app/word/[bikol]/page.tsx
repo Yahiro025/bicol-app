@@ -2,8 +2,67 @@ import { prisma } from '@/lib/prisma';
 import WordClientPage from './WordClientPage';
 import { notFound } from 'next/navigation';
 import { conjugateBikolVerb } from '@/lib/conjugator';
+import type { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';
+
+export async function generateMetadata({ params }: { params: Promise<{ bikol: string }> }): Promise<Metadata> {
+  const { bikol } = await params;
+  const bikolWord = decodeURIComponent(bikol);
+
+  try {
+    // Try normalized Root table first
+    const root = await prisma.root.findFirst({
+      where: { bikol: { equals: bikolWord, mode: 'insensitive' } },
+      include: { definitions: { select: { english: true, tagalog: true, dialect: true } } }
+    });
+
+    if (root?.definitions?.[0]) {
+      const def = root.definitions[0];
+      const english = def.english || '';
+      const desc = `Learn the Bikol word "${bikolWord}": ${english}.${def.tagalog ? ` Tagalog: ${def.tagalog}.` : ''} Includes verb conjugations, example sentences, and pronunciation.`;
+      return {
+        title: `${bikolWord} — ${english}`,
+        description: desc.substring(0, 160),
+        openGraph: {
+          title: `${bikolWord} — ${english} | BIKOL Dictionary`,
+          description: desc.substring(0, 160),
+          type: 'article',
+        },
+        twitter: {
+          title: `${bikolWord} — ${english}`,
+          description: desc.substring(0, 160),
+        }
+      };
+    }
+
+    // Fallback to legacy Word table
+    const word = await prisma.word.findUnique({ where: { bikol: bikolWord } });
+    if (word) {
+      const desc = `Learn the Bikol word "${bikolWord}": ${word.english}.${word.tagalog ? ` Tagalog: ${word.tagalog}.` : ''} Part of speech: ${word.pos || 'word'}.`;
+      return {
+        title: `${bikolWord} — ${word.english}`,
+        description: desc.substring(0, 160),
+        openGraph: {
+          title: `${bikolWord} — ${word.english} | BIKOL Dictionary`,
+          description: desc.substring(0, 160),
+          type: 'article',
+        },
+        twitter: {
+          title: `${bikolWord} — ${word.english}`,
+          description: desc.substring(0, 160),
+        }
+      };
+    }
+  } catch {
+    // Fall through to default
+  }
+
+  return {
+    title: `${bikolWord} — BIKOL Dictionary`,
+    description: `Look up the Bikol word "${bikolWord}" in our comprehensive Bikol language dictionary with translations, conjugations, and examples.`,
+  };
+}
 
 export default async function WordDetail({ params }: { params: Promise<{ bikol: string }> }) {
   const { bikol } = await params;

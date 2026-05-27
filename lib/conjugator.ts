@@ -57,6 +57,19 @@ function applyVowelRule(base: string): string {
 }
 
 /**
+ * Extracts the first vowel for object-focus reduplication.
+ * In object focus progressive, only the vowel is reduplicated after the infix.
+ */
+function getFirstVowel(root: string): string {
+  const vowels = ['a', 'e', 'i', 'o', 'u', 'á', 'é', 'í', 'ó', 'ú'];
+  const normalized = root.toLowerCase();
+  for (const char of normalized) {
+    if (vowels.includes(char)) return char;
+  }
+  return normalized[0] || '';
+}
+
+/**
  * Generates the full conjugation set for a root and its Mintz FocusClass.
  * Handles Actor Focus (MAG-) and Object Focus (-on, i-, -an).
  */
@@ -77,14 +90,16 @@ export function conjugateVerbMintz(root: string, focusClass: FocusClass): Conjug
   let object: ConjugationForms;
 
   switch (focusClass) {
-    case 'ON':
+    case 'ON': {
+      const v = getFirstVowel(normalized);
       object = {
         infinitive: `${baseWithH}on`,
         future: `${r}${baseWithH}on`,
         past: `${normalized[0]}in${normalized.substring(1)}`,
-        progressive: `${normalized[0]}in${r}${normalized.substring(1)}`
+        progressive: `${normalized[0]}in${v}${normalized}`
       };
       break;
+    }
     case 'I':
       object = {
         infinitive: `i${normalized}`,
@@ -93,14 +108,16 @@ export function conjugateVerbMintz(root: string, focusClass: FocusClass): Conjug
         progressive: `ini${r}${normalized}`
       };
       break;
-    case 'AN':
+    case 'AN': {
+      const v = getFirstVowel(normalized);
       object = {
         infinitive: `${baseWithH}an`,
         future: `${r}${baseWithH}an`,
         past: `${normalized[0]}in${normalized.substring(1)}an`,
-        progressive: `${normalized[0]}in${r}${normalized.substring(1)}an`
+        progressive: `${normalized[0]}in${v}${normalized}an`
       };
       break;
+    }
     case 'MAG':
     default:
       // For purely intransitive, object focus is identical to actor or empty
@@ -168,7 +185,7 @@ export function extractRoot(verb: string): string {
   else if (root.startsWith('nang')) root = root.substring(4);
   else if (root.startsWith('ma')) root = root.substring(2);
   else if (root.startsWith('na')) root = root.substring(2);
-  else if (root.startsWith('i') && root.length > 3) root = root.substring(1);
+  else if (root.startsWith('i') && !root.startsWith('in') && root.length > 3) root = root.substring(1);
 
   // 2. Remove suffixes (-on, -an)
   // Note: if word ends in vowel, 'h' might have been inserted.
@@ -187,17 +204,23 @@ export function extractRoot(verb: string): string {
   }
 
   // 3. Remove infixes (-in-)
-  // Infixes occur after the first consonant
+  // Infixes occur after the first consonant — only apply if root is long enough
+  // to avoid false positives on short words (e.g., "nin" would incorrectly strip to "n")
   const firstChar = root[0];
   if (root.length > 3 && firstChar && !vowels.includes(firstChar)) {
     if (root.substring(1, 3) === 'in') {
       root = firstChar + root.substring(3);
     }
-  } else if (root.startsWith('in') && root.length > 2) {
-    const thirdChar = root[2];
-    if (thirdChar && vowels.includes(thirdChar)) {
-      // If root starts with vowel, infix becomes prefix 'in-'
-      root = root.substring(2);
+  } else if (root.startsWith('in') && root.length > 3) {
+    // I-class past: "ini-" prefix (e.g., initao → tao, iniabot → abot)
+    if (root.startsWith('ini') && root.length > 4) {
+      root = root.substring(3);
+    } else {
+      const thirdChar = root[2];
+      if (thirdChar && vowels.includes(thirdChar)) {
+        // Vowel-initial root in ON/AN class: "in-" prefix (e.g., inapod → apod)
+        root = root.substring(2);
+      }
     }
   }
 

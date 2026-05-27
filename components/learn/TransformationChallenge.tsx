@@ -66,24 +66,19 @@ export default function TransformationChallenge({ onComplete, challenges: extern
     e.preventDefault();
     if (showAnswer || !userInput.trim()) return;
 
-    console.log('Validating answer for index:', currentIdx, 'Input:', userInput);
-    
     const normalizedInput = userInput.toLowerCase().trim().replace(/[.!?]$/, '');
     const normalizedAnswer = challenge.answer.toLowerCase().trim();
     const normalizedSentence = challenge.sentence.toLowerCase().trim().replace(/[.!?]$/, '');
     
     if (normalizedInput === normalizedAnswer || normalizedInput === normalizedSentence) {
-      console.log('Success at index:', currentIdx);
       setIsCorrect(true);
       setShowAnswer(true);
     } else {
-      console.log('Failure at index:', currentIdx);
       setIsCorrect(false);
     }
   };
 
   const nextChallenge = () => {
-    console.log('Next challenge triggered. Current index:', currentIdx);
     if (currentIdx + 1 < SAMPLE_CHALLENGES.length) {
       setIsCorrect(null);
       setShowAnswer(false);

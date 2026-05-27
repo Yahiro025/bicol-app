@@ -118,7 +118,7 @@ export default function LearnPage() {
           }
         }
       } catch (err) {
-        console.log("Using fallback drills:", err);
+        console.error("Using fallback drills:", err);
       } finally {
         setIsLoadingDrills(false);
       }

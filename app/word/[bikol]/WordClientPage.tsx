@@ -8,6 +8,7 @@ import AudioPlayer from '@/components/AudioPlayer';
 import type { LanguageMode } from '@/components/LanguageToggle';
 import { VerbConjugator } from '@/components/dictionary/VerbConjugator';
 import { GrammarHighlight } from '@/components/GrammarHighlight';
+import WordJsonLd from '@/components/WordJsonLd';
 
 export default function WordClientPage({ word, isNormalized }: { word: any, isNormalized: boolean }) {
   const [langMode, setLangMode] = useState<LanguageMode>('all');
@@ -120,6 +121,14 @@ export default function WordClientPage({ word, isNormalized }: { word: any, isNo
 
   return (
     <div className="min-h-screen bg-white dark:bg-zinc-950 p-4 md:p-8">
+      <WordJsonLd
+        bikol={bikol}
+        english={definitions[0]?.english || ''}
+        tagalog={definitions[0]?.tagalog}
+        pos={pos}
+        pronunciation={pronunciation}
+        definitions={definitions}
+      />
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

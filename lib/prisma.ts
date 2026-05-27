@@ -15,7 +15,6 @@ const getPool = () => {
       console.error('DATABASE_URL is not defined');
     }
     globalForPrisma.pgPool = new pg.Pool({ connectionString });
-    console.log('Created new pg Pool');
   }
   return globalForPrisma.pgPool;
 };
@@ -25,7 +24,6 @@ const getPrisma = () => {
     const pool = getPool();
     const adapter = new PrismaPg(pool);
     globalForPrisma.prisma = new PrismaClient({ adapter });
-    console.log('Created new PrismaClient instance');
   }
   return globalForPrisma.prisma;
 };
