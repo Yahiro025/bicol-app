@@ -1,0 +1,8 @@
+ALTER TABLE "user_submissions"
+ADD COLUMN IF NOT EXISTS "pos" TEXT,
+ADD COLUMN IF NOT EXISTS "pronunciation" TEXT,
+ADD COLUMN IF NOT EXISTS "example_bikol" TEXT,
+ADD COLUMN IF NOT EXISTS "example_english" TEXT,
+ADD COLUMN IF NOT EXISTS "source" TEXT,
+ADD COLUMN IF NOT EXISTS "target_table" TEXT DEFAULT 'legacy',
+ADD COLUMN IF NOT EXISTS "admin_notes" TEXT;
