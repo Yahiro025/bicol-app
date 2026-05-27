@@ -46,15 +46,17 @@ const SAMPLE_CHALLENGES: Challenge[] = [
 
 interface TransformationChallengeProps {
   onComplete?: () => void;
+  challenges?: Challenge[];
 }
 
-export default function TransformationChallenge({ onComplete }: TransformationChallengeProps) {
+export default function TransformationChallenge({ onComplete, challenges: externalChallenges }: TransformationChallengeProps) {
   const [currentIdx, setCurrentIdx] = useState(0);
   const [userInput, setUserInput] = useState('');
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [showAnswer, setShowAnswer] = useState(false);
 
-  const challenge = SAMPLE_CHALLENGES[currentIdx];
+  const challenges = externalChallenges && externalChallenges.length > 0 ? externalChallenges : SAMPLE_CHALLENGES;
+  const challenge = challenges[currentIdx];
 
   if (!challenge) {
     return null;

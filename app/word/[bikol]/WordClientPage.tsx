@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Share2, Info, Book } from 'lucide-react';
+import { ArrowLeft, Share2, Info, Book, BookOpen } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { saveToHistory } from '@/lib/offline';
 import AudioPlayer from '@/components/AudioPlayer';
@@ -119,18 +119,27 @@ export default function WordClientPage({ word, isNormalized }: { word: any, isNo
   }, [word]);
 
   return (
-    <div className="min-h-screen bg-zinc-950 p-4 md:p-8">
+    <div className="min-h-screen bg-white dark:bg-zinc-950 p-4 md:p-8">
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         className="max-w-4xl mx-auto space-y-8"
       >
-        <Link href="/" className="inline-flex items-center gap-2 text-zinc-500 hover:text-white font-bold transition-all hover:-translate-x-1 active:scale-95">
-          <ArrowLeft className="h-5 w-5" /> Back to Search
-        </Link>
+        <div className="flex items-center justify-between flex-wrap gap-4 mb-4">
+          <Link href="/" className="inline-flex items-center gap-2 text-zinc-500 hover:text-zinc-900 dark:hover:text-white font-bold transition-all hover:-translate-x-1 active:scale-95">
+            <ArrowLeft className="h-5 w-5" /> Back to Search
+          </Link>
+          <Link
+            href="/flashcards"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-500 transition-colors active:scale-95 shadow-lg shadow-blue-500/20"
+          >
+            <BookOpen className="w-4 h-4" />
+            Study with Flashcards
+          </Link>
+        </div>
 
-        <section className="bg-zinc-900/50 backdrop-blur-xl border border-white/5 rounded-[40px] p-8 md:p-12 shadow-2xl space-y-8 relative overflow-hidden">
+        <section className="bg-zinc-50 dark:bg-zinc-900/50 backdrop-blur-xl border border-zinc-200 dark:border-white/5 rounded-[40px] p-8 md:p-12 shadow-2xl space-y-8 relative overflow-hidden">
           {/* Background Decorative Glow */}
           <div className="absolute -top-24 -right-24 w-64 h-64 bg-blue-500/10 blur-[100px] rounded-full pointer-events-none" />
           
@@ -139,15 +148,15 @@ export default function WordClientPage({ word, isNormalized }: { word: any, isNo
               <span className="px-4 py-1 bg-blue-500/10 text-blue-400 text-xs font-black uppercase tracking-widest rounded-full border border-blue-500/20">
                 {pos || 'Word'} • {definitions[0]?.dialect || 'General'}
               </span>
-              <h2 className="text-6xl md:text-8xl font-black tracking-tighter mt-4 bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-400">{bikol}</h2>
+              <h2 className="text-6xl md:text-8xl font-black tracking-tighter mt-4 bg-clip-text text-transparent bg-gradient-to-b from-zinc-900 dark:from-white to-zinc-400">{bikol}</h2>
               <div className="flex items-center gap-6 mt-4">
-                {pronunciation && <p className="text-2xl text-zinc-500 font-medium font-mono">/ {pronunciation} /</p>}
+                {pronunciation && <p className="text-2xl text-zinc-400 dark:text-zinc-500 font-medium font-mono">/ {pronunciation} /</p>}
                 {audio_url && <AudioPlayer url={audio_url} />}
               </div>
             </div>
             <div className="flex gap-3">
               <button 
-                className="p-4 bg-zinc-800 border border-white/5 rounded-2xl hover:bg-zinc-700 active:scale-90 transition-all shadow-lg" 
+                className="p-4 bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-white/5 rounded-2xl hover:bg-zinc-200 dark:hover:bg-zinc-700 active:scale-90 transition-all shadow-lg" 
                 onClick={() => {
                   if (navigator.share) {
                     navigator.share({
@@ -158,7 +167,7 @@ export default function WordClientPage({ word, isNormalized }: { word: any, isNo
                   }
                 }}
               >
-                <Share2 className="h-6 w-6 text-zinc-400" />
+                <Share2 className="h-6 w-6 text-zinc-500 dark:text-zinc-400" />
               </button>
             </div>
           </div>
@@ -166,7 +175,7 @@ export default function WordClientPage({ word, isNormalized }: { word: any, isNo
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 relative z-10">
             {/* Definitions Column */}
             <div className="space-y-8">
-              <h3 className="text-sm font-black text-zinc-500 uppercase tracking-widest flex items-center gap-2"><Info className="h-4 w-4" /> Definitions</h3>
+              <h3 className="text-sm font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest flex items-center gap-2"><Info className="h-4 w-4" /> Definitions</h3>
               <div className="space-y-10">
                 {definitions.map((def: any, idx: number) => (
                   <div key={idx} className="space-y-4">
@@ -175,20 +184,20 @@ export default function WordClientPage({ word, isNormalized }: { word: any, isNo
                     )}
                     {(langMode === 'en' || langMode === 'all') && def.english && (
                       <div>
-                        <p className="text-xs text-zinc-500 font-black uppercase tracking-widest mb-1 opacity-50">ENGLISH</p>
-                        <p className="text-2xl font-bold leading-tight text-zinc-100">{def.english}</p>
+                        <p className="text-xs text-zinc-400 dark:text-zinc-500 font-black uppercase tracking-widest mb-1 opacity-50">ENGLISH</p>
+                        <p className="text-2xl font-bold leading-tight text-zinc-800 dark:text-zinc-100">{def.english}</p>
                       </div>
                     )}
                     {(langMode === 'tl' || langMode === 'all') && def.tagalog && (
                       <div>
-                        <p className="text-xs text-zinc-500 font-black uppercase tracking-widest mb-1 opacity-50">TAGALOG</p>
-                        <p className="text-2xl font-bold text-blue-400 leading-tight">{def.tagalog}</p>
+                        <p className="text-xs text-zinc-400 dark:text-zinc-500 font-black uppercase tracking-widest mb-1 opacity-50">TAGALOG</p>
+                        <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 leading-tight">{def.tagalog}</p>
                       </div>
                     )}
                     {langMode === 'tl' && !def.tagalog && def.english && (
                       <div>
-                        <p className="text-xs text-zinc-500 font-black uppercase tracking-widest mb-1 opacity-50">ENGLISH (Fallback)</p>
-                        <p className="text-2xl font-bold leading-tight text-zinc-100">{def.english}</p>
+                        <p className="text-xs text-zinc-400 dark:text-zinc-500 font-black uppercase tracking-widest mb-1 opacity-50">ENGLISH (Fallback)</p>
+                        <p className="text-2xl font-bold leading-tight text-zinc-800 dark:text-zinc-100">{def.english}</p>
                       </div>
                     )}
                   </div>
@@ -198,20 +207,20 @@ export default function WordClientPage({ word, isNormalized }: { word: any, isNo
 
             {/* Usage Column */}
             <div className="space-y-6">
-              <h3 className="text-sm font-black text-zinc-500 uppercase tracking-widest flex items-center gap-2"><Book className="h-4 w-4" /> Usage</h3>
+              <h3 className="text-sm font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest flex items-center gap-2"><Book className="h-4 w-4" /> Usage</h3>
               <div className="space-y-4">
                 {definitions.flatMap((d: any) => d.exampleSentences || []).map((ex: any, i: number) => (
-                  <div key={i} className="p-8 bg-blue-500/5 rounded-3xl border border-white/5 italic relative overflow-hidden group">
+                  <div key={i} className="p-8 bg-blue-50 dark:bg-blue-500/5 rounded-3xl border border-blue-100 dark:border-white/5 italic relative overflow-hidden group">
                     <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <p className="text-xl font-bold text-zinc-100 relative z-10">
+                    <p className="text-xl font-bold text-zinc-800 dark:text-zinc-100 relative z-10">
                       "<GrammarHighlight text={ex.bikol} />"
                     </p>
-                    <p className="text-zinc-500 mt-2 relative z-10">— {ex.english}</p>
+                    <p className="text-zinc-500 dark:text-zinc-500 mt-2 relative z-10">— {ex.english}</p>
                   </div>
                 ))}
                 {definitions.every((d: any) => !d.exampleSentences || d.exampleSentences.length === 0) && (
-                  <div className="p-8 bg-zinc-900/50 rounded-3xl border border-dashed border-white/10 text-center">
-                    <p className="text-zinc-500 italic">No example sentences available.</p>
+                  <div className="p-8 bg-zinc-50 dark:bg-zinc-900/50 rounded-3xl border border-dashed border-zinc-200 dark:border-white/10 text-center">
+                    <p className="text-zinc-400 dark:text-zinc-500 italic">No example sentences available.</p>
                   </div>
                 )}
               </div>
@@ -220,8 +229,8 @@ export default function WordClientPage({ word, isNormalized }: { word: any, isNo
 
           {/* Verb Conjugator Section */}
           {showConjugator && affixGroups.length > 0 && (
-            <div className="pt-12 border-t border-white/5 space-y-6 relative z-10">
-              <h3 className="text-sm font-black text-zinc-500 uppercase tracking-widest flex items-center gap-2">Verb Conjugation</h3>
+            <div className="pt-12 border-t border-zinc-200 dark:border-white/5 space-y-6 relative z-10">
+              <h3 className="text-sm font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest flex items-center gap-2">Verb Conjugation</h3>
               <VerbConjugator rootWord={bikol} affixGroups={affixGroups} />
             </div>
           )}
@@ -240,22 +249,22 @@ export default function WordClientPage({ word, isNormalized }: { word: any, isNo
             const uniqueSynonyms = Array.from(new Set(allSynonyms)) as string[];
             
             return (etymology || uniqueSynonyms.length > 0) && (
-              <div className="pt-8 border-t border-white/5 grid grid-cols-1 md:grid-cols-2 gap-12 relative z-10">
+              <div className="pt-8 border-t border-zinc-200 dark:border-white/5 grid grid-cols-1 md:grid-cols-2 gap-12 relative z-10">
                 {etymology && (
                   <div className="space-y-4">
-                    <h3 className="text-sm font-black text-zinc-500 uppercase tracking-widest flex items-center gap-2">Etymology</h3>
-                    <p className="text-zinc-400 text-sm leading-relaxed">{etymology}</p>
+                    <h3 className="text-sm font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest flex items-center gap-2">Etymology</h3>
+                    <p className="text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed">{etymology}</p>
                   </div>
                 )}
                 {uniqueSynonyms.length > 0 && (
                   <div className="space-y-4">
-                    <h3 className="text-sm font-black text-zinc-500 uppercase tracking-widest flex items-center gap-2">Synonyms</h3>
+                    <h3 className="text-sm font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest flex items-center gap-2">Synonyms</h3>
                     <div className="flex flex-wrap gap-2">
                       {uniqueSynonyms.map((s: string, i: number) => (
                         <Link 
                           key={i} 
                           href={`/word/${encodeURIComponent(s)}`}
-                          className="px-4 py-2 bg-zinc-800 text-blue-400 hover:bg-blue-500/10 hover:text-blue-300 border border-white/5 hover:border-blue-500/30 rounded-xl text-sm font-bold transition-all hover:scale-105 active:scale-95 shadow-sm"
+                          className="px-4 py-2 bg-zinc-100 dark:bg-zinc-800 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 hover:text-blue-700 dark:hover:text-blue-300 border border-zinc-200 dark:border-white/5 hover:border-blue-300 dark:hover:border-blue-500/30 rounded-xl text-sm font-bold transition-all hover:scale-105 active:scale-95 shadow-sm"
                         >
                           {s}
                         </Link>

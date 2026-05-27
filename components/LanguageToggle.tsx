@@ -11,7 +11,11 @@ export default function LanguageToggle() {
 
   useEffect(() => {
     const saved = localStorage.getItem('bikoldict-lang-mode') as LanguageMode;
-    if (saved) setMode(saved);
+    if (saved) {
+      setMode(saved);
+      // Dispatch on initial load so all components sync immediately
+      window.dispatchEvent(new CustomEvent('lang-mode-change', { detail: saved }));
+    }
   }, []);
 
   const handleToggle = (newMode: LanguageMode) => {

@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback, useTransition } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import Button from './ui/Button';
+import type { LanguageMode } from './LanguageToggle';
 
 type Word = {
   bikol: string;
@@ -53,6 +54,7 @@ export default function BrowseClient({
   const [hasMore, setHasMore] = useState(initialWords.length === 50);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [areFiltersVisible, setAreFiltersVisible] = useState(false);
+  const [langMode, setLangMode] = useState<LanguageMode>('all');
 
   // Intersection Observer for infinite scroll
   const observerTarget = useCallback((node: HTMLDivElement | null) => {
@@ -70,6 +72,21 @@ export default function BrowseClient({
     observer.observe(node);
     return () => observer.disconnect();
   }, [isLoadingMore, hasMore]);
+
+  // Sync language mode
+  useEffect(() => {
+    const saved = localStorage.getItem('bikoldict-lang-mode') as LanguageMode;
+    if (saved) setLangMode(saved);
+
+    const handleLangChange = (e: Event) => setLangMode((e as CustomEvent).detail);
+    window.addEventListener('lang-mode-change', handleLangChange);
+    return () => window.removeEventListener('lang-mode-change', handleLangChange);
+  }, []);
+
+  const displayTranslation = (word: Word) => {
+    if (langMode === 'tl' && word.tagalog) return word.tagalog;
+    return word.english;
+  };
 
   const fetchMoreWords = async (isReset = false) => {
     const currentPage = isReset ? 0 : page;
@@ -165,7 +182,7 @@ export default function BrowseClient({
           value={query}
           onChange={handleSearchChange}
           placeholder={`Search dictionary...`}
-          className="w-full px-8 py-4 bg-zinc-900 border border-zinc-800 rounded-full text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-950 text-lg transition-all duration-300 focus:bg-zinc-800/50"
+          className="w-full px-8 py-4 bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-full text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-zinc-950 text-lg transition-all duration-300 focus:bg-white dark:focus:bg-zinc-800/50"
         />
         <div className="absolute right-6 top-1/2 -translate-y-1/2 flex items-center gap-3">
           {isPending && (
@@ -174,7 +191,7 @@ export default function BrowseClient({
           {query && (
             <button 
               onClick={() => setQuery('')}
-              className="text-zinc-500 hover:text-white transition-colors p-1"
+              className="text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors p-1"
             >
               ✕
             </button>
@@ -223,16 +240,16 @@ export default function BrowseClient({
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden"
           >
-            <div className="bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 p-8 rounded-2xl mb-10 shadow-2xl">
+            <div className="bg-zinc-50 dark:bg-zinc-900/50 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 p-8 rounded-2xl mb-10 shadow-2xl">
               {/* Letter Grid */}
-              <h3 className="text-xs font-bold text-zinc-500 mb-4 uppercase tracking-widest">Starts with</h3>
+              <h3 className="text-xs font-bold text-zinc-400 dark:text-zinc-500 mb-4 uppercase tracking-widest">Starts with</h3>
               <div className="flex flex-wrap gap-2 mb-8">
                 <button
                   onClick={() => handleFilterClick('letter', '')}
                   className={`px-5 h-10 rounded-xl flex items-center justify-center text-sm font-bold transition-all duration-200 active:scale-95 ${
                     !selectedLetter 
                       ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' 
-                      : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200 border border-zinc-700'
+                      : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-300 dark:hover:bg-zinc-700 hover:text-zinc-700 dark:hover:text-zinc-200 border border-zinc-300 dark:border-zinc-700'
                   }`}
                 >
                   ALL
@@ -244,7 +261,7 @@ export default function BrowseClient({
                     className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold transition-all duration-200 active:scale-95 ${
                       selectedLetter === l 
                         ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' 
-                        : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200 border border-zinc-700'
+                        : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-300 dark:hover:bg-zinc-700 hover:text-zinc-700 dark:hover:text-zinc-200 border border-zinc-300 dark:border-zinc-700'
                     }`}
                   >
                     {l}
@@ -253,7 +270,7 @@ export default function BrowseClient({
               </div>
 
               {/* Category Grid */}
-              <h3 className="text-xs font-bold text-zinc-500 mb-4 uppercase tracking-widest">Category</h3>
+              <h3 className="text-xs font-bold text-zinc-400 dark:text-zinc-500 mb-4 uppercase tracking-widest">Category</h3>
               <div className="flex flex-wrap gap-2">
                 {initialCategories.map((cat) => (
                   <button
@@ -262,7 +279,7 @@ export default function BrowseClient({
                     className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 active:scale-95 ${
                       selectedCategory === cat 
                         ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/30' 
-                        : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200 border border-zinc-700'
+                        : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-300 dark:hover:bg-zinc-700 hover:text-zinc-700 dark:hover:text-zinc-200 border border-zinc-300 dark:border-zinc-700'
                     }`}
                   >
                     {cat}
@@ -282,20 +299,20 @@ export default function BrowseClient({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 z-50 bg-zinc-950/40 backdrop-blur-[2px] flex flex-col items-center pt-20"
+              className="absolute inset-0 z-50 bg-white/40 dark:bg-zinc-950/40 backdrop-blur-[2px] flex flex-col items-center pt-20"
             >
               <div className="relative">
                 <div className="w-12 h-12 border-4 border-blue-500/20 rounded-full animate-pulse" />
                 <div className="absolute inset-0 w-12 h-12 border-t-4 border-blue-500 rounded-full animate-spin" />
               </div>
-              <p className="mt-4 text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] animate-pulse">
+              <p className="mt-4 text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-[0.2em] animate-pulse">
                 Filtering Archive...
               </p>
             </motion.div>
           )}
         </AnimatePresence>
 
-        <div className="text-sm font-medium text-zinc-500 mb-6 flex items-center gap-2">
+        <div className="text-sm font-medium text-zinc-400 dark:text-zinc-500 mb-6 flex items-center gap-2">
           <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
           Found {words.length} result{words.length !== 1 ? 's' : ''}
         </div>
@@ -313,21 +330,21 @@ export default function BrowseClient({
               href={`/word/${encodeURIComponent(word.bikol)}`}
               prefetch={false}
               onMouseEnter={() => router.prefetch(`/word/${encodeURIComponent(word.bikol)}`)}
-              className="block bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 p-6 rounded-2xl hover:border-blue-500/30 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 group"
+              className="block bg-zinc-50 dark:bg-zinc-900/50 backdrop-blur-sm border border-zinc-200 dark:border-zinc-800 p-6 rounded-2xl hover:border-blue-500/30 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 group"
             >
               <div className="flex justify-between items-start">
                 <div>
-                  <h2 className="text-2xl font-display font-bold text-blue-500 group-hover:text-blue-400 transition-colors">
+                  <h2 className="text-2xl font-display font-bold text-blue-600 dark:text-blue-500 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors">
                     {highlightText(word.bikol)}
                   </h2>
-                  <p className="text-zinc-100 mt-1 font-medium">{highlightText(word.english)}</p>
-                  {word.tagalog && (
+                  <p className="text-zinc-800 dark:text-zinc-100 mt-1 font-medium">{highlightText(displayTranslation(word))}</p>
+                  {langMode === 'all' && word.tagalog && (
                     <p className="text-zinc-500 text-xs mt-2 italic">Tagalog: {highlightText(word.tagalog)}</p>
                   )}
                 </div>
                 <div className="text-right flex flex-col items-end gap-2">
                   {word.pos && (
-                    <span className="text-[10px] uppercase tracking-widest font-black bg-zinc-800 text-zinc-400 px-2 py-1 rounded border border-zinc-700">{word.pos}</span>
+                    <span className="text-[10px] uppercase tracking-widest font-black bg-zinc-200 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 px-2 py-1 rounded border border-zinc-300 dark:border-zinc-700">{word.pos}</span>
                   )}
                   {word.category && (
                     <span className="text-[10px] uppercase tracking-widest font-black bg-blue-500/10 text-blue-400 px-2 py-1 rounded border border-blue-500/20">{word.category}</span>
@@ -343,16 +360,16 @@ export default function BrowseClient({
           {isLoadingMore && (
             <div className="flex flex-col items-center gap-2">
               <div className="w-6 h-6 border-2 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
-              <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Loading more...</p>
+              <p className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">Loading more...</p>
             </div>
           )}
           {!hasMore && words.length > 0 && (
-            <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">End of Archive</p>
+            <p className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">End of Archive</p>
           )}
         </div>
 
         {words.length === 0 && !isLoadingMore && (
-           <motion.div variants={itemVariants} className="text-center text-zinc-500 py-12">
+           <motion.div variants={itemVariants} className="text-center text-zinc-400 dark:text-zinc-500 py-12">
              {query || hasActiveFilters ? `No matches found. Try adjusting your search or filters.` : `No words found.`}
            </motion.div>
         )}

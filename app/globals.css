@@ -1,6 +1,6 @@
  @import "tailwindcss";
 
-/* Custom theme variables for dark mode */
+/* Custom theme variables */
 :root {
   --color-primary: #3b82f6; /* Bicolano Sea Blue */
   --color-primary-hover: #2563eb;
@@ -8,9 +8,17 @@
   --color-secondary-hover: #9333ea;
   --color-accent: #0ea5e9;
   --color-accent-hover: #0284c7;
-  --color-background: #09090b; /* Foundation Deep */
-  --color-surface: #18181b; /* Surface Zinc */
-  --color-border: #27272a; /* Border Zinc */
+  --color-background: #ffffff;
+  --color-surface: #f4f4f5;
+  --color-border: #e4e4e7;
+  --color-text-main: #18181b;
+  --color-text-muted: #71717a;
+}
+
+.dark {
+  --color-background: #09090b;
+  --color-surface: #18181b;
+  --color-border: #27272a;
   --color-text-main: #fafafa;
   --color-text-muted: #a1a1aa;
 }
@@ -47,7 +55,7 @@ html {
 
 /* Glass effect for cards and overlays */
 .glass-effect {
-  @apply bg-zinc-900/50 backdrop-blur-md border border-zinc-800/50;
+  @apply bg-zinc-100/50 dark:bg-zinc-900/50 backdrop-blur-md border border-zinc-200 dark:border-zinc-800/50;
 }
 
 /* Responsive Bloom Elevation */
@@ -72,9 +80,13 @@ html {
 
 /* Card utilities - Resting Precision */
 .card-resting {
-  background-color: rgba(24, 24, 27, 0.5);
+  background-color: rgba(255, 255, 255, 0.8);
   border: 1px solid var(--color-border);
   @apply rounded-2xl transition-all duration-300;
+}
+
+.dark .card-resting {
+  background-color: rgba(24, 24, 27, 0.5);
 }
 
 .card-resting:hover {

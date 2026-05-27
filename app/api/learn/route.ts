@@ -5,6 +5,7 @@ import { generateQuizQuestions } from '@/lib/groq';
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const mode = searchParams.get('mode') || 'flashcards';
+  const limit = parseInt(searchParams.get('limit') || '20');
 
   try {
     if (mode === 'quiz') {
@@ -14,7 +15,7 @@ export async function GET(request: Request) {
         FROM words 
         WHERE confidence >= 0.8 
         ORDER BY RANDOM() 
-        LIMIT 10
+        LIMIT ${Math.min(limit, 50)}
       ` as any[];
 
       if (words.length < 5) {
@@ -30,7 +31,7 @@ export async function GET(request: Request) {
         FROM words 
         WHERE confidence >= 0.8 
         ORDER BY RANDOM() 
-        LIMIT 20
+        LIMIT ${Math.min(limit, 100)}
       ` as any[];
 
       return NextResponse.json(words);

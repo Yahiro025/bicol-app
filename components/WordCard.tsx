@@ -61,26 +61,26 @@ export default function WordCard({ word, className }: WordCardProps) {
         href={wordUrl}
         prefetch={false}
         onMouseEnter={() => router.prefetch(wordUrl)}
-        className={`group block p-6 bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-2xl hover:border-blue-500/30 hover:bg-zinc-800/50 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/10 active:scale-[0.98] transition-all duration-300 ${className}`}
+        className={`group block p-6 bg-zinc-50 dark:bg-zinc-900/50 backdrop-blur-sm border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-blue-500/30 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/10 active:scale-[0.98] transition-all duration-300 ${className}`}
       >
         <div className="flex justify-between items-start">
           <div className="space-y-1">
             <div className="flex items-center gap-3">
-              <h3 className="text-2xl font-display font-bold text-blue-500 group-hover:text-blue-400 transition-colors tracking-tight">
+              <h3 className="text-2xl font-display font-bold text-blue-600 dark:text-blue-500 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors tracking-tight">
                 {word.bikol}
               </h3>
               {word.pos && (
-                <span className="text-[10px] uppercase tracking-widest px-2 py-0.5 bg-zinc-800 text-zinc-500 rounded font-black border border-zinc-700">
+                <span className="text-[10px] uppercase tracking-widest px-2 py-0.5 bg-zinc-200 dark:bg-zinc-800 text-zinc-500 rounded font-black border border-zinc-300 dark:border-zinc-700">
                   {word.pos}
                 </span>
               )}
             </div>
-            <p className="text-zinc-100 font-medium line-clamp-1">{displayTranslation()}</p>
+            <p className="text-zinc-800 dark:text-zinc-100 font-medium line-clamp-1">{displayTranslation()}</p>
             {langMode === 'all' && word.tagalog && (
               <p className="text-xs text-zinc-500 italic opacity-60 mt-1">Tagalog: {word.tagalog}</p>
             )}
           </div>
-          <div className="p-2.5 rounded-full bg-zinc-800 text-zinc-500 group-hover:text-blue-400 group-hover:bg-blue-500/10 transition-all duration-300 group-hover:translate-x-1 border border-zinc-700/50 group-hover:border-blue-500/20">
+          <div className="p-2.5 rounded-full bg-zinc-200 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 group-hover:text-blue-500 dark:group-hover:text-blue-400 group-hover:bg-blue-50 dark:group-hover:bg-blue-500/10 transition-all duration-300 group-hover:translate-x-1 border border-zinc-300 dark:border-zinc-700/50 group-hover:border-blue-500/20">
             <ChevronRight size={18} />
           </div>
         </div>
