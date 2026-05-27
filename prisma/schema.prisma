@@ -66,6 +66,7 @@ model Definition {
   tagalog          String?
   aiConfidence     Float?            @default(1.0)
   source_url       String?
+  source           String?           @default("unknown")
   affixPair        String?           @default("UNKNOWN")
   focusType        String?           @default("UNKNOWN")
   series           String?           @default("REGULAR")

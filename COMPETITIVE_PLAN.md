@@ -1,6 +1,78 @@
 # Competitive Plan: Beating bikoldictionary.com
 
 > Created: May 27, 2026
+> Updated: After Mintz PDF analysis
+
+---
+
+## 🆕 NEW: Suggestions from Mintz PDF Linguistic Analysis
+
+The Mintz "BIKOL DICTIONARY" PDF (810 pages, University of Hawai'i Press) is the academic gold standard. It contains deep linguistic content we can leverage to build an unmatched moat.
+
+### 10. 🔤 Advanced Affix & Series Conjugation — Expand VerbConjugator
+Our `lib/conjugator.ts` currently handles MAG, ON, I, AN focuses. Mintz details many more:
+
+- **Causative Series (PA-)** — "to cause someone to do X"
+- **Social/Request Series (MAKI- / PAKI-)** — polite requests
+- **Unintentional/Ability Series (MAKA- / NAKA-)** — accidental actions, ability
+- **Becoming (MAG-ÍN)** — state change verbs
+- **Intent/Effort (HING- series)**
+- **Combined Affix Forms**
+
+**Action:** Extend the conjugator to generate all series. Show them in the VerbConjugator component with labels and example sentences.
+
+### 11. 🔄 English-to-Bikol Reverse Search
+The Mintz PDF is literally half Bikol→English and half English→Bikol. Our app only does Bikol→English lookups.
+
+**Action:** Add an English→Bikol reverse search endpoint and toggle in SearchBar. Allow users to switch direction.
+
+### 12. 🗣️ Syllable Stress Markers
+Mintz devotes entire sections to stress (Verbal vs. Non-Verbal). Stress placement changes meaning in Bikol (e.g., `báka` = "cow" vs. `baká` = "maybe").
+
+**Action:** Add a stress field to the word data model. Display stressed syllables visually (bold, underline, or accent marks) on word cards and entry pages.
+
+### 13. 📜 Etymology & Loanword Tags
+Mintz has explicit policies for Spanish and English loanword orthography. Many Bikol words come from Spanish (e.g., `bintana` from `ventana`, `kabayo` from `caballo`).
+
+**Action:** Add etymology tags to word entries. Flag Spanish/English origins. Show the original word and orthographic shift (e.g., why "c" → "k", "v" → "b").
+
+### 14. 🔢 Pluralization Engine
+Mintz covers pluralization rules for nouns, verbs, AND adjectives. Not just `mga` — Bikol uses reduplication and specific affixes.
+
+**Action:** Build a `pluralize.ts` utility (mirroring `conjugator.ts`). Generate and display plurals on word pages.
+
+### 15. 📚 Culturally Accurate Alphabetization (NG as a Letter)
+Mintz alphabetizes "NG" as its own letter section. This is standard Philippine linguistic practice.
+
+**Action:** Adjust database sorting and browse A-Z to treat `Ng` as a distinct letter between N and O.
+
+### 16. 📖 Alphabet & Orthography Reference Page
+Mintz has hundreds of pages on the Bikol alphabet, orthographic representation, sound system, etc.
+
+**Action:** Create a `/reference` or `/learn/alphabet` page with:
+- The Bikol alphabet
+- Spanish/English loanword orthography rules
+- Consonant and vowel charts
+- Diphthong guide
+- Stress rules (verbal vs non-verbal)
+
+### 17. 🔊 Sound & Pronunciation Guide
+Mintz has detailed phonetics: consonant charts, vowel distribution, diphthongs.
+
+**Action:** Add a phonetics reference with:
+- IPA transcriptions for each sound
+- Audio recordings for each phoneme
+- Visual mouth/tongue position diagrams
+
+### 18. 📘 Dictionary Usage Guide + Attribution
+Mintz has a "USE OF THE DICTIONARY" section explaining entry structure. We should credit the source material properly.
+
+**Action:**
+- Add a "How to Use This Dictionary" page
+- Add proper attribution to Malcolm W. Mintz and University of Hawai'i Press
+- Note the Creative Commons license (CC BY-NC-SA 4.0)
+
+---
 
 ## ✅ Completed (This Session)
 
@@ -78,3 +150,25 @@ The competitor has ZERO learning features. Double down:
 - WCAG AA compliance audit
 - Keyboard navigation improvements
 - Screen reader testing
+
+---
+
+## 📊 Priority Matrix
+
+| Priority | Feature | Effort | Impact |
+|---|---|---|---|
+| 🔥 P0 | Advanced Affix Conjugation (#10) | High | Very High |
+| 🔥 P0 | English-to-Bikol Search (#11) | Medium | Very High |
+| 🔥 P0 | Syllable Stress Markers (#12) | Medium | High |
+| ⭐ P1 | Pluralization Engine (#14) | Medium | High |
+| ⭐ P1 | Authentic Alphabetization (#15) | Low | Medium |
+| ⭐ P1 | Grammar Reference Pages (#4) | High | High |
+| ⭐ P1 | More Drill Types (#4) | High | Very High |
+| 📋 P2 | Etymology Tags (#13) | Low | Medium |
+| 📋 P2 | Alphabet Reference Page (#16) | Medium | Medium |
+| 📋 P2 | Sound/Pronunciation Guide (#17) | High | Medium |
+| 📋 P2 | Attribution & Usage Guide (#18) | Low | Low |
+| 📋 P2 | Progress Tracking (#4) | High | High |
+| 📋 P3 | Community Features (#5) | Very High | High |
+| 📋 P3 | Analytics (#8) | Medium | Medium |
+| 📋 P3 | Accessibility (#9) | Medium | Medium |
