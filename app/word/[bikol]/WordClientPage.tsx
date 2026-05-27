@@ -10,6 +10,41 @@ import { VerbConjugator } from '@/components/dictionary/VerbConjugator';
 import { GrammarHighlight } from '@/components/GrammarHighlight';
 import WordJsonLd from '@/components/WordJsonLd';
 
+// ─── Source Badge ──────────────────────────────────────────────────────────
+
+const SOURCE_LABELS: Record<string, { label: string; icon: string; color: string }> = {
+  mintz_book: {
+    label: 'Mintz Dictionary',
+    icon: '📖',
+    color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 border-blue-200 dark:border-blue-800',
+  },
+  wiktionary: {
+    label: 'Wiktionary',
+    icon: '🌐',
+    color: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800',
+  },
+  learnbikol: {
+    label: 'LearnBikol.com',
+    icon: '🎓',
+    color: 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 border-purple-200 dark:border-purple-800',
+  },
+};
+
+function SourceBadge({ source, sourceUrl }: { source: string; sourceUrl?: string | null }) {
+  const info = SOURCE_LABELS[source];
+  if (!info) return null;
+
+  return (
+    <span className={`inline-flex items-center gap-1.5 mt-2 px-2.5 py-1 rounded-full text-[11px] font-bold border transition-all hover:-translate-y-0.5 hover:shadow-md ${info.color}`}>
+      <span>{info.icon}</span>
+      <span>{info.label}</span>
+      {sourceUrl && (
+        <span className="opacity-60 hidden sm:inline">• {sourceUrl}</span>
+      )}
+    </span>
+  );
+}
+
 export default function WordClientPage({ word, isNormalized }: { word: any, isNormalized: boolean }) {
   const [langMode, setLangMode] = useState<LanguageMode>('all');
 
@@ -28,6 +63,10 @@ export default function WordClientPage({ word, isNormalized }: { word: any, isNo
         tagalog: word.tagalog,
         dialect: word.dialect,
         synonyms: word.synonyms,
+        source: word.source_url?.includes('wiktionary') ? 'wiktionary' 
+               : word.source_url?.includes('learnbikol') ? 'learnbikol' 
+               : 'unknown',
+        source_url: word.source_url,
         exampleSentences: word.example_bikol ? [{ bikol: word.example_bikol, english: word.example_english }] : []
       }];
 
@@ -188,9 +227,14 @@ export default function WordClientPage({ word, isNormalized }: { word: any, isNo
               <div className="space-y-10">
                 {definitions.map((def: any, idx: number) => (
                   <div key={idx} className="space-y-4">
-                    {definitions.length > 1 && (
-                      <span className="text-blue-500 font-black text-xs">DEFINITION {idx + 1}</span>
-                    )}
+                    <div className="flex items-center gap-3 flex-wrap">
+                      {definitions.length > 1 && (
+                        <span className="text-blue-500 font-black text-xs">DEFINITION {idx + 1}</span>
+                      )}
+                      {def.source && def.source !== 'unknown' && (
+                        <SourceBadge source={def.source} sourceUrl={def.source_url} />
+                      )}
+                    </div>
                     {(langMode === 'en' || langMode === 'all') && def.english && (
                       <div>
                         <p className="text-xs text-zinc-400 dark:text-zinc-500 font-black uppercase tracking-widest mb-1 opacity-50">ENGLISH</p>
