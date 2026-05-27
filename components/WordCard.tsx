@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
-import type { LanguageMode } from './LanguageToggle';
+import { useLanguageMode } from '@/hooks/useLanguageMode';
 import { normalizePOS } from '@/lib/lexicography';
 
 interface WordCardProps {
@@ -33,16 +33,7 @@ const itemVariants = {
 
 export default function WordCard({ word, className }: WordCardProps) {
   const router = useRouter();
-  const [langMode, setLangMode] = useState<LanguageMode>('all');
-
-  useEffect(() => {
-    const saved = localStorage.getItem('bikoldict-lang-mode') as LanguageMode;
-    if (saved) setLangMode(saved);
-
-    const handleLangChange = (e: any) => setLangMode(e.detail);
-    window.addEventListener('lang-mode-change', handleLangChange);
-    return () => window.removeEventListener('lang-mode-change', handleLangChange);
-  }, []);
+  const langMode = useLanguageMode();
 
   const displayTranslation = () => {
     if (langMode === 'tl' && word.tagalog) return word.tagalog;

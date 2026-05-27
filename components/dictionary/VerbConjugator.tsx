@@ -14,8 +14,8 @@ function cn(...inputs: ClassValue[]) {
 }
 
 export interface ConjugationForm {
-  tense: string;
-  form: string;
+  tense: string | null;
+  form: string | null;
 }
 
 export interface AffixGroup {
@@ -129,7 +129,7 @@ export function VerbConjugator({ rootWord, affixGroups }: VerbConjugatorProps) {
             {TENSE_ORDER.map((tenseKey) => {
               // 1. Try to find pre-stored conjugation
               let conj = currentGroup.conjugations.find(
-                c => c.tense.toLowerCase().includes(tenseKey)
+                c => c.tense?.toLowerCase().includes(tenseKey)
               );
 
               // 2. Fallback: Generate dynamically if missing

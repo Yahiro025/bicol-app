@@ -1,17 +1,17 @@
 "use client";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Share2, Info, Book, BookOpen } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { saveToHistory } from '@/lib/offline';
 import AudioPlayer from '@/components/AudioPlayer';
-import type { LanguageMode } from '@/components/LanguageToggle';
+import { useLanguageMode } from '@/hooks/useLanguageMode';
 import { VerbConjugator } from '@/components/dictionary/VerbConjugator';
 import { GrammarHighlight } from '@/components/GrammarHighlight';
 import WordJsonLd from '@/components/WordJsonLd';
 import { normalizePOS, normalizeDefinitionText, formatDialect } from '@/lib/lexicography';
+import type { WordDisplayData, AffixGroup } from '@/lib/types/word';
 
-// ─── Source Badge ──────────────────────────────────────────────────────────
 
 const SOURCE_LABELS: Record<string, { label: string; icon: string; color: string }> = {
   mintz_book: {
@@ -46,8 +46,8 @@ function SourceBadge({ source, sourceUrl }: { source: string; sourceUrl?: string
   );
 }
 
-export default function WordClientPage({ word, isNormalized }: { word: any, isNormalized: boolean }) {
-  const [langMode, setLangMode] = useState<LanguageMode>('all');
+export default function WordClientPage({ word, isNormalized }: { word: WordDisplayData, isNormalized: boolean }) {
+  const langMode = useLanguageMode();
 
   // Normalize the data for internal use
   const bikol = word.bikol;
@@ -57,23 +57,23 @@ export default function WordClientPage({ word, isNormalized }: { word: any, isNo
   const etymology = word.etymology;
 
   // Definitions normalized to an array
-  const definitions = isNormalized 
-    ? word.definitions 
+  const definitions: WordDisplayData['definitions'] = isNormalized 
+    ? (word.definitions ?? []) 
     : [{
-        english: word.english,
-        tagalog: word.tagalog,
-        dialect: word.dialect,
-        synonyms: word.synonyms,
-        source: word.source_url?.includes('wiktionary') ? 'wiktionary' 
+        english: word.english ?? null,
+        tagalog: word.tagalog ?? null,
+        dialect: word.dialect ?? null,
+        synonyms: word.synonyms ?? null,
+        source: (word.source_url?.includes('wiktionary') ? 'wiktionary' 
                : word.source_url?.includes('learnbikol') ? 'learnbikol' 
-               : 'unknown',
-        source_url: word.source_url,
-        exampleSentences: word.example_bikol ? [{ bikol: word.example_bikol, english: word.example_english }] : []
+               : 'unknown'),
+        source_url: word.source_url ?? null,
+        exampleSentences: word.example_bikol ? [{ bikol: word.example_bikol, english: word.example_english ?? null }] : []
       }];
 
   // Check if we should show VerbConjugator
   const isVerb = pos?.trim().toUpperCase() === 'VERB';
-  const hasAffixPair = isNormalized && word.definitions.some((d: any) => d.affixPair && d.affixPair !== 'UNKNOWN');
+  const hasAffixPair = isNormalized && (word.definitions ?? []).some((d) => d.affixPair && d.affixPair !== 'UNKNOWN');
   
   // Defensive check for legacy words: if it ends in -on, -an, or starts with mag- and has no POS, treat as potential verb
   const looksLikeVerb = (
@@ -86,21 +86,20 @@ export default function WordClientPage({ word, isNormalized }: { word: any, isNo
   const showConjugator = isVerb || hasAffixPair || looksLikeVerb;
 
   // Prepare affix groups for VerbConjugator
-  let affixGroups = isNormalized 
-    ? word.definitions
-        .filter((d: any) => d.affixPair && d.affixPair !== 'UNKNOWN')
-        .map((d: any) => ({
-          affixPair: d.affixPair,
+  let affixGroups: AffixGroup[] = isNormalized 
+    ? (word.definitions ?? [])
+        .filter((d) => d.affixPair && d.affixPair !== 'UNKNOWN')
+        .map((d) => ({
+          affixPair: d.affixPair!,
           focusType: d.focusType || 'UNKNOWN',
-          conjugations: d.conjugations
-            .filter((c: any) => {
-              // If we have a specific focusType for this definition, only show matching conjugations
+          conjugations: (d.conjugations ?? [])
+            .filter((c) => {
               if (d.focusType && d.focusType !== 'UNKNOWN') {
                 return c.focus === d.focusType;
               }
               return true;
             })
-            .map((c: any) => ({
+            .map((c) => ({
               tense: c.tense,
               form: c.form
             }))
@@ -138,20 +137,6 @@ export default function WordClientPage({ word, isNormalized }: { word: any, isNo
       }];
     }
   }
-
-  useEffect(() => {
-    // Load initial preference
-    const saved = localStorage.getItem('bikoldict-lang-mode') as LanguageMode;
-    if (saved) setLangMode(saved);
-
-    // Listen for changes
-    const handleLangChange = (e: any) => {
-      setLangMode(e.detail);
-    };
-
-    window.addEventListener('lang-mode-change', handleLangChange);
-    return () => window.removeEventListener('lang-mode-change', handleLangChange);
-  }, []);
 
   useEffect(() => {
     if (word && word.bikol) {
@@ -226,7 +211,7 @@ export default function WordClientPage({ word, isNormalized }: { word: any, isNo
             <div className="space-y-8">
               <h3 className="text-sm font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest flex items-center gap-2"><Info className="h-4 w-4" /> Definitions</h3>
               <div className="space-y-10">
-                {definitions.map((def: any, idx: number) => (
+                {definitions.map((def, idx: number) => (
                   <div key={idx} className="space-y-4">
                     <div className="flex items-center gap-3 flex-wrap">
                       {definitions.length > 1 && (
@@ -263,16 +248,16 @@ export default function WordClientPage({ word, isNormalized }: { word: any, isNo
             <div className="space-y-6">
               <h3 className="text-sm font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest flex items-center gap-2"><Book className="h-4 w-4" /> Usage</h3>
               <div className="space-y-4">
-                {definitions.flatMap((d: any) => d.exampleSentences || []).map((ex: any, i: number) => (
+                {definitions.flatMap((d) => d.exampleSentences || []).map((ex, i: number) => (
                   <div key={i} className="p-8 bg-blue-50 dark:bg-blue-500/5 rounded-3xl border border-blue-100 dark:border-white/5 italic relative overflow-hidden group">
                     <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                     <p className="text-xl font-bold text-zinc-800 dark:text-zinc-100 relative z-10">
-                      "<GrammarHighlight text={ex.bikol} />"
+                      "<GrammarHighlight text={ex.bikol ?? ''} />"
                     </p>
-                    <p className="text-zinc-500 dark:text-zinc-500 mt-2 relative z-10">— {ex.english}</p>
+                    <p className="text-zinc-500 dark:text-zinc-500 mt-2 relative z-10">— {ex.english ?? ''}</p>
                   </div>
                 ))}
-                {definitions.every((d: any) => !d.exampleSentences || d.exampleSentences.length === 0) && (
+                {definitions.every((d) => !d.exampleSentences || d.exampleSentences.length === 0) && (
                   <div className="p-8 bg-zinc-50 dark:bg-zinc-900/50 rounded-3xl border border-dashed border-zinc-200 dark:border-white/10 text-center">
                     <p className="text-zinc-400 dark:text-zinc-500 italic">No example sentences available.</p>
                   </div>
@@ -290,17 +275,17 @@ export default function WordClientPage({ word, isNormalized }: { word: any, isNo
           )}
 
           {(() => {
-            const getSynonyms = (syns: any) => {
-              if (Array.isArray(syns)) return syns;
-              if (typeof syns === 'string') return syns.split(',').map((s: string) => s.trim()).filter(Boolean);
+            const getSynonyms = (syns: unknown): string[] => {
+              if (Array.isArray(syns)) return syns.filter((s): s is string => typeof s === 'string');
+              if (typeof syns === 'string') return syns.split(',').map((s) => s.trim()).filter(Boolean);
               return [];
             };
 
-            const allSynonyms = definitions.reduce((acc: string[], def: any) => {
+            const allSynonyms = definitions.reduce((acc: string[], def) => {
               const syns = getSynonyms(def.synonyms);
               return [...acc, ...syns];
             }, []);
-            const uniqueSynonyms = Array.from(new Set(allSynonyms)) as string[];
+            const uniqueSynonyms = Array.from(new Set(allSynonyms));
             
             return (etymology || uniqueSynonyms.length > 0) && (
               <div className="pt-8 border-t border-zinc-200 dark:border-white/5 grid grid-cols-1 md:grid-cols-2 gap-12 relative z-10">

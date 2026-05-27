@@ -8,11 +8,11 @@ interface WordJsonLdProps {
   tagalog?: string | null;
   pos?: string | null;
   pronunciation?: string | null;
-  definitions: Array<{
-    english: string;
+  definitions?: Array<{
+    english: string | null;
     tagalog?: string | null;
     dialect?: string | null;
-    exampleSentences?: Array<{ bikol: string; english: string }>;
+    exampleSentences?: Array<{ bikol: string | null; english: string | null }>;
   }>;
 }
 
@@ -34,7 +34,7 @@ export default function WordJsonLd({ bikol, english, tagalog, pos, pronunciation
       },
       additionalType: pos,
     }),
-    ...(definitions?.length > 0 && {
+    ...(definitions && definitions.length > 0 && {
       hasDefinedTerm: definitions.slice(0, 3).map((def, i) => ({
         "@type": "DefinedTerm",
         name: `${bikol} (definition ${i + 1})`,

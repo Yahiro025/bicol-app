@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import Button from './ui/Button';
-import type { LanguageMode } from './LanguageToggle';
+import { useLanguageMode } from '@/hooks/useLanguageMode';
 
 type SearchResult = {
   bikol: string;
@@ -49,7 +49,7 @@ export default function SearchBar({ initialDictionary = [] }: SearchBarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
-  const [langMode, setLangMode] = useState<LanguageMode>('all');
+  const langMode = useLanguageMode();
   const wrapperRef = useRef<HTMLDivElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
   const router = useRouter();
@@ -63,16 +63,6 @@ export default function SearchBar({ initialDictionary = [] }: SearchBarProps) {
     }
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  // Sync language mode
-  useEffect(() => {
-    const saved = localStorage.getItem('bikoldict-lang-mode') as LanguageMode;
-    if (saved) setLangMode(saved);
-
-    const handleLangChange = (e: Event) => setLangMode((e as CustomEvent).detail);
-    window.addEventListener('lang-mode-change', handleLangChange);
-    return () => window.removeEventListener('lang-mode-change', handleLangChange);
   }, []);
 
   const displayTranslation = (item: SearchResult) => {
@@ -156,8 +146,8 @@ export default function SearchBar({ initialDictionary = [] }: SearchBarProps) {
             return [...prev, ...newResults].slice(0, 10);
           });
         }
-      } catch (error: any) {
-        if (error.name !== 'AbortError') {
+      } catch (error: unknown) {
+        if (error instanceof Error && error.name !== 'AbortError') {
           console.error('Search error:', error);
         }
       } finally {
