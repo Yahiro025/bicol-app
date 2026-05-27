@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Star, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { LanguageMode } from './LanguageToggle';
+import { normalizePOS } from '@/lib/lexicography';
 
 interface WordOfTheDayProps {
   word: {
@@ -65,7 +66,7 @@ export default function WordOfTheDay({ word, className }: WordOfTheDayProps) {
               <div className="flex items-center gap-4">
                 {word.pos && (
                   <span className="px-2 py-0.5 bg-white/20 rounded text-[10px] font-black text-white uppercase tracking-widest border border-white/10">
-                    {word.pos}
+                    {normalizePOS(word.pos)}
                   </span>
                 )}
                 <p className="text-2xl md:text-3xl text-white font-bold leading-tight">

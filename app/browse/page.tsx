@@ -8,9 +8,9 @@ export const dynamic = 'force-dynamic';
 export default async function BrowsePage({
   searchParams,
 }: {
-  searchParams: Promise<{ letter?: string; category?: string; q?: string }>;
+  searchParams: Promise<{ letter?: string; category?: string; q?: string; sort?: string }>;
 }) {
-  const { letter, category, q } = await searchParams;
+  const { letter, category, q, sort } = await searchParams;
 
   // Build the dynamic Prisma where clause
   const whereClause: any = {
@@ -36,9 +36,13 @@ export default async function BrowsePage({
   try {
     // Initial fetch of words for SSR (SEO and fast first paint)
     // We only fetch 50 to keep the initial HTML small and fast
+    const sortOrder = sort === 'frequency'
+      ? [{ frequency_rank: { sort: 'asc' as const, nulls: 'last' as const } }, { bikol: 'asc' as const }]
+      : [{ bikol: 'asc' as const }];
+
     const rawWords = await prisma.word.findMany({
       where: whereClause,
-      orderBy: { bikol: 'asc' },
+      orderBy: sortOrder,
       take: 50,
     });
 
@@ -86,7 +90,8 @@ export default async function BrowsePage({
           initialCategories={categories}
           initialLetter={letter || ''} 
           initialCategory={category || ''} 
-          initialQuery={q || ''} 
+          initialQuery={q || ''}
+          initialSort={sort || ''}
         />
       </div>
     </main>

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import Button from './ui/Button';
 import type { LanguageMode } from './LanguageToggle';
+import { normalizePOS } from '@/lib/lexicography';
 
 type Word = {
   bikol: string;
@@ -36,12 +37,14 @@ export default function BrowseClient({
   initialLetter: defaultLetter,
   initialCategory: defaultCategory,
   initialQuery: defaultQuery,
+  initialSort: defaultSort,
 }: {
   initialWords: Word[];
   initialCategories: string[];
   initialLetter: string;
   initialCategory: string;
   initialQuery: string;
+  initialSort?: string;
 }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -49,6 +52,7 @@ export default function BrowseClient({
   const [query, setQuery] = useState(defaultQuery);
   const [selectedLetter, setSelectedLetter] = useState(defaultLetter);
   const [selectedCategory, setSelectedCategory] = useState(defaultCategory);
+  const [sortMode, setSortMode] = useState<'alphabetical' | 'frequency'>(defaultSort === 'frequency' ? 'frequency' : 'alphabetical');
   const [words, setWords] = useState<Word[]>(initialWords);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(initialWords.length === 50);
@@ -101,6 +105,7 @@ export default function BrowseClient({
       if (query) params.set('q', query);
       if (selectedLetter) params.set('letter', selectedLetter);
       if (selectedCategory) params.set('category', selectedCategory);
+      if (sortMode === 'frequency') params.set('sort', 'frequency');
 
       const response = await fetch(`/api/browse?${params.toString()}`);
       const newWords = await response.json();
@@ -133,12 +138,13 @@ export default function BrowseClient({
     if (query) params.set('q', query);
     if (selectedLetter) params.set('letter', selectedLetter);
     if (selectedCategory) params.set('category', selectedCategory);
+    if (sortMode === 'frequency') params.set('sort', 'frequency');
     
     const newUrl = `/browse${params.toString() ? `?${params.toString()}` : ''}`;
     window.history.replaceState({ ...window.history.state, as: newUrl, url: newUrl }, '', newUrl);
 
     return () => clearTimeout(timer);
-  }, [query, selectedLetter, selectedCategory]);
+  }, [query, selectedLetter, selectedCategory, sortMode]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
@@ -201,14 +207,40 @@ export default function BrowseClient({
 
       {/* 2. TOGGLE FILTER BUTTON & ACTIVE FILTER PILLS */}
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
-        <Button 
-          variant="secondary"
-          onClick={() => setAreFiltersVisible(!areFiltersVisible)}
-          className="flex items-center gap-2"
-        >
-          <svg className={`w-4 h-4 transition-transform duration-300 ${areFiltersVisible ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
-          {areFiltersVisible ? 'Hide Filters' : 'Show Filters'}
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button 
+            variant="secondary"
+            onClick={() => setAreFiltersVisible(!areFiltersVisible)}
+            className="flex items-center gap-2"
+          >
+            <svg className={`w-4 h-4 transition-transform duration-300 ${areFiltersVisible ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+            {areFiltersVisible ? 'Hide Filters' : 'Show Filters'}
+          </Button>
+
+          {/* Sort Toggle */}
+          <div className="flex items-center border border-zinc-300 dark:border-zinc-800 rounded-xl overflow-hidden">
+            <button
+              onClick={() => setSortMode('alphabetical')}
+              className={`px-4 py-2 text-xs font-bold transition-all ${
+                sortMode === 'alphabetical'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-300 dark:hover:bg-zinc-700'
+              }`}
+            >
+              A–Z
+            </button>
+            <button
+              onClick={() => setSortMode('frequency')}
+              className={`px-4 py-2 text-xs font-bold transition-all ${
+                sortMode === 'frequency'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-300 dark:hover:bg-zinc-700'
+              }`}
+            >
+              Common
+            </button>
+          </div>
+        </div>
 
         <div className="flex items-center gap-2 flex-wrap">
           {selectedLetter && (
@@ -321,7 +353,7 @@ export default function BrowseClient({
           variants={listVariants}
           initial="hidden"
           animate="visible"
-          key={`${selectedLetter}-${selectedCategory}`}
+          key={`${selectedLetter}-${selectedCategory}-${sortMode}`}
           className="space-y-4"
         >
         {words.map((word) => (
@@ -344,7 +376,7 @@ export default function BrowseClient({
                 </div>
                 <div className="text-right flex flex-col items-end gap-2">
                   {word.pos && (
-                    <span className="text-[10px] uppercase tracking-widest font-black bg-zinc-200 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 px-2 py-1 rounded border border-zinc-300 dark:border-zinc-700">{word.pos}</span>
+                    <span className="text-[10px] uppercase tracking-widest font-black bg-zinc-200 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 px-2 py-1 rounded border border-zinc-300 dark:border-zinc-700">{normalizePOS(word.pos)}</span>
                   )}
                   {word.category && (
                     <span className="text-[10px] uppercase tracking-widest font-black bg-blue-500/10 text-blue-400 px-2 py-1 rounded border border-blue-500/20">{word.category}</span>

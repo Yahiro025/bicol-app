@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { LanguageMode } from './LanguageToggle';
+import { normalizePOS } from '@/lib/lexicography';
 
 interface WordCardProps {
   word: {
@@ -71,7 +72,7 @@ export default function WordCard({ word, className }: WordCardProps) {
               </h3>
               {word.pos && (
                 <span className="text-[10px] uppercase tracking-widest px-2 py-0.5 bg-zinc-200 dark:bg-zinc-800 text-zinc-500 rounded font-black border border-zinc-300 dark:border-zinc-700">
-                  {word.pos}
+                  {normalizePOS(word.pos)}
                 </span>
               )}
             </div>
