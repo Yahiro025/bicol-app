@@ -1,27 +1,13 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
-import dynamicImport from 'next/dynamic';
 import SearchBar from '@/components/SearchBar';
 import WordOfTheDay from '@/components/WordOfTheDay';
 import CategoryGrid from '@/components/CategoryGrid';
 import WordCard from '@/components/WordCard';
 import HomeVerbDemo from '@/components/HomeVerbDemo';
+import ClientSubmissionWrapper from '@/components/ClientSubmissionWrapper';
 import { ArrowRight, Zap, BookOpen } from 'lucide-react';
 import { POPULAR_WORDS } from '@/lib/constants';
-
-const UserSubmissionForm = dynamicImport(() => import('@/components/UserSubmissionForm'), {
-  ssr: false,
-  loading: () => (
-    <div className="w-full max-w-lg mx-auto bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-8 shadow-sm animate-pulse">
-      <div className="h-6 bg-zinc-100 dark:bg-zinc-800 rounded w-1/2 mb-4" />
-      <div className="space-y-4">
-        <div className="h-10 bg-zinc-100 dark:bg-zinc-800 rounded-xl" />
-        <div className="h-20 bg-zinc-100 dark:bg-zinc-800 rounded-xl" />
-        <div className="h-10 bg-zinc-100 dark:bg-zinc-800 rounded-xl" />
-      </div>
-    </div>
-  ),
-});
 
 export const dynamic = 'force-dynamic';
 
@@ -239,7 +225,7 @@ export default async function HomePage() {
                   <h2 className="text-3xl font-display font-bold text-white tracking-tight">Contribute a Word</h2>
                   <p className="text-zinc-500">Help us document and preserve the Bikol language. All submissions are reviewed by moderators.</p>
                 </div>
-                <UserSubmissionForm />
+                <ClientSubmissionWrapper />
               </div>
             </div>
           </div>
