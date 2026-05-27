@@ -1,9 +1,14 @@
 import Groq from 'groq-sdk';
 import type { Word, QuizQuestion, DialogueMessage, DialogueScenario, LinguisticAudit } from './types/learn';
 
-const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY,
-});
+// Lazy initialization to avoid build-time errors when GROQ_API_KEY is not set
+function getGroq(): Groq {
+  const key = process.env.GROQ_API_KEY;
+  if (!key) {
+    throw new Error('The GROQ_API_KEY environment variable is missing or empty; either provide it, or instantiate the Groq client with an apiKey option, like new Groq({ apiKey: \'My API Key\' }).');
+  }
+  return new Groq({ apiKey: key });
+}
 
 // GLOBAL MANDATE: Use qwen-3-32b and handle RateLimitError
 const MODEL = 'qwen-3-32b';
@@ -20,7 +25,7 @@ async function getCompletion(messages: any[], jsonMode: boolean = true) {
       // Respect 30 RPM limit: 2s delay between calls
       if (attempts > 0) await new Promise(resolve => setTimeout(resolve, 2000));
 
-      const completion = await groq.chat.completions.create({
+      const completion = await getGroq().chat.completions.create({
         messages,
         model: MODEL,
         response_format: jsonMode ? { type: 'json_object' } : undefined,

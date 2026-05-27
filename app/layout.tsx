@@ -24,6 +24,9 @@ export default function RootLayout({
           (function() {
             try {
               var theme = localStorage.getItem('theme');
+              if (!theme) {
+                theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+              }
               if (theme === 'light') {
                 document.documentElement.classList.remove('dark');
               } else {

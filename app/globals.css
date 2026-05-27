@@ -1,5 +1,8 @@
  @import "tailwindcss";
 
+/* Use class-based dark mode (uses .dark class on <html> instead of prefers-color-scheme media query) */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* Custom theme variables */
 :root {
   --color-primary: #3b82f6; /* Bicolano Sea Blue */
@@ -33,6 +36,14 @@ body {
 /* Smooth scroll behavior */
 html {
   scroll-behavior: smooth;
+}
+
+/* Theme transition - activated only during toggle to avoid flash on load */
+html.changing-theme,
+html.changing-theme *,
+html.changing-theme *::before,
+html.changing-theme *::after {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease !important;
 }
 
 /* Custom scrollbar */
