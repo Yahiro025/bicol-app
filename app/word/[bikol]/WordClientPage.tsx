@@ -9,6 +9,7 @@ import type { LanguageMode } from '@/components/LanguageToggle';
 import { VerbConjugator } from '@/components/dictionary/VerbConjugator';
 import { GrammarHighlight } from '@/components/GrammarHighlight';
 import WordJsonLd from '@/components/WordJsonLd';
+import { normalizePOS, normalizeDefinitionText, formatDialect } from '@/lib/lexicography';
 
 // ─── Source Badge ──────────────────────────────────────────────────────────
 
@@ -194,7 +195,7 @@ export default function WordClientPage({ word, isNormalized }: { word: any, isNo
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 relative z-10">
             <div className="flex-1">
               <span className="px-4 py-1 bg-blue-500/10 text-blue-400 text-xs font-black uppercase tracking-widest rounded-full border border-blue-500/20">
-                {pos || 'Word'} • {definitions[0]?.dialect || 'General'}
+                {normalizePOS(pos) || 'Word'}{formatDialect(definitions[0]?.dialect) ? ` • ${formatDialect(definitions[0]?.dialect)}` : ''}
               </span>
               <h2 className="text-6xl md:text-8xl font-black tracking-tighter mt-4 bg-clip-text text-transparent bg-gradient-to-b from-zinc-900 dark:from-white to-zinc-400">{bikol}</h2>
               <div className="flex items-center gap-6 mt-4">
@@ -229,7 +230,7 @@ export default function WordClientPage({ word, isNormalized }: { word: any, isNo
                   <div key={idx} className="space-y-4">
                     <div className="flex items-center gap-3 flex-wrap">
                       {definitions.length > 1 && (
-                        <span className="text-blue-500 font-black text-xs">DEFINITION {idx + 1}</span>
+                        <span className="text-blue-500 font-black text-xs">{idx + 1}.</span>
                       )}
                       {def.source && def.source !== 'unknown' && (
                         <SourceBadge source={def.source} sourceUrl={def.source_url} />
@@ -238,19 +239,19 @@ export default function WordClientPage({ word, isNormalized }: { word: any, isNo
                     {(langMode === 'en' || langMode === 'all') && def.english && (
                       <div>
                         <p className="text-xs text-zinc-400 dark:text-zinc-500 font-black uppercase tracking-widest mb-1 opacity-50">ENGLISH</p>
-                        <p className="text-2xl font-bold leading-tight text-zinc-800 dark:text-zinc-100">{def.english}</p>
+                        <p className="text-2xl font-bold leading-tight text-zinc-800 dark:text-zinc-100">{normalizeDefinitionText(def.english)}</p>
                       </div>
                     )}
                     {(langMode === 'tl' || langMode === 'all') && def.tagalog && (
                       <div>
                         <p className="text-xs text-zinc-400 dark:text-zinc-500 font-black uppercase tracking-widest mb-1 opacity-50">TAGALOG</p>
-                        <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 leading-tight">{def.tagalog}</p>
+                        <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 leading-tight">{normalizeDefinitionText(def.tagalog)}</p>
                       </div>
                     )}
                     {langMode === 'tl' && !def.tagalog && def.english && (
                       <div>
                         <p className="text-xs text-zinc-400 dark:text-zinc-500 font-black uppercase tracking-widest mb-1 opacity-50">ENGLISH (Fallback)</p>
-                        <p className="text-2xl font-bold leading-tight text-zinc-800 dark:text-zinc-100">{def.english}</p>
+                        <p className="text-2xl font-bold leading-tight text-zinc-800 dark:text-zinc-100">{normalizeDefinitionText(def.english)}</p>
                       </div>
                     )}
                   </div>

@@ -26,9 +26,14 @@ export async function GET(request: Request) {
       ],
     };
 
+    const sort = searchParams.get('sort');
+    const sortOrder = sort === 'frequency'
+      ? [{ frequency_rank: { sort: 'asc' as const, nulls: 'last' as const } }, { bikol: 'asc' as const }]
+      : [{ bikol: 'asc' as const }];
+
     const words = await prisma.word.findMany({
       where: whereClause,
-      orderBy: { bikol: 'asc' },
+      orderBy: sortOrder,
       skip: page * limit,
       take: limit,
     });
