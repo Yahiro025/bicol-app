@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import LanguageToggle from "@/components/LanguageToggle";
 import ThemeToggle from "@/components/ThemeToggle";
+import MobileNav from "@/components/MobileNav";
+import DesktopNav from "@/components/DesktopNav";
 import { AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import NavigationLoadingBar from "@/components/NavigationLoadingBar";
@@ -67,6 +69,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen bg-white text-zinc-900 dark:bg-[#09090b] dark:text-[#fafafa] selection:bg-blue-500/30">
         <Providers>
+          <div id="main-content">
           <Suspense fallback={null}>
             <NavigationLoadingBar />
           </Suspense>
@@ -76,15 +79,11 @@ export default function RootLayout({
                 <Link href="/" className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500">BIKOL</Link>
               </h1>
               <div className="flex items-center gap-6">
-                <nav className="hidden md:flex gap-8 text-xs font-bold uppercase tracking-widest">
-                  <Link href="/" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors">Home</Link>
-                  <Link href="/browse" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors">Browse</Link>
-                  <Link href="/learn" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors">Learn</Link>
-                  <Link href="/flashcards" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors">Study</Link>
-                </nav>
+                <DesktopNav />
                 <div className="flex items-center gap-3">
                   <ThemeToggle />
                   <LanguageToggle />
+                  <MobileNav />
                 </div>
               </div>
             </div>
@@ -93,6 +92,7 @@ export default function RootLayout({
           <AnimatePresence mode="wait">
             {children}
           </AnimatePresence>
+          </div>
         </Providers>
       </body>
     </html>
