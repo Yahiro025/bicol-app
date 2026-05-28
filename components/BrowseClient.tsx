@@ -67,33 +67,6 @@ export default function BrowseClient({
   const [areFiltersVisible, setAreFiltersVisible] = useState(false);
   const langMode = useLanguageMode();
 
-  // Intersection Observer for infinite scroll
-  // Uses refs to avoid stale closure bugs — the observer callback always reads
-  // the latest values of isLoadingMore and hasMore without recreating the observer.
-  const isLoadingMoreRef = useRef(isLoadingMore);
-  const hasMoreRef = useRef(hasMore);
-  const fetchMoreWordsRef = useRef(fetchMoreWords);
-  
-  isLoadingMoreRef.current = isLoadingMore;
-  hasMoreRef.current = hasMore;
-  fetchMoreWordsRef.current = fetchMoreWords;
-
-  const observerTarget = useCallback((node: HTMLDivElement | null) => {
-    if (!node) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]?.isIntersecting && hasMoreRef.current && !isLoadingMoreRef.current) {
-          fetchMoreWordsRef.current();
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, []);
-
   const displayTranslation = (word: Word) => {
     if (langMode === 'tl' && word.tagalog) return word.tagalog;
     return word.english;
@@ -143,6 +116,33 @@ export default function BrowseClient({
       setIsLoadingMore(false);
     }
   }, [query, selectedLetter, selectedCategory, sortMode]);
+
+  // Intersection Observer for infinite scroll
+  // Uses refs to avoid stale closure bugs — the observer callback always reads
+  // the latest values of isLoadingMore and hasMore without recreating the observer.
+  const isLoadingMoreRef = useRef(isLoadingMore);
+  const hasMoreRef = useRef(hasMore);
+  const fetchMoreWordsRef = useRef(fetchMoreWords);
+  
+  isLoadingMoreRef.current = isLoadingMore;
+  hasMoreRef.current = hasMore;
+  fetchMoreWordsRef.current = fetchMoreWords;
+
+  const observerTarget = useCallback((node: HTMLDivElement | null) => {
+    if (!node) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting && hasMoreRef.current && !isLoadingMoreRef.current) {
+          fetchMoreWordsRef.current();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
 
   // Reset and fetch when filters change
   useEffect(() => {
