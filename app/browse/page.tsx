@@ -3,7 +3,8 @@ import Link from 'next/link';
 import { BookOpen } from 'lucide-react';
 import { browseWords, getCategoryCounts } from '@/lib/word-search';
 
-export const dynamic = 'force-dynamic';
+// ISR: dictionary content changes infrequently, revalidate every 5 minutes
+export const revalidate = 300;
 
 export default async function BrowsePage({
   searchParams,
@@ -16,20 +17,28 @@ export default async function BrowsePage({
   let categories: string[] = [];
   let dbError = null;
 
-  try {
-    words = await browseWords({
+  // Fetch words & categories independently — one failing won't block the other
+  const [wordsResult, categoriesResult] = await Promise.allSettled([
+    browseWords({
       filters: { letter, category, q },
       sort,
       limit: 50,
       offset: 0,
-    });
+    }),
+    getCategoryCounts(50),
+  ]);
 
-    // Fetch distinct categories from both tables
-    const categoryCounts = await getCategoryCounts(50);
-    categories = categoryCounts.map((c) => c.category).sort();
-  } catch (e: any) {
-    console.error(e);
-    dbError = e.message;
+  if (wordsResult.status === 'fulfilled') {
+    words = wordsResult.value;
+  } else {
+    console.error(wordsResult.reason);
+    dbError = wordsResult.reason?.message || 'Failed to load words';
+  }
+
+  if (categoriesResult.status === 'fulfilled') {
+    categories = categoriesResult.value.map((c) => c.category).sort();
+  } else {
+    console.error('Categories failed:', categoriesResult.reason);
   }
 
   return (

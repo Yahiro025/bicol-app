@@ -18,7 +18,12 @@ export async function GET(request: Request) {
       offset: page * limit,
     });
 
-    return NextResponse.json(words);
+    // Cache for 5 minutes at CDN edge, 60 seconds in browser for stale-while-revalidate
+    return NextResponse.json(words, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=300, max-age=60, stale-while-revalidate=600',
+      },
+    });
   } catch (error: any) {
     console.error('Browse API Error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });

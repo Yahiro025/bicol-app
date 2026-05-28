@@ -221,7 +221,7 @@ export default function SearchBar({ initialDictionary = [] }: SearchBarProps) {
           }}
           onBlur={() => setIsFocused(false)}
           placeholder="Search a Bikol or English word..."
-          className={`w-full pl-12 pr-32 py-4 bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-2xl text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 text-lg transition-all duration-300 ${
+          className={`w-full pl-12 pr-28 sm:pr-32 py-4 bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-2xl text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 text-base sm:text-lg transition-all duration-300 ${
             isFocused ? 'bg-white dark:bg-zinc-800/50 shadow-[0_0_20px_rgba(59,130,246,0.1)]' : ''
           }`}
           autoComplete="off"
@@ -229,7 +229,7 @@ export default function SearchBar({ initialDictionary = [] }: SearchBarProps) {
         <Button 
           type="submit" 
           isLoading={isLoading}
-          className="absolute right-1.5 h-[calc(100%-12px)] px-6 rounded-xl text-sm"
+          className="absolute right-1.5 h-[calc(100%-12px)] px-4 sm:px-6 rounded-xl text-xs sm:text-sm"
         >
           Search
         </Button>

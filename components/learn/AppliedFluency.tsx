@@ -166,7 +166,7 @@ export default function AppliedFluency({ onComplete }: { onComplete: () => void 
   if (audit) {
     return (
       <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <div className="p-8 bg-zinc-900/50 border border-emerald-500/20 rounded-[32px] space-y-8 shadow-[0_0_50px_-12px_rgba(16,185,129,0.1)]">
+        <div className="p-8 bg-zinc-900/50 border border-emerald-500/20 rounded-[32px] space-y-8 glow-emerald-tiny">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center border border-emerald-500/20">

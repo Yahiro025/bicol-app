@@ -72,7 +72,7 @@ export default function FlashcardsPage() {
             <div className="h-px w-8 bg-blue-500/50" />
             <span className="text-blue-500 text-xs font-bold uppercase tracking-[0.3em]">Study Mode</span>
           </div>
-          <h1 className="text-5xl md:text-7xl font-display font-black tracking-tight">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-display font-black tracking-tight">
             Flashcards
           </h1>
           <p className="text-zinc-500 dark:text-zinc-400 text-lg max-w-xl leading-relaxed">

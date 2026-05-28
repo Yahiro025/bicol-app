@@ -50,13 +50,13 @@ export default function HomeVerbDemo() {
   }, [selectedVerb]);
 
   return (
-    <div className="bg-white/5 border border-white/10 rounded-3xl p-6 md:p-8 backdrop-blur-sm max-w-2xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
+    <div className="bg-white/5 border border-white/10 rounded-3xl p-4 sm:p-6 md:p-8 backdrop-blur-sm max-w-2xl mx-auto">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
           <h3 className="text-white font-bold text-lg">Try the Verb Conjugator</h3>
           <p className="text-zinc-500 text-sm">See how Bikol verbs transform across tenses</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-1.5 sm:gap-2 overflow-x-auto pb-1">
           {DEMO_VERBS.map((verb) => (
             <button
               key={verb.root}

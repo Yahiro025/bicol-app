@@ -2,15 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { NAV_LINKS } from "@/lib/constants";
-
-/** Per-link icon accent colors (light/dark) for hover and active states */
-const ICON_COLORS: Record<string, { base: string; active: string }> = {
-  "/":           { base: "#a1a1aa", active: "#3b82f6" }, // blue-500
-  "/browse":     { base: "#a1a1aa", active: "#10b981" }, // emerald-500
-  "/learn":      { base: "#a1a1aa", active: "#f59e0b" }, // amber-500
-  "/flashcards": { base: "#a1a1aa", active: "#8b5cf6" }, // violet-500
-};
+import { NAV_LINKS, NAV_ICON_COLORS } from "@/lib/constants";
 
 export default function DesktopNav() {
   const pathname = usePathname();
@@ -21,7 +13,7 @@ export default function DesktopNav() {
         const isActive =
           pathname === link.href ||
           (link.href !== "/" && pathname.startsWith(link.href));
-        const colors = ICON_COLORS[link.href] ?? {
+        const colors = NAV_ICON_COLORS[link.href] ?? {
           base: "#a1a1aa",
           active: "#3b82f6",
         };
@@ -30,7 +22,19 @@ export default function DesktopNav() {
           <Link
             key={link.href}
             href={link.href}
-            className={`flex items-center gap-1.5 transition-colors ${
+            onFocus={(e) => {
+              if (!isActive) {
+                const icon = e.currentTarget.firstElementChild as HTMLElement | null;
+                if (icon) icon.style.color = colors.active;
+              }
+            }}
+            onBlur={(e) => {
+              if (!isActive) {
+                const icon = e.currentTarget.firstElementChild as HTMLElement | null;
+                if (icon) icon.style.color = colors.base;
+              }
+            }}
+            className={`flex items-center gap-1.5 transition-colors rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-zinc-950 ${
               isActive
                 ? "text-blue-600 dark:text-blue-400"
                 : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
@@ -41,7 +45,6 @@ export default function DesktopNav() {
               style={{
                 color: isActive ? colors.active : colors.base,
               }}
-              // On hover (when not active), use the accent color
               onMouseEnter={(e) => {
                 if (!isActive)
                   (e.currentTarget as HTMLElement).style.color = colors.active;

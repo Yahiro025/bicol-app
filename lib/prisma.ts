@@ -17,6 +17,9 @@ const getPool = () => {
     const isSupabase = connectionString?.includes('supabase.co');
     globalForPrisma.pgPool = new pg.Pool({
       connectionString,
+      max: 20,                         // Limit concurrent connections
+      idleTimeoutMillis: 30000,        // Close idle connections after 30s
+      connectionTimeoutMillis: 5000,   // Fail fast if DB unreachable
       ...(isSupabase ? { ssl: { rejectUnauthorized: false } } : {}),
     });
   }

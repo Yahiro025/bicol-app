@@ -158,7 +158,7 @@ export default function LearnPage() {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: "spring", damping: 12, delay: 0.2 }}
-              className="w-24 h-24 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto border border-emerald-500/20 shadow-[0_0_50px_-12px_rgba(16,185,129,0.3)]"
+              className="w-24 h-24 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto border border-emerald-500/20 glow-emerald-large"
             >
               <CheckCircle2 className="w-12 h-12 text-emerald-500" />
             </motion.div>
@@ -212,7 +212,7 @@ export default function LearnPage() {
               <div className="h-px w-8 bg-purple-500/50" />
               <span className="text-purple-500 text-xs font-bold uppercase tracking-[0.3em]">Learning Module</span>
             </div>
-            <h1 className="text-5xl font-display font-black tracking-tight md:text-7xl">
+            <h1 className="text-4xl sm:text-5xl font-display font-black tracking-tight md:text-7xl">
               Mintz Drills: <span className="text-zinc-400 dark:text-zinc-500">
                 {activePhase === 1 ? 'Lesson 1' : activePhase === 2 ? 'Transformation' : 'Response'}
               </span>
@@ -301,7 +301,7 @@ export default function LearnPage() {
           </div>
         </section>
 
-        <section className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 pt-12">
+        <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 pt-12">
            <div className="p-6 bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/50 rounded-2xl space-y-2 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors group">
               <h3 className="font-bold text-sm uppercase tracking-widest group-hover:text-blue-400 transition-colors">Vocabulary Bloom</h3>
               <p className="text-blue-500 text-2xl font-black">12 Words</p>

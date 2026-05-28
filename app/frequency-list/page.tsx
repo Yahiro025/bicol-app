@@ -1,6 +1,7 @@
 import { browseWords } from '@/lib/word-search';
 
-export const dynamic = 'force-dynamic';
+// ISR: frequency data changes rarely, revalidate hourly
+export const revalidate = 3600;
 
 export default async function FrequencyListPage() {
   let words: any[] = [];

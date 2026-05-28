@@ -88,10 +88,10 @@ export default async function HomePage() {
         <div className="relative px-6 py-20 md:py-28">
           <div className="max-w-5xl mx-auto text-center space-y-6">
             <div className="space-y-3">
-              <h1 className="text-6xl md:text-8xl lg:text-9xl font-display font-black tracking-tighter leading-none bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-blue-400 to-purple-500 py-2">
+              <h1 className="text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-display font-black tracking-tighter leading-none bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-blue-400 to-purple-500 py-2">
                 BIKOL
               </h1>
-              <p className="text-xl md:text-2xl text-zinc-400 max-w-3xl mx-auto text-balance">
+              <p className="text-lg sm:text-xl md:text-2xl text-zinc-400 max-w-3xl mx-auto text-balance">
                 Discover the richness of the Bikol language with comprehensive definitions, examples, and audio pronunciations.
               </p>
             </div>
