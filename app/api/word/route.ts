@@ -8,13 +8,31 @@ export async function GET(request: Request) {
   if (!bikol) return NextResponse.json({ error: 'Missing word' }, { status: 400 });
 
   try {
-    const data = await prisma.word.findUnique({
-      where: { bikol },
+    // Query normalized roots first (includes Mintz data)
+    const root = await prisma.root.findFirst({
+      where: { bikol: { equals: bikol, mode: 'insensitive' } },
+      include: {
+        definitions: {
+          orderBy: { createdAt: 'asc' },
+        },
+        conjugations: true,
+      },
     });
 
-    if (!data) return NextResponse.json({ error: 'Word not found' }, { status: 404 });
+    // Fall back to legacy words table
+    const legacyWord = !root
+      ? await prisma.word.findUnique({ where: { bikol } })
+      : null;
 
-    return NextResponse.json(data);
+    if (!root && !legacyWord) {
+      return NextResponse.json({ error: 'Word not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({
+      root: root ?? null,
+      legacy: legacyWord ?? null,
+      source: root ? 'normalized' : 'legacy',
+    });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

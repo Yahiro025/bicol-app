@@ -9,7 +9,7 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
-import { prisma } from '../lib/prisma';
+import { prisma } from '../../lib/prisma';
 
 const SUPABASE_URL = 'https://ayvxqbxnrbcgbffrzbia.supabase.co';
 const SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5dnhxYnhucmJjZ2JmZnJ6YmlhIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NzIwOTMwMCwiZXhwIjoyMDkyNzg1MzAwfQ.VmOqtJOQ4NnqO4cnMPNPa-ABq_xUZlrbZYl8V6nUUc4';

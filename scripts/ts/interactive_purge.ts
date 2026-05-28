@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { prisma } from '../lib/prisma';
+import { prisma } from '../../lib/prisma';
 import { Groq } from 'groq-sdk';
 import readline from 'readline';
 import fs from 'fs';
