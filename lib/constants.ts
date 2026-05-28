@@ -88,3 +88,16 @@ export const POPULAR_WORDS = [
   "Magayon", "Kumusta", "Marhay", "Dakol", "Kakanon", 
   "Harong", "Tawo", "Aldaw", "Salamat", "Aram"
 ];
+
+export interface NavLink {
+  href: string;
+  label: string;
+  icon: LucideIcon;
+}
+
+export const NAV_LINKS: NavLink[] = [
+  { href: "/", label: "Home", icon: Home },
+  { href: "/browse", label: "Browse", icon: BookOpen },
+  { href: "/learn", label: "Learn", icon: GraduationCap },
+  { href: "/flashcards", label: "Study", icon: BookOpenCheck },
+];
