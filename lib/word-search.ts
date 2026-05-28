@@ -102,9 +102,13 @@ export async function browseWords(params: {
     ? Prisma.sql`AND ${Prisma.join(wordsFilterConditions, ' AND ')}`
     : Prisma.empty;
 
+  // Sort: frequency → by rank; relevance (search query) → exact match first;
+  // default → alphabetical
   const orderByClause = sort === 'frequency'
     ? Prisma.sql`ORDER BY COALESCE(frequency_rank, 999999) ASC, LOWER(bikol) ASC`
-    : Prisma.sql`ORDER BY LOWER(bikol) ASC`;
+    : filters.q
+      ? Prisma.sql`ORDER BY CASE WHEN LOWER(bikol) = LOWER(${filters.q}) THEN 0 WHEN LOWER(bikol) LIKE LOWER(${filters.q + '%'}) THEN 1 ELSE 2 END, LOWER(bikol) ASC`
+      : Prisma.sql`ORDER BY LOWER(bikol) ASC`;
 
   const rows: any[] = await prisma.$queryRaw`
     SELECT * FROM (
@@ -120,11 +124,11 @@ export async function browseWords(params: {
         'normalized' as source
       FROM roots r
       LEFT JOIN LATERAL (
-        SELECT d.english, d.tagalog
+        SELECT 
+          STRING_AGG(d.english, '; ' ORDER BY d."createdAt") as english,
+          STRING_AGG(d.tagalog, '; ' ORDER BY d."createdAt") as tagalog
         FROM definitions d
         WHERE d."rootId" = r.id
-        ORDER BY d."createdAt"
-        LIMIT 1
       ) def ON true
       WHERE r.bikol IS NOT NULL AND r.bikol != ''
       ${rootsWhere}

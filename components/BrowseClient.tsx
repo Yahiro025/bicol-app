@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState, useEffect, useCallback, useTransition } from 'react';
+import { useState, useEffect, useCallback, useRef, useTransition } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import Button from './ui/Button';
@@ -52,22 +52,39 @@ export default function BrowseClient({
   const [query, setQuery] = useState(defaultQuery);
   const [selectedLetter, setSelectedLetter] = useState(defaultLetter);
   const [selectedCategory, setSelectedCategory] = useState(defaultCategory);
-  const [sortMode, setSortMode] = useState<'alphabetical' | 'frequency'>(defaultSort === 'frequency' ? 'frequency' : 'alphabetical');
+  const [sortMode, setSortMode] = useState<'alphabetical' | 'frequency' | 'relevance'>(defaultSort === 'frequency' ? 'frequency' : defaultSort === 'relevance' ? 'relevance' : query ? 'relevance' : 'alphabetical');
+
+  // Reset sort to alphabetical when search query is cleared (relevance mode needs a query)
+  useEffect(() => {
+    if (!query && sortMode === 'relevance') {
+      setSortMode('alphabetical');
+    }
+  }, [query, sortMode]);
   const [words, setWords] = useState<Word[]>(initialWords);
-  const [page, setPage] = useState(1);
+  const pageRef = useRef(1);
   const [hasMore, setHasMore] = useState(initialWords.length === 50);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [areFiltersVisible, setAreFiltersVisible] = useState(false);
   const langMode = useLanguageMode();
 
   // Intersection Observer for infinite scroll
+  // Uses refs to avoid stale closure bugs — the observer callback always reads
+  // the latest values of isLoadingMore and hasMore without recreating the observer.
+  const isLoadingMoreRef = useRef(isLoadingMore);
+  const hasMoreRef = useRef(hasMore);
+  const fetchMoreWordsRef = useRef(fetchMoreWords);
+  
+  isLoadingMoreRef.current = isLoadingMore;
+  hasMoreRef.current = hasMore;
+  fetchMoreWordsRef.current = fetchMoreWords;
+
   const observerTarget = useCallback((node: HTMLDivElement | null) => {
-    if (!node || isLoadingMore || !hasMore) return;
+    if (!node) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0]?.isIntersecting && hasMore) {
-          fetchMoreWords();
+        if (entries[0]?.isIntersecting && hasMoreRef.current && !isLoadingMoreRef.current) {
+          fetchMoreWordsRef.current();
         }
       },
       { threshold: 0.1 }
@@ -75,37 +92,48 @@ export default function BrowseClient({
 
     observer.observe(node);
     return () => observer.disconnect();
-  }, [isLoadingMore, hasMore]);
+  }, []);
 
   const displayTranslation = (word: Word) => {
     if (langMode === 'tl' && word.tagalog) return word.tagalog;
     return word.english;
   };
 
-  const fetchMoreWords = async (isReset = false) => {
-    const currentPage = isReset ? 0 : page;
+  const fetchMoreWords = useCallback(async (isReset = false) => {
     const limit = 50;
+    
+    if (!isReset && isLoadingMoreRef.current) return; // Prevent duplicate requests
     
     setIsLoadingMore(true);
     try {
       const params = new URLSearchParams({
-        page: currentPage.toString(),
+        page: (isReset ? 0 : pageRef.current).toString(),
         limit: limit.toString(),
       });
       if (query) params.set('q', query);
       if (selectedLetter) params.set('letter', selectedLetter);
       if (selectedCategory) params.set('category', selectedCategory);
       if (sortMode === 'frequency') params.set('sort', 'frequency');
+      if (sortMode === 'relevance') params.set('sort', 'relevance');
 
       const response = await fetch(`/api/browse?${params.toString()}`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
       const newWords = await response.json();
+
+      if (!Array.isArray(newWords)) {
+        throw new Error('Invalid response format');
+      }
 
       if (isReset) {
         setWords(newWords);
-        setPage(1);
+        pageRef.current = 1;
       } else {
         setWords(prev => [...prev, ...newWords]);
-        setPage(prev => prev + 1);
+        pageRef.current += 1;
       }
       
       setHasMore(newWords.length === limit);
@@ -114,7 +142,7 @@ export default function BrowseClient({
     } finally {
       setIsLoadingMore(false);
     }
-  };
+  }, [query, selectedLetter, selectedCategory, sortMode]);
 
   // Reset and fetch when filters change
   useEffect(() => {
@@ -129,12 +157,13 @@ export default function BrowseClient({
     if (selectedLetter) params.set('letter', selectedLetter);
     if (selectedCategory) params.set('category', selectedCategory);
     if (sortMode === 'frequency') params.set('sort', 'frequency');
+    if (sortMode === 'relevance') params.set('sort', 'relevance');
     
     const newUrl = `/browse${params.toString() ? `?${params.toString()}` : ''}`;
     window.history.replaceState({ ...window.history.state, as: newUrl, url: newUrl }, '', newUrl);
 
     return () => clearTimeout(timer);
-  }, [query, selectedLetter, selectedCategory, sortMode]);
+  }, [query, selectedLetter, selectedCategory, sortMode, fetchMoreWords]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
@@ -196,8 +225,8 @@ export default function BrowseClient({
       </div>
 
       {/* 2. TOGGLE FILTER BUTTON & ACTIVE FILTER PILLS */}
-      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           <Button 
             variant="secondary"
             onClick={() => setAreFiltersVisible(!areFiltersVisible)}
@@ -209,6 +238,18 @@ export default function BrowseClient({
 
           {/* Sort Toggle */}
           <div className="flex items-center border border-zinc-300 dark:border-zinc-800 rounded-xl overflow-hidden">
+            {query && (
+              <button
+                onClick={() => setSortMode('relevance')}
+                className={`px-4 py-2 text-xs font-bold transition-all ${
+                  sortMode === 'relevance'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-300 dark:hover:bg-zinc-700'
+                }`}
+              >
+                Relevance
+              </button>
+            )}
             <button
               onClick={() => setSortMode('alphabetical')}
               className={`px-4 py-2 text-xs font-bold transition-all ${
@@ -262,7 +303,7 @@ export default function BrowseClient({
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden"
           >
-            <div className="bg-zinc-50 dark:bg-zinc-900/50 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 p-8 rounded-2xl mb-10 shadow-2xl">
+            <div className="bg-zinc-50 dark:bg-zinc-900/50 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 p-4 sm:p-8 rounded-2xl mb-10 shadow-2xl">
               {/* Letter Grid */}
               <h3 className="text-xs font-bold text-zinc-400 dark:text-zinc-500 mb-4 uppercase tracking-widest">Starts with</h3>
               <div className="flex flex-wrap gap-2 mb-8">
