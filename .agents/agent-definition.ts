@@ -1,72 +1,106 @@
 import { defineAgent } from '@codebuff/sdk';
 
-// 1. MASTER ORCHESTRATOR
 export const masterOrchestrator = defineAgent({
   name: 'Orchestrator',
   description: 'Spawns dynamic specialized agents that command Freebuff functional primitives.',
   
   async workflow(ctx, massiveUserInput) {
+    // =========================================================================
+    // PERMANENT SAFETY CONSTRAINTS (injected into every subagent)
+    // =========================================================================
+    const SAFETY_RULES = `
+## CRITICAL OUTPUT SAFETY RULES — VIOLATION WILL BREAK THE PROJECT
+
+### Workspace Sterility
+- NEVER output unstructured tracking files, markdown logs, or custom dump files to the project root or source directories.
+- Persistent configuration and agent definitions go strictly inside .agents/.
+- When creating new build or cache directories, immediately add them to both .gitignore and .codebuffignore.
+
+### Regex Character Class Safety
+- NEVER write regex character classes where a hyphen could form an out-of-order range.
+  BAD:  [_-.]   (underscore=95, period=46 => range 95->46 = "range out of order in character class")
+  BAD:  [z-a]   (range from high to low code point)
+  GOOD: [-_.]   (hyphen first = literal, no range interpretation)
+  GOOD: [_.-]   (hyphen last = literal)
+  GOOD: [_.\-]  (escaped hyphen = always literal)
+
+### Content Formatting
+- NEVER output dense minified/compressed code blobs.
+- NEVER produce bare unescaped bracket sequences [...] that could be misparsed as regex.
+- Always use proper spacing, line breaks, and readable formatting.
+`;
+    // =========================================================================
+
     ctx.log("🧠 Step 1: Decomposing master goal into specialized engineering roles...");
 
-    // Ask Freebuff's Thinker to evaluate the broad prompt and assign domain-expert roles
-const strategicPlan = await ctx.callAgent('Thinker', {
-  prompt: `Analyze this request: "${massiveUserInput}".
-           Decompose it into as many completely independent specialized roles as necessary.
-           
-           Format your output strictly as a JSON array matching this exact schema:
-           {
-             "subagents": [
+    const strategicPlan = await ctx.callAgent('Thinker', {
+      prompt: `Analyze this request: "${massiveUserInput}".
+               Decompose it into completely independent specialized roles.
+               
+               CRITICAL: Name the subagents using pure PascalCase words only (e.g., ArchiveFixer, DataFetcher). Do NOT use hyphens, spaces, or symbols in the names.
+               
+               Format your output strictly as a JSON array matching this exact schema:
                {
-                 "name": "UniqueTitleBasedOnTask",
-                 "role": "Detailed description of the specific responsibilities for this role",
-                 "focusFiles": ["paths/to/targeted/files/here.ts"]
-               }
-             ]
-           }`,
-  responseFormat: 'json'
-});
+                 "subagents": [
+                   {
+                     "name": "PurePascalCaseTitle",
+                     "role": "Detailed description of responsibilities",
+                     "focusFiles": ["src/app/archive/page.tsx"]
+                   }
+                 ]
+               }`,
+      responseFormat: 'json'
+    });
 
     const plan = JSON.parse(strategicPlan.text);
     ctx.log(`🎯 Generated ${plan.subagents.length} specialized domain subagents.`);
 
-    // Step 2: Spin off the dynamic role-based subagents in parallel
-    const agentTasks = plan.subagents.map(async (agentSpec) => {
-      ctx.log(`🚀 Spawning Dynamic Role Subagent: [${agentSpec.name}]`);
+    // Step 2: Execute subagents strictly one at a time, sequentially.
+    // Each agent must fully complete and write its output to disk before the next one starts.
+    const results = [];
+    for (const agentSpec of plan.subagents) {
+      // DEFENSIVE PROGRAMMING: Strip any illegal hyphens or symbols from the name
+      // This forces 'Archive-Fixer' or 'Archive Fixer' to become 'ArchiveFixer'
+      const safeName = agentSpec.name.replace(/[^a-zA-Z0-9]/g, '');
 
-      // Spawn a dynamic agent container that inherits Freebuff's core functional engines
-      return ctx.spawnAgent({
-        name: agentSpec.name,
+      ctx.log(`🚀 Spawning Safe Dynamic Agent: [${safeName}] (sequential)`);
+
+      const result = await ctx.spawnAgent({
+        name: safeName,
         role: agentSpec.role,
         isolated: true,
-        // System prompt instructs the custom agent how to use the built-in primitives
         systemPrompt: `
-          You are the specialized dynamic agent: [${agentSpec.name}]. Your role is: ${agentSpec.role}.
+          You are the specialized dynamic agent: [${safeName}]. Your role is: ${agentSpec.role}.
           You must execute your goals by coordinating Freebuff's internal primitives.
-          
+
           Your execution protocol:
           1. Call 'FileExplorer' to scan your assigned scope: ${JSON.stringify(agentSpec.focusFiles)}.
           2. Call 'Planner' to design the file structural updates.
           3. Call 'Implementation' to write the code.
           4. Call 'Testing' to verify the edits pass local terminal compilation checks.
+
+          ${SAFETY_RULES}
         `,
-        // Grant the dynamic child permission to call Freebuff's native toolchain
         allowedAgents: ['FileExplorer', 'Planner', 'Implementation', 'Testing', 'CodeReview']
       });
-    });
 
-    // Step 3: Run all specialized domains concurrently in the background
-    ctx.log("⚡ Executing specialized swarms concurrently in Codespaces...");
-    const results = await Promise.all(agentTasks);
+      results.push(result);
+      ctx.log(`✅ Agent [${safeName}] completed successfully.`);
+    }
 
-    // Step 4: Final validation and synchronization
-    ctx.log("🗙 Swarms completed. Running final system compilation and review...");
+    // Step 3: Final validation and synchronization
+    ctx.log("🗙 All sequential agents completed. Running final system compilation and review...");
     
     const finalReview = await ctx.callAgent('CodeReview', {
-      prompt: "Review the global diffs generated by the specialized subagents to guarantee zero schema or endpoint mismatches."
+      prompt: `Review the global diffs generated by the specialized subagents to guarantee zero schema or endpoint mismatches.
+
+${SAFETY_RULES}`
     });
 
     await ctx.callAgent('Documentation', {
-      prompt: "Update project readmes and log changes executed across all modules."
+      prompt: `Update project readmes and log changes executed across all modules.
+
+${SAFETY_RULES}`
     });
 
     return `🏆 Hierarchical multi-agent delivery successful!\n\nReview Status: ${finalReview.text}`;
