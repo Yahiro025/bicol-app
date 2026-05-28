@@ -145,7 +145,7 @@ export default function WordClientPage({ word, isNormalized }: { word: WordDispl
   }, [word]);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-zinc-950 p-4 md:p-8">
+    <div className="min-h-screen bg-white dark:bg-zinc-950 p-3 sm:p-4 md:p-8">
       <WordJsonLd
         bikol={bikol}
         english={definitions[0]?.english || ''}
@@ -173,7 +173,7 @@ export default function WordClientPage({ word, isNormalized }: { word: WordDispl
           </Link>
         </div>
 
-        <section className="bg-zinc-50 dark:bg-zinc-900/50 backdrop-blur-xl border border-zinc-200 dark:border-white/5 rounded-[40px] p-8 md:p-12 shadow-2xl space-y-8 relative overflow-hidden">
+        <section className="bg-zinc-50 dark:bg-zinc-900/50 backdrop-blur-xl border border-zinc-200 dark:border-white/5 rounded-[28px] sm:rounded-[40px] p-6 sm:p-8 md:p-12 shadow-2xl space-y-8 relative overflow-hidden">
           {/* Background Decorative Glow */}
           <div className="absolute -top-24 -right-24 w-64 h-64 bg-blue-500/10 blur-[100px] rounded-full pointer-events-none" />
           
@@ -182,7 +182,7 @@ export default function WordClientPage({ word, isNormalized }: { word: WordDispl
               <span className="px-4 py-1 bg-blue-500/10 text-blue-400 text-xs font-black uppercase tracking-widest rounded-full border border-blue-500/20">
                 {normalizePOS(pos) || 'Word'}{formatDialect(definitions[0]?.dialect) ? ` • ${formatDialect(definitions[0]?.dialect)}` : ''}
               </span>
-              <h2 className="text-6xl md:text-8xl font-black tracking-tighter mt-4 bg-clip-text text-transparent bg-gradient-to-b from-zinc-900 dark:from-white to-zinc-400">{bikol}</h2>
+              <h2 className="text-4xl sm:text-6xl md:text-8xl font-black tracking-tighter mt-4 bg-clip-text text-transparent bg-gradient-to-b from-zinc-900 dark:from-white to-zinc-400">{bikol}</h2>
               <div className="flex items-center gap-6 mt-4">
                 {pronunciation && <p className="text-2xl text-zinc-400 dark:text-zinc-500 font-medium font-mono">/ {pronunciation} /</p>}
                 {audio_url && <AudioPlayer url={audio_url} />}

@@ -30,7 +30,7 @@ def determine_series(affixes: List[str]) -> str:
     return "REGULAR"
 
 # STRICT AFFIX REGEX: Only Uppercase, Hyphens, Plus, Comma
-STRICT_AFFIX_REGEX = r"([A-Z0-9\-\+\s,]+[\-])"
+STRICT_AFFIX_REGEX = r"([A-Z0-9+\s,-]+[-])"
 
 def parse_mintz_line(line: str) -> List[Dict[str, Any]]:
     entries = []
@@ -117,7 +117,7 @@ def main():
                     buffer = ""
                     for line in lines:
                         # Logic to detect new entry start
-                        if re.match(r"^[A-ZÁÉÍÓÚ’\']{2,}\s+[A-Z\-\+]+", line):
+                        if re.match(r"^[A-ZÁÉÍÓÚ’\']{2,}\s+[A-Z+-]+", line):
                             if buffer:
                                 entries = parse_mintz_line(buffer)
                                 all_extracted_data.extend(entries)

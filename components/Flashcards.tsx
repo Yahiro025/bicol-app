@@ -127,7 +127,7 @@ export default function Flashcards({ words, onExit }: FlashcardsProps) {
         </div>
       </div>
 
-      <div className="relative w-full aspect-[4/5] perspective">
+      <div className="relative w-full aspect-[3/4] sm:aspect-[4/5] perspective">
         <AnimatePresence initial={false} custom={direction}>
           <motion.div
             key={page}
@@ -145,9 +145,9 @@ export default function Flashcards({ words, onExit }: FlashcardsProps) {
               transition={{ type: "spring", stiffness: 260, damping: 20 }}
             >
               {/* Front */}
-              <div className="absolute inset-0 backface-hidden bg-zinc-900 border border-zinc-800 rounded-[2.5rem] p-10 flex flex-col items-center justify-center text-center transition-shadow duration-500 group-hover:shadow-[0_20px_25px_-5px_rgba(59,130,246,0.1)]">
+              <div className="absolute inset-0 backface-hidden bg-zinc-900 border border-zinc-800 rounded-[2.5rem] p-10 flex flex-col items-center justify-center text-center transition-shadow duration-500 glow-blue-hover">
                 <span className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] mb-6">Bicolano</span>
-                <h2 className="text-5xl md:text-6xl font-black text-white tracking-tighter leading-none mb-4">{word.bikol}</h2>
+                <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-tighter leading-none mb-4">{word.bikol}</h2>
                 <div className="h-1 w-8 bg-blue-500/20 rounded-full mb-6"></div>
                 <p className="text-zinc-600 text-xs font-bold uppercase tracking-widest animate-pulse">Tap to reveal meaning</p>
               </div>

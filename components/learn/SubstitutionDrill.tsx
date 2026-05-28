@@ -102,7 +102,7 @@ export default function SubstitutionDrillComponent({
           ease: "easeOut",
         }}
         className={`card-resting p-8 md:p-12 space-y-10 relative overflow-hidden ${
-          isAnswered && isCorrect ? "ring-2 ring-emerald-500/20 bg-emerald-500/5 shadow-[0_0_50px_-12px_rgba(16,185,129,0.15)]" : 
+          isAnswered && isCorrect ? "ring-2 ring-emerald-500/20 bg-emerald-500/5 glow-emerald-small" : 
           isAnswered && !isCorrect ? "ring-2 ring-rose-500/20 bg-rose-500/5" : ""
         }`}
       >

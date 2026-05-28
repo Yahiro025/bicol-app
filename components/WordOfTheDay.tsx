@@ -36,7 +36,7 @@ export default function WordOfTheDay({ word, className }: WordOfTheDayProps) {
      >
        <Link
          href={`/word/${encodeURIComponent(word.bikol)}`}
-         className={`group relative overflow-hidden p-10 bg-gradient-to-br from-blue-600 via-blue-500 to-purple-600 rounded-[2rem] shadow-2xl shadow-blue-500/20 hover:shadow-blue-500/40 hover:scale-[1.01] active:scale-[0.98] transition-all duration-300 block ${className ?? ''}`}
+         className={`group relative overflow-hidden p-6 sm:p-10 bg-gradient-to-br from-blue-600 via-blue-500 to-purple-600 rounded-[2rem] shadow-2xl shadow-blue-500/20 hover:shadow-blue-500/40 hover:scale-[1.01] active:scale-[0.98] transition-all duration-300 block ${className ?? ''}`}
        >
         {/* Animated Background Element */}
         <div className="absolute top-0 right-0 p-10 opacity-10 group-hover:scale-125 group-hover:opacity-20 group-hover:rotate-12 transition-all duration-700 ease-out">
@@ -50,7 +50,7 @@ export default function WordOfTheDay({ word, className }: WordOfTheDayProps) {
           </div>
 
           <div>
-            <h2 className="text-5xl md:text-7xl font-display font-black text-white tracking-tighter mb-3 group-hover:translate-x-1 transition-transform duration-300">
+            <h2 className="text-4xl sm:text-5xl md:text-7xl font-display font-black text-white tracking-tighter mb-3 group-hover:translate-x-1 transition-transform duration-300">
               {word.bikol}
             </h2>
             <div className="flex flex-col gap-2">
@@ -60,7 +60,7 @@ export default function WordOfTheDay({ word, className }: WordOfTheDayProps) {
                     {normalizePOS(word.pos)}
                   </span>
                 )}
-                <p className="text-2xl md:text-3xl text-white font-bold leading-tight">
+                <p className="text-xl sm:text-2xl md:text-3xl text-white font-bold leading-tight">
                   {displayTranslation()}
                 </p>
               </div>
@@ -74,7 +74,7 @@ export default function WordOfTheDay({ word, className }: WordOfTheDayProps) {
 
           {word.example_bikol && (
             <div className="pt-8 border-t border-white/10">
-              <p className="text-white/90 italic text-xl md:text-2xl leading-relaxed font-medium">
+              <p className="text-white/90 italic text-lg sm:text-xl md:text-2xl leading-relaxed font-medium">
                 "{word.example_bikol}"
               </p>
               {word.example_english && (

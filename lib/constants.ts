@@ -101,3 +101,10 @@ export const NAV_LINKS: NavLink[] = [
   { href: "/learn", label: "Learn", icon: GraduationCap },
   { href: "/flashcards", label: "Study", icon: BookOpenCheck },
 ];
+
+export const NAV_ICON_COLORS: Record<string, { base: string; active: string }> = {
+  "/":           { base: "#a1a1aa", active: "#3b82f6" }, // blue-500
+  "/browse":     { base: "#a1a1aa", active: "#10b981" }, // emerald-500
+  "/learn":      { base: "#a1a1aa", active: "#f59e0b" }, // amber-500
+  "/flashcards": { base: "#a1a1aa", active: "#8b5cf6" }, // violet-500
+};

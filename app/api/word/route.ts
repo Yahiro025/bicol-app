@@ -32,6 +32,10 @@ export async function GET(request: Request) {
       root: root ?? null,
       legacy: legacyWord ?? null,
       source: root ? 'normalized' : 'legacy',
+    }, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=3600, max-age=60, stale-while-revalidate=7200',
+      },
     });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
