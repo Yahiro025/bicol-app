@@ -47,11 +47,11 @@ export default function DesktopNav() {
               }}
               onMouseEnter={(e) => {
                 if (!isActive)
-                  (e.currentTarget as HTMLElement).style.color = colors.active;
+                  (e.currentTarget as unknown as HTMLElement).style.color = colors.active;
               }}
               onMouseLeave={(e) => {
                 if (!isActive)
-                  (e.currentTarget as HTMLElement).style.color = colors.base;
+                  (e.currentTarget as unknown as HTMLElement).style.color = colors.base;
               }}
             />
             {link.label}
