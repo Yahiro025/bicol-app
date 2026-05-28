@@ -120,7 +120,7 @@ export default async function HomePage() {
             </div>
 
             {/* Social Proof Stats */}
-            <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
+            <div className="mt-10 grid grid-cols-2 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
               <div className="p-4 bg-white/5 border border-white/10 rounded-2xl text-center group hover:bg-white/10 transition-colors">
                 <div className="text-2xl font-black text-white">{wordCount.toLocaleString()}+</div>
                 <div className="text-xs text-zinc-500 font-bold uppercase tracking-wider mt-1">Words</div>
@@ -128,10 +128,6 @@ export default async function HomePage() {
               <div className="p-4 bg-white/5 border border-white/10 rounded-2xl text-center group hover:bg-white/10 transition-colors">
                 <div className="text-2xl font-black text-white">5+</div>
                 <div className="text-xs text-zinc-500 font-bold uppercase tracking-wider mt-1">Dialects</div>
-              </div>
-              <div className="p-4 bg-white/5 border border-white/10 rounded-2xl text-center group hover:bg-white/10 transition-colors">
-                <div className="text-2xl font-black text-white">AI</div>
-                <div className="text-xs text-zinc-500 font-bold uppercase tracking-wider mt-1">Enhanced</div>
               </div>
               <div className="p-4 bg-white/5 border border-white/10 rounded-2xl text-center group hover:bg-white/10 transition-colors">
                 <div className="text-2xl font-black text-white">Free</div>
