@@ -1,25 +1,56 @@
 import { prisma } from '@/lib/prisma';
+import { cache as reactCache } from 'react';
 import WordClientPage from './WordClientPage';
 import { notFound } from 'next/navigation';
 import { conjugateBikolVerb } from '@/lib/conjugator';
 import type { WordDisplayData } from '@/lib/types/word';
 import type { Metadata } from 'next';
 
-export const dynamic = 'force-dynamic';
+// ISR: word entries are essentially static, revalidate daily
+export const revalidate = 86400;
+
+// Cache the expensive word lookup so generateMetadata and the page component
+// share the same query result instead of hitting the DB twice per request.
+const getWordData = reactCache(async (bikolWord: string) => {
+  try {
+    const root = await prisma.root.findFirst({
+      where: {
+        bikol: {
+          equals: bikolWord,
+          mode: 'insensitive'
+        }
+      },
+      include: {
+        definitions: {
+          include: {
+            conjugations: true,
+            exampleSentences: true
+          }
+        }
+      }
+    });
+    if (root) return { type: 'root' as const, data: root };
+  } catch (dbError) {
+    console.error('Mintz Root table not ready or schema mismatch:', dbError);
+  }
+
+  const word = await prisma.word.findUnique({
+    where: { bikol: bikolWord }
+  });
+  if (word) return { type: 'word' as const, data: word };
+
+  return null;
+});
 
 export async function generateMetadata({ params }: { params: Promise<{ bikol: string }> }): Promise<Metadata> {
   const { bikol } = await params;
   const bikolWord = decodeURIComponent(bikol);
 
   try {
-    // Try normalized Root table first
-    const root = await prisma.root.findFirst({
-      where: { bikol: { equals: bikolWord, mode: 'insensitive' } },
-      include: { definitions: { select: { english: true, tagalog: true, dialect: true } } }
-    });
+    const result = await getWordData(bikolWord);
 
-    if (root?.definitions?.[0]) {
-      const def = root.definitions[0];
+    if (result?.type === 'root' && result.data.definitions?.[0]) {
+      const def = result.data.definitions[0];
       const english = def.english || '';
       const desc = `Learn the Bikol word "${bikolWord}": ${english}.${def.tagalog ? ` Tagalog: ${def.tagalog}.` : ''} Includes verb conjugations, example sentences, and pronunciation.`;
       return {
@@ -37,9 +68,8 @@ export async function generateMetadata({ params }: { params: Promise<{ bikol: st
       };
     }
 
-    // Fallback to legacy Word table
-    const word = await prisma.word.findUnique({ where: { bikol: bikolWord } });
-    if (word) {
+    if (result?.type === 'word') {
+      const word = result.data;
       const desc = `Learn the Bikol word "${bikolWord}": ${word.english}.${word.tagalog ? ` Tagalog: ${word.tagalog}.` : ''} Part of speech: ${word.pos || 'word'}.`;
       return {
         title: `${bikolWord} — ${word.english}`,
@@ -70,31 +100,11 @@ export default async function WordDetail({ params }: { params: Promise<{ bikol: 
   const bikolWord = decodeURIComponent(bikol);
 
   try {
-    // 1. Try to find in the normalized Root table (Mintz)
-    let root = null;
-    try {
-      root = await prisma.root.findFirst({
-        where: { 
-          bikol: {
-            equals: bikolWord,
-            mode: 'insensitive'
-          }
-        },
-        include: {
-          definitions: {
-            include: {
-              conjugations: true,
-              exampleSentences: true
-            }
-          }
-        }
-      });
-    } catch (dbError) {
-      console.error('Mintz Root table not ready or schema mismatch:', dbError);
-      // Proceed to fallback
-    }
+    // Uses the same cached getWordData() as generateMetadata — no duplicate DB query.
+    const result = await getWordData(bikolWord);
 
-    if (root) {
+    if (result?.type === 'root') {
+      const root = result.data;
       // 1b. Fallback: If verb has affixPair but no conjugations, generate them on-the-fly
       const enrichedDefinitions = root.definitions.map(def => {
         if (def.affixPair && def.affixPair !== 'UNKNOWN' && (!def.conjugations || def.conjugations.length === 0)) {
@@ -118,17 +128,13 @@ export default async function WordDetail({ params }: { params: Promise<{ bikol: 
       return <WordClientPage word={{ ...root, definitions: enrichedDefinitions }} isNormalized={true} />;
     }
 
-    // 2. Fallback to the legacy words table
-    const word = await prisma.word.findUnique({
-      where: { bikol: bikolWord } 
-    });
-
-    if (!word) {
-      return notFound();
+    if (result?.type === 'word') {
+      const word = result.data;
+      const displayWord: WordDisplayData = { ...word, bikol: word.bikol!, definitions: [] };
+      return <WordClientPage word={displayWord} isNormalized={false} />;
     }
 
-    const displayWord: WordDisplayData = { ...word, bikol: word.bikol!, definitions: [] };
-    return <WordClientPage word={displayWord} isNormalized={false} />;
+    return notFound();
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : 'An unexpected error occurred';
     console.error('Error fetching word:', e);

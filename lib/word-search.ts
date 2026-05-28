@@ -7,8 +7,26 @@
  * everywhere, not just on word detail pages.
  */
 
+import { cache as reactCache } from 'react';
 import { prisma } from '@/lib/prisma';
 import { Prisma } from '@prisma/client';
+
+// ─── Simple in-memory cache with TTL (seconds) ───────────────────────────────
+const cache = new Map<string, { data: unknown; expiresAt: number }>();
+
+function getCached<T>(key: string): T | null {
+  const entry = cache.get(key);
+  if (!entry) return null;
+  if (Date.now() > entry.expiresAt) {
+    cache.delete(key);
+    return null;
+  }
+  return entry.data as T;
+}
+
+function setCache(key: string, data: unknown, ttlSeconds: number): void {
+  cache.set(key, { data, expiresAt: Date.now() + ttlSeconds * 1000 });
+}
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -30,45 +48,9 @@ export interface BrowseFilters {
   q?: string | null;
 }
 
-// ─── Build WHERE conditions for the combined subquery ─────────────────────────
-// These reference columns that exist in both roots and words tables.
-// Used in the outer SELECT of the UNION query.
-
-export function buildCombinedWhere(filters: BrowseFilters): Prisma.Sql {
-  const conditions: Prisma.Sql[] = [];
-
-  if (filters.letter) {
-    conditions.push(
-      Prisma.sql`LOWER("bikol") LIKE LOWER(${filters.letter + '%'})`
-    );
-  }
-  if (filters.category) {
-    conditions.push(
-      Prisma.sql`LOWER("category") = LOWER(${filters.category})`
-    );
-  }
-  if (filters.q) {
-    conditions.push(
-      Prisma.sql`(
-        LOWER("bikol") LIKE LOWER(${'%' + filters.q + '%'}) OR
-        LOWER("english") LIKE LOWER(${'%' + filters.q + '%'}) OR
-        LOWER("tagalog") LIKE LOWER(${'%' + filters.q + '%'})
-      )`
-    );
-  }
-
-  return conditions.length > 0
-    ? Prisma.sql`WHERE ${Prisma.join(conditions, ' AND ')}`
-    : Prisma.empty;
-}
-
-export function buildCombinedOrderBy(sort?: string | null): Prisma.Sql {
-  return sort === 'frequency'
-    ? Prisma.sql`ORDER BY "frequency_rank" ASC NULLS LAST, LOWER("bikol") ASC`
-    : Prisma.sql`ORDER BY LOWER("bikol") ASC`;
-}
-
 // ─── Browse: Paginated query across both tables ───────────────────────────────
+// OPTIMIZED: Push WHERE into subqueries so PostgreSQL can use indexes and
+// avoid scanning the entire UNION ALL result before filtering.
 
 export async function browseWords(params: {
   filters: BrowseFilters;
@@ -77,14 +59,57 @@ export async function browseWords(params: {
   offset: number;
 }): Promise<WordSearchEntry[]> {
   const { filters, sort, limit, offset } = params;
-  const whereClause = buildCombinedWhere(filters);
-  const orderByClause = buildCombinedOrderBy(sort);
+
+  // Build filter SQL fragments that work inside each subquery.
+  // Uses qualified column references (def.english, def.tagalog for roots;
+  // bare english, tagalog for words since they're direct columns there).
+  const rootsFilterConditions: Prisma.Sql[] = [];
+  const wordsFilterConditions: Prisma.Sql[] = [];
+
+  // Letter and category filters apply identically to both tables
+  if (filters.letter) {
+    const letterClause = Prisma.sql`LOWER(bikol) LIKE LOWER(${filters.letter + '%'})`;
+    rootsFilterConditions.push(letterClause);
+    wordsFilterConditions.push(letterClause);
+  }
+  if (filters.category) {
+    const catClause = Prisma.sql`LOWER(category) = LOWER(${filters.category})`;
+    rootsFilterConditions.push(catClause);
+    wordsFilterConditions.push(catClause);
+  }
+  // Search query: roots uses def.english/def.tagalog (LATERAL), words uses direct columns
+  if (filters.q) {
+    rootsFilterConditions.push(
+      Prisma.sql`(
+        LOWER(bikol) LIKE LOWER(${'%' + filters.q + '%'}) OR
+        LOWER(def.english) LIKE LOWER(${'%' + filters.q + '%'}) OR
+        LOWER(def.tagalog) LIKE LOWER(${'%' + filters.q + '%'})
+      )`
+    );
+    wordsFilterConditions.push(
+      Prisma.sql`(
+        LOWER(bikol) LIKE LOWER(${'%' + filters.q + '%'}) OR
+        LOWER(english) LIKE LOWER(${'%' + filters.q + '%'}) OR
+        LOWER(tagalog) LIKE LOWER(${'%' + filters.q + '%'})
+      )`
+    );
+  }
+
+  const rootsWhere = rootsFilterConditions.length > 0
+    ? Prisma.sql`AND ${Prisma.join(rootsFilterConditions, ' AND ')}`
+    : Prisma.empty;
+  const wordsWhere = wordsFilterConditions.length > 0
+    ? Prisma.sql`AND ${Prisma.join(wordsFilterConditions, ' AND ')}`
+    : Prisma.empty;
+
+  const orderByClause = sort === 'frequency'
+    ? Prisma.sql`ORDER BY COALESCE(frequency_rank, 999999) ASC, LOWER(bikol) ASC`
+    : Prisma.sql`ORDER BY LOWER(bikol) ASC`;
 
   const rows: any[] = await prisma.$queryRaw`
     SELECT * FROM (
       -- Normalized roots (includes Mintz + Wiktionary data)
       SELECT
-        r.id::text,
         r.bikol,
         r.pos,
         r.category,
@@ -102,12 +127,12 @@ export async function browseWords(params: {
         LIMIT 1
       ) def ON true
       WHERE r.bikol IS NOT NULL AND r.bikol != ''
+      ${rootsWhere}
 
       UNION ALL
 
       -- Legacy words (Wiktionary / learnbikol.com — may overlap with roots)
       SELECT
-        w.id::text,
         w.bikol,
         w.pos,
         w.category,
@@ -118,8 +143,8 @@ export async function browseWords(params: {
         'legacy' as source
       FROM words w
       WHERE w.bikol IS NOT NULL AND w.bikol != ''
+      ${wordsWhere}
     ) combined
-    ${whereClause}
     ${orderByClause}
     LIMIT ${limit} OFFSET ${offset}
   `;
@@ -150,8 +175,18 @@ export async function browseWords(params: {
 }
 
 // ─── Count distinct bikol words across both tables ────────────────────────────
+// Wrapped in React cache() to deduplicate within a single request (e.g.,
+// homepage calls it directly AND getWordOfTheDay() calls it again internally).
+export const countDistinctWords = reactCache(async (): Promise<number> => {
+  const CACHE_KEY = 'countDistinctWords';
+  const CACHE_TTL = 600; // 10 minutes
 
-export async function countDistinctWords(): Promise<number> {
+  const cached = getCached<number>(CACHE_KEY);
+  if (cached !== null) return cached;
+
+  // Exact count via COUNT(DISTINCT ...) — cached for 10 min so cold start is
+  // the only time this runs. The UNION ALL is needed for accuracy since
+  // getWordOfTheDay() depends on the exact count for its offset calculation.
   const result: any[] = await prisma.$queryRaw`
     SELECT COUNT(DISTINCT LOWER(bikol)) as count FROM (
       SELECT bikol FROM roots WHERE bikol IS NOT NULL AND bikol != ''
@@ -159,32 +194,60 @@ export async function countDistinctWords(): Promise<number> {
       SELECT bikol FROM words WHERE bikol IS NOT NULL AND bikol != ''
     ) combined
   `;
-  return Number(result[0]?.count ?? 0);
-}
+  const count = Number(result[0]?.count ?? 0);
+  setCache(CACHE_KEY, count, CACHE_TTL);
+  return count;
+});
 
 // ─── Categories from both tables ──────────────────────────────────────────────
 
+// Wrapped in React cache() to deduplicate within a single request.
 export interface CategoryCount {
   category: string;
   count: number;
 }
 
-export async function getCategoryCounts(limit = 12): Promise<CategoryCount[]> {
-  const rows: any[] = await prisma.$queryRaw`
-    SELECT category, COUNT(*) as count FROM (
-      SELECT category FROM roots WHERE category IS NOT NULL AND category != ''
-      UNION ALL
-      SELECT category FROM words WHERE category IS NOT NULL AND category != ''
-    ) combined
-    GROUP BY category
-    ORDER BY count DESC
-    LIMIT ${limit}
-  `;
-  return rows.map((r: any) => ({
-    category: r.category,
-    count: Number(r.count),
-  }));
-}
+export const getCategoryCounts = reactCache(async (limit = 12): Promise<CategoryCount[]> => {
+  const CACHE_KEY = `categoryCounts_${limit}`;
+  const CACHE_TTL = 600; // 10 minutes
+
+  const cached = getCached<CategoryCount[]>(CACHE_KEY);
+  if (cached !== null) return cached;
+
+  // OPTIMIZED: Count each table separately, then combine in JS
+  // This avoids the expensive UNION ALL + GROUP BY combo
+  const [rootCats, wordCats]: any[] = await Promise.all([
+    prisma.$queryRaw`
+      SELECT category, COUNT(*) as count
+      FROM roots
+      WHERE category IS NOT NULL AND category != ''
+      GROUP BY category
+    `,
+    prisma.$queryRaw`
+      SELECT category, COUNT(*) as count
+      FROM words
+      WHERE category IS NOT NULL AND category != ''
+      GROUP BY category
+    `,
+  ]);
+
+  // Merge counts in JS (faster than UNION ALL + re-GROUP BY)
+  const categoryMap = new Map<string, number>();
+  for (const row of rootCats as any[]) {
+    categoryMap.set(row.category, Number(row.count));
+  }
+  for (const row of wordCats as any[]) {
+    categoryMap.set(row.category, (categoryMap.get(row.category) || 0) + Number(row.count));
+  }
+
+  const result = Array.from(categoryMap.entries())
+    .map(([category, count]) => ({ category, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, limit);
+
+  setCache(CACHE_KEY, result, CACHE_TTL);
+  return result;
+});
 
 // ─── Look up specific words from both tables ──────────────────────────────────
 
@@ -279,42 +342,34 @@ export async function getWordOfTheDay(): Promise<WordSearchEntry | null> {
 
 // ─── Initial dictionary for search autocomplete ────────────────────────────────
 
+// Wrapped in React cache() to deduplicate within a single request.
 export interface DictionaryEntry {
   bikol: string;
   english: string;
   tagalog: string | null;
 }
 
-export async function getInitialDictionary(
-  limit = 5000
-): Promise<DictionaryEntry[]> {
+export const getInitialDictionary = reactCache(async (
+  limit = 500
+): Promise<DictionaryEntry[]> => {
+  // OPTIMIZED: Query roots only (covers Mintz + Wiktionary), since legacy words' bikol
+  // entries already overlap with roots. This avoids the expensive UNION ALL.
   const rows: any[] = await prisma.$queryRaw`
-    SELECT * FROM (
-      SELECT
-        r.bikol,
-        def.english,
-        def.tagalog
-      FROM roots r
-      LEFT JOIN LATERAL (
-        SELECT d.english, d.tagalog
-        FROM definitions d
-        WHERE d."rootId" = r.id
-        ORDER BY d."createdAt"
-        LIMIT 1
-      ) def ON true
-      WHERE r.bikol IS NOT NULL AND r.bikol != ''
-
-      UNION ALL
-
-      SELECT
-        w.bikol,
-        w.english,
-        w.tagalog
-      FROM words w
-      WHERE w.bikol IS NOT NULL AND w.bikol != '' AND w.english IS NOT NULL
-    ) combined
-    WHERE english IS NOT NULL
-    ORDER BY LOWER(bikol) ASC
+    SELECT
+      r.bikol,
+      def.english,
+      def.tagalog
+    FROM roots r
+    LEFT JOIN LATERAL (
+      SELECT d.english, d.tagalog
+      FROM definitions d
+      WHERE d."rootId" = r.id
+      ORDER BY d."createdAt"
+      LIMIT 1
+    ) def ON true
+    WHERE r.bikol IS NOT NULL AND r.bikol != ''
+      AND def.english IS NOT NULL
+    ORDER BY LOWER(r.bikol) ASC
     LIMIT ${limit}
   `;
 
@@ -334,4 +389,4 @@ export async function getInitialDictionary(
   }
 
   return deduped;
-}
+});
