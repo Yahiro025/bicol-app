@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prisma';
+import { browseWords } from '@/lib/word-search';
 
 export const dynamic = 'force-dynamic';
 
@@ -6,9 +6,11 @@ export default async function FrequencyListPage() {
   let words: any[] = [];
   let dbError = null;
   try {
-    words = await prisma.word.findMany({ 
-      orderBy: { bikol: 'asc' },
-      take: 100 
+    words = await browseWords({
+      filters: {},
+      sort: 'frequency',
+      limit: 100,
+      offset: 0,
     });
   } catch (e: any) {
     console.error(e);

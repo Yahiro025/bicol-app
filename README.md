@@ -98,10 +98,10 @@ pip install -r requirements.txt
 python ai_wiktionary_scraper.py
 
 # Run the Mintz PDF extractor
-python scripts/extract_mintz_pdfs.py
+python scripts/py/extract_mintz_pdfs.py
 
 # Migrate flat data to Mintz Normalized Schema
-bun run scripts/migrate-to-mintz.ts
+bun run scripts/ts/migrate-to-mintz.ts
 ```
 
 ### 3. Mobile Deployment

@@ -1,8 +1,7 @@
-import { prisma } from '@/lib/prisma';
 import BrowseClient from '@/components/BrowseClient';
 import Link from 'next/link';
 import { BookOpen } from 'lucide-react';
-import { buildBrowseConditions, buildBrowseOrderBy } from '@/lib/browse-query';
+import { browseWords, getCategoryCounts } from '@/lib/word-search';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,30 +17,16 @@ export default async function BrowsePage({
   let dbError = null;
 
   try {
-    const whereClause = buildBrowseConditions({ letter, category, q });
-    const orderByClause = buildBrowseOrderBy(sort);
-
-    const rawWords: any[] = await prisma.$queryRaw`
-      SELECT * FROM "words"
-      ${whereClause}
-      ${orderByClause}
-      LIMIT 50
-    `;
-
-    // BigInt serialization fix for Next.js
-    words = rawWords.map(w => ({
-      ...w,
-      id: Number(w.id)
-    }));
-
-    // Fetch distinct categories for the filter buttons
-    const result = await prisma.word.findMany({
-      where: { category: { not: null } },
-      select: { category: true },
-      distinct: ['category'],
+    words = await browseWords({
+      filters: { letter, category, q },
+      sort,
+      limit: 50,
+      offset: 0,
     });
-    categories = result.map((r: any) => r.category).filter(Boolean).sort() as string[];
-    
+
+    // Fetch distinct categories from both tables
+    const categoryCounts = await getCategoryCounts(50);
+    categories = categoryCounts.map((c) => c.category).sort();
   } catch (e: any) {
     console.error(e);
     dbError = e.message;

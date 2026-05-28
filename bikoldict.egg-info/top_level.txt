@@ -1,4 +1,0 @@
-build
-scripts
-tests
-venv

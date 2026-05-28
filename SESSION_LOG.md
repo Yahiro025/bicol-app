@@ -52,7 +52,7 @@ The frontend only queried `roots` (Wiktionary/learnbikol data), completely ignor
 - Migration applied locally: `prisma/migrations/20260527164907_add_source_field`
 - SQL for Supabase: `ALTER TABLE "definitions" ADD COLUMN IF NOT EXISTS "source" TEXT DEFAULT 'unknown';`
 
-#### 2. Merge Script (`scripts/merge-mintz-into-roots.ts`)
+#### 2. Merge Script (`scripts/ts/merge-mintz-into-roots.ts`)
 - Reads all 6,672 entries from `bikol_dictionary` via Supabase REST API (paginated)
 - Fetches all existing `roots` and `definitions` for dedup
 - Normalizes headwords (NFD strip diacritics, case-insensitive) for matching
@@ -87,7 +87,7 @@ The frontend only queried `roots` (Wiktionary/learnbikol data), completely ignor
 |---|---|
 | `prisma/schema.prisma` | Added `source String? @default("unknown")` to `Definition` |
 | `prisma/migrations/20260527164907_add_source_field/migration.sql` | New migration |
-| `scripts/merge-mintz-into-roots.ts` | **New** — complete merge script |
+| `scripts/ts/merge-mintz-into-roots.ts` | **New** — complete merge script |
 | `app/word/[bikol]/WordClientPage.tsx` | Added `SourceBadge` component + source display per definition |
 
 ### Design Decisions

@@ -1,4 +1,3 @@
-import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import SearchBar from '@/components/SearchBar';
 import WordOfTheDay from '@/components/WordOfTheDay';
@@ -7,6 +6,7 @@ import WordCard from '@/components/WordCard';
 import HomeVerbDemo from '@/components/HomeVerbDemo';
 import ClientSubmissionWrapper from '@/components/ClientSubmissionWrapper';
 import { ArrowRight, Zap, BookOpen } from 'lucide-react';
+import { countDistinctWords, getCategoryCounts, findWordsByBikol, getWordOfTheDay, getInitialDictionary } from '@/lib/word-search';
 import { POPULAR_WORDS } from '@/lib/constants';
 
 export const dynamic = 'force-dynamic';
@@ -19,75 +19,40 @@ export default async function HomePage() {
   let dbError = null;
 
   try {
-    // 1. Basic Stats
-    wordCount = await prisma.word.count();
-    
-    // 2. Category Counts
-    const rawCategoryCounts = await (prisma.word.groupBy as any)({
-      by: ['category'],
-      _count: { bikol: true },
-      orderBy: { _count: { bikol: 'desc' } },
-      take: 12,
-    }) as { category: string | null; _count: { bikol: number } }[];
-    categoryCounts = rawCategoryCounts
-      .filter((c): c is { category: string; _count: { bikol: number } } => c.category !== null)
-      .map(c => c);
+    // 1. Basic Stats — count distinct words from both tables
+    wordCount = await countDistinctWords();
 
-    // 3. Popular Words
-    const rawPopularWords = await prisma.word.findMany({
-      where: {
-        bikol: {
-          in: POPULAR_WORDS
-        }
-      }
-    });
-    popularWords = rawPopularWords.map(w => ({
-      bikol: w.bikol!,
-      english: w.english!,
+    // 2. Category Counts — aggregate from both roots and words
+    const rawCategoryCounts = await getCategoryCounts(12);
+    categoryCounts = rawCategoryCounts.map(c => ({
+      category: c.category,
+      _count: { bikol: c.count },
+    }));
+
+    // 3. Popular Words — look up from both tables (roots preferred)
+    const popularEntries = await findWordsByBikol(POPULAR_WORDS);
+    popularWords = popularEntries.map(w => ({
+      bikol: w.bikol,
+      english: w.english || '',
       tagalog: w.tagalog,
       pos: w.pos,
       dialect: w.dialect,
       pronunciation: w.pronunciation,
     }));
 
-    // 4. Word of the Day (Deterministic based on date)
-    const today = new Date();
-    const dayOfYear = Math.floor((today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) / 86400000);
-    const skip = dayOfYear % (wordCount || 1);
-    
-    const wotdList = await prisma.word.findMany({
-      take: 1,
-      skip: skip
-    });
-    const rawWotd = wotdList[0];
-    wotd = rawWotd ? {
-      bikol: rawWotd.bikol!,
-      english: rawWotd.english!,
-      tagalog: rawWotd.tagalog,
-      pos: rawWotd.pos,
-      dialect: rawWotd.dialect,
-      pronunciation: rawWotd.pronunciation,
+    // 4. Word of the Day — from combined pool
+    const wotdEntry = await getWordOfTheDay();
+    wotd = wotdEntry ? {
+      bikol: wotdEntry.bikol,
+      english: wotdEntry.english || '',
+      tagalog: wotdEntry.tagalog,
+      pos: wotdEntry.pos,
+      dialect: wotdEntry.dialect,
+      pronunciation: wotdEntry.pronunciation,
     } : null;
 
-    // 5. Fetch initial dictionary for optimistic search
-    const initialDictionaryRaw = await prisma.word.findMany({
-      where: {
-        bikol: { not: null },
-        english: { not: null }
-      },
-      select: { bikol: true, english: true, tagalog: true },
-      take: 5000,
-      orderBy: [
-        { frequency_rank: 'asc' },
-        { bikol: 'asc' }
-      ]
-    });
-
-    const initialDictionary = initialDictionaryRaw.map(w => ({
-      bikol: w.bikol as string,
-      english: w.english as string,
-      tagalog: w.tagalog
-    }));
+    // 5. Fetch initial dictionary for optimistic search autocomplete
+    const initialDictionary = await getInitialDictionary(5000);
 
     return (
       <main className="min-h-screen bg-zinc-950 text-white">

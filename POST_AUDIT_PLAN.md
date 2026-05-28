@@ -11,7 +11,7 @@ Once you have completed the entire audit, simply tell me: **"Proceed with the po
 ### 1. Running & Resuming the Auditor
 To run or resume the auditor at any time, open your terminal in the project root and run:
 ```bash
-bun scripts/interactive_purge.ts
+bun scripts/ts/interactive_purge.ts
 ```
 
 ### 2. How Progress is Saved
@@ -35,7 +35,7 @@ When you complete the audit and tell me to proceed, I will automatically execute
 
 ### Step 2: Codebase Hygiene & Cleanup
 * Safely remove the temporary auditing script:
-  * Delete `scripts/interactive_purge.ts`
+  * Delete `scripts/ts/interactive_purge.ts`
 * Remove temporary progress tracking files to keep the repository pristine:
   * Delete `data/audit_progress.json`
   * Delete `data/purge_queue.json`
