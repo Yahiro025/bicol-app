@@ -85,8 +85,9 @@ export default function MobileNav() {
         aria-haspopup="menu"
       >
         <Menu className="w-6 h-6" />
-      </button>      {/* Overlay + Drawer — rendered via portal to document.body so the inert
-          attribute on #main-content doesn't block drawer interactions */}}
+      </button>
+      {/* Overlay + Drawer — rendered via portal to document.body so the inert
+          attribute on #main-content doesn't block drawer interactions */}
       <AnimatePresence>
         {isOpen &&
           createPortal(
