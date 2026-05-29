@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { browseWords } from '@/lib/word-search';
+import { browseWords, countDistinctWords } from '@/lib/word-search';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -11,15 +11,18 @@ export async function GET(request: Request) {
   const sort = searchParams.get('sort');
 
   try {
-    const words = await browseWords({
-      filters: { letter, category, q },
-      sort,
-      limit,
-      offset: page * limit,
-    });
+    const [words, total] = await Promise.all([
+      browseWords({
+        filters: { letter, category, q },
+        sort,
+        limit,
+        offset: page * limit,
+      }),
+      countDistinctWords(),
+    ]);
 
     // Cache for 5 minutes at CDN edge, 60 seconds in browser for stale-while-revalidate
-    return NextResponse.json(words, {
+    return NextResponse.json({ words, total }, {
       headers: {
         'Cache-Control': 'public, s-maxage=300, max-age=60, stale-while-revalidate=600',
       },
