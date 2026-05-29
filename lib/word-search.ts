@@ -60,6 +60,13 @@ export async function browseWords(params: {
 }): Promise<WordSearchEntry[]> {
   const { filters, sort, limit, offset } = params;
 
+  // ─── In-memory cache for API route calls (not for ISR server renders) ──────
+  const cacheKey = `browse:${JSON.stringify({ filters, sort, limit, offset })}`;
+  const BROWSE_CACHE_TTL = 30; // 30 seconds — balances freshness with performance
+
+  const cachedBrowse = getCached<WordSearchEntry[]>(cacheKey);
+  if (cachedBrowse !== null) return cachedBrowse;
+
   // Build filter SQL fragments that work inside each subquery.
   // Uses qualified column references (def.english, def.tagalog for roots;
   // bare english, tagalog for words since they're direct columns there).
@@ -174,6 +181,9 @@ export async function browseWords(params: {
       source: row.source as 'normalized' | 'legacy',
     });
   }
+
+  // Cache the result to avoid repeated expensive UNION ALL queries
+  setCache(cacheKey, deduped, BROWSE_CACHE_TTL);
 
   return deduped;
 }

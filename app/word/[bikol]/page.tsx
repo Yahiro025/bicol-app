@@ -3,11 +3,46 @@ import { cache as reactCache } from 'react';
 import WordClientPage from './WordClientPage';
 import { notFound } from 'next/navigation';
 import { conjugateBikolVerb } from '@/lib/conjugator';
+import { POPULAR_WORDS } from '@/lib/constants';
 import type { WordDisplayData } from '@/lib/types/word';
 import type { Metadata } from 'next';
 
 // ISR: word entries are essentially static, revalidate daily
 export const revalidate = 86400;
+
+// ─── SSG: Pre-build the most popular words at build time ────────────────────
+// This ensures instant loads for frequently-visited entries.
+// Less common words render on-demand via ISR (first hit slow, then cached).
+export async function generateStaticParams() {
+  try {
+    // Pre-build popular words + words with frequency_rank <= 100
+    const freqWords = await prisma.$queryRaw<{ bikol: string }[]>`
+      SELECT bikol FROM roots
+      WHERE bikol IS NOT NULL AND bikol != '' AND frequency_rank IS NOT NULL AND frequency_rank <= 100
+      UNION ALL
+      SELECT bikol FROM words
+      WHERE bikol IS NOT NULL AND bikol != '' AND frequency_rank IS NOT NULL AND frequency_rank <= 100
+      LIMIT 100
+    `;
+
+    const popularBikol: string[] = [...POPULAR_WORDS];
+    for (const row of freqWords) {
+      const b = row.bikol;
+      if (!popularBikol.some((p) => p.toLowerCase() === b.toLowerCase())) {
+        popularBikol.push(b);
+      }
+    }
+
+    return popularBikol.map((b) => ({ bikol: encodeURIComponent(b) }));
+  } catch {
+    // Fall back to popular words only if DB unavailable at build time (e.g., CI)
+    console.warn('generateStaticParams: DB unavailable, pre-building popular words only');
+    return POPULAR_WORDS.map((b) => ({ bikol: encodeURIComponent(b) }));
+  }
+}
+
+// Dynamic params for words not in the static set
+export const dynamicParams = true;
 
 // Cache the expensive word lookup so generateMetadata and the page component
 // share the same query result instead of hitting the DB twice per request.
