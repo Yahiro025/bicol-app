@@ -6,7 +6,7 @@ import {
   Theater, Church, Hammer, Car, Soup, Sprout, Box, Gavel, 
   Laugh, HelpingHand, SpellCheck, BookOpen, Landmark, Lightbulb, 
   CalendarDays, Bus, CloudRain, BookOpenCheck, Coins, Flame, 
-  Book
+  Book, Send
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -100,6 +100,7 @@ export const NAV_LINKS: NavLink[] = [
   { href: "/browse", label: "Browse", icon: BookOpen },
   { href: "/learn", label: "Learn", icon: GraduationCap },
   { href: "/flashcards", label: "Study", icon: BookOpenCheck },
+  { href: "/contribute", label: "Contribute", icon: Send },
 ];
 
 export const NAV_ICON_COLORS: Record<string, { base: string; active: string }> = {
@@ -107,4 +108,5 @@ export const NAV_ICON_COLORS: Record<string, { base: string; active: string }> =
   "/browse":     { base: "#a1a1aa", active: "#10b981" }, // emerald-500
   "/learn":      { base: "#a1a1aa", active: "#f59e0b" }, // amber-500
   "/flashcards": { base: "#a1a1aa", active: "#8b5cf6" }, // violet-500
+  "/contribute": { base: "#a1a1aa", active: "#14b8a6" }, // teal-500
 };

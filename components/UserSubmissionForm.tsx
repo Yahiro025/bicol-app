@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useRef, useCallback } from "react";
-import { Send, CheckCircle2, AlertCircle, Plus, X } from "lucide-react";
+import { Send, CheckCircle2, AlertCircle, X } from "lucide-react";
 import SpecialCharToolbar from "./SpecialCharToolbar";
 
 type FormField = "word" | "definition" | "pronunciation" | "example_bikol" | "example_english";
@@ -211,12 +211,6 @@ export default function UserSubmissionForm() {
       onSubmit={handleSubmit}
       className="w-full max-w-lg mx-auto bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-6 sm:p-8 shadow-sm"
     >
-      <div className="flex items-center gap-2 mb-1">
-        <Plus className="w-5 h-5 text-blue-500" />
-        <h3 className="text-2xl font-black text-zinc-900 dark:text-white">
-          Contribute a Bikol Word
-        </h3>
-      </div>
       <p className="text-sm text-zinc-500 mb-6">
         Help grow the dictionary. Fields marked with{" "}
         <span className="text-red-400 font-bold">*</span> are required.
