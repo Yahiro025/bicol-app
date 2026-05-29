@@ -132,15 +132,16 @@ export function fuzzyMatch<T>(
     let bestScore = 0;
     let bestField = '';
 
-    // Fast pre-filter: skip items that can't possibly match
-    // (no field starts with the query's first character AND length difference > 3)
+    // Fast pre-filter: skip items that can't possibly match.
+    // Allows: same first char, similar length, or the query as a substring.
     let canMatch = false;
     for (const extractor of extractors) {
       const text = extractor(item);
       if (!text) continue;
       const lower = text.toLowerCase();
-      // Cheap pre-filter checks
+      // Cheap pre-filter checks (ordered by cost)
       if (lower.charAt(0) === firstChar) { canMatch = true; break; }
+      if (lower.includes(normalizedQuery)) { canMatch = true; break; }
       if (Math.abs(lower.length - normalizedQuery.length) <= 3) { canMatch = true; break; }
     }
     if (!canMatch) continue;
