@@ -10,9 +10,15 @@ import { NAV_LINKS, NAV_ICON_COLORS } from "@/lib/constants";
 
 export default function MobileNav() {
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const hamburgerRef = useRef<HTMLButtonElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Only render portal after client-side mount (SSR-safe)
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const open = useCallback(() => {
     setIsOpen(true);
@@ -87,33 +93,38 @@ export default function MobileNav() {
         <Menu className="w-6 h-6" />
       </button>
       {/* Overlay + Drawer — rendered via portal to document.body so the inert
-          attribute on #main-content doesn't block drawer interactions */}
-      <AnimatePresence>
-        {isOpen &&
-          createPortal(
-            <>
-              {/* Backdrop */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                onClick={close}
-                className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
-                aria-hidden="true"
-              />
+          attribute on #main-content doesn't block drawer interactions.
+          AnimatePresence is placed INSIDE the portal (not wrapping it) so
+          framer-motion can properly track motion children for enter/exit. */}
+      {mounted &&
+        createPortal(
+          <AnimatePresence>
+            {isOpen && (
+              <>
+                {/* Backdrop */}
+                <motion.div
+                  key="mobile-nav-backdrop"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  onClick={close}
+                  className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
+                  aria-hidden="true"
+                />
 
-              {/* Drawer */}
-              <motion.div
-                initial={{ x: "100%" }}
-                animate={{ x: 0 }}
-                exit={{ x: "100%" }}
-                transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                role="dialog"
-                aria-modal="true"
-                aria-label="Navigation menu"
-                className="fixed top-0 right-0 z-50 h-full w-[280px] bg-white dark:bg-zinc-900 border-l border-zinc-200 dark:border-zinc-800 shadow-2xl"
-              >
+                {/* Drawer */}
+                <motion.div
+                  key="mobile-nav-drawer"
+                  initial={{ x: "100%" }}
+                  animate={{ x: 0 }}
+                  exit={{ x: "100%" }}
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  role="dialog"
+                  aria-modal="true"
+                  aria-label="Navigation menu"
+                  className="fixed top-0 right-0 z-50 h-full w-[280px] bg-white dark:bg-zinc-900 border-l border-zinc-200 dark:border-zinc-800 shadow-2xl"
+                >
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-200 dark:border-zinc-800">
                   <span className="text-lg font-display font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500">
@@ -195,11 +206,11 @@ export default function MobileNav() {
                   </p>
                 </div>
               </motion.div>
-            </>,
-            document.body,
-            "mobile-nav-drawer"
-          )}
-      </AnimatePresence>
+              </>
+            )}
+          </AnimatePresence>,
+          document.body
+        )}
     </div>
   );
 }
