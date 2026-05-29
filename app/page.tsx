@@ -4,7 +4,6 @@ import WordOfTheDay from '@/components/WordOfTheDay';
 import CategoryGrid from '@/components/CategoryGrid';
 import WordCard from '@/components/WordCard';
 import HomeVerbDemo from '@/components/HomeVerbDemo';
-import ClientSubmissionWrapper from '@/components/ClientSubmissionWrapper';
 import { ArrowRight, Zap, BookOpen } from 'lucide-react';
 import { countDistinctWords, getCategoryCounts, findWordsByBikol, getWordOfTheDay, getInitialDictionary } from '@/lib/word-search';
 import { POPULAR_WORDS } from '@/lib/constants';
@@ -204,14 +203,7 @@ export default async function HomePage() {
               </div>
             </div>
 
-            {/* Contribute Section */}
-            <div className="space-y-10 pt-8 border-t border-white/10">
-              <div className="text-center space-y-2">
-                <h2 className="text-3xl font-display font-bold text-white tracking-tight">Contribute a Word</h2>
-                <p className="text-zinc-500">Help us document and preserve the Bikol language. All submissions are reviewed by moderators.</p>
-              </div>
-              <ClientSubmissionWrapper />
-            </div>
+
           </div>
         </div>
       </div>
