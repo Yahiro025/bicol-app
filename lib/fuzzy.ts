@@ -124,11 +124,26 @@ export function fuzzyMatch<T>(
 
   if (!normalizedQuery) return [];
 
+  const firstChar = normalizedQuery.charAt(0);
+
   const results: FuzzyMatch<T>[] = [];
 
   for (const item of items) {
     let bestScore = 0;
     let bestField = '';
+
+    // Fast pre-filter: skip items that can't possibly match
+    // (no field starts with the query's first character AND length difference > 3)
+    let canMatch = false;
+    for (const extractor of extractors) {
+      const text = extractor(item);
+      if (!text) continue;
+      const lower = text.toLowerCase();
+      // Cheap pre-filter checks
+      if (lower.charAt(0) === firstChar) { canMatch = true; break; }
+      if (Math.abs(lower.length - normalizedQuery.length) <= 3) { canMatch = true; break; }
+    }
+    if (!canMatch) continue;
 
     for (const extractor of extractors) {
       const text = extractor(item);

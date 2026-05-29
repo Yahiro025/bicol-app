@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Languages } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 
 export type LanguageMode = 'en' | 'tl' | 'all';
 
@@ -60,28 +60,30 @@ export default function LanguageToggle() {
       <div className="flex items-center gap-1.5 px-2 text-zinc-500">
         <Languages size={14} />
       </div>
-      {(['en', 'tl', 'all'] as LanguageMode[]).map((m) => (
-        <motion.button
-          key={m}
-          whileTap={{ scale: 0.92 }}
-          onClick={() => handleToggle(m)}
-          className={`px-3 py-1 rounded-full text-[10px] font-black tracking-widest transition-all relative ${
-            mode === m 
-              ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' 
-              : 'text-zinc-500 hover:text-white'
-          }`}
-        >
-          {m.toUpperCase()}
-          {/* Active indicator dot */}
-          {mode === m && (
-            <motion.span
-              layoutId="lang-active-dot"
-              className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-white rounded-full"
-              transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-            />
-          )}
-        </motion.button>
-      ))}
+      <LayoutGroup>
+        {(['en', 'tl', 'all'] as LanguageMode[]).map((m) => (
+          <motion.button
+            key={m}
+            whileTap={{ scale: 0.92 }}
+            onClick={() => handleToggle(m)}
+            className={`px-3 py-1 rounded-full text-[10px] font-black tracking-widest transition-all relative ${
+              mode === m 
+                ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' 
+                : 'text-zinc-500 hover:text-white'
+            }`}
+          >
+            {m.toUpperCase()}
+            {/* Active indicator dot */}
+            {mode === m && (
+              <motion.span
+                layoutId="lang-active-dot"
+                className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-white rounded-full"
+                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+              />
+            )}
+          </motion.button>
+        ))}
+      </LayoutGroup>
     </div>
   );
 }
