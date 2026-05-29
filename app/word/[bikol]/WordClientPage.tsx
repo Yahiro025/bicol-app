@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Share2, Info, Book, BookOpen } from 'lucide-react';
+import { ArrowLeft, Share2, Info, Book, BookOpen, ChevronRight, Home } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { saveToHistory } from '@/lib/offline';
 import AudioPlayer from '@/components/AudioPlayer';
@@ -43,6 +43,43 @@ function SourceBadge({ source, sourceUrl }: { source: string; sourceUrl?: string
         <span className="opacity-60 hidden sm:inline">• {sourceUrl}</span>
       )}
     </span>
+  );
+}
+
+/** Breadcrumb trail showing Home > Browse > [word] */
+function Breadcrumbs({ bikol, pos }: { bikol: string; pos: string | null }) {
+  const normalizedPos = normalizePOS(pos);
+  const browseHref = `/browse?q=${encodeURIComponent(bikol.charAt(0).toLowerCase())}`;
+
+  return (
+    <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest flex-wrap mb-2">
+      <Link
+        href="/"
+        className="inline-flex items-center gap-1 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
+      >
+        <Home className="w-3 h-3" />
+        Home
+      </Link>
+      <ChevronRight className="w-3 h-3" />
+      <Link
+        href="/browse"
+        className="hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
+      >
+        Browse
+      </Link>
+      <ChevronRight className="w-3 h-3" />
+      <span className="text-zinc-700 dark:text-zinc-300 truncate max-w-[160px]">
+        {bikol}
+      </span>
+      {normalizedPos && (
+        <>
+          <ChevronRight className="w-3 h-3" />
+          <span className="text-zinc-500 dark:text-zinc-600 hidden sm:inline">
+            {normalizedPos}
+          </span>
+        </>
+      )}
+    </nav>
   );
 }
 
@@ -160,17 +197,22 @@ export default function WordClientPage({ word, isNormalized }: { word: WordDispl
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         className="max-w-4xl mx-auto space-y-8"
       >
-        <div className="flex items-center justify-between flex-wrap gap-4 mb-4">
-          <Link href="/" className="inline-flex items-center gap-2 text-zinc-500 hover:text-zinc-900 dark:hover:text-white font-bold transition-all hover:-translate-x-1 active:scale-95">
-            <ArrowLeft className="h-5 w-5" /> Back to Search
-          </Link>
-          <Link
-            href="/flashcards"
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-500 transition-colors active:scale-95 shadow-lg shadow-blue-500/20"
-          >
-            <BookOpen className="w-4 h-4" />
-            Study with Flashcards
-          </Link>
+        {/* ─── Breadcrumb + Back Navigation ────────────────────────────── */}
+        <div className="space-y-2">
+          <Breadcrumbs bikol={bikol} pos={pos} />
+
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <Link href="/" className="inline-flex items-center gap-2 text-zinc-500 hover:text-zinc-900 dark:hover:text-white font-bold transition-all hover:-translate-x-1 active:scale-95">
+              <ArrowLeft className="h-5 w-5" /> Back to Search
+            </Link>
+            <Link
+              href="/flashcards"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-500 transition-colors active:scale-95 shadow-lg shadow-blue-500/20"
+            >
+              <BookOpen className="w-4 h-4" />
+              Study with Flashcards
+            </Link>
+          </div>
         </div>
 
         <section className="bg-zinc-50 dark:bg-zinc-900/50 backdrop-blur-xl border border-zinc-200 dark:border-white/5 rounded-[28px] sm:rounded-[40px] p-6 sm:p-8 md:p-12 shadow-2xl space-y-8 relative overflow-hidden">

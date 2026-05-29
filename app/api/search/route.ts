@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { normalizePOS } from '@/lib/lexicography';
+import { fuzzyMatch } from '@/lib/fuzzy';
 
 /**
  * Advanced Fuzzy Search Route
@@ -83,29 +84,51 @@ export async function GET(request: Request) {
     });
   } catch (error: any) {
     console.error('Postgres Search Error:', error);
-    // If the extension isn't enabled, fallback to basic search
-    if (error.message?.includes('similarity')) {
-       const fallback = await prisma.root.findMany({
-         where: { bikol: { contains: q, mode: 'insensitive' } },
-         take: 10,
-         include: { definitions: true }
+    // If the extension isn't enabled, fallback to fuzzy JS-based search
+    if (error.message?.includes('similarity') || error.message?.includes('operator does not exist')) {
+       // Fetch candidate roots (broader prefix match to feed fuzzy scorer)
+       const candidates = await prisma.root.findMany({
+         where: { bikol: { startsWith: q.charAt(0), mode: 'insensitive' } },
+         take: 200,
+         include: { definitions: { take: 1 } }
        });
+
+       const entries = candidates.map(c => ({
+         bikol: c.bikol,
+         pos: normalizePOS(c.pos),
+         english: c.definitions[0]?.english ?? null,
+         tagalog: c.definitions[0]?.tagalog ?? null,
+       }));
+
+       // Fuzzy match against bikol, english, and tagalog fields
+       const matched = fuzzyMatch(q, entries, [
+         (e) => e.bikol,
+         (e) => e.english,
+         (e) => e.tagalog,
+       ], { minScore: 0.35, limit: 10 });
+
        const seen = new Set<string>();
        const deduped = [];
-       for (const f of fallback) {
-         const key = f.bikol.toLowerCase();
+       for (const m of matched) {
+         const key = m.item.bikol.toLowerCase();
          if (seen.has(key)) continue;
          seen.add(key);
          deduped.push({
-           bikol: f.bikol,
-           pos: normalizePOS(f.pos),
-           english: f.definitions.map(d => d.english).filter(Boolean).join('; ') || null,
-           tagalog: f.definitions.map(d => d.tagalog).filter(Boolean).join('; ') || null,
-           score: 0.5,
+           bikol: m.item.bikol,
+           pos: m.item.pos,
+           english: m.item.english,
+           tagalog: m.item.tagalog,
+           score: Number(m.score.toFixed(3)),
            type: 'normalized',
          });
        }
-       return NextResponse.json(deduped);
+
+       return NextResponse.json(deduped, {
+         headers: {
+           'Cache-Control': 'public, s-maxage=120, max-age=30, stale-while-revalidate=300',
+           'X-Search-Mode': 'fuzzy-fallback',
+         },
+       });
     }
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
