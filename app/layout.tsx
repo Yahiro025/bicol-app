@@ -4,7 +4,7 @@ import LanguageToggle from "@/components/LanguageToggle";
 import ThemeToggle from "@/components/ThemeToggle";
 import MobileNav from "@/components/MobileNav";
 import DesktopNav from "@/components/DesktopNav";
-import { AnimatePresence } from "framer-motion";
+import PageTransition from "@/components/PageTransition";
 import Link from "next/link";
 import NavigationLoadingBar from "@/components/NavigationLoadingBar";
 import PwaInstallPrompt from "@/components/PwaInstallPrompt";
@@ -89,9 +89,9 @@ export default function RootLayout({
             </div>
           </header>
           <PwaInstallPrompt />
-          <AnimatePresence mode="wait">
+          <PageTransition>
             {children}
-          </AnimatePresence>
+          </PageTransition>
           </div>
         </Providers>
       </body>
