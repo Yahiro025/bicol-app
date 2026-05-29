@@ -1,7 +1,7 @@
 import BrowseClient from '@/components/BrowseClient';
 import Link from 'next/link';
 import { BookOpen } from 'lucide-react';
-import { browseWords, getCategoryCounts } from '@/lib/word-search';
+import { browseWords, getCategoryCounts, countDistinctWords } from '@/lib/word-search';
 
 // ISR: dictionary content changes infrequently, revalidate every 5 minutes
 export const revalidate = 300;
@@ -15,10 +15,11 @@ export default async function BrowsePage({
 
   let words: any[] = [];
   let categories: string[] = [];
+  let totalWords = 0;
   let dbError = null;
 
-  // Fetch words & categories independently — one failing won't block the other
-  const [wordsResult, categoriesResult] = await Promise.allSettled([
+  // Fetch words, categories & total count independently — one failing won't block the others
+  const [wordsResult, categoriesResult, totalResult] = await Promise.allSettled([
     browseWords({
       filters: { letter, category, q },
       sort,
@@ -26,6 +27,7 @@ export default async function BrowsePage({
       offset: 0,
     }),
     getCategoryCounts(50),
+    countDistinctWords(),
   ]);
 
   if (wordsResult.status === 'fulfilled') {
@@ -39,6 +41,10 @@ export default async function BrowsePage({
     categories = categoriesResult.value.map((c) => c.category).sort();
   } else {
     console.error('Categories failed:', categoriesResult.reason);
+  }
+
+  if (totalResult.status === 'fulfilled') {
+    totalWords = totalResult.value;
   }
 
   return (
@@ -64,6 +70,7 @@ export default async function BrowsePage({
         <BrowseClient 
           initialWords={words} 
           initialCategories={categories}
+          totalWords={totalWords}
           initialLetter={letter || ''} 
           initialCategory={category || ''} 
           initialQuery={q || ''}

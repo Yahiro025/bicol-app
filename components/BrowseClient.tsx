@@ -34,6 +34,7 @@ const itemVariants = {
 export default function BrowseClient({
   initialWords,
   initialCategories,
+  totalWords: initialTotalWords,
   initialLetter: defaultLetter,
   initialCategory: defaultCategory,
   initialQuery: defaultQuery,
@@ -41,6 +42,7 @@ export default function BrowseClient({
 }: {
   initialWords: Word[];
   initialCategories: string[];
+  totalWords: number;
   initialLetter: string;
   initialCategory: string;
   initialQuery: string;
@@ -61,6 +63,7 @@ export default function BrowseClient({
     }
   }, [query, sortMode]);
   const [words, setWords] = useState<Word[]>(initialWords);
+  const [totalWords, setTotalWords] = useState(initialTotalWords);
   const pageRef = useRef(1);
   const [hasMore, setHasMore] = useState(initialWords.length === 50);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -95,7 +98,13 @@ export default function BrowseClient({
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
       
-      const newWords = await response.json();
+      const data = await response.json();
+
+      // Support both legacy array format and new { words, total } format
+      const newWords = Array.isArray(data) ? data : data.words;
+      if (data.total !== undefined) {
+        setTotalWords(data.total);
+      }
 
       if (!Array.isArray(newWords)) {
         throw new Error('Invalid response format');
@@ -377,7 +386,7 @@ export default function BrowseClient({
 
         <div className="text-sm font-medium text-zinc-400 dark:text-zinc-500 mb-6 flex items-center gap-2">
           <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-          Found {words.length} result{words.length !== 1 ? 's' : ''}
+          Found {words.length} result{words.length !== 1 ? 's' : ''}{totalWords > 0 ? ` out of ${totalWords.toLocaleString()} total words` : ''}
         </div>
 
         <motion.div 

@@ -52,12 +52,14 @@ export interface BrowseFilters {
 // OPTIMIZED: Push WHERE into subqueries so PostgreSQL can use indexes and
 // avoid scanning the entire UNION ALL result before filtering.
 
-export async function browseWords(params: {
+// Wrapped in React cache() to deduplicate within a single request — critical for
+// SSR renders where multiple components may call browseWords with the same params.
+export const browseWords = reactCache(async (params: {
   filters: BrowseFilters;
   sort?: string | null;
   limit: number;
   offset: number;
-}): Promise<WordSearchEntry[]> {
+}): Promise<WordSearchEntry[]> => {
   const { filters, sort, limit, offset } = params;
 
   // ─── In-memory cache for API route calls (not for ISR server renders) ──────
@@ -132,10 +134,12 @@ export async function browseWords(params: {
       FROM roots r
       LEFT JOIN LATERAL (
         SELECT 
-          STRING_AGG(d.english, '; ' ORDER BY d."createdAt") as english,
-          STRING_AGG(d.tagalog, '; ' ORDER BY d."createdAt") as tagalog
+          d.english,
+          d.tagalog
         FROM definitions d
         WHERE d."rootId" = r.id
+        ORDER BY d."createdAt" ASC
+        LIMIT 1
       ) def ON true
       WHERE r.bikol IS NOT NULL AND r.bikol != ''
       ${rootsWhere}
@@ -186,7 +190,7 @@ export async function browseWords(params: {
   setCache(cacheKey, deduped, BROWSE_CACHE_TTL);
 
   return deduped;
-}
+});
 
 // ─── Count distinct bikol words across both tables ────────────────────────────
 // Wrapped in React cache() to deduplicate within a single request (e.g.,
