@@ -145,6 +145,7 @@ const definition: AgentDefinition = {
     'codebuff/planner@0.0.1',
     'codebuff/reviewer@0.0.1',
     'codebuff/researcher@0.0.1',
+    'basher',
     // MetaBuff custom agents
     'metabuff-validator',
     'metabuff-mega',
@@ -169,6 +170,20 @@ const definition: AgentDefinition = {
           agents: [{
             agent_type: 'codebuff/base@0.0.1',
             prompt: withCoT(prompt),
+          }],
+        },
+      }
+
+      // Type-check and test before final validation — catches regex/compile errors
+      yield {
+        toolName: 'spawn_agents',
+        input: {
+          agents: [{
+            agent_type: 'basher',
+            params: {
+              command: 'echo "=== TYPE CHECK ===" && bun run typecheck 2>&1 | head -40 && echo "=== TESTS ===" && bun test 2>&1 | tail -30',
+              what_to_summarize: 'Type-check and test results. Report any TypeScript errors or test failures. If errors found, fix them now before calling end_turn.',
+            },
           }],
         },
       }
@@ -239,7 +254,21 @@ const definition: AgentDefinition = {
         },
       }
 
-      // 5. Anti-hallucination validation pass
+      // 5. Type-check and test before final validation
+      yield {
+        toolName: 'spawn_agents',
+        input: {
+          agents: [{
+            agent_type: 'basher',
+            params: {
+              command: 'echo "=== TYPE CHECK ===" && bun run typecheck 2>&1 | head -40 && echo "=== TESTS ===" && bun test 2>&1 | tail -30',
+              what_to_summarize: 'Type-check and test results. Report any TypeScript errors or test failures. If errors found, fix them now before calling end_turn.',
+            },
+          }],
+        },
+      }
+
+      // 6. Anti-hallucination validation pass
       yield {
         toolName: 'spawn_agents',
         input: {
