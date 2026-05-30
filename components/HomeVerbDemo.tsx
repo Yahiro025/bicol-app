@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { conjugateBikolVerb } from "@/lib/conjugator";
+import { TENSE_LABELS } from "@/lib/constants";
 
 const DEMO_VERBS: Array<{ root: string; english: string; affix: string }> = [
   { root: "bakal", english: "buy", affix: "MAG- / -ON" },
@@ -13,13 +14,6 @@ const DEMO_VERBS: Array<{ root: string; english: string; affix: string }> = [
   { root: "hugas", english: "wash", affix: "MAG- / -AN" },
   { root: "kakan", english: "eat", affix: "MAG- / -ON" },
 ];
-
-const TENSE_LABELS: Record<string, string> = {
-  Infinitive: "Infinitive",
-  "Past": "Past",
-  "Progressive": "Progressive",
-  "Future": "Future",
-};
 
 export default function HomeVerbDemo() {
   const [selectedVerb, setSelectedVerb] = useState(DEMO_VERBS[0]!);
@@ -32,7 +26,7 @@ export default function HomeVerbDemo() {
     const referentialForms: Record<string, string> = {};
 
     for (const c of results) {
-      const label = TENSE_LABELS[c.tense] || c.tense;
+      const label = TENSE_LABELS[c.tense.toLowerCase()] || c.tense;
       if (c.focus === "Actor") {
         actorForms[label] = c.form;
       } else if (c.focus === "Object") {

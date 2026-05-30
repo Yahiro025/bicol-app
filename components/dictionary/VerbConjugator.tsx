@@ -2,16 +2,9 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
 import { conjugateBikolVerb } from '@/lib/conjugator';
-
-/**
- * Utility to merge tailwind classes
- */
-function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
+import { cn } from '@/lib/utils';
+import { TENSE_LABELS, TENSE_ORDER } from '@/lib/constants';
 
 export interface ConjugationForm {
   tense: string | null;
@@ -28,15 +21,6 @@ interface VerbConjugatorProps {
   rootWord: string;
   affixGroups: AffixGroup[];
 }
-
-const TENSE_LABELS: Record<string, string> = {
-  infinitive: 'Infinitive',
-  past: 'Past (Completed)',
-  progressive: 'Progressive (Incomplete)',
-  future: 'Future (Contemplated)',
-};
-
-const TENSE_ORDER = ['infinitive', 'past', 'progressive', 'future'];
 
 const springTransition = {
   type: "spring",
