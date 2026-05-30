@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-export const dynamic = "force-dynamic" as const;
+export const dynamic = "force-dynamic";
 
 const ADMIN_SECRET = process.env.ADMIN_API_SECRET || "bikoldict-admin-secret-change-me";
 
