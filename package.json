@@ -10,7 +10,8 @@
     "start": "next start",
     "lint": "eslint .",
     "postinstall": "prisma generate",
-    "test": "bun test"
+    "test": "bun test",
+    "typecheck": "tsc --noEmit"
   },
   "keywords": [],
   "author": "",
@@ -51,7 +52,8 @@
     "postcss": "^8.5.14",
     "prettier": "^3.0.0",
     "prisma": "^7.8.0",
-    "tailwindcss": "^4.3.0"
+    "tailwindcss": "^4.3.0",
+    "typescript": "^6.0.3"
   },
   "private": true,
   "peerDependencies": {

@@ -124,6 +124,7 @@ const definition: AgentDefinition = {
     'codebuff/reviewer@0.0.1',
     'codebuff/researcher@0.0.1',
     'codebuff/file-picker@0.0.1',
+    'basher',
     // MetaBuff specialists
     'metabuff-arch',
     'metabuff-security',
@@ -223,7 +224,22 @@ const definition: AgentDefinition = {
       },
     }
 
-    // ── Phase 4: Final validation ─────────────────────────────────────────────
+    // ── Phase 4: Type-check and test ───────────────────────────────────────────
+    // Catches compile-time errors (regex, type mismatches) before the validator runs
+    yield {
+      toolName: 'spawn_agents',
+      input: {
+        agents: [{
+          agent_type: 'basher',
+          params: {
+            command: 'echo "=== TYPE CHECK ===" && bun run typecheck 2>&1 | head -40 && echo "=== TESTS ===" && bun test 2>&1 | tail -30',
+            what_to_summarize: 'Type-check and test results. Report any TypeScript errors or test failures. If errors found, describe them so the validator can fix them.',
+          },
+        }],
+      },
+    }
+
+    // ── Phase 5: Final validation ─────────────────────────────────────────────
     yield {
       toolName: 'spawn_agents',
       input: {

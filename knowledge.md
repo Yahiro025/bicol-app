@@ -11,127 +11,242 @@
 
 ## Project Identity
 
-**Name**: [FILL IN — e.g., "my-flutter-app"]
-**Type**: [FILL IN — e.g., "Flutter mobile app with Supabase backend"]
-**Primary language**: [FILL IN — e.g., TypeScript / Dart / Python / Go]
-**Framework**: [FILL IN — e.g., Next.js 15 / Flutter 3.x / FastAPI]
-**Package manager**: [FILL IN — e.g., bun / npm / pnpm / pub]
+**Name**: bikoldict (Bikol Dictionary)
+**Type**: Next.js web app + Capacitor Android wrapper + Python data pipeline — a Bikol language dictionary with AI-enhanced learning features
+**Primary language**: TypeScript
+**Framework**: Next.js 16 (App Router) with React 19
+**Package manager**: bun
 
 ## Architecture Overview
 
-[FILL IN — 3-5 sentences describing the system.  Example:]
-<!-- The app is a Flutter mobile client that talks to a Supabase PostgreSQL backend.
-     Business logic lives in lib/services/. UI components are in lib/widgets/.
-     Authentication is handled by Supabase Auth with JWT tokens stored in secure storage.
-     The Dart code uses the Repository pattern: services never call Supabase directly — 
-     they go through a repository interface to allow testing. -->
+The app is a full-stack Next.js 16 web application for a Bikol (Bicolano) language dictionary. The frontend uses React 19 with Tailwind CSS v4 for styling, Framer Motion for page transitions, and lucide-react for icons. The backend uses Prisma ORM with @prisma/adapter-pg connecting to a PostgreSQL database hosted on Supabase, with API routes in the Next.js App Router. Data is sourced from Wiktionary (Python scraper) and AI-enriched via Groq, then merged into a normalized Mintz-based schema (roots → definitions → conjugations → example sentences). Learning features include AI-generated quizzes, substitution drills, applied fluency dialogues, and flashcards. The app also has a Capacitor Android wrapper for mobile deployment and a PWA manifest for installability.
 
 ## Directory Layout (Most Important Paths)
 
 ```
-[FILL IN — paste the output of: find . -type f -name "*.ts" | head -40]
-
-Examples:
-src/
-  app/            Next.js app router pages
-  components/     Reusable React components
-  lib/
-    db/           Drizzle ORM schema and queries
-    auth/         NextAuth configuration
-    utils/        Shared utility functions
-  api/            tRPC routers
-tests/
-  unit/
-  integration/
+app/
+  page.tsx              Homepage (hero, search, WOTD, categories, popular)
+  layout.tsx            Root layout (nav bar, theme providers, PWA prompt)
+  providers.tsx         Client-side ThemeProvider wrapper
+  browse/page.tsx       Browse dictionary with pagination/filtering
+  word/[bikol]/page.tsx Word detail page with conjugator and definitions
+  learn/page.tsx        Learning hub (quiz, substitution drills, fluency)
+  flashcards/page.tsx   Flashcard study page
+  contribute/page.tsx   User word submission form
+  frequency-list/       Frequency-ranked word list
+  admin/submissions/    Admin panel for reviewing user submissions
+  api/                  App Router API route handlers (browse, search, word,
+                        conjugations, learn, drills, submit, frequency, admin)
+components/             Reusable React components
+  SearchBar.tsx         Autocomplete search with fuzzy matching
+  WordCard.tsx          Word display card
+  BrowseClient.tsx      Client-side browsing with infinite scroll
+  VerbConjugator.tsx    Interactive verb conjugation table
+  Flashcards.tsx        Flashcard study component
+  Quiz.tsx              Quiz component
+  GrammarHighlight.tsx  Grammatical feature highlighting
+  LanguageToggle.tsx    Language mode toggle (Bikol/English/Tagalog/All)
+  ThemeToggle.tsx       Dark/light mode toggle
+  DesktopNav.tsx        Desktop navigation links
+  MobileNav.tsx         Mobile hamburger menu (portal-based)
+  PageTransition.tsx    Framer Motion page transition wrapper
+  WordOfTheDay.tsx      Daily featured word card
+  CategoryGrid.tsx      Category browsing grid
+  SuggestEditModal.tsx  Suggest edit dialog for word entries
+  AudioPlayer.tsx       Pronunciation audio player
+  PwaInstallPrompt.tsx  PWA install banner
+  dictionary/           Sub-components for word pages
+    VerbConjugator.tsx  Verb conjugation display component
+  learn/                Learning exercise components
+    SubstitutionDrill.tsx  AI-powered substitution drill
+    AppliedFluency.tsx     AI dialogue practice
+    TransformationChallenge.tsx Transformation exercise
+  ui/                   Base UI primitives (Button, LoadingBar, ThemeToggle)
+    index.ts            Barrel exports
+lib/                    Core business logic and utilities
+  prisma.ts             Prisma client init with pgPool connection pooling
+  supabase.ts           Supabase client (legacy, for Python scripts)
+  word-search.ts        Browse, count, search across roots + words tables
+  conjugator.ts         Bikol verb conjugator (Mintz grammar rules)
+  fuzzy.ts              Damerau-Levenshtein fuzzy matching for search
+  lexicography.ts       POS normalization and definition text formatting
+  constants.ts          Category metadata (icons/colors), nav links, popular words
+  utils.ts              cn() utility (clsx + tailwind-merge)
+  groq.ts               Groq AI client (quiz gen, dialogues, linguistic audit)
+  offline.ts            IndexedDB offline search history
+  admin-auth.ts         HMAC-based admin authentication
+  types/
+    word.ts             WordDisplayData, EnrichedRoot, DisplayDefinition types
+    learn.ts            QuizQuestion, DialogueScenario, FlashcardSession types
+hooks/
+  useLanguageMode.ts    Custom hook for language mode state (localStorage + events)
+scripts/                Data processing and maintenance
+  ts/                   migrate-to-mintz, enrich_with_ai, sync-supabase-to-local,
+                        fix_examples, merge_definitions, deduplicate_case, etc.
+  py/                   audit_data, calculate_frequency, extract_mintz_pdfs,
+                        count_bikol_words, python_utils, fix_inaccurate_translations
+  js/                   generate_tagalog
+tests/                  Test files
+  fuzzy.test.ts        Fuzzy matching unit tests
+  conjugator.test.ts   Conjugation unit tests
+  test_*.py            Python tests for scrapers, integration, and utils
+prisma/
+  schema.prisma        Database schema (7 models: Root, Definition, Conjugation,
+                       ExampleSentence, Word, UserSubmission, UserFlashcard,
+                       DialogueScenario)
+  migrations/          Prisma migration files
 ```
 
 ## Key Files (Read These Before Editing Anything)
 
 | File | Role |
 |------|------|
-| [FILL IN] | [what it does] |
-| [FILL IN] | [what it does] |
-
-Examples (delete these and replace with your actual files):
-<!-- 
-| src/lib/db/schema.ts        | All Drizzle table definitions — source of truth for data shape |
-| src/lib/auth/config.ts      | NextAuth providers and session config |
-| src/app/api/trpc/[trpc].ts  | tRPC entry point |
-| lib/models/user.dart        | User domain model |
-| lib/services/auth_service.dart | All auth calls go here |
--->
+| prisma/schema.prisma | Database schema — source of truth for all 7 models and the FocusClass enum |
+| lib/word-search.ts | Main data access layer: browse, count, and search across both normalized (roots) and legacy (words) tables |
+| lib/conjugator.ts | Bikol verb conjugation logic based on Mintz grammar rules (FocusClass: ON, I, AN, MAG) |
+| lib/fuzzy.ts | Client-side Damerau-Levenshtein fuzzy string matching for typo-tolerant search |
+| lib/groq.ts | Groq AI client using qwen-3-32b for quiz generation, dialogue processing, and linguistic audit |
+| lib/prisma.ts | Prisma client singleton with @prisma/adapter-pg connection pooling |
+| app/layout.tsx | Root layout — navigation bar, ThemeProvider, LanguageToggle, PWA prompt, page transitions |
+| app/page.tsx | Homepage — hero section, search bar, WOTD, categories grid, popular words, verb demo |
+| app/word/[bikol]/page.tsx | Word detail page — definitions, conjugator, example sentences, suggest edit |
 
 ## Import Conventions
 
-[FILL IN — how imports work in this project.  Examples:]
-<!--
-- Path alias `@/` maps to `src/`
+- Path alias `@/` maps to project root (e.g., `import { prisma } from '@/lib/prisma'`)
 - `@/components` → React components
-- `@/lib/db` → database utilities
-- Barrel exports exist in each folder's index.ts
-- In Dart: all imports use relative paths within lib/
--->
+- `@/lib` → utilities and business logic
+- `@/app` → app router pages
+- `@prisma/client` → generated Prisma types
+- All imports use ESM syntax (no require); project has `"type": "module"` in package.json
 
 ## Naming Conventions
 
-[FILL IN.  Examples:]
-<!--
-- Files: kebab-case (my-component.tsx)
-- React components: PascalCase
-- Functions: camelCase
-- Constants: SCREAMING_SNAKE_CASE
-- Database tables: snake_case (user_profiles, auth_sessions)
-- Dart classes: PascalCase, files: snake_case
--->
+- Files: kebab-case (`word-search.ts`, `VerbConjugator.tsx`)
+- React components: PascalCase (`WordCard`, `SearchBar`)
+- Functions: camelCase (`conjugateVerbMintz`, `normalizePOS`)
+- Constants: SCREAMING_SNAKE_CASE (`POPULAR_WORDS`, `ADMIN_SESSION_COOKIE`) or camelCase for local exports
+- Database tables: snake_case (`roots`, `definitions`, `user_submissions`, `user_flashcards`)
+- Prisma models: PascalCase (`Root`, `Definition`, `Conjugation`, `ExampleSentence`)
+- Database columns: camelCase in Prisma (`rootId`, `focusType`, `aiConfidence`), mapped to snake_case in SQL via `@@map`
+- Enums: PascalCase (`FocusClass`), values: UPPER_SNAKE (`ON_CLASS`, `I_CLASS`)
+- TypeScript types: PascalCase (`WordSearchEntry`, `FuzzyMatch<T>`, `ConjugationSet`)
 
 ## Type System Notes
 
-[FILL IN — important types/interfaces the model might reference.  Examples:]
-<!--
-- User object shape: { id: string, email: string, role: 'admin' | 'user' }
-- ApiResponse<T> wrapper: { data: T, error: string | null }
-- All DB queries return Promise<Result<T, DbError>>
-- Flutter: UserModel is in lib/models/user_model.dart
--->
+- `WordDisplayData`: Union type for both normalized (Root) and legacy (Word) data paths. Has `definitions` (DisplayDefinition[]) when normalized, flat fields (english, tagalog) when legacy.
+- `EnrichedRoot = Root & { definitions: EnrichedDefinition[] }` — Root with fully included Definition children (each Definition includes conjugations + exampleSentences)
+- `DisplayDefinition`: Flattened definition shape with english, tagalog, dialect, synonyms, source, conjugations[], exampleSentences[]
+- `FuzzyMatch<T>`: Generic result type with `item: T`, `score: number`, `matchedField: string`
+- `ConjugationSet`: `{ actorFocus: ConjugationForms; objectFocus: ConjugationForms }` where each ConjugationForms has infinitive, future, past, progressive
+- `WordSearchEntry`: Unified search/browse result type with bikol, english, tagalog, pos, category, pronunciation, dialect, frequency_rank, source ('normalized' | 'legacy')
+- `LanguageMode`: Type from LanguageToggle — values 'all' | 'english' | 'tagalog' (controls what translations are shown)
+- `QuizQuestion`: `{ id, question, options[], correctAnswer, explanation, word }`
+- `LinguisticAudit`: `{ comprehension: string, focus: string, particles: string, score: number }` — post-dialogue evaluation
+- API responses return `NextResponse` with JSON; no shared ApiResponse wrapper type
 
 ## Database / Backend
 
-**Type**: [FILL IN — e.g., PostgreSQL via Supabase / SQLite via Drizzle / MongoDB]
-**ORM/Client**: [FILL IN — e.g., Drizzle ORM / Prisma / Supabase JS SDK]
+**Type**: PostgreSQL (hosted on Supabase)
+**ORM/Client**: Prisma v7 with @prisma/adapter-pg and pg.Pool connection pooling
 
 Key tables/collections:
-[FILL IN — list the main tables and their purpose]
+- `roots` — Normalized Mintz lexicon entries. Fields: bikol, pos, category, pronunciation, etymology, frequency_rank, audio_url, focusClass (enum), isTransitive. One-to-many with definitions.
+- `definitions` — Word meanings per root. Fields: english, dialect, synonyms, tagalog, aiConfidence, source_url, source, affixPair, focusType, series, isVerified, notes. One-to-many with conjugations and example_sentences.
+- `conjugations` — Verb forms per definition. Unique on (definitionId, tense, focus). Fields: tense, focus, form.
+- `example_sentences` — Usage examples per definition. Fields: bikol, english, source.
+- `words` — Legacy table (Wiktionary / learnbikol.com import, pre-Mintz migration).
+- `user_submissions` — User-contributed word suggestions. Fields: word, definition, pos, dialect, status (default "pending"), target_table, admin_notes.
+- `user_flashcards` — User study progress. Fields: user_id, word_bikol, proficiency_score, next_review.
+- `dialogue_scenarios` — AI dialogue practice scenarios. Fields: title, description, goal, difficulty, visualCue, vocabulary (String[]).
 
-Migration approach: [FILL IN — e.g., "Drizzle migrations in drizzle/migrations/"]
+Migration approach: Prisma migrations in `prisma/migrations/`. Schema URL configured in `prisma.config.ts`.
 
 ## Test Setup
 
-**Framework**: [FILL IN — e.g., Vitest / Jest / pytest / Go testing / Flutter test]
-**Test file location**: [FILL IN — e.g., co-located as *.test.ts / tests/ folder]
-**Run command**: [FILL IN — e.g., `bun test` / `npx vitest` / `flutter test`]
+**Framework**: bun test (TypeScript) + pytest (Python)
+**Test file location**: `tests/` folder — `*.test.ts` for TypeScript, `test_*.py` for Python
+**Run command**: `bun test` for TypeScript tests | `pytest` for Python tests
 
 ## Known Gotchas
 
-[FILL IN — things that caused bugs before.  MetaBuff uses these to avoid repeating mistakes.]
-
-Examples (replace with your project's actual gotchas):
-<!--
-- DO NOT use `process.env` directly — always use `src/lib/env.ts` which validates vars at startup
-- Supabase client must be created server-side in API routes; never import the client-side client in server code
-- The User type from Supabase Auth is different from the User row in our users table — don't mix them up
-- All date handling must use UTC — never local timezone
-- Flutter: never call setState after dispose — always check mounted first
--->
+- DO NOT query only the `words` (legacy) table — always UNION ALL both `roots` and `words` for complete results. Many words exist only in the normalized schema.
+- The Prisma client uses `@prisma/adapter-pg` with a raw `pg.Pool` — not the default Prisma driver. Never create multiple PrismaClient instances; the singleton in `lib/prisma.ts` handles this via globalThis.
+- Groq AI (lib/groq.ts) has a 30 RPM rate limit. The `getCompletion` function retries with 2s/5s delays. MODEL is hardcoded to `qwen-3-32b` — do NOT change without explicit user request.
+- Admin auth is custom HMAC-based (lib/admin-auth.ts): ADMIN_PASSWORD must be >= 12 chars, ADMIN_SESSION_SECRET must be >= 32 chars. There is NO NextAuth, Supabase Auth, or any third-party auth.
+- Verb conjugator uses Mintz grammar rules for 4 focus classes: ON_CLASS (-on suffix), I_CLASS (i- prefix), AN_CLASS (-an suffix), MAG_INTRANSITIVE (mag-). Always use `conjugateVerbMintz()` for new code; `conjugateBikolVerb()` is legacy wrapper.
+- React `cache()` is used from `'react'` to deduplicate database queries within a single SSR render — this is NOT the deprecated `React.cache` from `react/cache`.
+- `prisma.config.ts` (v7+) is used for datasource URL config, separate from `schema.prisma`.
+- Tailwind CSS v4 uses `@tailwindcss/postcss` plugin (NOT the old `tailwindcss` PostCSS plugin). Configuration is in `postcss.config.mjs`.
+- `next.config.mjs` has a conditional static export for Capacitor mobile builds — set `NEXT_PUBLIC_PLATFORM=mobile` to enable.
+- There is NO Redux, Zustand, or any client-side state library — state is managed via React state, hooks (useLanguageMode), localStorage events, and URL search params.
 
 ## Anti-Hallucination Anchors
 
 These are real, verified facts about this codebase.
 DeepSeek Flash: treat these as ground truth; do not contradict them.
 
-- [FILL IN — e.g., "The entry point is src/app/page.tsx, not src/index.tsx"]
-- [FILL IN — e.g., "Authentication middleware is in src/middleware.ts"]
-- [FILL IN — e.g., "There is NO Redux in this project — state is managed with Zustand"]
-- [FILL IN — e.g., "The Supabase URL and anon key are in .env.local as NEXT_PUBLIC_SUPABASE_URL"]
+- The entry point is `app/page.tsx`, not any custom server or `index.tsx`
+- Database is queried via Prisma (`lib/prisma.ts`), NOT directly via Supabase client (Supabase client exists but is legacy/unused in the TS app)
+- There is NO NextAuth, Supabase Auth, or any authentication library — admin auth is custom HMAC-based in `lib/admin-auth.ts`
+- The verb conjugator uses Mintz grammar rules defined in `lib/conjugator.ts` — 4 focus classes: ON, I, AN, MAG
+- React `cache()` from `'react'` is used for deduplicating DB queries within a single SSR render
+- The project uses Tailwind CSS v4 with `@tailwindcss/postcss` plugin (NOT v3)
+- TypeScript config has `strict: true`, `noUncheckedIndexedAccess: true`, `verbatimModuleSyntax: true`
+- Bun is the package manager AND test runner (`bun install`, `bun test`)
+- Prisma adapter is `@prisma/adapter-pg` using a raw `pg.Pool` connection pool
+- The Python scraper (`ai_wiktionary_scraper.py`) and data scripts are separate from the Next.js app — they run in GitHub Actions workflows or manually
+
+## Context7 — Live Documentation (Integrated)
+
+This project uses **Upstash Context7** to fetch live, version-specific documentation for all major libraries and frameworks. This prevents hallucinated APIs by replacing stale training data with current docs.
+
+### How to Use
+
+**Before writing code that involves external libraries**, resolve and fetch docs:
+
+```bash
+# Step 1: Resolve library to Context7 ID
+npx ctx7 library <library> "<what-you-want-to-do>"
+
+# Step 2: Fetch live docs
+npx ctx7 docs <library-id> "<specific-question>"
+```
+
+### Key Library IDs for This Project
+
+| Library | Context7 ID |
+|---------|-------------|
+| Prisma | `/prisma/web` or `/prisma/prisma` |
+| Next.js | `/vercel/next.js` |
+| React | `/facebook/react` |
+| Tailwind CSS | `/tailwindlabs/tailwindcss` |
+| Framer Motion | `/framer/motion` |
+| Groq SDK | `/groq/groq-sdk` |
+| Zod | `/colinhacks/zod` |
+| Supabase | `/supabase/supabase` |
+
+### When to Always Use Context7
+
+- Framework APIs (Next.js route handlers, layouts, metadata, middleware)
+- ORM queries (Prisma relations, raw queries, connection pooling, migrations)
+- UI libraries (Tailwind CSS v4 patterns, Framer Motion, lucide-react)
+- React hooks and patterns (`useActionState`, `useOptimistic`, Server Components, `cache()`)
+- Database (PostgreSQL, Supabase, pg.Pool)
+- Package configuration (`next.config.mjs`, `postcss.config.mjs`, `tsconfig.json`)
+
+### Skill File
+
+Context7 skill documentation is at `.agents/skills/context7/SKILL.md`. Codebuff auto-discovers skills in this directory at session start.
+
+### How Agents Should Use Context7
+
+When writing code that involves an external library, agents should:
+1. Run `npx ctx7 library <name> "<question>"` to resolve the library
+2. Run `npx ctx7 docs <library-id> "<question>"` to fetch live docs
+3. Use the retrieved API signatures and patterns as ground truth
+
+This is especially critical for: Prisma relations/raw queries, Next.js App Router patterns, React 19 hooks, Tailwind CSS v4, Framer Motion, and any PostgreSQL/Supabase interactions.
 
 ## MetaBuff Configuration
 
