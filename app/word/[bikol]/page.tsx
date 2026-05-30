@@ -33,11 +33,17 @@ export async function generateStaticParams() {
       }
     }
 
-    return popularBikol.map((b) => ({ bikol: encodeURIComponent(b) }));
+    const existingWords: string[] = [];
+    for (const word of popularBikol) {
+      const result = await getWordData(word);
+      if (result) existingWords.push(word);
+    }
+
+    return existingWords.map((b) => ({ bikol: encodeURIComponent(b) }));
   } catch {
-    // Fall back to popular words only if DB unavailable at build time (e.g., CI)
-    console.warn('generateStaticParams: DB unavailable, pre-building popular words only');
-    return POPULAR_WORDS.map((b) => ({ bikol: encodeURIComponent(b) }));
+    // Avoid prerendering non-existent popular-word pages when DB is unavailable.
+    console.warn('generateStaticParams: DB unavailable, skipping word prebuild');
+    return [];
   }
 }
 
@@ -133,12 +139,25 @@ export async function generateMetadata({ params }: { params: Promise<{ bikol: st
 export default async function WordDetail({ params }: { params: Promise<{ bikol: string }> }) {
   const { bikol } = await params;
   const bikolWord = decodeURIComponent(bikol);
+  let result: Awaited<ReturnType<typeof getWordData>> = null;
 
   try {
     // Uses the same cached getWordData() as generateMetadata — no duplicate DB query.
-    const result = await getWordData(bikolWord);
+    result = await getWordData(bikolWord);
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : 'An unexpected error occurred';
+    console.error('Error fetching word:', e);
+    return (
+      <main className="min-h-screen bg-zinc-950 text-white p-8 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="text-red-500 text-xl font-bold">Error loading word</div>
+          <p className="text-zinc-400">{message}</p>
+        </div>
+      </main>
+    );
+  }
 
-    if (result?.type === 'root') {
+  if (result?.type === 'root') {
       const root = result.data;
       // 1b. Fallback: If verb has affixPair but no conjugations, generate them on-the-fly
       const enrichedDefinitions = root.definitions.map(def => {
@@ -163,23 +182,11 @@ export default async function WordDetail({ params }: { params: Promise<{ bikol: 
       return <WordClientPage word={{ ...root, definitions: enrichedDefinitions }} isNormalized={true} />;
     }
 
-    if (result?.type === 'word') {
+  if (result?.type === 'word') {
       const word = result.data;
       const displayWord: WordDisplayData = { ...word, bikol: word.bikol!, definitions: [] };
       return <WordClientPage word={displayWord} isNormalized={false} />;
     }
 
-    return notFound();
-  } catch (e: unknown) {
-    const message = e instanceof Error ? e.message : 'An unexpected error occurred';
-    console.error('Error fetching word:', e);
-    return (
-      <main className="min-h-screen bg-zinc-950 text-white p-8 flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <div className="text-red-500 text-xl font-bold">Error loading word</div>
-          <p className="text-zinc-400">{message}</p>
-        </div>
-      </main>
-    );
-  }
+  return notFound();
 }
