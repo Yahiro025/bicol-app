@@ -20,81 +20,14 @@
  *   5. Validator does a final anti-hallucination pass
  *
  * The number of parallel agents scales with task complexity (3–12 by default).
+ *
+ * CRITICAL NOTE:
+ *   All helpers are inlined inside handleSteps to avoid runtime errors.
+ *   The agent execution framework extracts the exported definition object —
+ *   module-level function references outside the object are NOT preserved.
  */
 
 import { AgentDefinition } from './types/agent-definition'
-
-const FREE_MODEL = 'deepseek/deepseek-v4-flash'
-
-/** Maximum number of parallel specialist agents to spawn */
-const MAX_PARALLEL_AGENTS = 12
-
-/**
- * Map a subtask's specialist tag to the correct Codebuff agent type.
- * Add entries here as you create more specialist agents.
- */
-function resolveAgent(specialist: string): string {
-  const map: Record<string, string> = {
-    arch:     'metabuff-arch',
-    security: 'metabuff-security',
-    testgen:  'metabuff-testgen',
-    base:     'codebuff/base@0.0.1',
-    research: 'codebuff/researcher@0.0.1',
-    review:   'codebuff/reviewer@0.0.1',
-  }
-  return map[specialist] ?? 'codebuff/base@0.0.1'
-}
-
-/**
- * Parse the thinker's decomposition output into a list of subtasks.
- * Tries JSON first, falls back to a reasonable default if parsing fails.
- */
-function parseDecomposition(
-  raw: string | undefined,
-  fallbackPrompt: string,
-): Array<{ subtask: string; specialist: string; focus: string }> {
-  if (!raw) return [{ subtask: fallbackPrompt, specialist: 'base', focus: 'full implementation' }]
-
-  // Try to extract a JSON array from anywhere in the output
-  const jsonMatch = raw.match(/\[[\s\S]*?\]/s)
-  if (jsonMatch) {
-    try {
-      const parsed = JSON.parse(jsonMatch[0]) as unknown[]
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        return (parsed as Array<{ subtask: string; specialist: string; focus: string }>)
-          .slice(0, MAX_PARALLEL_AGENTS)
-          .filter(s => typeof s.subtask === 'string' && typeof s.specialist === 'string')
-      }
-    } catch {
-      // fall through to default
-    }
-  }
-
-  // If thinker returned prose instead of JSON, extract action items as base tasks
-  const lines = raw.split('\n').filter(l => /^\s*[-\d*•]/.test(l)).slice(0, MAX_PARALLEL_AGENTS)
-  if (lines.length > 1) {
-    return lines.map((line, i) => ({
-      subtask: line.replace(/^\s*[-\d.*•]+\s*/, ''),
-      specialist: i === 0 ? 'arch' : i === lines.length - 1 ? 'testgen' : 'base',
-      focus: `part ${i + 1} of ${lines.length}`,
-    }))
-  }
-
-  return [{ subtask: fallbackPrompt, specialist: 'base', focus: 'full implementation' }]
-}
-
-const COT_SYSTEM_PREFIX = `You are a specialist agent in MetaBuff's parallel execution pipeline.
-You are responsible for ONE specific subtask of a larger system.
-
-PROTOCOL:
-  1. Read every file relevant to your subtask before touching anything
-  2. Verify all symbols, imports, and types you plan to use via code_search
-  3. Make your changes with surgical str_replace operations
-  4. Leave a brief comment in each changed file: // [MetaBuff Mega: <focus>]
-  5. Do NOT attempt to handle subtasks assigned to other specialist agents
-  6. Call end_turn only when your subtask is complete and verified
-
-`
 
 const definition: AgentDefinition = {
   id: 'metabuff-mega',
@@ -106,7 +39,7 @@ const definition: AgentDefinition = {
     'architectural changes, or anything requiring more than 5 files to change. ' +
     'MetaBuff Mega decomposes the task and runs specialist agents in parallel like Antigravity 2.0.',
 
-  model: FREE_MODEL,
+  model: 'deepseek/deepseek-v4-flash',
 
   // High reasoning for the orchestration layer — decomposition quality is critical
   reasoningOptions: {
@@ -141,6 +74,73 @@ const definition: AgentDefinition = {
   // ─── Programmatic mega-task flow ──────────────────────────────────────────
   handleSteps: function* ({ prompt }) {
 
+    /** Maximum number of parallel specialist agents to spawn */
+    const MAX_PARALLEL_AGENTS = 12
+
+    /**
+     * Map a subtask's specialist tag to the correct Codebuff agent type.
+     */
+    function resolveAgent(specialist: string): string {
+      const map: Record<string, string> = {
+        arch:     'metabuff-arch',
+        security: 'metabuff-security',
+        testgen:  'metabuff-testgen',
+        base:     'codebuff/base@0.0.1',
+        research: 'codebuff/researcher@0.0.1',
+        review:   'codebuff/reviewer@0.0.1',
+      }
+      return map[specialist] ?? 'codebuff/base@0.0.1'
+    }
+
+    /**
+     * Parse the thinker's decomposition output into a list of subtasks.
+     * Tries JSON first, falls back to a reasonable default if parsing fails.
+     */
+    function parseDecomposition(
+      raw: string | undefined,
+      fallbackPrompt: string,
+    ): Array<{ subtask: string; specialist: string; focus: string }> {
+      if (!raw) return [{ subtask: fallbackPrompt, specialist: 'base', focus: 'full implementation' }]
+
+      const jsonMatch = raw.match(/\[[\s\S]*?\]/s)
+      if (jsonMatch) {
+        try {
+          const parsed = JSON.parse(jsonMatch[0]) as unknown[]
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            return (parsed as Array<{ subtask: string; specialist: string; focus: string }>)
+              .slice(0, MAX_PARALLEL_AGENTS)
+              .filter(s => typeof s.subtask === 'string' && typeof s.specialist === 'string')
+          }
+        } catch {
+          // fall through to default
+        }
+      }
+
+      const lines = raw.split('\n').filter(l => /^\s*[-\d*•]/.test(l)).slice(0, MAX_PARALLEL_AGENTS)
+      if (lines.length > 1) {
+        return lines.map((line, i) => ({
+          subtask: line.replace(/^\s*[-\d.*•]+\s*/, ''),
+          specialist: i === 0 ? 'arch' : i === lines.length - 1 ? 'testgen' : 'base',
+          focus: `part ${i + 1} of ${lines.length}`,
+        }))
+      }
+
+      return [{ subtask: fallbackPrompt, specialist: 'base', focus: 'full implementation' }]
+    }
+
+    const COT_SYSTEM_PREFIX = `You are a specialist agent in MetaBuff's parallel execution pipeline.
+You are responsible for ONE specific subtask of a larger system.
+
+PROTOCOL:
+  1. Read every file relevant to your subtask before touching anything
+  2. Verify all symbols, imports, and types you plan to use via code_search
+  3. Make your changes with surgical str_replace operations
+  4. Leave a brief comment in each changed file: // [MetaBuff Mega: <focus>]
+  5. Do NOT attempt to handle subtasks assigned to other specialist agents
+  6. Call end_turn only when your subtask is complete and verified
+
+`
+
     // ── Phase 0: Understand the full codebase scope ──────────────────────────
     yield {
       toolName: 'spawn_agents',
@@ -156,8 +156,6 @@ const definition: AgentDefinition = {
     }
 
     // ── Phase 1: Architect-level decomposition ────────────────────────────────
-    // We ask the thinker to output structured JSON so we can spawn agents
-    // with precision rather than guessing.
     const { toolResult: decompositionRaw } = yield {
       toolName: 'spawn_agents',
       input: {
