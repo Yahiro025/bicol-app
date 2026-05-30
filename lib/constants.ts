@@ -95,6 +95,17 @@ export interface NavLink {
   icon: LucideIcon;
 }
 
+/** Bikol verb conjugation tense labels for UI display */
+export const TENSE_LABELS: Record<string, string> = {
+  infinitive: 'Infinitive',
+  past: 'Past (Completed)',
+  progressive: 'Progressive (Incomplete)',
+  future: 'Future (Contemplated)',
+};
+
+/** Display order for conjugation tenses */
+export const TENSE_ORDER = ['infinitive', 'past', 'progressive', 'future'];
+
 export const NAV_LINKS: NavLink[] = [
   { href: "/", label: "Home", icon: Home },
   { href: "/browse", label: "Browse", icon: BookOpen },

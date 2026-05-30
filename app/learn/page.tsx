@@ -8,6 +8,7 @@ import { CheckCircle2, Home, RefreshCw, ArrowLeft, Loader2 } from "lucide-react"
 import SubstitutionDrill from "@/components/learn/SubstitutionDrill";
 import TransformationChallenge from "@/components/learn/TransformationChallenge";
 import AppliedFluency from "@/components/learn/AppliedFluency";
+import { escapeRegex } from "@/lib/fuzzy";
 import type { SubstitutionDrill as DrillType } from "@/lib/types/learn";
 
 // Fallback drills when the API is unavailable
@@ -53,10 +54,6 @@ const FALLBACK_DRILLS: DrillType[] = [
  * Generate substitution drills from real dictionary words.
  * Creates drills by using example sentences and substituting key words.
  */
-function escapeRegex(str: string): string {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
 function generateDrillsFromWords(words: { bikol: string; english: string; example_bikol?: string | null; example_english?: string | null }[]): DrillType[] {
   const drills: DrillType[] = [];
   

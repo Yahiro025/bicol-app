@@ -187,6 +187,6 @@ export function fuzzyMatch<T>(
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
-function escapeRegex(str: string): string {
+export function escapeRegex(str: string): string {
   return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
