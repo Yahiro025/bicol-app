@@ -99,49 +99,126 @@ export async function PATCH(request: Request) {
         return NextResponse.json({ error: "Submission not found" }, { status: 404 });
       }
 
-      if (target === "normalized") {
-        // Create in the normalized Root + Definition schema
-        const root = await prisma.root.create({
-          data: {
-            bikol: fullSubmission.word,
-            pos: fullSubmission.pos || null,
-            pronunciation: fullSubmission.pronunciation || null,
-          },
-        });
+      if (fullSubmission.original_id && fullSubmission.original_type) {
+        // ─── Suggested Edit (Recommendation) ───
+        const { original_id, original_type } = fullSubmission;
 
-        const definition = await prisma.definition.create({
-          data: {
-            rootId: root.id,
-            english: fullSubmission.definition,
-            dialect: fullSubmission.dialect || null,
-            source: "user_submission",
-            source_url: fullSubmission.source || null,
-          },
-        });
-
-        if (fullSubmission.example_bikol || fullSubmission.example_english) {
-          await prisma.exampleSentence.create({
+        if (original_type === "normalized") {
+          // Update the normalized Root
+          await prisma.root.update({
+            where: { id: original_id },
             data: {
-              definitionId: definition.id,
-              bikol: fullSubmission.example_bikol || null,
-              english: fullSubmission.example_english || null,
+              bikol: fullSubmission.word,
+              pos: fullSubmission.pos || null,
+              pronunciation: fullSubmission.pronunciation || null,
+            },
+          });
+
+          // Find the first definition associated with this root
+          const firstDef = await prisma.definition.findFirst({
+            where: { rootId: original_id },
+            orderBy: { createdAt: "asc" },
+          });
+
+          if (firstDef) {
+            // Update the definition
+            await prisma.definition.update({
+              where: { id: firstDef.id },
+              data: {
+                english: fullSubmission.definition,
+                dialect: fullSubmission.dialect || null,
+                source_url: fullSubmission.source || null,
+              },
+            });
+
+            // Update example sentence
+            if (fullSubmission.example_bikol || fullSubmission.example_english) {
+              const firstExample = await prisma.exampleSentence.findFirst({
+                where: { definitionId: firstDef.id },
+                orderBy: { createdAt: "asc" },
+              });
+
+              if (firstExample) {
+                await prisma.exampleSentence.update({
+                  where: { id: firstExample.id },
+                  data: {
+                    bikol: fullSubmission.example_bikol || null,
+                    english: fullSubmission.example_english || null,
+                  },
+                });
+              } else {
+                await prisma.exampleSentence.create({
+                  data: {
+                    definitionId: firstDef.id,
+                    bikol: fullSubmission.example_bikol || null,
+                    english: fullSubmission.example_english || null,
+                  },
+                });
+              }
+            }
+          }
+        } else {
+          // Update the legacy Word table (cast string id to BigInt)
+          await prisma.word.update({
+            where: { id: BigInt(original_id) },
+            data: {
+              bikol: fullSubmission.word,
+              english: fullSubmission.definition,
+              pos: fullSubmission.pos || null,
+              dialect: fullSubmission.dialect || null,
+              pronunciation: fullSubmission.pronunciation || null,
+              example_bikol: fullSubmission.example_bikol || null,
+              example_english: fullSubmission.example_english || null,
+              source_url: fullSubmission.source || null,
             },
           });
         }
       } else {
-        // Legacy Word table
-        await prisma.word.create({
-          data: {
-            bikol: fullSubmission.word,
-            english: fullSubmission.definition,
-            pos: fullSubmission.pos || null,
-            dialect: fullSubmission.dialect || null,
-            pronunciation: fullSubmission.pronunciation || null,
-            example_bikol: fullSubmission.example_bikol || null,
-            example_english: fullSubmission.example_english || null,
-            source_url: fullSubmission.source || null,
-          },
-        });
+        // ─── New Word Submission ───
+        if (target === "normalized") {
+          // Create in the normalized Root + Definition schema
+          const root = await prisma.root.create({
+            data: {
+              bikol: fullSubmission.word,
+              pos: fullSubmission.pos || null,
+              pronunciation: fullSubmission.pronunciation || null,
+            },
+          });
+
+          const definition = await prisma.definition.create({
+            data: {
+              rootId: root.id,
+              english: fullSubmission.definition,
+              dialect: fullSubmission.dialect || null,
+              source: "user_submission",
+              source_url: fullSubmission.source || null,
+            },
+          });
+
+          if (fullSubmission.example_bikol || fullSubmission.example_english) {
+            await prisma.exampleSentence.create({
+              data: {
+                definitionId: definition.id,
+                bikol: fullSubmission.example_bikol || null,
+                english: fullSubmission.example_english || null,
+              },
+            });
+          }
+        } else {
+          // Legacy Word table
+          await prisma.word.create({
+            data: {
+              bikol: fullSubmission.word,
+              english: fullSubmission.definition,
+              pos: fullSubmission.pos || null,
+              dialect: fullSubmission.dialect || null,
+              pronunciation: fullSubmission.pronunciation || null,
+              example_bikol: fullSubmission.example_bikol || null,
+              example_english: fullSubmission.example_english || null,
+              source_url: fullSubmission.source || null,
+            },
+          });
+        }
       }
     }
 
@@ -176,6 +253,8 @@ export async function POST(request: Request) {
       example_bikol,
       example_english,
       source,
+      original_id,
+      original_type,
     } = body;
 
     if (!word || !word.trim()) {
@@ -195,6 +274,8 @@ export async function POST(request: Request) {
         example_bikol: example_bikol || null,
         example_english: example_english || null,
         source: source || null,
+        original_id: original_id || null,
+        original_type: original_type || null,
       },
     });
 

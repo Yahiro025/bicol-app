@@ -121,6 +121,8 @@ model UserSubmission {
   status          String?   @default("pending")
   target_table    String?   @default("legacy")
   admin_notes     String?
+  original_id     String?
+  original_type   String?
   created_at      DateTime? @default(now()) @db.Timestamptz(6)
 
   @@map("user_submissions")

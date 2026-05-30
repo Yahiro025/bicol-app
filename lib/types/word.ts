@@ -36,6 +36,7 @@ export type DisplayDefinition = {
  * This type captures all fields accessed in both code paths.
  */
 export type WordDisplayData = {
+  id: string | number | bigint;
   bikol: string;
   pos: string | null;
   pronunciation: string | null;

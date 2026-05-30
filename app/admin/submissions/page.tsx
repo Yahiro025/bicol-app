@@ -13,6 +13,10 @@ import {
   Save,
   Database,
   MessageSquare,
+  GitCompareArrows,
+  ChevronDown,
+  ChevronUp,
+  ArrowRight,
 } from "lucide-react";
 
 type Submission = {
@@ -28,6 +32,8 @@ type Submission = {
   status: string;
   target_table: string;
   admin_notes: string | null;
+  original_id: string | null;
+  original_type: string | null;
   created_at: string;
 };
 
@@ -42,6 +48,58 @@ type EditFormData = {
   source: string;
   admin_notes: string;
 };
+
+type OriginalWordData = {
+  word: string | null;
+  pos: string | null;
+  pronunciation: string | null;
+  definition: string | null;
+  dialect: string | null;
+  example_bikol: string | null;
+  example_english: string | null;
+  source: string | null;
+};
+
+const DIFF_FIELDS: { key: keyof OriginalWordData; label: string }[] = [
+  { key: "word", label: "Bikol Word" },
+  { key: "definition", label: "Definition" },
+  { key: "pos", label: "Part of Speech" },
+  { key: "dialect", label: "Dialect" },
+  { key: "pronunciation", label: "Pronunciation" },
+  { key: "example_bikol", label: "Example (Bikol)" },
+  { key: "example_english", label: "Example (English)" },
+  { key: "source", label: "Source" },
+];
+
+function DiffRow({ label, original, proposed }: { label: string; original: string | null; proposed: string | null }) {
+  const norm = (v: string | null | undefined) => (v ?? "").trim();
+  const isChanged = norm(original) !== norm(proposed);
+
+  if (!isChanged) {
+    return (
+      <div className="grid grid-cols-[140px_1fr_1fr] gap-3 text-xs items-start py-2 opacity-40">
+        <span className="font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider select-none text-[10px]">{label}</span>
+        <span className="text-zinc-600 dark:text-zinc-400 break-words">{norm(original) || "—"}</span>
+        <span className="text-zinc-600 dark:text-zinc-400 break-words">{norm(proposed) || "—"}</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-[140px_1fr_1fr] gap-3 text-xs items-start py-2 bg-yellow-500/5 dark:bg-yellow-500/[0.02] border-l-2 border-yellow-500/40 pl-2 rounded-r-md">
+      <span className="font-bold text-yellow-600 dark:text-yellow-400 uppercase tracking-wider text-[10px] flex items-center gap-1 select-none">
+        {label}
+        <span className="text-[9px] bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 px-1 rounded font-normal font-sans">Changed</span>
+      </span>
+      <span className="text-red-600 dark:text-red-400/80 bg-red-500/5 px-2 py-1 rounded border border-red-500/10 break-words line-through">
+        {norm(original) || "—"}
+      </span>
+      <span className="text-emerald-700 dark:text-emerald-400 bg-emerald-500/5 px-2 py-1 rounded border border-emerald-500/10 break-words font-medium">
+        {norm(proposed) || "—"}
+      </span>
+    </div>
+  );
+}
 
 const emptyEditForm = (sub: Submission): EditFormData => ({
   word: sub.word,
@@ -77,6 +135,11 @@ export default function AdminSubmissionsPage() {
 
   // Batch action state
   const [batchLoading, setBatchLoading] = useState(false);
+
+  // Comparison view state (for suggested edits)
+  const [expandedCompare, setExpandedCompare] = useState<Set<number>>(new Set());
+  const [originals, setOriginals] = useState<Record<number, OriginalWordData | null>>({});
+  const [originalsLoading, setOriginalsLoading] = useState<Set<number>>(new Set());
 
   const ADMIN_SECRET =
     process.env.NEXT_PUBLIC_ADMIN_API_SECRET || "bikoldict-admin-secret-change-me";
@@ -242,6 +305,46 @@ export default function AdminSubmissionsPage() {
     }
 
     setBatchLoading(false);
+  };
+
+  const toggleCompare = async (sub: Submission) => {
+    if (!sub.original_id || !sub.original_type) return;
+
+    const id = sub.id;
+    const isExpanded = expandedCompare.has(id);
+
+    if (isExpanded) {
+      setExpandedCompare((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+      return;
+    }
+
+    setExpandedCompare((prev) => new Set(prev).add(id));
+
+    if (originals[id] !== undefined) return;
+
+    setOriginalsLoading((prev) => new Set(prev).add(id));
+    try {
+      const res = await fetch(
+        `/api/admin/word-original?id=${encodeURIComponent(sub.original_id)}&type=${sub.original_type}`,
+        { headers: adminHeaders }
+      );
+      if (!res.ok) throw new Error(`Failed to fetch original: ${res.status}`);
+      const data = await res.json();
+      setOriginals((prev) => ({ ...prev, [id]: data }));
+    } catch (err) {
+      console.error(err);
+      setOriginals((prev) => ({ ...prev, [id]: null }));
+    } finally {
+      setOriginalsLoading((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    }
   };
 
   const filtered = submissions.filter((s) =>
@@ -477,6 +580,30 @@ export default function AdminSubmissionsPage() {
                               {sub.dialect}
                             </span>
                           )}
+                          {sub.original_id && (
+                            <div className="flex flex-wrap gap-2">
+                              <Link 
+                                href={`/word/${encodeURIComponent(sub.word)}`}
+                                target="_blank"
+                                className="text-[10px] uppercase tracking-widest font-black bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 px-2 py-1 rounded border border-yellow-500/20 flex items-center gap-1 transition-colors"
+                              >
+                                <span>✏️ Suggested Edit</span>
+                                <span className="opacity-70 font-normal font-sans">(View Current)</span>
+                              </Link>
+                              <button
+                                onClick={() => toggleCompare(sub)}
+                                className="text-[10px] uppercase tracking-widest font-black bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 px-2 py-1 rounded border border-blue-500/20 flex items-center gap-1 transition-colors"
+                              >
+                                <GitCompareArrows className="w-3 h-3" />
+                                <span>{expandedCompare.has(sub.id) ? "Hide Changes" : "Compare Changes"}</span>
+                                {expandedCompare.has(sub.id) ? (
+                                  <ChevronUp className="w-3 h-3" />
+                                ) : (
+                                  <ChevronDown className="w-3 h-3" />
+                                )}
+                              </button>
+                            </div>
+                          )}
                         </div>
 
                         <p className="text-zinc-700 dark:text-zinc-300">
@@ -533,6 +660,58 @@ export default function AdminSubmissionsPage() {
                               : "Legacy"}
                           </span>
                         </div>
+
+                        {/* Comparison Panel */}
+                        {sub.original_id && expandedCompare.has(sub.id) && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="overflow-hidden mt-4"
+                          >
+                            <div className="p-4 bg-zinc-100/50 dark:bg-zinc-950/40 border border-zinc-200/60 dark:border-zinc-800/60 rounded-2xl space-y-3">
+                              <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-2 text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
+                                <span>Field</span>
+                                <div className="grid grid-cols-2 gap-3 flex-1 ml-[140px] text-left">
+                                  <span>Current (Live)</span>
+                                  <span>Proposed Edit</span>
+                                </div>
+                              </div>
+
+                              {originalsLoading.has(sub.id) ? (
+                                <div className="flex items-center gap-2 py-4 justify-center text-xs text-zinc-500">
+                                  <motion.div
+                                    animate={{ rotate: 360 }}
+                                    transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                                    className="w-3.5 h-3.5 border border-blue-500/20 border-t-blue-500 rounded-full"
+                                  />
+                                  <span>Fetching current database values...</span>
+                                </div>
+                              ) : originals[sub.id] === null ? (
+                                <div className="text-center py-4 text-xs text-red-500 font-medium">
+                                  Original word has been deleted or not found in the database.
+                                </div>
+                              ) : originals[sub.id] ? (
+                                <div className="space-y-1 divide-y divide-zinc-200/30 dark:divide-zinc-800/30">
+                                  {DIFF_FIELDS.map((field) => {
+                                    const orig = originals[sub.id]?.[field.key] ?? null;
+                                    const prop = sub[field.key as keyof Submission] ?? null;
+                                    
+                                    return (
+                                      <DiffRow
+                                        key={field.key}
+                                        label={field.label}
+                                        original={orig}
+                                        proposed={prop ? String(prop) : null}
+                                      />
+                                    );
+                                  })}
+                                </div>
+                              ) : null}
+                            </div>
+                          </motion.div>
+                        )}
                       </div>
 
                       {/* Action buttons */}
