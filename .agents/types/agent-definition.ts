@@ -13,5 +13,8 @@ export interface AgentDefinition {
   spawnableAgents: string[]
   systemPrompt: string
   instructionsPrompt?: string
+  stepPrompt?: string
   includeMessageHistory?: boolean
+  /** Generator function for programmatic orchestration flow */
+  handleSteps?: (context: { prompt: string }) => Generator<unknown, void, unknown>
 }
