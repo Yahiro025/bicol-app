@@ -116,8 +116,10 @@ const emptyEditForm = (sub: Submission): EditFormData => ({
 export default function AdminSubmissionsPage() {
   // Auth state
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const [loginLoading, setLoginLoading] = useState(false);
   const [password, setPassword] = useState("");
-  const [passwordError, setPasswordError] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
 
   // Data state
   const [submissions, setSubmissions] = useState<Submission[]>([]);
@@ -141,18 +143,17 @@ export default function AdminSubmissionsPage() {
   const [originals, setOriginals] = useState<Record<number, OriginalWordData | null>>({});
   const [originalsLoading, setOriginalsLoading] = useState<Set<number>>(new Set());
 
-  const ADMIN_SECRET =
-    process.env.NEXT_PUBLIC_ADMIN_API_SECRET || "bikoldict-admin-secret-change-me";
-
-  const adminHeaders = {
-    "Content-Type": "application/json",
-    "x-admin-secret": ADMIN_SECRET,
-  };
   const fetchSubmissions = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/submit?limit=500", { headers: adminHeaders });
+      const res = await fetch("/api/submit?limit=500", {
+        credentials: "same-origin",
+      });
+      if (res.status === 401) {
+        setIsAuthenticated(false);
+        throw new Error("Your admin session has expired. Sign in again.");
+      }
       if (!res.ok) throw new Error(`API error: ${res.status}`);
       const data = await res.json();
       setSubmissions(data);
@@ -166,22 +167,67 @@ export default function AdminSubmissionsPage() {
   }, []);
 
   useEffect(() => {
+    let cancelled = false;
+
+    async function checkSession() {
+      try {
+        const res = await fetch("/api/admin/session", {
+          credentials: "same-origin",
+        });
+        const data = await res.json();
+        if (!cancelled) {
+          setIsAuthenticated(Boolean(data.authenticated));
+          if (!data.configured) {
+            setPasswordError("Admin authentication is not configured.");
+          }
+        }
+      } catch {
+        if (!cancelled) setIsAuthenticated(false);
+      } finally {
+        if (!cancelled) setIsCheckingAuth(false);
+      }
+    }
+
+    checkSession();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
     if (isAuthenticated) {
       fetchSubmissions();
     }
   }, [isAuthenticated, fetchSubmissions]);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (
-      password ===
-      (process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "bikoldict2024")
-    ) {
+    setLoginLoading(true);
+    setPasswordError("");
+
+    try {
+      const res = await fetch("/api/admin/session", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
+
+      if (!res.ok) {
+        if (res.status === 503) {
+          throw new Error("Admin authentication is not configured.");
+        }
+        throw new Error("Incorrect password. Try again.");
+      }
+
       setIsAuthenticated(true);
-      setPasswordError(false);
       setPassword("");
-    } else {
-      setPasswordError(true);
+    } catch (err) {
+      setPasswordError(
+        err instanceof Error ? err.message : "Unable to sign in.",
+      );
+    } finally {
+      setLoginLoading(false);
     }
   };
 
@@ -206,7 +252,8 @@ export default function AdminSubmissionsPage() {
     try {
       const res = await fetch("/api/submit", {
         method: "PATCH",
-        headers: adminHeaders,
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           id: editTarget.id,
           word: editForm.word.trim(),
@@ -252,7 +299,8 @@ export default function AdminSubmissionsPage() {
 
       const res = await fetch("/api/submit", {
         method: "PATCH",
-        headers: adminHeaders,
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
 
@@ -279,7 +327,8 @@ export default function AdminSubmissionsPage() {
       try {
         const res = await fetch("/api/submit", {
           method: "PATCH",
-          headers: adminHeaders,
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             id: sub.id,
             status,
@@ -330,7 +379,7 @@ export default function AdminSubmissionsPage() {
     try {
       const res = await fetch(
         `/api/admin/word-original?id=${encodeURIComponent(sub.original_id)}&type=${sub.original_type}`,
-        { headers: adminHeaders }
+        { credentials: "same-origin" }
       );
       if (!res.ok) throw new Error(`Failed to fetch original: ${res.status}`);
       const data = await res.json();
@@ -385,6 +434,18 @@ export default function AdminSubmissionsPage() {
     },
   ];
 
+  if (isCheckingAuth) {
+    return (
+      <main className="min-h-screen bg-white dark:bg-zinc-950 flex items-center justify-center p-6">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+          className="w-8 h-8 border-2 border-blue-500/20 border-t-blue-500 rounded-full"
+        />
+      </main>
+    );
+  }
+
   // ─── Password gate ───────────────────────────────────────────────────────
   if (!isAuthenticated) {
     return (
@@ -407,7 +468,7 @@ export default function AdminSubmissionsPage() {
             value={password}
             onChange={(e) => {
               setPassword(e.target.value);
-              setPasswordError(false);
+              setPasswordError("");
             }}
             placeholder="Password"
             className="w-full px-5 py-3.5 bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-lg"
@@ -415,14 +476,15 @@ export default function AdminSubmissionsPage() {
           />
           {passwordError && (
             <p className="text-sm text-red-500 text-center font-medium">
-              Incorrect password. Try again.
+              {passwordError}
             </p>
           )}
           <button
             type="submit"
-            className="w-full py-3.5 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-500 transition-colors active:scale-95 shadow-lg shadow-blue-500/20"
+            disabled={loginLoading}
+            className="w-full py-3.5 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-500 transition-colors active:scale-95 shadow-lg shadow-blue-500/20 disabled:opacity-50"
           >
-            Unlock
+            {loginLoading ? "Unlocking..." : "Unlock"}
           </button>
         </form>
       </main>

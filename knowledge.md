@@ -1,53 +1,152 @@
-# Project knowledge
+# MetaBuff Knowledge File
+# ─────────────────────────────────────────────────────────────────────────────
+# This file is read by Codebuff/Freebuff at the start of every session.
+# It primes DeepSeek V4 Flash with codebase context to reduce hallucinations.
+#
+# HOW TO USE:
+#   1. Fill in every section marked [FILL IN] before using MetaBuff
+#   2. Keep this file updated when the project structure changes
+#   3. The more accurate this file, the fewer hallucinations you'll see
+# ─────────────────────────────────────────────────────────────────────────────
 
-Bikol Dictionary ("BIKOL") — a full-stack dictionary & learning platform for the Bikol language (Next.js + Supabase + Prisma).
+## Project Identity
 
-## Quickstart
-- **Setup:** `bun install` (runs `prisma generate` as postinstall)
-- **Dev:** `bun dev` (Next.js dev server)
-- **Test:** `bun test` (uses Bun's native test runner)
-- **Lint:** `bun lint` (next lint)
-- **Build:** `bun run build` (also used by Vercel)
-- **Start prod:** `bun start`
+**Name**: [FILL IN — e.g., "my-flutter-app"]
+**Type**: [FILL IN — e.g., "Flutter mobile app with Supabase backend"]
+**Primary language**: [FILL IN — e.g., TypeScript / Dart / Python / Go]
+**Framework**: [FILL IN — e.g., Next.js 15 / Flutter 3.x / FastAPI]
+**Package manager**: [FILL IN — e.g., bun / npm / pnpm / pub]
 
-## Architecture
-- **Framework:** Next.js 16 App Router, React 19, TypeScript 6 (strict)
-- **Styling:** Tailwind CSS v4 via `@tailwindcss/postcss`, Framer Motion for animations
-- **Database:** Supabase (PostgreSQL), Prisma 7 ORM
-- **Package manager / runtime:** Bun (exclusively — no npm/yarn)
-- **Mobile:** Capacitor 8 for Android; set `NEXT_PUBLIC_PLATFORM=mobile` to trigger static export in `next.config.mjs`
-- **AI:** Groq SDK (`qwen/qwen3-32b`) for data enrichment
+## Architecture Overview
 
-### Key directories
-| Path | Purpose |
-|------|---------|
-| `app/` | Next.js App Router pages, layouts, API routes |
-| `components/` | React components (UI, dictionary, learn modules) |
-| `lib/` | Core library: Prisma client, Groq, conjugator, fuzzy search, word-search, offline, constants, utils |
-| `hooks/` | Client hooks (useLanguageMode) |
-| `prisma/` | Schema & migrations |
-| `scripts/ts/` | TypeScript data pipeline scripts (migration, enrich, dedup, sync) |
-| `scripts/py/` | Python data pipeline (PDF extraction, frequency calc, data audit) |
-| `tests/` | Test files (Bun for TS, pytest for Python) |
+[FILL IN — 3-5 sentences describing the system.  Example:]
+<!-- The app is a Flutter mobile client that talks to a Supabase PostgreSQL backend.
+     Business logic lives in lib/services/. UI components are in lib/widgets/.
+     Authentication is handled by Supabase Auth with JWT tokens stored in secure storage.
+     The Dart code uses the Repository pattern: services never call Supabase directly — 
+     they go through a repository interface to allow testing. -->
 
-### Data flow
-- **Prisma schema:** Normalized "Mintz" architecture — `Root` → `Definition` → `Conjugation` / `ExampleSentence`. Legacy `Word` table also exists. User-generated content via `UserSubmission` and `UserFlashcard`.
-- **API routes:** `/api/search`, `/api/browse`, `/api/word`, `/api/learn`, `/api/submit`, `/api/conjugations/[word]`, `/api/drills`, `/api/dialogue`, `/api/frequency`
-- **Python pipeline:** Scrapes Wiktionary & extracts Mintz PDFs; TypeScript scripts handle migration and enrichment via Groq AI.
+## Directory Layout (Most Important Paths)
 
-## Conventions
-- **Formatting:** Prettier — semicolons on, double quotes, trailing commas all, print width 90
-- **Imports:** `verbatimModuleSyntax: true` — use `import type` for type-only imports. Path alias `@/*` maps to `./*`.
-- **Strict TS:** `noUncheckedIndexedAccess: true`, `noImplicitOverride: true`, strict mode on. Avoid `as any` casts.
-- **Components:** Client components need `"use client"` directive. Prefer server components by default.
-- **Design system:** "Living Archive" — "Resting Rigor" (clean 1px borders, zinc neutrals, no shadows at rest) + "Responsive Bloom" (blue-tinted shadows, subtle lifts on hover). Bikol words: Blue-500 bold; bridge languages (English/Tagalog): Zinc-400.
-- **Testing:** Use `bun test` for TS tests. Use `pytest` for Python tests.
-- **Environment:** `NEXT_PUBLIC_PLATFORM` (mobile vs web), `NEXT_PUBLIC_SITE_URL`, Supabase & Groq API keys required.
+```
+[FILL IN — paste the output of: find . -type f -name "*.ts" | head -40]
 
-## Gotchas
-- `postinstall` runs `prisma generate` — always run `bun install` after pulling schema changes.
-- The `next.config.mjs` has commented-out `next-pwa` config (PWA handled differently now).
-- `next.config.mjs` uses `output: 'export'` only when `NEXT_PUBLIC_PLATFORM === 'mobile'` — SSR otherwise.
-- Prisma adapter uses `@prisma/adapter-pg` with `pg` driver for direct Postgres connections.
-- `lib/prisma.ts` exports the Prisma client singleton — import from there, don't create new instances.
-- Python scripts in `scripts/py/` depend on `pdfplumber`, `BeautifulSoup4` (via `requirements.txt`).
+Examples:
+src/
+  app/            Next.js app router pages
+  components/     Reusable React components
+  lib/
+    db/           Drizzle ORM schema and queries
+    auth/         NextAuth configuration
+    utils/        Shared utility functions
+  api/            tRPC routers
+tests/
+  unit/
+  integration/
+```
+
+## Key Files (Read These Before Editing Anything)
+
+| File | Role |
+|------|------|
+| [FILL IN] | [what it does] |
+| [FILL IN] | [what it does] |
+
+Examples (delete these and replace with your actual files):
+<!-- 
+| src/lib/db/schema.ts        | All Drizzle table definitions — source of truth for data shape |
+| src/lib/auth/config.ts      | NextAuth providers and session config |
+| src/app/api/trpc/[trpc].ts  | tRPC entry point |
+| lib/models/user.dart        | User domain model |
+| lib/services/auth_service.dart | All auth calls go here |
+-->
+
+## Import Conventions
+
+[FILL IN — how imports work in this project.  Examples:]
+<!--
+- Path alias `@/` maps to `src/`
+- `@/components` → React components
+- `@/lib/db` → database utilities
+- Barrel exports exist in each folder's index.ts
+- In Dart: all imports use relative paths within lib/
+-->
+
+## Naming Conventions
+
+[FILL IN.  Examples:]
+<!--
+- Files: kebab-case (my-component.tsx)
+- React components: PascalCase
+- Functions: camelCase
+- Constants: SCREAMING_SNAKE_CASE
+- Database tables: snake_case (user_profiles, auth_sessions)
+- Dart classes: PascalCase, files: snake_case
+-->
+
+## Type System Notes
+
+[FILL IN — important types/interfaces the model might reference.  Examples:]
+<!--
+- User object shape: { id: string, email: string, role: 'admin' | 'user' }
+- ApiResponse<T> wrapper: { data: T, error: string | null }
+- All DB queries return Promise<Result<T, DbError>>
+- Flutter: UserModel is in lib/models/user_model.dart
+-->
+
+## Database / Backend
+
+**Type**: [FILL IN — e.g., PostgreSQL via Supabase / SQLite via Drizzle / MongoDB]
+**ORM/Client**: [FILL IN — e.g., Drizzle ORM / Prisma / Supabase JS SDK]
+
+Key tables/collections:
+[FILL IN — list the main tables and their purpose]
+
+Migration approach: [FILL IN — e.g., "Drizzle migrations in drizzle/migrations/"]
+
+## Test Setup
+
+**Framework**: [FILL IN — e.g., Vitest / Jest / pytest / Go testing / Flutter test]
+**Test file location**: [FILL IN — e.g., co-located as *.test.ts / tests/ folder]
+**Run command**: [FILL IN — e.g., `bun test` / `npx vitest` / `flutter test`]
+
+## Known Gotchas
+
+[FILL IN — things that caused bugs before.  MetaBuff uses these to avoid repeating mistakes.]
+
+Examples (replace with your project's actual gotchas):
+<!--
+- DO NOT use `process.env` directly — always use `src/lib/env.ts` which validates vars at startup
+- Supabase client must be created server-side in API routes; never import the client-side client in server code
+- The User type from Supabase Auth is different from the User row in our users table — don't mix them up
+- All date handling must use UTC — never local timezone
+- Flutter: never call setState after dispose — always check mounted first
+-->
+
+## Anti-Hallucination Anchors
+
+These are real, verified facts about this codebase.
+DeepSeek Flash: treat these as ground truth; do not contradict them.
+
+- [FILL IN — e.g., "The entry point is src/app/page.tsx, not src/index.tsx"]
+- [FILL IN — e.g., "Authentication middleware is in src/middleware.ts"]
+- [FILL IN — e.g., "There is NO Redux in this project — state is managed with Zustand"]
+- [FILL IN — e.g., "The Supabase URL and anon key are in .env.local as NEXT_PUBLIC_SUPABASE_URL"]
+
+## MetaBuff Configuration
+
+```yaml
+# Complexity thresholds (affects which pipeline MetaBuff chooses)
+simple_max_files: 2       # tasks touching <= 2 files → simple pipeline
+complex_max_files: 10     # tasks touching 3-10 files → complex pipeline
+mega_threshold: 11        # 11+ files or architectural changes → mega pipeline
+
+# Model override (leave blank to use MetaBuff's default = deepseek/deepseek-v4-flash)
+model_override: ""
+
+# Parallel agent limit for metabuff-mega
+max_parallel_agents: 8
+
+# Run validator after every pipeline (recommended: true)
+always_validate: true
+```

@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { isAdminRequest } from "@/lib/admin-auth";
 
 export const dynamic = "force-dynamic";
-
-const ADMIN_SECRET = process.env.ADMIN_API_SECRET || "bikoldict-admin-secret-change-me";
 
 /**
  * GET /api/admin/word-original?id=<original_id>&type=<normalized|legacy>
@@ -12,8 +11,7 @@ const ADMIN_SECRET = process.env.ADMIN_API_SECRET || "bikoldict-admin-secret-cha
  * it against a suggested edit submission.
  */
 export async function GET(request: Request) {
-  const authHeader = request.headers.get("x-admin-secret");
-  if (authHeader !== ADMIN_SECRET) {
+  if (!isAdminRequest(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
