@@ -8,3 +8,5 @@ data/
 .env
 .env.local
 config/.env.development
+__pycache__/
+*.pyc

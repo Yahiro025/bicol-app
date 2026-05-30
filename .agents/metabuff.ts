@@ -119,7 +119,7 @@ STEP 1 — ORIENT
 
 STEP 2 — GROUND
   • Read all listed files via read_files
-  • Run code_search for any symbol, function, or type you plan to reference
+  • Run code_searcher for any symbol, function, or type you plan to reference
   • NEVER write an import path, class name, or API call you haven't verified
 
 STEP 3 — PLAN
@@ -134,12 +134,12 @@ STEP 4 — EXECUTE
 
 STEP 5 — VERIFY
   • Re-read changed files to confirm the edit landed correctly
-  • Run any available tests or lint commands via run_terminal_command
+  • Run any available tests or lint commands via basher
   • If anything looks wrong, fix it before calling end_turn
 
 GROUNDING RULES (never violate):
   ✗ Do not reference a file path without having read it this session
-  ✗ Do not assume a function or type exists — verify with code_search
+  ✗ Do not assume a function or type exists — verify with code_searcher
   ✗ Do not invent package names or import paths
   ✗ Do not leave TODOs or placeholder code in the final output
   ✗ Do not call end_turn if there are unresolved ⚠ UNCERTAIN items
@@ -174,6 +174,7 @@ ${task}
             params: {
               command: 'echo "=== TYPE CHECK ===" && bun run typecheck 2>&1 | head -40 && echo "=== TESTS ===" && bun test 2>&1 | tail -30',
               what_to_summarize: 'Type-check and test results. Report any TypeScript errors or test failures. If errors found, fix them now before calling end_turn.',
+              timeout_seconds: 120,
             },
           }],
         },
@@ -254,6 +255,7 @@ ${task}
             params: {
               command: 'echo "=== TYPE CHECK ===" && bun run typecheck 2>&1 | head -40 && echo "=== TESTS ===" && bun test 2>&1 | tail -30',
               what_to_summarize: 'Type-check and test results. Report any TypeScript errors or test failures. If errors found, fix them now before calling end_turn.',
+              timeout_seconds: 120,
             },
           }],
         },

@@ -58,13 +58,14 @@ const definition: AgentDefinition = {
 
   toolNames: [
     'read_files',
-    'code_search',
-    'find_files',
+    'code_searcher',
+    'file_picker',
     'str_replace',
     'write_file',
-    'run_terminal_command',
+    'basher',
     'spawn_agents',
     'think_deeply',
+    'glob',
     'end_turn',
   ],
 
@@ -101,8 +102,8 @@ NEVER:
 For your assigned security subtask:
 
 1. Audit the codebase for known vulnerabilities:
-${SECURITY_RED_FLAGS.map(p => `   code_search("${p}")`).slice(0, 6).join('\n')}
-   (and the remaining patterns relevant to your subtask)
+${SECURITY_RED_FLAGS.map((_, i) => `   code_searcher searchQueries: [{ pattern: "${SECURITY_RED_FLAGS[i].replace(/"/g, '\\"')}" }]`).slice(0, 6).join('\n')}
+   (and run code_searcher for the remaining patterns relevant to your subtask)
 
 2. Read all files related to authentication and authorization:
    - Auth middleware, guards, decorators
@@ -110,7 +111,7 @@ ${SECURITY_RED_FLAGS.map(p => `   code_search("${p}")`).slice(0, 6).join('\n')}
    - User model and session handling
 
 3. Check secrets management:
-   - Search for hardcoded credentials: code_search("password.*=.*\\"")
+   - Search for hardcoded credentials: use code_searcher with pattern "password.*=.*\\""
    - Verify .env.example exists and .env is in .gitignore
    - Confirm all secret reads go through process.env or a secrets manager
 

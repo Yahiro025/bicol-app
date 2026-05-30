@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import LanguageToggle from "@/components/LanguageToggle";
-import ThemeToggle from "@/components/ThemeToggle";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import MobileNav from "@/components/MobileNav";
 import DesktopNav from "@/components/DesktopNav";
 import PageTransition from "@/components/PageTransition";

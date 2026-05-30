@@ -35,13 +35,14 @@ const definition: AgentDefinition = {
 
   toolNames: [
     'read_files',
-    'code_search',
-    'find_files',
+    'code_searcher',
+    'file_picker',
     'write_file',
     'str_replace',
-    'run_terminal_command',
+    'basher',
     'spawn_agents',
     'think_deeply',
+    'glob',
     'end_turn',
   ],
 
@@ -92,7 +93,7 @@ For your assigned architectural subtask:
    - Add JSDoc comments to all public types you create
 
 5. Verify consistency:
-   - code_search for every new type you defined to make sure it's used correctly
+   - code_searcher for every new type you defined to make sure it's used correctly
    - Make sure no circular imports were introduced (check imports in changed files)`,
 
   stepPrompt:
