@@ -12,67 +12,103 @@
  *        → Simple:  planner → base → validator
  *        → Complex: file-picker → thinker → planner → base → reviewer → validator
  *        → Mega:    metabuff-mega (Antigravity-style parallel spawning)
+ *
+ * CRITICAL NOTE:
+ *   All helper functions (analyzeComplexity, withCoT) are inlined inside
+ *   handleSteps to avoid runtime errors. The agent execution framework
+ *   extracts the exported definition object — module-level function
+ *   references outside the object are NOT preserved in that context.
  */
 
 import { AgentDefinition } from './types/agent-definition'
 
-// ─── Constants ───────────────────────────────────────────────────────────────
+// ─── Agent Definition ─────────────────────────────────────────────────────────
 
-/** Free tier model.  Swap to 'deepseek/deepseek-v4-pro' if you have credits. */
-const FREE_MODEL = 'deepseek/deepseek-v4-flash'
+const definition: AgentDefinition = {
+  id: 'metabuff',
+  version: '1.0.0',
+  displayName: 'MetaBuff Orchestrator',
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+  spawnerPrompt:
+    'Spawn MetaBuff as your primary agent for ANY coding task. ' +
+    'It automatically classifies complexity and coordinates the optimal agent pipeline, ' +
+    'including CoT enforcement and anti-hallucination validation.',
 
-/**
- * Scores a prompt to classify task complexity.
- *
- * 0–2 → simple   (single-concern, 1-2 files)
- * 3–6 → complex  (multi-file, multiple concerns)
- * 7+  → mega     (system-wide, architectural, needs parallel agents)
- */
-function analyzeComplexity(prompt: string): 'simple' | 'complex' | 'mega' {
-  const p = prompt.toLowerCase()
-  let score = 0
+  model: 'deepseek/deepseek-v4-flash',
 
-  // Mega signals
-  const megaKw = [
-    'from scratch', 'entire codebase', 'full system', 'operating system',
-    'complete rewrite', 'new architecture', 'all files', 'every file',
-    'redesign everything', 'migrate entire',
-  ]
-  megaKw.forEach(kw => { if (p.includes(kw)) score += 4 })
+  // Enable reasoning mode — this alone gives Flash a significant quality boost
+  reasoningOptions: {
+    enabled: true,
+    exclude: false,  // keep reasoning visible so validator can audit it
+    effort: 'medium',
+  },
 
-  // Complex signals
-  const complexKw = [
-    'multiple files', 'refactor', 'architecture', 'redesign', 'across the',
-    'everywhere', 'integrate', 'migrate', 'all endpoints', 'all components',
-    'add authentication', 'add auth', 'database migration', 'performance',
-  ]
-  complexKw.forEach(kw => { if (p.includes(kw)) score += 2 })
+  toolNames: ['spawn_agents', 'think_deeply', 'end_turn'],
 
-  // Length heuristic
-  if (prompt.length > 500) score += 3
-  else if (prompt.length > 200) score += 1
+  spawnableAgents: [
+    // Codebuff built-ins
+    'codebuff/base@0.0.1',
+    'codebuff/file-picker@0.0.1',
+    'codebuff/thinker@0.0.1',
+    'codebuff/planner@0.0.1',
+    'codebuff/reviewer@0.0.1',
+    'codebuff/researcher@0.0.1',
+    'basher',
+    // MetaBuff custom agents
+    'metabuff-validator',
+    'metabuff-mega',
+  ],
 
-  // Explicit multi-file mention
-  const fileMatches = prompt.match(/\b\w+\.(ts|tsx|js|jsx|py|go|rs|java|cpp|cs)\b/g)
-  if (fileMatches && fileMatches.length > 5) score += 3
-  else if (fileMatches && fileMatches.length > 2) score += 1
+  systemPrompt:
+    'You are MetaBuff, an intelligent orchestration layer that coordinates AI coding agents. ' +
+    'Your job is NOT to write code yourself — it is to decompose tasks, select the right agents, ' +
+    'and ensure every output is verified before delivery. ' +
+    'Always prefer precision over speed.',
 
-  if (score >= 7) return 'mega'
-  if (score >= 3) return 'complex'
-  return 'simple'
-}
+  // ─── Programmatic orchestration ─────────────────────────────────────────────
+  handleSteps: function* ({ prompt }) {
+    /**
+     * Scores a prompt to classify task complexity.
+     *
+     * 0–2 → simple   (single-concern, 1-2 files)
+     * 3–6 → complex  (multi-file, multiple concerns)
+     * 7+  → mega     (system-wide, architectural, needs parallel agents)
+     */
+    function analyzeComplexity(p: string): 'simple' | 'complex' | 'mega' {
+      const lower = p.toLowerCase()
+      let score = 0
 
-/**
- * Wraps any prompt with a mandatory Chain-of-Thought prefix.
- *
- * This is the single biggest lever for reducing DeepSeek Flash hallucinations:
- * forcing the model to verify file contents before editing and to narrate
- * reasoning at each step.
- */
-function withCoT(task: string, role = 'coding'): string {
-  return `<metabuff_cot_protocol>
+      const megaKw = [
+        'from scratch', 'entire codebase', 'full system', 'operating system',
+        'complete rewrite', 'new architecture', 'all files', 'every file',
+        'redesign everything', 'migrate entire',
+      ]
+      megaKw.forEach(kw => { if (lower.includes(kw)) score += 4 })
+
+      const complexKw = [
+        'multiple files', 'refactor', 'architecture', 'redesign', 'across the',
+        'everywhere', 'integrate', 'migrate', 'all endpoints', 'all components',
+        'add authentication', 'add auth', 'database migration', 'performance',
+      ]
+      complexKw.forEach(kw => { if (lower.includes(kw)) score += 2 })
+
+      if (p.length > 500) score += 3
+      else if (p.length > 200) score += 1
+
+      const fileMatches = p.match(/\b\w+\.(ts|tsx|js|jsx|py|go|rs|java|cpp|cs)\b/g)
+      if (fileMatches && fileMatches.length > 5) score += 3
+      else if (fileMatches && fileMatches.length > 2) score += 1
+
+      if (score >= 7) return 'mega'
+      if (score >= 3) return 'complex'
+      return 'simple'
+    }
+
+    /**
+     * Wraps any prompt with a mandatory Chain-of-Thought prefix.
+     */
+    function withCoT(task: string, role = 'coding'): string {
+      return `<metabuff_cot_protocol>
 You are operating under MetaBuff's anti-hallucination protocol.
 
 BEFORE taking any action you MUST follow these steps IN ORDER:
@@ -112,53 +148,8 @@ GROUNDING RULES (never violate):
 <task role="${role}">
 ${task}
 </task>`
-}
+    }
 
-// ─── Agent Definition ─────────────────────────────────────────────────────────
-
-const definition: AgentDefinition = {
-  id: 'metabuff',
-  version: '1.0.0',
-  displayName: 'MetaBuff Orchestrator',
-
-  spawnerPrompt:
-    'Spawn MetaBuff as your primary agent for ANY coding task. ' +
-    'It automatically classifies complexity and coordinates the optimal agent pipeline, ' +
-    'including CoT enforcement and anti-hallucination validation.',
-
-  model: FREE_MODEL,
-
-  // Enable reasoning mode — this alone gives Flash a significant quality boost
-  reasoningOptions: {
-    enabled: true,
-    exclude: false,  // keep reasoning visible so validator can audit it
-    effort: 'medium',
-  },
-
-  toolNames: ['spawn_agents', 'think_deeply', 'end_turn'],
-
-  spawnableAgents: [
-    // Codebuff built-ins
-    'codebuff/base@0.0.1',
-    'codebuff/file-picker@0.0.1',
-    'codebuff/thinker@0.0.1',
-    'codebuff/planner@0.0.1',
-    'codebuff/reviewer@0.0.1',
-    'codebuff/researcher@0.0.1',
-    'basher',
-    // MetaBuff custom agents
-    'metabuff-validator',
-    'metabuff-mega',
-  ],
-
-  systemPrompt:
-    'You are MetaBuff, an intelligent orchestration layer that coordinates AI coding agents. ' +
-    'Your job is NOT to write code yourself — it is to decompose tasks, select the right agents, ' +
-    'and ensure every output is verified before delivery. ' +
-    'Always prefer precision over speed.',
-
-  // ─── Programmatic orchestration ─────────────────────────────────────────────
-  handleSteps: function* ({ prompt }) {
     const complexity = analyzeComplexity(prompt)
 
     // ── SIMPLE ── (1-2 file changes, single concern) ─────────────────────────

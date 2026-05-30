@@ -3,6 +3,16 @@ import { prisma } from '@/lib/prisma';
 import { normalizePOS } from '@/lib/lexicography';
 import { fuzzyMatch } from '@/lib/fuzzy';
 
+/** Shape returned by the raw PostgreSQL trigram search query */
+interface SearchResultRow {
+  bikol: string
+  pos: string | null
+  english: string | null
+  tagalog: string | null
+  score: number
+  priority: number
+}
+
 /**
  * Advanced Fuzzy Search Route
  * 
@@ -67,7 +77,8 @@ export async function GET(request: Request) {
     `;
 
     // Normalize POS and serialize
-    const normalized = (results as any[]).map((r: any) => ({
+    const rows = results as unknown as SearchResultRow[]
+    const normalized = rows.map((r) => ({
       bikol: r.bikol,
       pos: normalizePOS(r.pos),
       english: r.english ?? null,
