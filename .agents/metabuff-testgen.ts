@@ -39,11 +39,12 @@ const definition: AgentDefinition = {
 
   toolNames: [
     'read_files',
-    'code_search',
-    'find_files',
+    'code_searcher',
+    'file_picker',
     'write_file',
     'str_replace',
-    'run_terminal_command',
+    'basher',
+    'glob',
     'end_turn',
   ],
 
@@ -83,7 +84,7 @@ NEVER:
 For your test generation subtask:
 
 1. Discover the test setup:
-   - find_files("test|spec|__tests__") to locate existing test files
+   - Use file_picker or glob to locate existing test files (e.g., glob("**/*.test.ts") for TypeScript, glob("**/test_*.py") for Python)
    - Read 2-3 representative test files to learn the testing style
    - Check package.json for the test runner and any test utilities
    - Look for test helpers, factories, or fixtures

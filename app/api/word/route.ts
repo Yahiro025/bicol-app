@@ -13,9 +13,12 @@ export async function GET(request: Request) {
       where: { bikol: { equals: bikol, mode: 'insensitive' } },
       include: {
         definitions: {
+          include: {
+            conjugations: true,
+            exampleSentences: true,
+          },
           orderBy: { createdAt: 'asc' },
         },
-        conjugations: true,
       },
     });
 

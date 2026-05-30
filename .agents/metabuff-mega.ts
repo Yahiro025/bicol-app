@@ -74,8 +74,8 @@ const definition: AgentDefinition = {
   // ─── Programmatic mega-task flow ──────────────────────────────────────────
   handleSteps: function* ({ prompt }) {
 
-    /** Maximum number of parallel specialist agents to spawn */
-    const MAX_PARALLEL_AGENTS = 12
+    /** Maximum number of parallel specialist agents to spawn (reduced from 12 to prevent UI freezing) */
+    const MAX_PARALLEL_AGENTS = 6
 
     /**
      * Map a subtask's specialist tag to the correct Codebuff agent type.
@@ -133,7 +133,7 @@ You are responsible for ONE specific subtask of a larger system.
 
 PROTOCOL:
   1. Read every file relevant to your subtask before touching anything
-  2. Verify all symbols, imports, and types you plan to use via code_search
+  2. Verify all symbols, imports, and types you plan to use via code_searcher
   3. Make your changes with surgical str_replace operations
   4. Leave a brief comment in each changed file: // [MetaBuff Mega: <focus>]
   5. Do NOT attempt to handle subtasks assigned to other specialist agents
@@ -232,6 +232,7 @@ PROTOCOL:
           params: {
             command: 'echo "=== TYPE CHECK ===" && bun run typecheck 2>&1 | head -40 && echo "=== TESTS ===" && bun test 2>&1 | tail -30',
             what_to_summarize: 'Type-check and test results. Report any TypeScript errors or test failures. If errors found, describe them so the validator can fix them.',
+            timeout_seconds: 120,
           },
         }],
       },
