@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Share2, Info, Book, BookOpen, ChevronRight, Home } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -11,6 +11,7 @@ import { GrammarHighlight } from '@/components/GrammarHighlight';
 import WordJsonLd from '@/components/WordJsonLd';
 import { normalizePOS, normalizeDefinitionText, formatDialect } from '@/lib/lexicography';
 import type { WordDisplayData, AffixGroup } from '@/lib/types/word';
+import SuggestEditModal from '@/components/SuggestEditModal';
 
 
 const SOURCE_LABELS: Record<string, { label: string; icon: string; color: string }> = {
@@ -85,6 +86,7 @@ function Breadcrumbs({ bikol, pos }: { bikol: string; pos: string | null }) {
 
 export default function WordClientPage({ word, isNormalized }: { word: WordDisplayData, isNormalized: boolean }) {
   const langMode = useLanguageMode();
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   // Normalize the data for internal use
   const bikol = word.bikol;
@@ -230,7 +232,14 @@ export default function WordClientPage({ word, isNormalized }: { word: WordDispl
                 {audio_url && <AudioPlayer url={audio_url} />}
               </div>
             </div>
-            <div className="flex gap-3">
+            <div className="flex gap-3 flex-wrap">
+              <button 
+                className="px-5 py-4 bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-white/5 rounded-2xl hover:bg-zinc-200 dark:hover:bg-zinc-700 active:scale-95 transition-all shadow-lg flex items-center gap-2 font-bold text-sm text-zinc-700 dark:text-zinc-300"
+                onClick={() => setIsEditModalOpen(true)}
+              >
+                <span>📝</span>
+                <span>Suggest Edit</span>
+              </button>
               <button 
                 className="p-4 bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-white/5 rounded-2xl hover:bg-zinc-200 dark:hover:bg-zinc-700 active:scale-90 transition-all shadow-lg" 
                 onClick={() => {
@@ -358,6 +367,13 @@ export default function WordClientPage({ word, isNormalized }: { word: WordDispl
           })()}
         </section>
       </motion.div>
+
+      <SuggestEditModal 
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        isNormalized={isNormalized}
+        wordData={word}
+      />
     </div>
   );
 }
