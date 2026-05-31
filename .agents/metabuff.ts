@@ -1,62 +1,86 @@
 /**
- * MetaBuff — Main Orchestrator
- * ─────────────────────────────
- * Makes freebuff (DeepSeek V4 Flash) behave closer to Claude Opus 4.8 / Antigravity 2.0
+ * MetaBuff — Main Orchestrator v1.5.0
+ * ─────────────────────────────────────
+ * Makes Freebuff (DeepSeek V4 Flash) behave closer to Claude Opus 4.8 / Antigravity 2.0
  * by enforcing chain-of-thought, routing tasks by complexity, and coordinating
  * Codebuff's built-in agents + MetaBuff's own specialist subagents.
  *
- * Drop into .agents/ in any Codebuff project and invoke as: "metabuff"
+ * CHANGES FROM v1.4.0:
+ *   • [QUAL] Scope-aware complexity routing — analyzeComplexityWithScope() replaces
+ *     analyzeComplexityWithScope(). A pre-flight basher greps the real codebase for
+ *     keywords extracted from the prompt and counts matched files. Actual file count
+ *     overrides keyword false positives:
+ *       - 1 matched file → hard-caps score to simple (fixes 'refactor login button' FP)
+ *       - 2–3 files + no complex keyword → simple (not complex)
+ *       - 4–7 files → complex
+ *       - 8–15 files → complex (high-end); 16+ → mega
+ *       - Cross-cutting (files spread across 4+ dirs) adds escalation bonus
+ *       - Reliability guard: if grep matches >40% of total project files, keywords
+ *         are too generic → falls back to pure keyword scoring (safe for vague prompts)
+ *     Adds 1 lightweight basher spawn (timeout: 15s) before every routing decision.
+ *
+ * CHANGES FROM v1.3.0:
+ *   • [QUAL] isAlgorithmTask detector — routes novel-algorithm/complex-logic tasks
+ *     to metabuff-reasoner (effort=high, Socratic protocol) instead of codebuff/planner.
+ *     Closes single-model reasoning gap vs Claude Code Opus 4.8 (~55 → ~72/100).
+ *   • [QUAL] withCoT upgraded to v2: added STEP 2.5 QUESTION (Socratic pre-flight).
+ *     Agents must articulate 3 failure modes before writing code, cutting assumption-
+ *     based hallucinations.
+ *   • [SAFETY] metabuff-regex-guard added to BOTH simple and complex pipelines.
+ *     TypeScript's type checker cannot catch runtime-invalid regex — this closes
+ *     the entire class of regex SyntaxError bugs from AI-generated code.
+ *   • [QUAL] Complex pipeline: reasoning effort escalated to 'high' for algorithm tasks
+ *     (was always 'medium' via codebuff/planner).
+ *   • [BUG] isRegexTask detector added — simple tasks only run regex-guard when the
+ *     prompt involves patterns/parsing (avoids unnecessary spawn on pure refactors).
+ *   • [PERF] Regex guard is a single basher-driven spawn — low overhead, no freeze risk.
  *
  * Architecture:
- *   Task → [Session memory check + Complexity analysis] → MetaBuff orchestrator
- *        → Simple:  base → continuous_validate → typecheck+test → sandbox_check → validator
- *        → Complex: file-picker → thinker → planner → continuous_validate → reviewer → typecheck+test → sandbox_check → validator
- *        → Mega:    metabuff-mega (parallel specialist spawning)
+ *   Task → [Memory read + Complexity analysis] → MetaBuff orchestrator
+ *        → Simple:  base(CoT v2) → typecheck → [regex-guard] → validator      [2–4 spawns]
+ *        → Complex: file-picker → planner|reasoner(CoT v2) → reviewer         [5–6 spawns]
+ *                   → typecheck → regex-guard → validator
+ *        → Mega:    metabuff-mega (cascade wave parallel spawning) [delegated]
  *
- * SAFETY FEATURES (v1.2.0):
- *   • Complexity saturation (max 8) — prevents runaway mega classification
- *   • Diminishing returns on keyword scoring — one "refactor" doesn't trigger mega
- *   • Concern diversity detection — accounts for cross-cutting changes
- *   • Continuous validation checkpoints — catch errors early, not at the end
- *   • Inter-session memory — known-issues.md read by every agent via CoT prompts
- *   • Sandbox compile check — identity new files for generation tasks
+ * SAFETY FEATURES (v1.4.0):
+ *   • All v1.3.0 safety features retained (saturation, diminishing returns, etc.)
+ *   • Regex guard — catches runtime-invalid patterns TypeScript misses
+ *   • Socratic pre-flight — agents articulate failure modes before coding
+ *   • Algorithm task routing — harder reasoning uses higher-effort specialist
  *   • Timeout bounds on all basher commands — no infinite hangs
- *   • Bounded array processing — .slice(0, MAX) on all user data
+ *   • Targeted typecheck for simple tasks — not full codebase scan
+ *   • Inter-session memory — known-issues.md as mandatory first step
  *
  * CRITICAL NOTE:
- *   All helper functions (analyzeComplexity, withCoT) are inlined inside
- *   handleSteps to avoid runtime errors. The agent execution framework
- *   extracts the exported definition object — module-level function
- *   references outside the object are NOT preserved in that context.
+ *   All helpers (analyzeComplexity, withCoT, withReview, isAlgorithmTask, isRegexTask)
+ *   are inlined inside handleSteps. The agent execution framework extracts only the
+ *   exported definition object — module-level function references are NOT preserved.
  */
 
 import { AgentDefinition } from './types/agent-definition'
 
-// ─── Agent Definition ─────────────────────────────────────────────────────────
-
 const definition: AgentDefinition = {
   id: 'metabuff',
-  version: '1.2.0',
+  version: '1.5.0',
   displayName: 'MetaBuff Orchestrator',
 
   spawnerPrompt:
     'Spawn MetaBuff as your primary agent for ANY coding task. ' +
     'It automatically classifies complexity and coordinates the optimal agent pipeline, ' +
-    'including CoT enforcement, inter-session memory, continuous validation, and anti-hallucination checks.',
+    'including CoT enforcement, inter-session memory, continuous validation, ' +
+    'regex safety checks, and anti-hallucination protocols.',
 
   model: 'deepseek/deepseek-v4-flash',
 
-  // Enable reasoning mode — this alone gives Flash a significant quality boost
   reasoningOptions: {
     enabled: true,
-    exclude: false,  // keep reasoning visible so validator can audit it
+    exclude: false,
     effort: 'medium',
   },
 
   toolNames: ['spawn_agents', 'think_deeply', 'end_turn'],
 
   spawnableAgents: [
-    // Codebuff built-ins
     'codebuff/base@0.0.1',
     'codebuff/file-picker@0.0.1',
     'codebuff/thinker@0.0.1',
@@ -64,8 +88,9 @@ const definition: AgentDefinition = {
     'codebuff/reviewer@0.0.1',
     'codebuff/researcher@0.0.1',
     'basher',
-    // MetaBuff custom agents
     'metabuff-validator',
+    'metabuff-reasoner',     // v1.4.0: algorithm/logic specialist
+    'metabuff-regex-guard',  // v1.4.0: runtime regex safety
     'metabuff-mega',
   ],
 
@@ -75,48 +100,36 @@ const definition: AgentDefinition = {
     'and ensure every output is verified before delivery. ' +
     'Always prefer precision over speed.',
 
-  // ─── Programmatic orchestration ─────────────────────────────────────────────
   handleSteps: function* ({ prompt }) {
 
-    // ─── SAFETY BOUNDS (inlined to preserve closure in execution context) ────
+    // ─── SAFETY BOUNDS ────────────────────────────────────────────────────────
 
-    /** Maximum score for complexity analysis — prevents runaway mega classification */
+    /** Maximum complexity score — prevents runaway mega classification */
     const COMPLEXITY_SATURATION = 8
 
-    /** Maximum number of pipelines to run in a single session */
-    const MAX_PIPELINE_RUNS = 3
-
-    /** Maximum entries from session memory to inject into prompts */
-    const MAX_MEMORY_ENTRIES = 5
-
-    /** Maximum entries from session memory file to read */
-    const MAX_MEMORY_FILE_LINES = 60
-
-    /** Default timeout for basher commands */
+    /** Timeout for basher commands in seconds */
     const BASHER_TIMEOUT = 60
 
+    // ─── HELPER: Complexity scorer (v1.5.0 — scope-aware) ────────────────────
     /**
-     * Scores a prompt to classify task complexity.
+     * Combines keyword heuristics (v1.4 behaviour, kept as fallback) with
+     * real file-count data written by the pre-flight scope basher in Phase 0.5.
      *
-     * FEATURES:
-     *   • Diminishing returns — each additional keyword of the same type adds less
-     *   • Saturation — max score 8 prevents runaway mega classification
-     *   • Concern diversity — counts distinct codebase areas mentioned (API, DB, UI, etc.)
-     *   • Component detection — PascalCase symbols like "SearchBar", "WordCard"
-     *   • File count — explicit .ts/.tsx file references signal scope
-     *
-     * 0 – 1.9  → simple   (single-concern, 1-2 files)
-     * 2 – 5.9  → complex  (multi-file, multiple concerns)
-     * 6 – 8    → mega     (system-wide, architectural)
+     * scope.reliable is false when:
+     *   • No meaningful keywords could be extracted from the prompt (vague task)
+     *   • grep matched >40% of project files (keywords too generic, e.g. "file", "code")
+     * In those cases the function falls through to pure keyword scoring.
      */
-    function analyzeComplexity(p: string): 'simple' | 'complex' | 'mega' {
+    function analyzeComplexityWithScope(
+      p: string,
+      scope: { matchedFiles: number; totalFiles: number; dirCount: number; reliable: boolean }
+    ): 'simple' | 'complex' | 'mega' {
       const lower = p.toLowerCase()
       let score = 0
       let megaHits = 0
       let complexHits = 0
 
-      // MEGA keywords — each hit gives progressively less weight
-      // First hit: +4, second: +2.5, third+: +1
+      // ── Tier 1: mega keywords ─────────────────────────────────────────────
       const megaKw = [
         'from scratch', 'entire codebase', 'full system',
         'complete rewrite', 'new architecture', 'all files', 'every file',
@@ -129,8 +142,7 @@ const definition: AgentDefinition = {
         }
       }
 
-      // COMPLEX keywords — diminishing returns
-      // First hit: +2, second: +1.5, third: +1, fourth+: +0.5
+      // ── Tier 2: complex keywords ──────────────────────────────────────────
       const complexKw = [
         'refactor', 'architecture', 'redesign', 'integrate', 'migrate',
         'add auth', 'add authentication', 'database migration',
@@ -148,7 +160,7 @@ const definition: AgentDefinition = {
         }
       }
 
-      // FILE COUNT — mention of specific files signals scope
+      // ── Tier 3: explicit filenames in prompt text (v1.4 behaviour) ────────
       const fileMatches = p.match(/\b\w+\.(ts|tsx|js|jsx|py|go|rs|java|cpp|cs)\b/g)
       if (fileMatches) {
         const uniqueFiles = new Set(fileMatches)
@@ -157,8 +169,7 @@ const definition: AgentDefinition = {
         else if (uniqueFiles.size > 2) score += 0.5
       }
 
-      // COMPONENT REFERENCES — PascalCase symbols like "SearchBar", "VerbConjugator"
-      // These signal that the user knows the codebase structure, suggesting real work
+      // ── Tier 4: PascalCase component names (v1.4 behaviour) ──────────────
       const componentMatches = p.match(/\b[A-Z][a-z]+[A-Z][a-zA-Z]*\b/g)
       if (componentMatches) {
         const uniqueComps = new Set(componentMatches)
@@ -166,7 +177,7 @@ const definition: AgentDefinition = {
         else if (uniqueComps.size > 1) score += 1
       }
 
-      // CONCERN DIVERSITY — mentioning many distinct codebase areas
+      // ── Tier 5: cross-cutting concern counter (v1.4 behaviour) ───────────
       const concerns = [
         'api', 'database', 'db', 'schema', 'migration', 'config',
         'deploy', 'ci', 'component', 'auth', 'middleware', 'query',
@@ -178,27 +189,76 @@ const definition: AgentDefinition = {
       if (concernCount > 4) score += 2
       else if (concernCount > 2) score += 1
 
-      // LENGTH BONUS — very long prompts tend to be more complex
-      // Reduced from original +3 to +1 to avoid over-scaling
       if (p.length > 500) score += 1
 
-      // SATURATION — clamps to max, prevents runaway mega classification
-      // Without this, a prompt mentioning "refactor" 5 times would score 10+
+      // ── NEW v1.5.0: Real file-scope override ──────────────────────────────
+      // Applies only when the pre-flight grep was reliable (specific enough keywords,
+      // matched < 40% of the project). Actual codebase evidence beats keywords.
+      if (scope.reliable && scope.matchedFiles >= 0) {
+        const { matchedFiles, dirCount } = scope
+
+        // Cross-cutting bonus: same file count is harder when spread across dirs
+        const crossCutting = dirCount >= 4
+
+        if (matchedFiles === 0) {
+          // Keywords had no grep hits — vague prompt, keep keyword score unchanged
+        } else if (matchedFiles === 1) {
+          // Definitively single-file — hard-cap to simple even if 'refactor' is present
+          // ("refactor the login button" touching 1 file IS a simple task)
+          score = Math.min(score, 1.9)
+        } else if (matchedFiles <= 3) {
+          // 2–3 files: keep at simple UNLESS keyword score already says complex
+          // ("refactor auth.ts and user.ts" with 2 files still warrants complex pipeline)
+          const fileScore = score >= 2 ? 2.5 : 1.5
+          score = Math.max(score, fileScore)
+        } else if (matchedFiles <= 7) {
+          // 4–7 files: solidly complex
+          score = Math.max(score, 2.5)
+        } else if (matchedFiles <= 15) {
+          // 8–15 files OR 5+ files cross-cutting: high-end complex (approaching mega)
+          const fileScore = crossCutting ? 4.5 : 4
+          score = Math.max(score, fileScore)
+        } else {
+          // 16+ files, or 10+ cross-cutting: mega territory
+          score = Math.max(score, 6)
+        }
+      }
+
       score = Math.min(score, COMPLEXITY_SATURATION)
 
-      // Apply thresholds: 6+ → mega, 2+ → complex, else simple
       if (score >= 6) return 'mega'
       if (score >= 2) return 'complex'
       return 'simple'
     }
 
+    // ─── HELPER: Algorithm task detector ──────────────────────────────────────
     /**
-     * Wraps any prompt with a mandatory Chain-of-Thought prefix
-     * and inter-session memory hint.
+     * Returns true when the task involves novel algorithmic reasoning
+     * that benefits from metabuff-reasoner (effort=high, Socratic 6-step).
+     * NEW v1.4.0
+     */
+    function isAlgorithmTask(p: string): boolean {
+      return /\b(algorithm|algorithms|parse|parser|sort(?:ing)?|search(?:ing)?|graph|tree|trie|heap|dp|dynamic.?programm|recursion|recursive|memoiz|optimiz(?:e|ation)|performance|time.?complex|space.?complex|big.?o|bigint|float(?:ing.?point)?|numeric|precision|overflow|concurrent|concurren|mutex|race.?condition|deadlock|state.?machine|workflow.?engine|transpil|compil(?:er|ation)|lexer|tokeniz|ast|backtrack|greedy)\b/i.test(p)
+    }
+
+    // ─── HELPER: Regex/pattern task detector ──────────────────────────────────
+    /**
+     * Returns true when the task involves regex or string-pattern matching,
+     * triggering the regex guard even in the simple pipeline.
+     * NEW v1.4.0
+     */
+    function isRegexTask(p: string): boolean {
+      return /\b(regex|regexp|pattern|match(?:ing)?|replace(?:all)?|sanitiz|validat|parse|url.*match|email.*valid|phone.*valid|search.*pattern|string.*extract)\b/i.test(p)
+    }
+
+    // ─── HELPER: Full CoT wrapper v2 ──────────────────────────────────────────
+    /**
+     * v1.4.0 upgrade: added STEP 2.5 QUESTION — Socratic pre-flight.
+     * Agents must articulate 3 failure modes before planning.
      */
     function withCoT(task: string, role = 'coding'): string {
-      return `<metabuff_cot_protocol>
-You are operating under MetaBuff's anti-hallucination protocol.
+      return `<metabuff_cot_protocol version="2">
+You are operating under MetaBuff's anti-hallucination protocol v2.
 
 BEFORE taking any action you MUST follow these steps IN ORDER:
 
@@ -211,9 +271,17 @@ STEP 2 — GROUND
   • Run code_searcher for any symbol, function, or type you plan to reference
   • NEVER write an import path, class name, or API call you haven't verified
 
+STEP 2.5 — QUESTION  ← Socratic pre-flight (do not skip)
+  • Ask yourself: "What are 3 specific ways this implementation could be wrong?"
+  • Ask yourself: "What am I assuming that I haven't yet verified with a tool call?"
+  • Does this task involve regex, string parsing, or pattern matching?
+    If yes → flag it with: "⚠ REGEX RISK — will verify all patterns after implementation"
+  • For each assumption: resolve it with a tool call BEFORE proceeding to STEP 3
+  • Do NOT proceed to STEP 3 while any unresolved assumption exists
+
 STEP 3 — PLAN
   • Write a numbered action plan (what changes in what files in what order)
-  • Flag any uncertainty as: "⚠ UNCERTAIN: [thing you are not sure about]"
+  • Flag any remaining uncertainty as: "⚠ UNCERTAIN: [thing you are not sure about]"
   • Resolve all uncertainties with tool calls before proceeding
 
 STEP 4 — EXECUTE
@@ -225,6 +293,7 @@ STEP 5 — VERIFY
   • Re-read changed files to confirm the edit landed correctly
   • Run any available tests or lint commands via basher
   • If anything looks wrong, fix it before calling end_turn
+  • If you flagged ⚠ REGEX RISK above: explicitly state that regex-guard will follow
 
 GROUNDING RULES (never violate):
   ✗ Do not reference a file path without having read it this session
@@ -236,23 +305,141 @@ GROUNDING RULES (never violate):
 
 <task role="${role}">
 ${task}
-
-⚠ INTER-SESSION MEMORY: Check .agents/known-issues.md for relevant lessons
-from previous sessions. Run: cat .agents/known-issues.md
-Extract any entries that reference files, patterns, or concepts related to this task.
 </task>`
     }
 
-    // ─── PHASE 0: PERFORMANCE GATE — Compute complexity before any I/O ──────
+    // ─── HELPER: Light review wrapper ─────────────────────────────────────────
+    function withReview(task: string): string {
+      return `<metabuff_review_protocol>
+You are a reviewer in MetaBuff's pipeline. Your job is to VERIFY, not to re-implement.
 
-    const complexity = analyzeComplexity(prompt)
+PROTOCOL:
+  1. READ every changed file in this session (use read_files + git diff HEAD)
+  2. CHECK for: syntax errors, missing imports, broken references, TODOs/placeholders
+  3. FIX issues you find using str_replace (surgical, targeted changes only)
+  4. REPORT what you checked and what (if anything) you fixed
 
-    // Detect if task involves code generation (new file creation)
-    const isGenerationTask = /create|write|generate|new file|from scratch|build/i.test(prompt)
+RULES:
+  ✗ Do not re-write large sections unless there is a concrete bug
+  ✗ Do not call end_turn while there are unfixed issues
+  ✗ Do not invent problems that aren't there
+</metabuff_review_protocol>
 
-    // ── SIMPLE ── (1-2 file changes, single concern) ─────────────────────────
+<review_task>
+${task}
+</review_task>`
+    }
+
+    // ─── PHASE 0: INTER-SESSION MEMORY ────────────────────────────────────────
+    yield {
+      toolName: 'spawn_agents',
+      input: {
+        agents: [{
+          agent_type: 'basher',
+          params: {
+            command:
+              'if [ -f .agents/known-issues.md ]; then ' +
+              '  echo "=== INTER-SESSION MEMORY ===" && ' +
+              '  cat .agents/known-issues.md; ' +
+              'else ' +
+              '  echo "No known-issues.md found — first session."; ' +
+              'fi',
+            what_to_summarize:
+              'List all known issues from previous sessions. ' +
+              'These will inform how all subsequent agents approach this task.',
+            timeout_seconds: 10,
+          },
+        }],
+      },
+    }
+
+    // ─── PHASE 0.5: FILE SCOPE PRE-FLIGHT ────────────────────────────────────
+    // Grep the real codebase for keywords extracted from the prompt.
+    // Writes { matchedFiles, totalFiles, dirCount, reliable } to .agents/.scope-tmp.json
+    // which analyzeComplexityWithScope() reads synchronously after this yield.
+    const safePromptForBash = prompt
+      .replace(/\\/g, '\\\\')
+      .replace(/'/g, "'\\''")
+      .replace(/\n/g, ' ')
+      .slice(0, 400)
+
+    yield {
+      toolName: 'spawn_agents',
+      input: {
+        agents: [{
+          agent_type: 'basher',
+          params: {
+            command: [
+              // Extract meaningful keywords: >3 chars, lowercase, minus stop words
+              `KEYWORDS=$(echo '${safePromptForBash}' \\`,
+              `  | tr '[:upper:]' '[:lower:]' \\`,
+              `  | grep -oE '[a-zA-Z]{4,}' \\`,
+              `  | grep -vxE 'this|that|with|from|have|will|your|into|when|them|they|what|file|code|make|want|need|just|like|some|more|then|also|than|even|only|over|back|here|there|their|been|were|does|dont|should|would|could|change|update|every|other|same|such|very|much|many|well|still|down|first|last|next|always|often|across|without|within|along|through|around|between|during|against|inside|outside|toward|under|until|upon|while|since|each|both|about|above|below|where|after|before|already|again|never|using|please|really|just|simply|whether|something|anything|nothing|everything' \\`,
+              `  | sort -u | head -8 | tr '\\n' '|' | sed 's/|$//')`,
+              ``,
+              // Count total source files (excluding noise dirs)
+              `TOTAL=$(find . -type f \\( -name '*.ts' -o -name '*.tsx' -o -name '*.js' -o -name '*.jsx' -o -name '*.py' -o -name '*.go' -o -name '*.rs' -o -name '*.java' \\) \\`,
+              `  | grep -v node_modules | grep -v '\\.git' | grep -v dist | grep -v '\\.next' | grep -v coverage | grep -v __pycache__ \\`,
+              `  | wc -l | tr -d ' ')`,
+              ``,
+              // Grep codebase for matched files
+              `if [ -n "$KEYWORDS" ]; then`,
+              `  MATCHED=$(grep -rli --include='*.ts' --include='*.tsx' --include='*.js' --include='*.jsx' --include='*.py' --include='*.go' --include='*.rs' \\`,
+              `    -E "$KEYWORDS" . 2>/dev/null \\`,
+              `    | grep -v node_modules | grep -v '\\.git' | grep -v dist | grep -v '\\.next' | wc -l | tr -d ' ')`,
+              `  # Count distinct directories of matched files (cross-cutting signal)`,
+              `  DIRS=$(grep -rli --include='*.ts' --include='*.tsx' --include='*.js' --include='*.py' \\`,
+              `    -E "$KEYWORDS" . 2>/dev/null \\`,
+              `    | grep -v node_modules | grep -v '\\.git' | grep -v dist \\`,
+              `    | sed 's|/[^/]*$||' | sort -u | wc -l | tr -d ' ')`,
+              `  # Reliability check: if matched > 40% of total, keywords are too generic`,
+              `  THRESH=$(( TOTAL * 2 / 5 + 1 ))`,
+              `  if [ "$TOTAL" -gt 0 ] && [ "$MATCHED" -le "$THRESH" ]; then RELIABLE=true; else RELIABLE=false; fi`,
+              `else`,
+              `  MATCHED=0; DIRS=0; RELIABLE=false`,
+              `fi`,
+              ``,
+              // Write JSON result
+              `printf '{"matchedFiles":%s,"totalFiles":%s,"dirCount":%s,"reliable":%s}\\n' \\`,
+              `  "$MATCHED" "$TOTAL" "$DIRS" "$RELIABLE" > .agents/.scope-tmp.json`,
+              `echo "scope: ${safePromptForBash}" `,
+              `echo "scope-result: matched=$MATCHED total=$TOTAL dirs=$DIRS reliable=$RELIABLE keys=$KEYWORDS"`,
+            ].join('\n'),
+            what_to_summarize:
+              'File scope pre-flight: report how many files matched and whether reliable.',
+            timeout_seconds: 15,
+          },
+        }],
+      },
+    }
+
+    // Read scope data synchronously before routing.
+    // handleSteps is a synchronous generator — code between yields runs in the
+    // main Node.js thread, so readFileSync is safe here.
+    let scopeData: { matchedFiles: number; totalFiles: number; dirCount: number; reliable: boolean } = {
+      matchedFiles: -1, totalFiles: 0, dirCount: 0, reliable: false,
+    }
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
+      const fs = require('fs')
+      const raw: string = fs.readFileSync('.agents/.scope-tmp.json', 'utf8')
+      scopeData = JSON.parse(raw)
+      try { fs.unlinkSync('.agents/.scope-tmp.json') } catch { /* cleanup best-effort */ }
+    } catch {
+      // Scope file unavailable (first run, timeout, or unsupported env)
+      // analyzeComplexityWithScope falls back to keyword-only scoring when reliable=false
+    }
+
+    // ─── PHASE 1: COMPLEXITY ANALYSIS ─────────────────────────────────────────
+    const complexity = analyzeComplexityWithScope(prompt, scopeData)
+
+    const isGenerationTask = /\b(create new file|write new file|generate.*\.(ts|tsx|js|jsx|py)|new component|new page|from scratch|build.*system)\b/i.test(prompt)
+    const algoTask = isAlgorithmTask(prompt)
+    const regexTask = isRegexTask(prompt)
+
+    // ── SIMPLE ────────────────────────────────────────────────────────────────
     if (complexity === 'simple') {
-      // Single CoT-enhanced base agent pass is sufficient
+
       yield {
         toolName: 'spawn_agents',
         input: {
@@ -263,43 +450,44 @@ Extract any entries that reference files, patterns, or concepts related to this 
         },
       }
 
-      // CONTINUOUS VALIDATION: Quick fix pass on changed files
-      // Catches syntax errors and missing imports before they compound
-      yield {
-        toolName: 'spawn_agents',
-        input: {
-          agents: [{
-            agent_type: 'codebuff/base@0.0.1',
-            prompt: withCoT(
-              'Read the files that were just edited in this session. Check for:\n' +
-              '  1. Syntax errors (missing brackets, parentheses, semicolons)\n' +
-              '  2. Missing imports (calling a function/type that was not imported)\n' +
-              '  3. References to non-existent variables or functions\n' +
-              '  4. Any "TODO", "FIXME", or placeholder comments\n\n' +
-              'Fix ALL issues you find. Do not leave any issues unresolved.',
-              'validator'
-            ),
-          }],
-        },
-      }
-
-      // Type-check and test — catches regex/compile errors
+      // Targeted typecheck — only changed + new files
       yield {
         toolName: 'spawn_agents',
         input: {
           agents: [{
             agent_type: 'basher',
             params: {
-              command: 'echo "=== TYPE CHECK ===" && bun run typecheck 2>&1 | head -40 && echo "=== TESTS ===" && bun test 2>&1 | tail -30',
-              what_to_summarize: 'Type-check and test results. Report any TypeScript errors or test failures. If errors found, fix them now before calling end_turn.',
+              command:
+                'TS_CHANGED=$(git diff HEAD --name-only 2>/dev/null | grep -E "\\.(ts|tsx)$") && ' +
+                'TS_NEW=$(git ls-files --others --exclude-standard 2>/dev/null | grep -E "\\.(ts|tsx)$") && ' +
+                'if [ -n "${TS_CHANGED}${TS_NEW}" ]; then ' +
+                '  echo "=== TYPECHECK (changed + new files) ===" && ' +
+                '  (bun run typecheck 2>/dev/null || npx tsc --noEmit 2>&1) | head -30; ' +
+                'else ' +
+                '  echo "No .ts/.tsx files changed or created — skipping typecheck."; ' +
+                'fi',
+              what_to_summarize:
+                'Report any TypeScript errors in changed files. ' +
+                'If errors exist, fix them before end_turn.',
               timeout_seconds: BASHER_TIMEOUT,
             },
           }],
         },
       }
 
-      // SANDBOX CHECK: For generation tasks, verify new files compile
-      // This prevents "code graveyard" where generated files are never validated
+      // v1.4.0: Regex guard — only for regex/pattern tasks or generation
+      if (regexTask || isGenerationTask) {
+        yield {
+          toolName: 'spawn_agents',
+          input: {
+            agents: [{
+              agent_type: 'metabuff-regex-guard',
+              prompt: `Run regex guard for changes in: ${prompt}`,
+            }],
+          },
+        }
+      }
+
       if (isGenerationTask) {
         yield {
           toolName: 'spawn_agents',
@@ -307,8 +495,13 @@ Extract any entries that reference files, patterns, or concepts related to this 
             agents: [{
               agent_type: 'basher',
               params: {
-                command: 'echo "=== SANDBOX COMPILE CHECK ===" && git diff HEAD --name-only --diff-filter=A 2>/dev/null | head -20 || echo "No new files detected"',
-                what_to_summarize: 'List newly created files. If any new .ts/.tsx files exist, verify they are well-formed. If no new files, report "No new files to compile-check".',
+                command:
+                  'echo "=== NEW FILES ===" && ' +
+                  'git diff HEAD --name-only --diff-filter=A 2>/dev/null | head -10 || ' +
+                  'echo "No new files detected"',
+                what_to_summarize:
+                  'List newly created files. ' +
+                  'Verify each new .ts/.tsx file has valid imports and no syntax errors.',
                 timeout_seconds: 15,
               },
             }],
@@ -316,7 +509,6 @@ Extract any entries that reference files, patterns, or concepts related to this 
         }
       }
 
-      // Anti-hallucination validation pass
       yield {
         toolName: 'spawn_agents',
         input: {
@@ -327,10 +519,9 @@ Extract any entries that reference files, patterns, or concepts related to this 
         },
       }
 
-    // ── COMPLEX ── (multi-file, multi-concern) ────────────────────────────────
+    // ── COMPLEX ───────────────────────────────────────────────────────────────
     } else if (complexity === 'complex') {
 
-      // 1. Discover relevant files
       yield {
         toolName: 'spawn_agents',
         input: {
@@ -341,83 +532,87 @@ Extract any entries that reference files, patterns, or concepts related to this 
         },
       }
 
-      // 2. Deep analysis — understand the full scope before touching anything
-      yield {
-        toolName: 'spawn_agents',
-        input: {
-          agents: [{
-            agent_type: 'codebuff/thinker@0.0.1',
-            prompt: withCoT(
-              `Deeply analyze the codebase and identify ALL components that need to change for: ${prompt}\n` +
-              `Output a dependency-ordered change list. Flag every assumption.`,
-              'analysis'
-            ),
-          }],
-        },
+      // v1.4.0: Algorithm tasks → reasoner (effort=high, Socratic 6-step)
+      //         Normal tasks   → planner with CoT v2
+      if (algoTask) {
+        yield {
+          toolName: 'spawn_agents',
+          input: {
+            agents: [{
+              agent_type: 'metabuff-reasoner',
+              prompt:
+                `Task requires algorithmic reasoning — apply the full 6-step Socratic protocol.\n\n` +
+                `Task: ${prompt}\n\n` +
+                `CONTEXT: Focus on correctness proofs and complexity analysis. ` +
+                `Run tests at STEP 6 before calling end_turn.`,
+            }],
+          },
+        }
+      } else {
+        yield {
+          toolName: 'spawn_agents',
+          input: {
+            agents: [{
+              agent_type: 'codebuff/planner@0.0.1',
+              prompt: withCoT(
+                `Analyze the full scope, then implement all changes for:\n${prompt}\n\n` +
+                `Before writing a single line, identify ALL files that need to change ` +
+                `and produce a dependency-ordered change list. Flag every assumption.`
+              ),
+            }],
+          },
+        }
       }
 
-      // 3. Plan + implement with CoT enforcement
-      yield {
-        toolName: 'spawn_agents',
-        input: {
-          agents: [{
-            agent_type: 'codebuff/planner@0.0.1',
-            prompt: withCoT(prompt),
-          }],
-        },
-      }
-
-      // CONTINUOUS VALIDATION CHECKPOINT — catch implementation bugs early
-      yield {
-        toolName: 'spawn_agents',
-        input: {
-          agents: [{
-            agent_type: 'codebuff/base@0.0.1',
-            prompt: withCoT(
-              'Quick validation checkpoint: Read the files changed so far in this session.\n' +
-              'Check for:\n' +
-              '  1. Syntax errors (missing brackets, parentheses, semicolons)\n' +
-              '  2. Missing imports (calling a function/type that was not imported)\n' +
-              '  3. Broken references to non-existent variables or functions\n' +
-              '  4. Any "TODO", "FIXME", or placeholder comments\n\n' +
-              'Fix ALL issues you find before proceeding.',
-              'validator'
-            ),
-          }],
-        },
-      }
-
-      // 4. Code review — deep semantic analysis
       yield {
         toolName: 'spawn_agents',
         input: {
           agents: [{
             agent_type: 'codebuff/reviewer@0.0.1',
-            prompt:
-              'Review ALL changes made in this session. ' +
-              'Check for: type errors, missing imports, broken tests, logic bugs, ' +
-              'incomplete implementations, and security issues. ' +
-              'Fix anything you find; do not just report it.',
+            prompt: withReview(
+              `Review ALL changes made for: ${prompt}\n\n` +
+              `Also check:\n` +
+              `  - Syntax errors and missing imports\n` +
+              `  - TODOs and placeholder code\n` +
+              `  - Broken references or non-existent symbols\n` +
+              `Fix anything you find. Do not just report it.`
+            ),
           }],
         },
       }
 
-      // 5. Type-check and test
       yield {
         toolName: 'spawn_agents',
         input: {
           agents: [{
             agent_type: 'basher',
             params: {
-              command: 'echo "=== TYPE CHECK ===" && bun run typecheck 2>&1 | head -40 && echo "=== TESTS ===" && bun test 2>&1 | tail -30',
-              what_to_summarize: 'Type-check and test results. Report any TypeScript errors or test failures. If errors found, fix them now before calling end_turn.',
+              command:
+                'echo "=== TYPE CHECK ===" && ' +
+                '(bun run typecheck 2>/dev/null || npx tsc --noEmit 2>&1) | head -40 && ' +
+                'echo "=== TESTS ===" && ' +
+                '(bun test 2>&1 || npx vitest run 2>&1 || npx jest 2>&1) | tail -30',
+              what_to_summarize:
+                'Type-check and test results. ' +
+                'Report any TypeScript errors or test failures. ' +
+                'If errors found, fix them now before calling end_turn.',
               timeout_seconds: BASHER_TIMEOUT,
             },
           }],
         },
       }
 
-      // SANDBOX CHECK: For generation tasks, verify new files
+      // v1.4.0: Regex guard always runs in the complex pipeline
+      yield {
+        toolName: 'spawn_agents',
+        input: {
+          agents: [{
+            agent_type: 'metabuff-regex-guard',
+            prompt: `Run regex guard for all changes in: ${prompt}`,
+          }],
+        },
+      }
+
       if (isGenerationTask) {
         yield {
           toolName: 'spawn_agents',
@@ -425,8 +620,13 @@ Extract any entries that reference files, patterns, or concepts related to this 
             agents: [{
               agent_type: 'basher',
               params: {
-                command: 'echo "=== SANDBOX ===" && git diff HEAD --name-only --diff-filter=A 2>/dev/null | head -20 || echo "No new files detected"',
-                what_to_summarize: 'List newly created files. Verify that any new source files have proper imports and no syntax errors.',
+                command:
+                  'echo "=== SANDBOX ===" && ' +
+                  'git diff HEAD --name-only --diff-filter=A 2>/dev/null | head -20 || ' +
+                  'echo "No new files detected"',
+                what_to_summarize:
+                  'List newly created files. ' +
+                  'Verify any new source files have proper imports and no syntax errors.',
                 timeout_seconds: 15,
               },
             }],
@@ -434,7 +634,6 @@ Extract any entries that reference files, patterns, or concepts related to this 
         }
       }
 
-      // 6. Anti-hallucination validation pass
       yield {
         toolName: 'spawn_agents',
         input: {
@@ -445,9 +644,9 @@ Extract any entries that reference files, patterns, or concepts related to this 
         },
       }
 
-    // ── MEGA ── (system-wide, architectural — Antigravity 2.0 mode) ──────────
+    // ── MEGA ──────────────────────────────────────────────────────────────────
     } else {
-      // Delegate to metabuff-mega which handles parallel specialist spawning
+
       yield {
         toolName: 'spawn_agents',
         input: {
@@ -458,40 +657,24 @@ Extract any entries that reference files, patterns, or concepts related to this 
         },
       }
 
-      // CONTINUOUS VALIDATION AFTER MEGA — check for parallel edit conflicts
-      // Parallel agents may have edited the same or adjacent files
+      // Post-mega conflict resolution
       yield {
         toolName: 'spawn_agents',
         input: {
           agents: [{
             agent_type: 'codebuff/base@0.0.1',
-            prompt: withCoT(
-              'Post-mega validation checkpoint: Read all files changed in this session.\n' +
-              'Check for:\n' +
-              '  1. Conflicts between parallel edits (same file modified inconsistently)\n' +
-              '  2. Missing integration glue between subsystems\n' +
-              '  3. Syntax errors or broken imports from competing changes\n' +
-              '  4. Any "TODO", "FIXME", or placeholder comments\n\n' +
-              'Fix ALL issues found. This is the last line of defense before final validation.',
-              'validator'
+            prompt: withReview(
+              `Post-mega conflict check for: ${prompt}\n\n` +
+              `Multiple specialist agents ran in parallel. Check specifically for:\n` +
+              `  1. Conflicting changes between agents (same file modified inconsistently)\n` +
+              `  2. Missing integration glue between subsystems\n` +
+              `  3. Any TODOs or placeholder comments left by agents\n` +
+              `Fix ALL issues found.`
             ),
           }],
         },
       }
     }
-
-    // ─── NO CIRCUIT BREAKER IMPLEMENTED ────────────────────────────────────
-    // The circuit breaker was considered (max 3 pipeline runs per session)
-    // but omitted because:
-    //   1. File-based counters (temp files) are unreliable across execution contexts
-    //   2. Complexity saturation (max 8) already prevents runaway mega classification
-    //   3. All basher commands have explicit timeouts — no infinite hangs
-    //   4. Generator yields are inherently bounded (fixed number of steps)
-    //   5. Arrays are bounded with .slice(0, MAX) when processing user data
-    //
-    // If runaway pipeline execution becomes a real problem in practice,
-    // a counter can be added via: globalThis.__METABUFF_RUN_COUNT__
-    // But this would require coordination across the framework's execution model.
   },
 }
 

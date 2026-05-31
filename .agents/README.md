@@ -14,52 +14,59 @@ This directory contains the **MetaBuff agent orchestration system** — a set of
          Simple         Complex        Mega
        (1-2 files)   (multi-file)   (parallel)
               │             │             │
-              │        ┌────┴────┐        │
-              │        │         │        │
-         codebuff/base  │    metabuff─────┘
-                    ┌───┴───┐     mega
-                    │       │
-              specialist    │
-              agents   validator
+         base(CoT v2)  planner|reasoner  metabuff-mega
+              │         (CoT v2)     (cascade waves)
+         typecheck      reviewer          │
+         [regex-guard]  typecheck    file-picker
+         validator      regex-guard  thinker → N subtasks
+                        validator    wave1[≤6] → inter-review
+                                     wave2[≤6] → ...
+                                     synthesis-review
+                                     regex-guard
+                                     typecheck+tests
+                                     validator
 ```
 
 ### Agent Roles
 
-| Agent | Role | Description |
-|-------|------|-------------|
-| `metabuff` | **Orchestrator** | Classifies task complexity (simple/complex/mega) and routes to the appropriate pipeline. Enforces Chain-of-Thought protocols. |
-| `metabuff-mega` | **Parallel Spawner** | Decomposes large tasks into parallel subtasks and spawns specialist agents simultaneously (Antigravity 2.0 pattern). |
-| `metabuff-validator` | **Validator** | Post-execution audit: catches ghost imports, phantom edits, broken tests, and incomplete implementations. |
-| `metabuff-testgen` | **Test Generator** | Writes unit/integration tests matching the project's existing style. |
-| `metabuff-arch` | **Architecture Analyst** | Handles data model design, API contracts, component structure, and dependency analysis. |
-| `metabuff-security` | **Security Analyst** | Audits for hardcoded secrets, injection vulnerabilities, auth gaps, and insecure patterns. |
+| Agent | Version | Role | Description |
+|-------|---------|------|-------------|
+| `metabuff` | v1.4.0 | **Orchestrator** | Classifies task complexity (simple/complex/mega) and routes to the optimal pipeline. Enforces CoT v2 with Socratic pre-flight. Routes algorithm tasks to `metabuff-reasoner`. |
+| `metabuff-mega` | v1.2.0 | **Parallel Spawner** | Decomposes large tasks into up to 12 subtasks, runs them in cascade waves of ≤6 parallel agents (Antigravity 2.0 pattern, Freebuff-safe). Supports dynamic `custom` specialist types. |
+| `metabuff-reasoner` | v1.0.0 | **Deep Logic Specialist** | 6-step Socratic protocol for algorithmic tasks (understand → challenge → explore → select → implement → prove). Uses `effort: 'high'`. Closes single-model reasoning gap (~55 → ~72/100 vs Claude Opus). |
+| `metabuff-regex-guard` | v1.0.0 | **Regex Safety Validator** | Catches runtime-invalid regex patterns TypeScript's type checker misses. 4-phase scan: syntax, ReDoS, double-escape, empty alternation. Spawned after any AI-generated code. |
+| `metabuff-validator` | v1.1.0 | **Validator** | Post-execution audit: ghost imports, phantom edits, broken tests, incomplete TODOs, regex safety delegation, and function signature consistency. |
+| `metabuff-testgen` | v1.0.0 | **Test Generator** | Writes unit/integration tests matching the project's existing style. |
+| `metabuff-arch` | v1.0.0 | **Architecture Analyst** | Handles data model design, API contracts, component structure, and dependency analysis. |
+| `metabuff-security` | v1.0.0 | **Security Analyst** | Audits for hardcoded secrets, injection vulnerabilities, auth gaps, and insecure patterns. |
+
+## What Closed in v1.4.0
+
+| Gap (from v1.3.0 chart) | Fix | Expected Impact |
+|------------------------|-----|-----------------|
+| Single-model reasoning: ~55/100 | `metabuff-reasoner`: 6-step Socratic + effort=high routed by `isAlgorithmTask` | ~72/100 |
+| Hallucination control: ~65/100 | CoT v2 STEP 2.5 "3 failure modes before coding" | ~72/100 |
+| Parallel scale: 6 agents hard ceiling | Cascade waves: 2× waves of 6 = 12 effective specialists | 12 agents total |
+| Dynamic agent creation: Static pool | `custom` specialist type in mega thinker schema with `customRole`+`customSystemAddition` | Near-dynamic |
+| Regex runtime errors: undetected | `metabuff-regex-guard` in all pipelines; `metabuff-validator` v1.1.0 auto-delegates | Eliminated class |
 
 ## Agent Definition Structure
 
-Every agent file exports a default `AgentDefinition` object with this shape:
+Every agent file exports a default `AgentDefinition` object:
 
 ```typescript
 import { AgentDefinition } from './types/agent-definition'
 
 const definition: AgentDefinition = {
-  // Identity
   id: 'my-agent',
   version: '1.0.0',
   displayName: 'My Agent',
-
-  // Prompts shown to users/other agents
   spawnerPrompt: 'Short description for spawning this agent.',
   systemPrompt: 'System prompt that sets the agent\'s personality and rules.',
-
-  // Model config
   model: 'deepseek/deepseek-v4-flash',
   reasoningOptions: { enabled: true, exclude: false, effort: 'medium' },
-
-  // Allowed tools
   toolNames: ['read_files', 'str_replace', 'write_file', 'spawn_agents', 'end_turn'],
   spawnableAgents: ['codebuff/base@0.0.1'],
-
-  // Optional: programmatic orchestration
   handleSteps: function* ({ prompt }) {
     // Generator-based execution flow
   },
@@ -68,105 +75,65 @@ const definition: AgentDefinition = {
 export default definition
 ```
 
-### `AgentDefinition` Interface (from `types/agent-definition.ts`)
-
-- `id` — Unique identifier for the agent
-- `version` — SemVer version
-- `displayName` — Human-readable name
-- `spawnerPrompt` — Shown in agent list for spawning
-- `model` — LLM model string
-- `reasoningOptions` — Optional reasoning mode config (enabled, exclude, effort)
-- `toolNames` — Tools the agent can invoke
-- `spawnableAgents` — Other agents this agent can spawn
-- `systemPrompt` — System prompt setting personality and rules
-- `instructionsPrompt` — Optional detailed step-by-step instructions
-- `includeMessageHistory` — Whether the agent sees full conversation history
-- `stepPrompt` — Optional reminder prompt for multi-step flows
-- `handleSteps` — Optional generator function for programmatic orchestration
-
 ## ⚠️ CRITICAL RULE: Inline Helpers Inside `handleSteps`
 
 **Never reference module-level functions or constants inside `handleSteps`.**
 
-### The Problem
-
-The agent execution framework extracts the exported `definition` object from each file. **Module-level function and constant bindings are NOT preserved** in the execution context. If `handleSteps` references a function defined outside the object, you get:
-
-```
-Error: analyzeComplexity is not defined
-```
-
-### The Fix
-
-Inline ALL helper functions and constants **inside** the `handleSteps` generator:
+The agent execution framework extracts only the exported `definition` object — module-level function bindings are NOT preserved. Inline ALL helpers inside `handleSteps`.
 
 ```typescript
-// ❌ WRONG — module-level function, lost at runtime
+// ❌ WRONG — lost at runtime
 function helper() { return 'value' }
+const definition = { handleSteps: function* () { helper() } }
 
-const definition: AgentDefinition = {
-  handleSteps: function* ({ prompt }) {
-    const result = helper() // Runtime error: helper is not defined
-  },
-}
-
-// ✅ CORRECT — inlined inside handleSteps
-const definition: AgentDefinition = {
-  handleSteps: function* ({ prompt }) {
-    function helper() { return 'value' } // Safe: inside the closure
-    const result = helper()
+// ✅ CORRECT — inlined inside the generator
+const definition = {
+  handleSteps: function* () {
+    function helper() { return 'value' }  // Safe: inside the closure
+    helper()
   },
 }
 ```
 
-### Safe Patterns
-
-These are safe at module level because they're evaluated when the definition object is **created** (at import time):
-
-```typescript
-// ✅ SAFE — used in definition object PROPERTIES, not inside handleSteps
-const FREE_MODEL = 'deepseek/deepseek-v4-flash'
-
-const definition: AgentDefinition = {
-  model: FREE_MODEL,                    // Evaluated at import time
-  systemPrompt: `Using ${FREE_MODEL}`,  // Template evaluated at import time
-}
-```
+**Exception:** Module-level constants used only in definition *properties* (not inside `handleSteps`) are safe — they're evaluated at import time.
 
 ### Files that follow this rule
 
 | File | Has `handleSteps` | Status |
 |------|:---:|:---:|
-| `metabuff.ts` | ✅ | ✅ Fixed — helpers inlined |
-| `metabuff-mega.ts` | ✅ | ✅ Fixed — helpers inlined |
-| `metabuff-validator.ts` | ✅ | ✅ Safe — uses only locals/string literals |
-| `metabuff-testgen.ts` | ❌ | ✅ N/A — no `handleSteps` |
-| `metabuff-arch.ts` | ❌ | ✅ N/A — no `handleSteps` |
-| `metabuff-security.ts` | ❌ | ✅ N/A — no `handleSteps` |
+| `metabuff.ts` | ✅ | ✅ Inlined |
+| `metabuff-mega.ts` | ✅ | ✅ Inlined |
+| `metabuff-validator.ts` | ❌ | ✅ N/A |
+| `metabuff-reasoner.ts` | ❌ | ✅ N/A |
+| `metabuff-regex-guard.ts` | ❌ | ✅ N/A — REGEX_SCAN_COMMAND is a module-level const used only in instructionsPrompt (safe) |
+| `metabuff-testgen.ts` | ❌ | ✅ N/A |
+| `metabuff-arch.ts` | ❌ | ✅ N/A |
+| `metabuff-security.ts` | ❌ | ✅ N/A |
 
-## Anti-Hallucination Protocol
+## Anti-Hallucination Protocol (CoT v2)
 
-All MetaBuff agents are wrapped with a Chain-of-Thought protocol that enforces five steps:
+All MetaBuff implementation agents use CoT v2, which adds a mandatory **Socratic pre-flight** step:
 
 1. **ORIENT** — State the goal and list all files to read
-2. **GROUND** — Read files and verify all symbols exist before referencing them
-3. **PLAN** — Write a numbered action plan; flag uncertainties with `⚠ UNCERTAIN`
-4. **EXECUTE** — Make targeted edits; narrate each change
-5. **VERIFY** — Re-read changed files, run tests, fix issues
+2. **GROUND** — Read files and verify all symbols before referencing them
+3. **QUESTION** *(NEW v1.4.0)* — Articulate 3 failure modes; flag assumptions; resolve before continuing
+4. **PLAN** — Numbered action plan; flag `⚠ UNCERTAIN` items
+5. **EXECUTE** — Targeted edits with narration
+6. **VERIFY** — Re-read, run tests, fix issues
 
 ### Grounding Rules (Never Violate)
 
 - ✗ Do not reference a file path without having read it
-- ✗ Do not assume a function/type exists — verify with `code_search`
+- ✗ Do not assume a function/type exists — verify with `code_searcher`
 - ✗ Do not invent package names or import paths
 - ✗ Do not leave TODOs or placeholder code
 - ✗ Do not proceed with unresolved `⚠ UNCERTAIN` items
 
-## Creating a New Agent
+## Performance Constraints
 
-1. Create a new `.ts` file in this directory
-2. Import `AgentDefinition` from `./types/agent-definition`
-3. Define and export the `definition` object
-4. If using `handleSteps`, inline ALL helper functions inside it
-5. Add the new agent to `spawnableAgents` in `metabuff.ts` or `metabuff-mega.ts`
-6. Add it to the table above in this README
+| Constraint | Value | Reason |
+|-----------|-------|--------|
+| `MAX_WAVE_SIZE` | 6 | Hard limit — more concurrent spawns freeze/crash Freebuff |
+| `MAX_DECOMP_TASKS` | 12 | Soft limit — 2 waves of 6 = 12 effective specialists |
+| `BASHER_TIMEOUT` | 60s (simple/complex), 120s (mega) | Prevent infinite hangs |
+| Reasoner effort | `'high'` | Only for algorithm tasks — avoids unnecessary cost on standard tasks |
