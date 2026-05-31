@@ -23,6 +23,7 @@ type Submission = {
   id: number;
   word: string;
   definition: string;
+  tagalog: string | null;
   pos: string | null;
   dialect: string | null;
   pronunciation: string | null;
@@ -40,6 +41,7 @@ type Submission = {
 type EditFormData = {
   word: string;
   definition: string;
+  tagalog: string;
   pos: string;
   dialect: string;
   pronunciation: string;
@@ -54,6 +56,7 @@ type OriginalWordData = {
   pos: string | null;
   pronunciation: string | null;
   definition: string | null;
+  tagalog: string | null;
   dialect: string | null;
   example_bikol: string | null;
   example_english: string | null;
@@ -63,6 +66,7 @@ type OriginalWordData = {
 const DIFF_FIELDS: { key: keyof OriginalWordData; label: string }[] = [
   { key: "word", label: "Bikol Word" },
   { key: "definition", label: "Definition" },
+  { key: "tagalog", label: "Tagalog" },
   { key: "pos", label: "Part of Speech" },
   { key: "dialect", label: "Dialect" },
   { key: "pronunciation", label: "Pronunciation" },
@@ -104,6 +108,7 @@ function DiffRow({ label, original, proposed }: { label: string; original: strin
 const emptyEditForm = (sub: Submission): EditFormData => ({
   word: sub.word,
   definition: sub.definition,
+  tagalog: sub.tagalog || "",
   pos: sub.pos || "",
   dialect: sub.dialect || "",
   pronunciation: sub.pronunciation || "",
@@ -258,6 +263,7 @@ export default function AdminSubmissionsPage() {
           id: editTarget.id,
           word: editForm.word.trim(),
           definition: editForm.definition.trim(),
+          tagalog: editForm.tagalog.trim() || null,
           pos: editForm.pos || null,
           dialect: editForm.dialect || null,
           pronunciation: editForm.pronunciation || null,
@@ -677,6 +683,11 @@ export default function AdminSubmissionsPage() {
                           {sub.pronunciation && (
                             <span>🔊 {sub.pronunciation}</span>
                           )}
+                          {sub.tagalog && (
+                            <span className="text-blue-500">
+                              🇵🇭 {sub.tagalog}
+                            </span>
+                          )}
                           {sub.example_bikol && (
                             <span className="italic">
                               &ldquo;{sub.example_bikol}&rdquo;
@@ -873,6 +884,21 @@ export default function AdminSubmissionsPage() {
                       })
                     }
                     className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm min-h-[80px]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">
+                    Tagalog Definition
+                  </label>
+                  <textarea
+                    value={editForm.tagalog}
+                    onChange={(e) =>
+                      setEditForm({
+                        ...editForm,
+                        tagalog: e.target.value,
+                      })
+                    }
+                    className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm min-h-[60px]"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-3">

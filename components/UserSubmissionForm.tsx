@@ -3,11 +3,12 @@ import React, { useState, useRef, useCallback } from "react";
 import { Send, CheckCircle2, AlertCircle, X } from "lucide-react";
 import SpecialCharToolbar from "./SpecialCharToolbar";
 
-type FormField = "word" | "definition" | "pronunciation" | "example_bikol" | "example_english";
+type FormField = "word" | "definition" | "tagalog" | "pronunciation" | "example_bikol" | "example_english";
 
 type FormData = {
   word: string;
   definition: string;
+  tagalog: string;
   pos: string;
   dialect: string;
   pronunciation: string;
@@ -19,6 +20,7 @@ type FormData = {
 const INITIAL_FORM: FormData = {
   word: "",
   definition: "",
+  tagalog: "",
   pos: "",
   dialect: "General Bikol",
   pronunciation: "",
@@ -70,9 +72,12 @@ export default function UserSubmissionForm() {
   const exampleBikolRef = useRef<HTMLInputElement>(null);
   const exampleEnglishRef = useRef<HTMLInputElement>(null);
 
+  const tagalogRef = useRef<HTMLTextAreaElement>(null);
+
   const fieldRefs: Record<FormField, React.RefObject<HTMLInputElement | HTMLTextAreaElement | null>> = {
     word: wordRef,
     definition: definitionRef,
+    tagalog: tagalogRef,
     pronunciation: pronunciationRef,
     example_bikol: exampleBikolRef,
     example_english: exampleEnglishRef,
@@ -99,7 +104,9 @@ export default function UserSubmissionForm() {
           ? "exampleBikol"
           : activeField === "example_english"
             ? "exampleEnglish"
-            : activeField;
+            : activeField === "tagalog"
+              ? "tagalog"
+              : activeField;
 
       const current = formData[fieldKey as keyof FormData];
       const newValue = current.slice(0, start) + char + current.slice(end);
@@ -148,6 +155,7 @@ export default function UserSubmissionForm() {
         body: JSON.stringify({
           word: formData.word.trim(),
           definition: formData.definition.trim(),
+          tagalog: formData.tagalog.trim() || null,
           pos: formData.pos || null,
           dialect: formData.dialect === "General Bikol" ? null : formData.dialect,
           pronunciation: formData.pronunciation.trim() || null,
@@ -254,6 +262,24 @@ export default function UserSubmissionForm() {
             onChange={(e) => updateField("definition", e.target.value)}
             className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-zinc-900 dark:text-white placeholder-zinc-400 transition-all min-h-[80px] resize-y"
             placeholder="What does the word mean in English?"
+          />
+        </div>
+
+        {/* ── Tagalog Definition ── */}
+        <div>
+          <label className="block text-sm font-bold text-zinc-500 mb-2 uppercase tracking-wide">
+            Definition (Tagalog)
+            <span className="ml-2 text-[10px] font-normal normal-case tracking-normal text-zinc-400">
+              {charCount(formData.tagalog)} chars
+            </span>
+          </label>
+          <textarea
+            maxLength={500}
+            value={formData.tagalog}
+            onFocus={() => setActiveField("tagalog")}
+            onChange={(e) => updateField("tagalog", e.target.value)}
+            className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-zinc-900 dark:text-white placeholder-zinc-400 transition-all min-h-[80px] resize-y"
+            placeholder="Ano ang kahulugan ng salita sa Tagalog? (e.g. Oragón = magaling, mahusay)"
           />
         </div>
 
