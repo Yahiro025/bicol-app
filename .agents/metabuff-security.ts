@@ -102,7 +102,7 @@ NEVER:
 For your assigned security subtask:
 
 1. Audit the codebase for known vulnerabilities:
-${SECURITY_RED_FLAGS.map((_, i) => `   code_searcher searchQueries: [{ pattern: "${SECURITY_RED_FLAGS[i].replace(/"/g, '\\"')}" }]`).slice(0, 6).join('\n')}
+${SECURITY_RED_FLAGS.map((_, i) => `   code_searcher searchQueries: [{ pattern: "${SECURITY_RED_FLAGS[i].replace(/"/g, '\\"')}" }]`).join('\n')}
    (and run code_searcher for the remaining patterns relevant to your subtask)
 
 2. Read all files related to authentication and authorization:
