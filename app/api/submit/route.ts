@@ -15,6 +15,7 @@ const optionalText = z
 const publicSubmissionSchema = z.object({
   word: z.string().trim().min(1).max(200),
   definition: z.string().trim().min(1).max(4000),
+  tagalog: optionalText,
   pos: optionalText,
   dialect: optionalText,
   pronunciation: optionalText,
@@ -32,6 +33,7 @@ const patchSchema = z.object({
   admin_notes: optionalText,
   word: z.string().trim().min(1).max(200).optional(),
   definition: z.string().trim().min(1).max(4000).optional(),
+  tagalog: optionalText,
   pos: optionalText,
   dialect: optionalText,
   pronunciation: optionalText,
@@ -66,6 +68,7 @@ function editableUpdates(data: z.infer<typeof patchSchema>) {
   const fields = [
     "word",
     "definition",
+    "tagalog",
     "pos",
     "dialect",
     "pronunciation",
@@ -120,6 +123,7 @@ async function applyApprovedSubmission(
         where: { id: definition.id },
         data: {
           english: submission.definition,
+          tagalog: submission.tagalog || null,
           dialect: submission.dialect || null,
           source_url: submission.source || null,
         },
@@ -162,6 +166,7 @@ async function applyApprovedSubmission(
       data: {
         bikol: submission.word,
         english: submission.definition,
+        tagalog: submission.tagalog || null,
         pos: submission.pos || null,
         dialect: submission.dialect || null,
         pronunciation: submission.pronunciation || null,
@@ -192,6 +197,7 @@ async function applyApprovedSubmission(
       data: {
         rootId: root.id,
         english: submission.definition,
+        tagalog: submission.tagalog || null,
         dialect: submission.dialect || null,
         source: "user_submission",
         source_url: submission.source || null,
@@ -215,6 +221,7 @@ async function applyApprovedSubmission(
     create: {
       bikol: submission.word,
       english: submission.definition,
+      tagalog: submission.tagalog || null,
       pos: submission.pos || null,
       dialect: submission.dialect || null,
       pronunciation: submission.pronunciation || null,
@@ -224,6 +231,7 @@ async function applyApprovedSubmission(
     },
     update: {
       english: submission.definition,
+      tagalog: submission.tagalog || null,
       pos: submission.pos || null,
       dialect: submission.dialect || null,
       pronunciation: submission.pronunciation || null,
@@ -349,6 +357,7 @@ export async function POST(request: Request) {
       data: {
         word: parsed.data.word,
         definition: parsed.data.definition,
+        tagalog: parsed.data.tagalog,
         pos: parsed.data.pos,
         dialect: parsed.data.dialect,
         pronunciation: parsed.data.pronunciation,

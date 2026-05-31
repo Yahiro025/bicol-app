@@ -76,6 +76,7 @@ export default function SuggestEditModal({ isOpen, onClose, isNormalized, wordDa
 
   const [word, setWord] = useState(initialWord);
   const [definition, setDefinition] = useState(initialDefinition);
+  const [tagalog, setTagalog] = useState("");
   const [pos, setPos] = useState(initialPos);
   const [dialect, setDialect] = useState(initialDialect);
   const [pronunciation, setPronunciation] = useState(initialPronunciation);
@@ -86,10 +87,11 @@ export default function SuggestEditModal({ isOpen, onClose, isNormalized, wordDa
 
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
-  const [activeField, setActiveField] = useState<"word" | "definition" | "pronunciation" | "exampleBikol" | "exampleEnglish">("word");
+  const [activeField, setActiveField] = useState<"word" | "definition" | "tagalog" | "pronunciation" | "exampleBikol" | "exampleEnglish">("word");
 
   const wordRef = useRef<HTMLInputElement>(null);
   const definitionRef = useRef<HTMLTextAreaElement>(null);
+  const tagalogRef = useRef<HTMLTextAreaElement>(null);
   const pronunciationRef = useRef<HTMLInputElement>(null);
   const exampleBikolRef = useRef<HTMLInputElement>(null);
   const exampleEnglishRef = useRef<HTMLInputElement>(null);
@@ -97,6 +99,7 @@ export default function SuggestEditModal({ isOpen, onClose, isNormalized, wordDa
   const fieldRefs = {
     word: wordRef,
     definition: definitionRef,
+    tagalog: tagalogRef,
     pronunciation: pronunciationRef,
     exampleBikol: exampleBikolRef,
     exampleEnglish: exampleEnglishRef,
@@ -116,6 +119,7 @@ export default function SuggestEditModal({ isOpen, onClose, isNormalized, wordDa
 
       if (activeField === "word") { current = word; setVal = setWord; }
       else if (activeField === "definition") { current = definition; setVal = setDefinition; }
+      else if (activeField === "tagalog") { current = tagalog; setVal = setTagalog; }
       else if (activeField === "pronunciation") { current = pronunciation; setVal = setPronunciation; }
       else if (activeField === "exampleBikol") { current = exampleBikol; setVal = setExampleBikol; }
       else if (activeField === "exampleEnglish") { current = exampleEnglish; setVal = setExampleEnglish; }
@@ -152,6 +156,7 @@ export default function SuggestEditModal({ isOpen, onClose, isNormalized, wordDa
         body: JSON.stringify({
           word: word.trim(),
           definition: definition.trim(),
+          tagalog: tagalog.trim() || null,
           pos: pos || null,
           dialect: dialect === "General Bikol" ? null : dialect,
           pronunciation: pronunciation.trim() || null,
@@ -280,6 +285,20 @@ export default function SuggestEditModal({ isOpen, onClose, isNormalized, wordDa
                       onFocus={() => setActiveField("definition")}
                       onChange={(e) => setDefinition(e.target.value)}
                       className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-white resize-y"
+                    />
+                  </div>
+
+                  {/* Tagalog Definition */}
+                  <div>
+                    <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Definition (Tagalog)</label>
+                    <textarea
+                      ref={tagalogRef}
+                      rows={3}
+                      value={tagalog}
+                      onFocus={() => setActiveField("tagalog")}
+                      onChange={(e) => setTagalog(e.target.value)}
+                      className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-white resize-y"
+                      placeholder="Ano ang kahulugan ng salita sa Tagalog?"
                     />
                   </div>
 

@@ -117,6 +117,7 @@ model UserSubmission {
   pronunciation   String?
   example_bikol   String?
   example_english String?
+  tagalog         String?
   source          String?
   status          String?   @default("pending")
   target_table    String?   @default("legacy")
