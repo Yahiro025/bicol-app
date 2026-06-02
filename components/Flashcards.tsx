@@ -22,10 +22,11 @@ const cardVariants = {
     scale: 1,
     rotateY: 0,
     transition: {
-      duration: 0.4,
+      duration: 0.5,
       type: "spring",
-      stiffness: 300,
-      damping: 30
+      stiffness: 260,
+      damping: 20,
+      mass: 1.2,
     }
   },
   exit: (direction: number) => ({
@@ -138,6 +139,7 @@ export default function Flashcards({ words, onExit }: FlashcardsProps) {
             exit="exit"
             className="absolute inset-0 w-full h-full cursor-pointer preserve-3d"
             onClick={() => setIsFlipped(!isFlipped)}
+            whileHover={{ rotateX: 2, rotateY: 2 }}
           >
             <motion.div 
               className="w-full h-full relative preserve-3d"

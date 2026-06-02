@@ -48,7 +48,7 @@ export default function CategoryGrid({ categoryCounts, className }: CategoryGrid
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-50px" }}
-      className={`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 ${className}`}
+      className={`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 ${className}`}
     >
       {categoryCounts.map(({ category, _count }) => {
         const meta = CATEGORY_META[category] || { icon: Book, color: "#6B6259" };
@@ -58,7 +58,7 @@ export default function CategoryGrid({ categoryCounts, className }: CategoryGrid
           <motion.div key={category} variants={itemVariants}>
             <Link
               href={`/browse?category=${encodeURIComponent(category)}`}
-              className="group p-6 bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-2xl hover:border-blue-500/30 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/10 active:scale-[0.98] transition-all duration-300 flex flex-col items-center text-center space-y-4 relative overflow-hidden"
+              className="group p-8 bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-2xl hover:border-blue-500/30 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/10 active:scale-[0.98] transition-all duration-300 flex flex-col items-center text-center space-y-4 relative overflow-hidden"
             >
               <div 
                 className="p-4 rounded-2xl bg-zinc-800/50 text-blue-500 group-hover:bg-blue-500/10 group-hover:scale-110 transition-all duration-300 shadow-inner border border-zinc-700/50 group-hover:border-blue-500/20"

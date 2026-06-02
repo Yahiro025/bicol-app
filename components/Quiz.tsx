@@ -136,7 +136,7 @@ export default function Quiz({ questions, onComplete, onExit }: QuizProps) {
                   disabled={isAnswered}
                   className={`w-full text-left p-5 rounded-2xl border transition-all duration-300 active:scale-[0.98] ${
                     variant === 'correct' ? 'bg-green-500/10 border-green-500 text-green-400' :
-                    variant === 'incorrect' ? 'bg-red-500/10 border-red-500 text-red-400' :
+                    variant === 'incorrect' ? 'bg-amber-400/10 border-amber-400 text-amber-400' :
                     variant === 'selected' ? 'bg-blue-500/10 border-blue-500 text-blue-400 glow-blue-selected' :
                     variant === 'dimmed' ? 'bg-zinc-900/50 border-zinc-800/50 opacity-40' :
                     'bg-zinc-900/50 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:bg-zinc-900 hover:text-zinc-200 glow-black-hover'
@@ -145,7 +145,15 @@ export default function Quiz({ questions, onComplete, onExit }: QuizProps) {
                   <div className="flex justify-between items-center">
                     <span className="font-medium">{option}</span>
                     {variant === 'correct' && <span className="text-lg">✓</span>}
-                    {variant === 'incorrect' && <span className="text-lg">✗</span>}
+                    {variant === 'incorrect' && (
+                      <motion.span
+                        animate={{ scale: [1, 1.1, 1] }}
+                        transition={{ duration: 0.3 }}
+                        className="text-lg"
+                      >
+                        •
+                      </motion.span>
+                    )}
                   </div>
                 </button>
               );

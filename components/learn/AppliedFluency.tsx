@@ -348,8 +348,18 @@ export default function AppliedFluency({ onComplete }: { onComplete: () => void 
             </div>
             <div className="flex items-center gap-4 pt-2">
               <div className="flex items-center gap-1.5">
-                <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
-                <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">{scenario.difficulty}</span>
+                {scenario.difficulty === 'beginner' ? (
+                  <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
+                ) : scenario.difficulty === 'intermediate' ? (
+                  <div className="w-1.5 h-1.5 bg-amber-500 rounded-full" />
+                ) : (
+                  <div className="w-1.5 h-1.5 bg-red-500 rounded-full" />
+                )}
+                <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+                  {scenario.difficulty === 'beginner' ? 'Low Energy' :
+                   scenario.difficulty === 'intermediate' ? 'Moderate Energy' :
+                   'High Energy'}
+                </span>
               </div>
               <div className="flex items-center gap-2 text-blue-500 text-xs font-bold">
                 Start Session <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />

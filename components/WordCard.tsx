@@ -53,7 +53,7 @@ export default function WordCard({ word, className }: WordCardProps) {
         href={wordUrl}
         prefetch={false}
         onMouseEnter={() => router.prefetch(wordUrl)}
-        className={`group block p-6 bg-zinc-50 dark:bg-zinc-900/50 backdrop-blur-sm border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-blue-500/30 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/10 active:scale-[0.98] transition-all duration-300 ${className}`}
+        className={`group block p-7 bg-zinc-50 dark:bg-zinc-900/50 backdrop-blur-sm border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-blue-500/30 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/10 active:scale-[0.98] transition-all duration-300 ${className}`}
       >
         <div className="flex justify-between items-start">
           <div className="space-y-1">

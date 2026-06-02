@@ -211,7 +211,7 @@ export default function LearnPage() {
             </div>
             <h1 className="text-4xl sm:text-5xl font-display font-black tracking-tight md:text-7xl">
               Mintz Drills: <span className="text-zinc-400 dark:text-zinc-500">
-                {activePhase === 1 ? 'Lesson 1' : activePhase === 2 ? 'Transformation' : 'Response'}
+                {activePhase === 1 ? 'Warm-up' : activePhase === 2 ? 'Build' : 'Flow'}
               </span>
             </h1>
             <p className="text-zinc-500 dark:text-zinc-400 text-lg max-w-xl leading-relaxed text-balance">
@@ -259,6 +259,10 @@ export default function LearnPage() {
                 : 'bg-zinc-50 dark:bg-zinc-900/50 border-zinc-200 dark:border-white/5 hover:border-zinc-300 dark:hover:border-white/10'
               }`}
             >
+              <div className="flex items-center gap-2 mb-2">
+                <div className={`w-2 h-2 rounded-full ${activePhase === 1 ? 'bg-emerald-500' : 'bg-zinc-700'}`} />
+                <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Warm-up</span>
+              </div>
               <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black ${
                 activePhase === 1 ? 'bg-blue-500 text-white' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-500'
               }`}>1</div>
@@ -274,6 +278,10 @@ export default function LearnPage() {
                 : 'bg-zinc-50 dark:bg-zinc-900/50 border-zinc-200 dark:border-white/5 hover:border-zinc-300 dark:hover:border-white/10'
               }`}
             >
+              <div className="flex items-center gap-2 mb-2">
+                <div className={`w-2 h-2 rounded-full ${activePhase === 2 ? 'bg-amber-500' : 'bg-zinc-700'}`} />
+                <span className="text-[10px] font-bold text-amber-500 uppercase tracking-widest">Build</span>
+              </div>
               <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black ${
                 activePhase === 2 ? 'bg-blue-500 text-white' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-500'
               }`}>2</div>
@@ -289,6 +297,10 @@ export default function LearnPage() {
                 : 'bg-zinc-50 dark:bg-zinc-900/50 border-zinc-200 dark:border-white/5 hover:border-zinc-300 dark:hover:border-white/10'
               }`}
             >
+              <div className="flex items-center gap-2 mb-2">
+                <div className={`w-2 h-2 rounded-full ${activePhase === 3 ? 'bg-red-500' : 'bg-zinc-700'}`} />
+                <span className="text-[10px] font-bold text-red-500 uppercase tracking-widest">Flow</span>
+              </div>
               <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black ${
                 activePhase === 3 ? 'bg-blue-500 text-white' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-500'
               }`}>3</div>

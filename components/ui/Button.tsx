@@ -24,6 +24,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           "disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none",
           "focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-zinc-950",
           "active:scale-95",
+          "hover:scale-[1.02]",
           "touch-manipulation [-webkit-tap-highlight-color:transparent]",
           {
             "bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/20":

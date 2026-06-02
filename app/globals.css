@@ -16,6 +16,24 @@
   --color-border: #e4e4e7;
   --color-text-main: #18181b;
   --color-text-muted: #71717a;
+
+  /* Motion system — controlled by MotionProvider */
+  --motion-multiplier: 1;
+
+  /* Spacing scale (neuro-inclusive generous defaults) */
+  --space-card-padding: 1.75rem;
+  --space-section-gap: 6rem;
+  --space-content-max-width: 72rem;
+
+  /* Energy state colors (replacing "difficulty" language) */
+  --energy-low: #10b981;
+  --energy-moderate: #f59e0b;
+  --energy-high: #ef4444;
+
+  /* Sensory-safe feedback colors */
+  --feedback-success: #34d399;
+  --feedback-neutral: #94a3b8;
+  --feedback-highlight: #60a5fa;
 }
 
 .dark {
@@ -69,9 +87,9 @@ html.changing-theme *::after {
   @apply bg-zinc-100/50 dark:bg-zinc-900/50 backdrop-blur-md border border-zinc-200 dark:border-zinc-800/50;
 }
 
-/* Responsive Bloom Elevation */
+/* Responsive Bloom Elevation (respects motion multiplier) */
 .responsive-bloom {
-  @apply transition-all duration-300;
+  transition: all calc(300ms * var(--motion-multiplier, 1)) ease-out;
 }
 
 .responsive-bloom:hover {
@@ -89,11 +107,12 @@ html.changing-theme *::after {
   text-wrap: balance;
 }
 
-/* Card utilities - Resting Precision */
+/* Card utilities - Resting Precision (respects motion multiplier) */
 .card-resting {
   background-color: rgba(255, 255, 255, 0.8);
   border: 1px solid var(--color-border);
-  @apply rounded-2xl transition-all duration-300;
+  border-radius: 1rem;
+  transition: all calc(200ms * var(--motion-multiplier, 1)) ease-out;
 }
 
 .dark .card-resting {
@@ -104,7 +123,7 @@ html.changing-theme *::after {
   background-color: rgba(39, 39, 42, 0.5);
   border-color: rgba(59, 130, 246, 0.3);
   box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.1);
-  @apply -translate-y-1;
+  transform: translateY(-0.25rem);
 }
 
 /* Custom Glow Utilities to bypass framework parser bugs */
@@ -134,4 +153,31 @@ html.changing-theme *::after {
 
 .glow-black-hover:hover {
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* Sanctuary breathing animation */
+@keyframes breathe {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.05); opacity: 1; }
+}
+
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.4); }
+  100% { box-shadow: 0 0 0 20px rgba(52, 211, 153, 0); }
+}
+
+.sanctuary-breathe {
+  animation: breathe 6s ease-in-out infinite;
+}
+
+.sanctuary-pulse {
+  animation: pulse-ring 3s ease-out infinite;
+}
+
+/* Respect OS-level motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .sanctuary-breathe,
+  .sanctuary-pulse {
+    animation: none;
+  }
 }
