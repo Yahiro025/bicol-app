@@ -84,8 +84,8 @@ export default async function HomePage() {
           <div className="w-full h-full bg-gradient-to-br from-blue-950/20 to-zinc-950/40 backdrop-blur-sm"></div>
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1440 320%22><path fill=%22%231e293b%22 opacity=%220.15%22 d=%22M0,160L48,155.4C96,151,192,141,288,125.3C384,110,480,89,576,90.7C672,92,768,117,864,128C960,139,1056,134,1152,117.3C1248,101,1344,73,1392,58.7L1440,48L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z%22></path></svg>')"></div>
         </div>
-        <div className="relative px-6 py-20 md:py-28">
-          <div className="max-w-5xl mx-auto text-center space-y-6">
+        <div className="relative px-6 py-24 md:py-36">
+          <div className="max-w-4xl mx-auto text-center space-y-8">
             <div className="space-y-3">
               <h1 className="text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-display font-black tracking-tighter leading-none bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-blue-400 to-purple-500 py-2">
                 BIKOL
@@ -119,7 +119,7 @@ export default async function HomePage() {
             </div>
 
             {/* Social Proof Stats */}
-            <div className="mt-10 grid grid-cols-2 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
+            <div className="mt-10 grid grid-cols-2 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
               <div className="p-4 bg-white/5 border border-white/10 rounded-2xl text-center group hover:bg-white/10 transition-colors">
                 <div className="text-2xl font-black text-white">{wordCount.toLocaleString()}+</div>
                 <div className="text-xs text-zinc-500 font-bold uppercase tracking-wider mt-1">Words</div>
@@ -157,7 +157,7 @@ export default async function HomePage() {
           <div className="w-full h-full bg-[url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1440 320%22><path fill=%22%230f172a%22 opacity=%220.03%22 d=%22M0,224L60,208C120,192,240,160,360,138.7C480,117,600,107,720,125.3C840,143,960,187,1080,202.7C1200,219,1320,208,1380,202.7L1440,197.3L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z%22></path></svg>')"></div>
         </div>
         <div className="max-w-6xl mx-auto px-6">
-          <div className="grid gap-16">
+          <div className="grid gap-24">
             {/* Word of the Day */}
             {wotd && (
               <div className="space-y-8">

@@ -6,6 +6,7 @@ import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { conjugateBikolVerb } from "@/lib/conjugator";
 import { TENSE_LABELS } from "@/lib/constants";
+import { Springs } from "@/lib/motion";
 
 const DEMO_VERBS: Array<{ root: string; english: string; affix: string }> = [
   { root: "bakal", english: "buy", affix: "MAG- / -ON" },
@@ -70,10 +71,10 @@ export default function HomeVerbDemo() {
       <AnimatePresence mode="wait">
         <motion.div
           key={selectedVerb.root}
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.2 }}
+          exit={{ opacity: 0, y: -15 }}
+          transition={Springs.default}
         >
           <div className="text-center mb-4">
             <span className="text-xs font-black text-zinc-500 uppercase tracking-widest">

@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { Springs } from "@/lib/motion";
 import type { ReactNode } from "react";
 
 export default function PageTransition({ children }: { children: ReactNode }) {
@@ -11,10 +12,10 @@ export default function PageTransition({ children }: { children: ReactNode }) {
     <AnimatePresence mode="wait">
       <motion.div
         key={pathname}
-        initial={{ opacity: 0, y: 8 }}
+        initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -8 }}
-        transition={{ duration: 0.15 }}
+        exit={{ opacity: 0, y: -12 }}
+        transition={Springs.page}
       >
         {children}
       </motion.div>

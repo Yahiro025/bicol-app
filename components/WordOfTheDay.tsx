@@ -6,6 +6,7 @@ import { Star, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useLanguageMode } from '@/hooks/useLanguageMode';
 import { normalizePOS } from '@/lib/lexicography';
+import { Springs } from '@/lib/motion';
 
 interface WordOfTheDayProps {
   word: {
@@ -32,7 +33,7 @@ export default function WordOfTheDay({ word, className }: WordOfTheDayProps) {
        initial={{ opacity: 0, scale: 0.95 }}
        whileInView={{ opacity: 1, scale: 1 }}
        viewport={{ once: true }}
-       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+       transition={Springs.heavy}
      >
        <Link
          href={`/word/${encodeURIComponent(word.bikol)}`}

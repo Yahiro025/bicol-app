@@ -17,7 +17,7 @@ export default function SubstitutionDrillComponent({
   const [userInput, setUserInput] = useState("");
   const [isAnswered, setIsAnswered] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
-  const [shake, setShake] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
 
   const currentDrill = drills[currentIndex];
 
@@ -39,8 +39,7 @@ export default function SubstitutionDrillComponent({
     setIsAnswered(true);
 
     if (!correct) {
-      setShake(true);
-      setTimeout(() => setShake(false), 500);
+      setRetryCount((c) => c + 1);
     }
   };
 
@@ -50,6 +49,7 @@ export default function SubstitutionDrillComponent({
       setUserInput("");
       setIsAnswered(false);
       setIsCorrect(false);
+      setRetryCount(0);
     } else if (onComplete) {
       onComplete();
     }
@@ -95,15 +95,14 @@ export default function SubstitutionDrillComponent({
         animate={{
           opacity: 1,
           scale: 1,
-          x: shake ? [-10, 10, -10, 10, 0] : 0,
         }}
         transition={{
-          duration: shake ? 0.4 : 0.5,
+          duration: 0.5,
           ease: "easeOut",
         }}
         className={`card-resting p-8 md:p-12 space-y-10 relative overflow-hidden ${
           isAnswered && isCorrect ? "ring-2 ring-emerald-500/20 bg-emerald-500/5 glow-emerald-small" : 
-          isAnswered && !isCorrect ? "ring-2 ring-rose-500/20 bg-rose-500/5" : ""
+          isAnswered && !isCorrect ? "ring-1 ring-amber-400/10 bg-amber-400/5" : ""
         }`}
       >
         {/* Base Sentence */}
@@ -138,7 +137,7 @@ export default function SubstitutionDrillComponent({
             placeholder="Type the new sentence..."
             className={`w-full bg-zinc-950 border-2 p-6 rounded-2xl text-xl text-center focus:outline-none transition-all duration-300 placeholder:text-zinc-700 ${
               isAnswered && isCorrect ? "border-emerald-500/50 text-emerald-400" :
-              isAnswered && !isCorrect ? "border-rose-500/50 text-rose-400" :
+              isAnswered && !isCorrect ? "border-amber-400/30 text-amber-400" :
               "border-zinc-800 focus:border-blue-500 text-white"
             }`}
             autoFocus
@@ -153,9 +152,13 @@ export default function SubstitutionDrillComponent({
                 className="space-y-4 text-center"
               >
                 {!isCorrect && (
-                  <div className="p-4 bg-rose-500/5 rounded-xl border border-rose-500/20 space-y-2">
-                    <p className="text-rose-500 text-xs font-bold uppercase tracking-widest">Expected Translation</p>
-                    <p className="text-zinc-100 text-lg font-mono">{currentDrill.expectedAnswer}</p>
+                  <div className="p-4 bg-amber-400/5 rounded-xl border border-amber-400/10 space-y-2">
+                    <p className="text-amber-400 text-xs font-bold uppercase tracking-widest">
+                      {retryCount === 1 ? "Let's try that again" : "Here's the answer"}
+                    </p>
+                    {retryCount > 1 && (
+                      <p className="text-zinc-100 text-lg font-mono">{currentDrill.expectedAnswer}</p>
+                    )}
                   </div>
                 )}
                 {isCorrect && (
@@ -179,7 +182,17 @@ export default function SubstitutionDrillComponent({
 
         {/* Actions */}
         <div className="flex gap-4 pt-4">
-          {!isAnswered ? (
+          {isAnswered && !isCorrect && retryCount === 1 ? (
+            <button
+              onClick={() => {
+                setIsAnswered(false);
+                setUserInput("");
+              }}
+              className="w-full py-5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 font-bold rounded-2xl transition-all active:scale-[0.98] border border-amber-500/20"
+            >
+              Try Again
+            </button>
+          ) : !isAnswered ? (
             <button
               onClick={handleCheck}
               disabled={userInput.trim() === ""}
