@@ -46,11 +46,11 @@ export default function LanguageToggle() {
       <AnimatePresence>
         {showToast && (
           <motion.div
-            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+            initial={{ opacity: 0, y: -5, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+            exit={{ opacity: 0, y: -5, scale: 0.95 }}
             transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-            className="absolute -top-10 left-1/2 -translate-x-1/2 whitespace-nowrap px-3 py-1.5 bg-blue-600 text-white text-[10px] font-bold rounded-lg shadow-lg pointer-events-none z-50"
+            className="absolute top-full mt-2 left-1/2 -translate-x-1/2 whitespace-nowrap px-3 py-1.5 bg-blue-600 text-white text-[10px] font-bold rounded-lg shadow-lg pointer-events-none z-50"
           >
             {toastMessage}
           </motion.div>
