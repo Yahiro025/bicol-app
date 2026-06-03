@@ -18,7 +18,7 @@ const definition: AgentDefinition = {
     'Documentation and codemap specialist. Use PROACTIVELY for updating documentation. ' +
     'Generates codemaps, updates READMEs and guides from actual code structure.',
 
-  model: 'deepseek/deepseek-v4-flash',
+  model: 'deepseek/deepseek-v4-pro',
 
   reasoningOptions: {
     enabled: true,

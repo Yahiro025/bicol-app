@@ -18,13 +18,13 @@ const definition: AgentDefinition = {
     'Documentation lookup specialist. Use for searching API documentation, ' +
     'framework guides, and library references. Retrieves current, version-specific docs.',
 
-  model: 'deepseek/deepseek-v4-flash',
+  model: 'deepseek/deepseek-v4-pro',
 
   reasoningOptions: { enabled: true, exclude: false, effort: 'low' },
 
   toolNames: ['read_files', 'spawn_agents'],
 
-  spawnableAgents: ['codebuff/researcher@0.0.1'],
+  spawnableAgents: ['researcher-web'],
 
   systemPrompt:
     'You are a documentation lookup specialist. Your mission is to find and retrieve accurate, ' +

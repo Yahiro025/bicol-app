@@ -11,7 +11,7 @@ const definition: AgentDefinition = {
   version: '1.0.0',
   displayName: 'ECC Mle Reviewer',
   spawnerPrompt: "Production machine-learning engineering reviewer for data contracts, feature pipelines, training reproducibility, offline/online evaluation, model serving, monitoring, and rollback. Use when ML, MLOps, model training, inference, feature store, or evaluation code changes.",
-  model: 'deepseek/deepseek-v4-flash',
+  model: 'deepseek/deepseek-v4-pro',
   reasoningOptions: { enabled: true, exclude: false, effort: 'medium' },
   toolNames: ['read_files', 'code_searcher', 'glob', 'basher', 'spawn_agents'],
   spawnableAgents: [],

@@ -215,7 +215,7 @@ const definition: AgentDefinition = {
     'including CoT enforcement, inter-session memory, continuous validation, ' +
     'regex safety checks, and anti-hallucination protocols.',
 
-  model: 'deepseek/deepseek-v4-pro',  // Primary; falls back to deepseek-v4-flash when unavailable
+  model: 'deepseek/deepseek-v4-pro',  // v4-pro confirmed available in free tier; v4-flash was 403 in sub-agent spawns
 
   reasoningOptions: {
     enabled: true,
@@ -226,12 +226,12 @@ const definition: AgentDefinition = {
   toolNames: ['spawn_agents', 'think_deeply', 'end_turn'],
 
   spawnableAgents: [
-    'codebuff/base@0.0.1',
-    'codebuff/file-picker@0.0.1',
-    'codebuff/thinker@0.0.1',
-    'codebuff/planner@0.0.1',
-    'codebuff/reviewer@0.0.1',
-    'codebuff/researcher@0.0.1',
+    'ecc-code-architect',        // general-purpose implementation (was codebuff/base)
+    'file-picker',               // codebase mapping
+    'thinker-with-files-gemini', // task decomposition / planning
+    'code-reviewer-deepseek',    // review / synthesis
+    'researcher-web',            // documentation research
+    'researcher-docs',           // API docs research
     'basher',
     'metabuff-validator',
     'metabuff-reasoner',     // v1.4.0: algorithm/logic specialist
@@ -320,6 +320,12 @@ const definition: AgentDefinition = {
 
     /** Timeout for basher commands in seconds */
     const BASHER_TIMEOUT = 60
+
+    /** Minimum score threshold to consider a domain "matched" */
+    const MIN_DOMAIN_SCORE = 0.35
+
+    /** Vagueness threshold: above this, semantic enrichment gets higher weight */
+    // const VAGUE_PROMPT_THRESHOLD = 0.5  // inlined below due to generator TDZ issue
 
     // ─── HELPER: Complexity scorer (v1.5.0 — scope-aware) ────────────────────
     /**
@@ -904,20 +910,21 @@ ${task}
     // Detects whether the prompt is vague and enriches it with semantic context.
     // Vague prompts (short, few technical terms, conversational language) get
     // synonym expansion + context inference before routing decisions.
+
     const vagueness = detectVagueness(prompt)
     const { enriched: enrichedPrompt, domainHints } = semanticEnrich(prompt)
 
     // ─── PHASE 1.6: DEEP SEMANTIC ANALYSIS (v2.0.0) ──────────────────────
     // For vague prompts (vagueness >= 0.5) or when no domain scored above
     // MIN_DOMAIN_SCORE, use think_deeply to deeply analyze the user's intent.
-    const needsDeepAnalysis = vagueness >= VAGUE_PROMPT_THRESHOLD ||
+    const needsDeepAnalysis = vagueness >= 0.5 ||
       (domainHints.size === 0 && !algoTask && complexity !== 'simple')
 
     if (needsDeepAnalysis) {
       yield {
         toolName: 'think_deeply',
         input: {
-          prompt:
+          thought:
             `Deeply analyze this user coding request. It may be vague or require interpretation.\n\n` +
             `USER REQUEST: "${prompt.slice(0, 500)}"\n\n` +
             `Your task:\n` +
@@ -1064,12 +1071,6 @@ ${task}
     // Replaces keyword-only boolean detectors with score-based semantic routing.
     // Vague prompts (short, few technical terms) get synonym expansion +
     // context inference so they still route to the right specialist agents.
-
-    /** Minimum score threshold to consider a domain "matched" */
-    const MIN_DOMAIN_SCORE = 0.35
-
-    /** Vagueness threshold: above this, semantic enrichment gets higher weight */
-    const VAGUE_PROMPT_THRESHOLD = 0.5
 
     /**
      * Detects how vague a prompt is (0 = very specific, 1 = completely vague).
@@ -1652,7 +1653,7 @@ ${task}
         toolName: 'spawn_agents',
         input: {
           agents: [{
-            agent_type: 'codebuff/base@0.0.1',
+            agent_type: 'ecc-code-architect',
             prompt: withECCContext(withCoT(prompt) + tddInjectionSimple + antiPatternInjection, prompt),
           }],
         },
@@ -1743,7 +1744,7 @@ ${task}
         toolName: 'spawn_agents',
         input: {
           agents: [{
-            agent_type: 'codebuff/file-picker@0.0.1',
+            agent_type: 'file-picker',
             prompt: `Find all files relevant to: ${prompt}`,
           }],
         },
@@ -1784,7 +1785,7 @@ ${task}
         )
       } else {
         finalPrompt = withECCContext(
-          withCoTv3(routedPrompt) + tddInjection + antiInjection,
+          withCoTv3(routedPrompt) + tddInjection + antiPatternInjection,
           prompt
         )
       }
@@ -1896,7 +1897,7 @@ ${task}
         toolName: 'spawn_agents',
         input: {
           agents: [{
-            agent_type: 'codebuff/base@0.0.1',
+            agent_type: 'code-reviewer-deepseek',
             prompt: withECCContext(withReview(
               `Post-mega conflict check for: ${prompt}\n\n` +
               `Multiple specialist agents ran in parallel. Check specifically for:\n` +

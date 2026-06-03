@@ -11,7 +11,7 @@ const definition: AgentDefinition = {
   version: '1.0.0',
   displayName: 'ECC Comment Analyzer',
   spawnerPrompt: "Analyze code comments for accuracy, completeness, maintainability, and comment rot risk.",
-  model: 'deepseek/deepseek-v4-flash',
+  model: 'deepseek/deepseek-v4-pro',
   reasoningOptions: { enabled: true, exclude: false, effort: 'medium' },
   toolNames: ['read_files', 'code_searcher', 'glob', 'spawn_agents'],
   spawnableAgents: [],

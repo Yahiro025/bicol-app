@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Button from './ui/Button';
 import { useLanguageMode } from '@/hooks/useLanguageMode';
 import { normalizePOS } from '@/lib/lexicography';
+import { escapeRegex } from '@/lib/fuzzy';
 
 type Word = {
   bikol: string;
@@ -194,7 +195,7 @@ export default function BrowseClient({
 
   const highlightText = (text: string) => {
     if (!query || !text.toLowerCase().includes(query.toLowerCase())) return text;
-    const parts = text.split(new RegExp(`(${query})`, 'gi'));
+    const parts = text.split(new RegExp(`(${escapeRegex(query)})`, 'gi'));
     return (
       <>
         {parts.map((part, i) => 

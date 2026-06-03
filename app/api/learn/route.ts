@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
 import { NextResponse } from 'next/server';
 import { generateQuizQuestions } from '@/lib/groq';
 
@@ -25,6 +26,57 @@ function setCached<T>(key: string, data: T): void {
   learnCache.set(key, { data, expiresAt: Date.now() + LEARN_CACHE_TTL * 1000 });
 }
 
+/**
+ * Builds a Prisma.sql query that fetches random words from both roots and legacy
+ * words tables, deduplicated by LOWER(bikol) with roots taking priority.
+ */
+function buildRandomWordsQuery(limit: number): Prisma.Sql {
+  return Prisma.sql`
+    SELECT bikol, english, tagalog, pos, category, example_bikol, example_english
+    FROM (
+      SELECT DISTINCT ON (LOWER(bikol))
+        bikol, english, tagalog, pos, category, example_bikol, example_english
+      FROM (
+        SELECT
+          r.bikol,
+          def.english,
+          def.tagalog,
+          r.pos,
+          r.category,
+          NULL as example_bikol,
+          NULL as example_english,
+          0 as source_priority
+        FROM roots r
+        LEFT JOIN LATERAL (
+          SELECT d.english, d.tagalog
+          FROM definitions d
+          WHERE d."rootId" = r.id
+          ORDER BY d."createdAt" ASC
+          LIMIT 1
+        ) def ON true
+        WHERE r.bikol IS NOT NULL AND r.bikol != '' AND def.english IS NOT NULL
+
+        UNION ALL
+
+        SELECT
+          w.bikol,
+          w.english,
+          w.tagalog,
+          w.pos,
+          w.category,
+          w.example_bikol,
+          w.example_english,
+          1 as source_priority
+        FROM words w
+        WHERE w.bikol IS NOT NULL AND w.bikol != '' AND confidence >= 0.8
+      ) combined
+      ORDER BY LOWER(bikol), source_priority ASC
+    ) deduped
+    ORDER BY RANDOM()
+    LIMIT ${limit}
+  `;
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const mode = searchParams.get('mode') || 'flashcards';
@@ -46,14 +98,7 @@ export async function GET(request: Request) {
 
   try {
     if (mode === 'quiz') {
-      // Fetch random words with high confidence — partial index on confidence speeds this up
-      const words = await prisma.$queryRaw`
-        SELECT bikol, english, tagalog, pos, category, example_bikol, example_english
-        FROM words
-        WHERE confidence >= 0.8
-        ORDER BY RANDOM()
-        LIMIT ${Math.min(limit, 50)}
-      ` as any[];
+      const words = await prisma.$queryRaw(buildRandomWordsQuery(Math.min(limit, 50))) as any[];
 
       if (words.length < 5) {
         return NextResponse.json({ error: 'Not enough words to generate a quiz' }, { status: 400 });
@@ -72,14 +117,8 @@ export async function GET(request: Request) {
         }
       );
     } else {
-      // Default: Flashcards — random words with high confidence
-      const words = await prisma.$queryRaw`
-        SELECT bikol, english, tagalog, pos, category, example_bikol, example_english
-        FROM words
-        WHERE confidence >= 0.8
-        ORDER BY RANDOM()
-        LIMIT ${Math.min(limit, 100)}
-      ` as any[];
+      // Default: Flashcards
+      const words = await prisma.$queryRaw(buildRandomWordsQuery(Math.min(limit, 100))) as any[];
 
       setCached(cacheKey, words);
 

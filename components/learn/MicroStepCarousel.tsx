@@ -58,9 +58,12 @@ export function MicroStepCarousel({
             onClick={() => paginate(i)}
             className={`h-2 rounded-full transition-all duration-300 ${
               i === page
-                ? 'w-6 bg-blue-500'
-                : 'w-2 bg-zinc-700 hover:bg-zinc-600'
+                ? 'w-6'
+                : 'w-2'
             }`}
+            style={{
+              backgroundColor: i === page ? 'var(--editorial-accent)' : 'var(--editorial-divider)',
+            }}
             aria-label={`Go to step ${i + 1}: ${step.title}`}
           />
         ))}
@@ -77,15 +80,15 @@ export function MicroStepCarousel({
             animate="center"
             exit="exit"
             transition={{ type: 'spring', stiffness: 200, damping: 25, mass: 0.8 }}
-            className="rounded-[32px] border border-zinc-800 bg-zinc-900/50 p-8"
+            className="rounded-[32px] border p-8" style={{ backgroundColor: 'var(--editorial-surface)', borderColor: 'var(--editorial-border)' }}
           >
             <div className="mb-4 flex items-center gap-3">
-              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-500 text-sm font-black text-white">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full text-sm font-black text-white" style={{ backgroundColor: 'var(--editorial-accent)' }}>
                 {page + 1}
               </span>
-              <h3 className="text-xl font-bold text-white">{currentStep.title}</h3>
+              <h3 className="text-xl font-bold" style={{ color: 'var(--editorial-text)', fontFamily: 'var(--font-display)' }}>{currentStep.title}</h3>
             </div>
-            <p className="text-sm leading-relaxed text-zinc-400">{currentStep.description}</p>
+            <p className="text-sm leading-relaxed" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>{currentStep.description}</p>
             {currentStep.content && <div className="mt-6">{currentStep.content}</div>}
           </motion.div>
         </AnimatePresence>
@@ -96,18 +99,20 @@ export function MicroStepCarousel({
         <button
           onClick={() => paginate(page - 1)}
           disabled={page === 0}
-          className="flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold text-zinc-500 transition-colors hover:text-zinc-300 disabled:opacity-30"
+          className="flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold transition-colors disabled:opacity-30"
+          style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}
         >
           <ChevronLeft className="h-4 w-4" />
           Previous
         </button>
-        <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-600">
+        <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>
           {page + 1} of {steps.length}
         </span>
         <button
           onClick={() => paginate(page + 1)}
           disabled={page === steps.length - 1}
-          className="flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold text-blue-500 transition-colors hover:text-blue-400 disabled:opacity-30"
+          className="flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold transition-colors disabled:opacity-30"
+          style={{ color: 'var(--editorial-accent-dim)', fontFamily: 'var(--font-body)' }}
         >
           Next
           <ChevronRight className="h-4 w-4" />

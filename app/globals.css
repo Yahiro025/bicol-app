@@ -103,12 +103,18 @@ html.changing-theme *::after {
   background-color: var(--color-background);
 }
 
+::-webkit-scrollbar-track {
+  background-color: var(--editorial-bg);
+}
+
 ::-webkit-scrollbar-thumb {
-  @apply bg-zinc-800 rounded-full border-2 border-zinc-950;
+  background-color: var(--editorial-divider);
+  border-radius: 9999px;
+  border: 2px solid var(--editorial-bg);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-zinc-700;
+  background-color: var(--editorial-muted);
 }
 
 /* Glass effect for cards and overlays */

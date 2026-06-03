@@ -11,7 +11,7 @@ const definition: AgentDefinition = {
   version: '1.0.0',
   displayName: 'ECC Code Explorer',
   spawnerPrompt: "Deeply analyzes existing codebase features by tracing execution paths, mapping architecture layers, and documenting dependencies to inform new development.",
-  model: 'deepseek/deepseek-v4-flash',
+  model: 'deepseek/deepseek-v4-pro',
   reasoningOptions: { enabled: true, exclude: false, effort: 'medium' },
   toolNames: ['read_files', 'code_searcher', 'glob', 'spawn_agents'],
   spawnableAgents: [],

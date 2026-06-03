@@ -69,7 +69,7 @@ const definition: AgentDefinition = {
     'MetaBuff Mega decomposes the task into up to 12 subtasks and runs them in ' +
     'cascade waves of ≤6 parallel agents (Antigravity 2.0 pattern, Freebuff-safe).',
 
-  model: 'deepseek/deepseek-v4-pro',  // Primary; falls back to deepseek-v4-flash when unavailable
+  model: 'deepseek/deepseek-v4-pro',  // v4-pro confirmed available in free tier; v4-flash was 403 in sub-agent spawns
 
   reasoningOptions: {
     enabled: true,
@@ -77,14 +77,15 @@ const definition: AgentDefinition = {
     effort: 'high',
   },
 
-  toolNames: ['spawn_agents', 'think_deeply', 'end_turn'],
+  toolNames: ['spawn_agents', 'think_deeply'],
 
   spawnableAgents: [
-    'codebuff/base@0.0.1',
-    'codebuff/thinker@0.0.1',
-    'codebuff/reviewer@0.0.1',
-    'codebuff/researcher@0.0.1',
-    'codebuff/file-picker@0.0.1',
+    'metabuff',              // general-purpose implementation
+    'thinker-with-files-gemini',  // task decomposition
+    'code-reviewer-deepseek',    // review / synthesis
+    'researcher-web',            // documentation research
+    'researcher-docs',           // API docs research
+    'file-picker',               // codebase mapping
     'basher',
     'metabuff-arch',
     'metabuff-security',
@@ -124,13 +125,13 @@ const definition: AgentDefinition = {
         arch:     'metabuff-arch',
         security: 'metabuff-security',
         testgen:  'metabuff-testgen',
-        base:     'codebuff/base@0.0.1',
-        research: 'codebuff/researcher@0.0.1',
-        review:   'codebuff/reviewer@0.0.1',
+        base:     'ecc-code-architect',
+        research: 'researcher-web',
+        review:   'code-reviewer-deepseek',
         reason:   'metabuff-reasoner',     // v1.2.0
-        custom:   'codebuff/base@0.0.1',   // v1.2.0: dynamic via custom prompt
+        custom:   'ecc-code-architect',    // v1.2.0: dynamic via custom prompt
       }
-      return map[specialist] ?? 'codebuff/base@0.0.1'
+      return map[specialist] ?? 'ecc-code-architect'
     }
 
     // ─── HELPER: Split array into waves ───────────────────────────────────────
@@ -153,7 +154,7 @@ const definition: AgentDefinition = {
       customRole?: string
       customSystemAddition?: string
     }> {
-      if (!raw) return [{
+      if (!raw || typeof raw !== 'string') return [{
         subtask: fallbackPrompt,
         specialist: 'base',
         focus: 'full implementation',
@@ -237,7 +238,8 @@ ANTI-HALLUCINATION (non-negotiable):
       toolName: 'spawn_agents',
       input: {
         agents: [{
-          agent_type: 'codebuff/file-picker@0.0.1',
+          agent_type: 'file-picker',
+          params: {},
           prompt:
             `Map the entire codebase structure relevant to this task.\n` +
             `List key files, their roles, and how they interconnect.\n` +
@@ -251,7 +253,8 @@ ANTI-HALLUCINATION (non-negotiable):
       toolName: 'spawn_agents',
       input: {
         agents: [{
-          agent_type: 'codebuff/thinker@0.0.1',
+          agent_type: 'thinker-with-files-gemini',
+          params: { filePaths: [] },
           prompt:
             `You are decomposing a large coding task for parallel cascade execution.\n\n` +
             `Task: ${prompt}\n\n` +
@@ -289,18 +292,21 @@ ANTI-HALLUCINATION (non-negotiable):
     }
 
     // Extract decomposition JSON from thinker's response
-    const decompositionRaw: string = yield {
+    const decompositionRaw: unknown = yield {
       toolName: 'think_deeply',
       input: {
-        prompt:
+        thought:
           'Look at the thinker agent\'s most recent response in this session. ' +
           'Extract ONLY the JSON array of subtasks it produced. ' +
           'Return just the raw JSON array, nothing else. ' +
           'If no valid JSON array is found, return an empty string.',
       },
-    } as unknown as string
+    }
 
-    const subtasks = parseDecomposition(decompositionRaw, prompt)
+    const subtasks = parseDecomposition(
+      typeof decompositionRaw === 'string' ? decompositionRaw : undefined,
+      prompt,
+    )
 
     // ── Phase 2: Cascade wave execution ───────────────────────────────────────
     const agentConfigs = subtasks.map(st => {
@@ -348,7 +354,7 @@ ANTI-HALLUCINATION (non-negotiable):
         toolName: 'spawn_agents',
         input: {
           agents: [{
-            agent_type: 'codebuff/reviewer@0.0.1',
+            agent_type: 'code-reviewer-deepseek',
             prompt:
               `SDD STAGE 1 — SPEC COMPLIANCE REVIEW (Wave ${waveIdx + 1} of ${waves.length})\n\n` +
               `${wave.length} subagents completed work on: ${prompt}\n\n` +
@@ -365,7 +371,7 @@ ANTI-HALLUCINATION (non-negotiable):
               `Fix [CRITICAL] and [HIGH] issues. Do NOT refactor style. Do NOT use performative\n` +
               `language ("Great point!" is banned — use "Verified:" or "Found:" instead).`,
           }, {
-            agent_type: 'codebuff/reviewer@0.0.1',
+            agent_type: 'code-reviewer-deepseek',
             prompt:
               `SDD STAGE 2 — CODE QUALITY REVIEW (Wave ${waveIdx + 1} of ${waves.length})\n\n` +
               `After spec compliance verified, check code quality:\n\n` +
@@ -398,7 +404,7 @@ ANTI-HALLUCINATION (non-negotiable):
       toolName: 'spawn_agents',
       input: {
         agents: [{
-          agent_type: 'codebuff/reviewer@0.0.1',
+          agent_type: 'code-reviewer-deepseek',
           prompt:
             `Final synthesis review for a ${waves.length}-wave parallel cascade session.\n\n` +
             `${subtasks.length} specialist agents completed work on:\n${prompt}\n\n` +

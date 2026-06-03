@@ -19,29 +19,30 @@ export default async function FrequencyListPage() {
   }
 
   return (
-    <main className="min-h-screen bg-zinc-950 text-white p-8">
+    <main className="min-h-screen p-8" style={{ backgroundColor: 'var(--editorial-bg)', color: 'var(--editorial-text)' }}>
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6">Word Frequency List</h1>
+        <span className="section-number">Reference</span>
+        <h1 className="text-3xl sm:text-4xl font-black tracking-tight mt-3 mb-6" style={{ fontFamily: 'var(--font-display)', color: 'var(--editorial-text)' }}>Word Frequency List</h1>
         
         {dbError && (
-          <div className="bg-red-900 text-red-100 p-4 rounded-xl text-sm mb-6">
+          <div className="p-4 rounded-xl text-sm mb-6" style={{ backgroundColor: 'rgba(160,82,45,0.1)', color: 'var(--editorial-rust)', border: '1px solid rgba(160,82,45,0.2)' }}>
             Database Error: {dbError}
           </div>
         )}
 
         {!dbError && words.length === 0 && (
-          <p className="text-zinc-400">No words found in the database.</p>
+          <p style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>No words found in the database.</p>
         )}
 
-        <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
-          <ul className="divide-y divide-zinc-800">
+        <div className="rounded-xl overflow-hidden" style={{ backgroundColor: 'var(--editorial-surface)', border: '1px solid var(--editorial-border)' }}>
+          <ul className="divide-y" style={{ borderColor: 'var(--editorial-divider)' }}>
             {words.map((word, idx) => (
-              <li key={word.bikol} className="px-6 py-4 hover:bg-zinc-800 flex items-center justify-between">
+              <li key={word.bikol} className="px-6 py-4 flex items-center justify-between transition-colors" style={{ fontFamily: 'var(--font-body)' }}>
                 <div className="flex items-center gap-4">
-                  <span className="text-zinc-500 font-mono w-8">{idx + 1}.</span>
-                  <a href={`/word/${encodeURIComponent(word.bikol)}`} className="text-blue-500 hover:underline font-medium">{word.bikol}</a>
+                  <span className="font-mono w-8" style={{ color: 'var(--editorial-muted)' }}>{idx + 1}.</span>
+                  <a href={`/word/${encodeURIComponent(word.bikol)}`} className="hover:underline font-medium" style={{ color: 'var(--editorial-accent)' }}>{word.bikol}</a>
                 </div>
-                <span className="text-zinc-400 text-sm">{word.english}</span>
+                <span className="text-sm" style={{ color: 'var(--editorial-muted)' }}>{word.english}</span>
               </li>
             ))}
           </ul>

@@ -35,7 +35,7 @@
 
 import { AgentDefinition } from './types/agent-definition'
 
-const FREE_MODEL = 'deepseek/deepseek-v4-pro'  // Primary; falls back to deepseek-v4-flash when unavailable
+const FREE_MODEL = 'deepseek/deepseek-v4-pro'  // v4-pro confirmed available in free tier; v4-flash was 403 in sub-agent spawns
 
 const VALIDATOR_SYSTEM_PROMPT = `You are MetaBuff's Superpowers-enhanced anti-hallucination validator.
 Your ONLY job is to audit changes made by other agents and fix any problems.
@@ -95,7 +95,7 @@ Audit all changes made in this session. Use these tools (all available in toolNa
   - read_files      → read file contents
   - str_replace     → edit files (prefer this)
   - write_file      → create new files
-  - spawn_agents    → spawn codebuff/base for fix passes OR metabuff-regex-guard for regex
+  - spawn_agents    → spawn ecc-code-architect for fix passes OR metabuff-regex-guard for regex
 
 STEPS:
 
@@ -186,9 +186,9 @@ const definition: AgentDefinition = {
   ],
 
   spawnableAgents: [
-    'codebuff/base@0.0.1',       // targeted fix passes
-    'codebuff/thinker@0.0.1',    // deep analysis of tricky failures
-    'metabuff-regex-guard',      // v1.1.0: regex safety scan
+    'metabuff',                     // targeted fix passes
+    'thinker-with-files-gemini',    // deep analysis of tricky failures
+    'metabuff-regex-guard',         // v1.1.0: regex safety scan
   ],
 
   includeMessageHistory: true,

@@ -11,7 +11,7 @@ const definition: AgentDefinition = {
   version: '1.0.0',
   displayName: 'ECC Type Design Analyzer',
   spawnerPrompt: "Analyze type design for encapsulation, invariant expression, usefulness, and enforcement.",
-  model: 'deepseek/deepseek-v4-flash',
+  model: 'deepseek/deepseek-v4-pro',
   reasoningOptions: { enabled: true, exclude: false, effort: 'medium' },
   toolNames: ['read_files', 'code_searcher', 'glob', 'spawn_agents'],
   spawnableAgents: [],

@@ -18,7 +18,7 @@ const definition: AgentDefinition = {
     'Database code reviewer specializing in schema design, query performance, migrations, and Supabase. ' +
     'Use for reviewing Prisma schema changes, SQL migrations, query patterns, and RLS policies.',
 
-  model: 'deepseek/deepseek-v4-flash',
+  model: 'deepseek/deepseek-v4-pro',
 
   reasoningOptions: { enabled: true, exclude: false, effort: 'medium' },
 

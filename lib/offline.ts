@@ -14,11 +14,41 @@ export const initDB = async () => {
 };
 
 export const saveToHistory = async (word: Record<string, unknown> & { bikol: string }) => {
-  const db = await initDB();
-  await db.put(STORE_NAME, { ...word, timestamp: Date.now() });
+  try {
+    const db = await initDB();
+    await db.put(STORE_NAME, { ...word, timestamp: Date.now() });
+  } catch {
+    // IndexedDB unavailable (SSR, private browsing, etc.) — silently skip
+  }
 };
 
 export const getHistory = async () => {
-  const db = await initDB();
-  return db.getAll(STORE_NAME);
+  try {
+    const db = await initDB();
+    return db.getAll(STORE_NAME);
+  } catch {
+    return [];
+  }
+};
+
+/** Return up to `limit` most recent history entries (newest first) */
+export const getRecentHistory = async (limit?: number) => {
+  try {
+    const db = await initDB();
+    const all = await db.getAll(STORE_NAME);
+    const sorted = all.sort((a, b) => (b.timestamp as number) - (a.timestamp as number));
+    return limit ? sorted.slice(0, limit) : sorted;
+  } catch {
+    return [];
+  }
+};
+
+/** Clear all search history from IndexedDB */
+export const clearHistory = async () => {
+  try {
+    const db = await initDB();
+    await db.clear(STORE_NAME);
+  } catch {
+    // Silently skip if IndexedDB is unavailable
+  }
 };

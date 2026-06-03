@@ -11,7 +11,7 @@ const definition: AgentDefinition = {
   version: '1.0.0',
   displayName: 'ECC Swift Reviewer',
   spawnerPrompt: "Expert Swift code reviewer specializing in protocol-oriented design, value semantics, ARC memory management, Swift Concurrency, and idiomatic patterns. Use for all Swift code changes. MUST BE USED for Swift projects.",
-  model: 'deepseek/deepseek-v4-flash',
+  model: 'deepseek/deepseek-v4-pro',
   reasoningOptions: { enabled: true, exclude: false, effort: 'medium' },
   toolNames: ['read_files', 'code_searcher', 'glob', 'basher', 'spawn_agents'],
   spawnableAgents: [],

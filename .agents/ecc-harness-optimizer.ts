@@ -18,7 +18,7 @@ const definition: AgentDefinition = {
     'Agent harness optimization specialist. Use for tuning agent configurations, model routing, ' +
     'context window optimization, hook performance, and token efficiency.',
 
-  model: 'deepseek/deepseek-v4-flash',
+  model: 'deepseek/deepseek-v4-pro',
 
   reasoningOptions: { enabled: true, exclude: false, effort: 'medium' },
 

@@ -11,7 +11,7 @@ const definition: AgentDefinition = {
   version: '1.0.0',
   displayName: 'ECC Pr Test Analyzer',
   spawnerPrompt: "Review pull request test coverage quality and completeness, with emphasis on behavioral coverage and real bug prevention.",
-  model: 'deepseek/deepseek-v4-flash',
+  model: 'deepseek/deepseek-v4-pro',
   reasoningOptions: { enabled: true, exclude: false, effort: 'medium' },
   toolNames: ['read_files', 'code_searcher', 'glob', 'basher', 'spawn_agents'],
   spawnableAgents: [],

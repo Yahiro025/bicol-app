@@ -11,7 +11,8 @@ export async function GET() {
     return NextResponse.json(scenarios);
   } catch (error: unknown) {
     console.error('Failed to fetch dialogue scenarios:', error);
-    return NextResponse.json([], { status: 200 });
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    return NextResponse.json({ error: 'Failed to fetch dialogue scenarios', details: message }, { status: 500 });
   }
 }
 

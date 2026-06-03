@@ -107,7 +107,7 @@ const definition: AgentDefinition = {
   displayName: 'My Agent',
   spawnerPrompt: 'Short description for spawning this agent.',
   systemPrompt: 'System prompt that sets the agent\'s personality and rules.',
-  model: 'deepseek/deepseek-v4-flash',
+  model: 'deepseek/deepseek-v4-pro',
   reasoningOptions: { enabled: true, exclude: false, effort: 'medium' },
   toolNames: ['read_files', 'str_replace', 'write_file', 'spawn_agents', 'end_turn'],
   spawnableAgents: ['codebuff/base@0.0.1'],

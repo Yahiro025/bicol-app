@@ -34,7 +34,7 @@
 
 import { AgentDefinition } from './types/agent-definition'
 
-const FREE_MODEL = 'deepseek/deepseek-v4-pro'  // Primary; falls back to deepseek-v4-flash when unavailable
+const FREE_MODEL = 'deepseek/deepseek-v4-pro'  // v4-pro confirmed available in free tier; v4-flash was 403 in sub-agent spawns
 
 /**
  * Shell script that validates regex patterns in all changed .ts/.tsx/.js files.

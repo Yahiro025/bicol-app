@@ -61,9 +61,11 @@ export default function Quiz({ questions, onComplete, onExit }: QuizProps) {
     return (
       <div className="max-w-md mx-auto py-20 px-6 text-center space-y-8">
         <div className="space-y-4">
-          <div className="text-6xl">🏆</div>
-          <h2 className="text-3xl font-black text-white tracking-tighter">Quiz Complete</h2>
-          <p className="text-zinc-500">You've finished the Bicolano Knowledge Check.</p>
+          <div className="w-20 h-20 mx-auto flex items-center justify-center rounded-full border" style={{ backgroundColor: 'rgba(196,155,76,0.1)', borderColor: 'rgba(196,155,76,0.2)' }}>
+            <svg className="w-10 h-10" style={{ color: 'var(--editorial-accent)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          </div>
+          <h2 className="text-3xl font-black tracking-tighter" style={{ color: 'var(--editorial-text)', fontFamily: 'var(--font-display)' }}>Quiz Complete</h2>
+          <p style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>You've finished the Bicolano Knowledge Check.</p>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
@@ -97,7 +99,7 @@ export default function Quiz({ questions, onComplete, onExit }: QuizProps) {
           <span>Question {currentIndex + 1} of {questions.length}</span>
           <span>Score: {score}</span>
         </div>
-        <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
+        <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--editorial-border)' }}>
           <motion.div 
             className="h-full" style={{ backgroundColor: 'var(--editorial-accent)' }}
             initial={{ width: 0 }}
@@ -135,14 +137,15 @@ export default function Quiz({ questions, onComplete, onExit }: QuizProps) {
                   key={option}
                   onClick={() => handleOptionClick(option)}
                   disabled={isAnswered}
-                  className={`w-full text-left p-5 rounded-2xl border transition-all duration-300 active:scale-[0.98] ${
-                    variant === 'correct' ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' :
-                    variant === 'incorrect' ? 'bg-amber-400/10 border-amber-400/30 text-amber-400' :
-                    variant === 'selected' ? 'text-[var(--editorial-accent)]' :
-                    variant === 'dimmed' ? 'opacity-40' :
-                    'text-[var(--editorial-muted)] hover:border-[var(--editorial-muted)] hover:text-[var(--editorial-text)]'
-                  }`}
-                  style={variant === 'selected' ? { borderColor: 'var(--editorial-accent)', backgroundColor: 'rgba(196,155,76,0.08)', fontFamily: 'var(--font-body)' } : variant === 'dimmed' ? { backgroundColor: 'var(--editorial-bg)', borderColor: 'var(--editorial-border)', fontFamily: 'var(--font-body)' } : variant === 'correct' || variant === 'incorrect' ? { fontFamily: 'var(--font-body)' } : { backgroundColor: 'var(--editorial-bg)', borderColor: 'var(--editorial-border)', fontFamily: 'var(--font-body)' }}
+                  className="w-full text-left p-5 rounded-2xl border transition-all duration-300 active:scale-[0.98]"
+                  style={{
+                    fontFamily: 'var(--font-body)',
+                    ...(variant === 'correct' ? { backgroundColor: 'rgba(52,211,153,0.1)', borderColor: 'rgba(52,211,153,0.3)', color: '#34d399' } :
+                    variant === 'incorrect' ? { backgroundColor: 'rgba(251,191,36,0.1)', borderColor: 'rgba(251,191,36,0.3)', color: '#fbbf24' } :
+                    variant === 'selected' ? { borderColor: 'var(--editorial-accent)', backgroundColor: 'rgba(196,155,76,0.08)', color: 'var(--editorial-accent)' } :
+                    variant === 'dimmed' ? { backgroundColor: 'var(--editorial-bg)', borderColor: 'var(--editorial-border)', color: 'var(--editorial-muted)', opacity: 0.4 } :
+                    { backgroundColor: 'var(--editorial-bg)', borderColor: 'var(--editorial-border)', color: 'var(--editorial-muted)' })
+                  }}
                 >
                   <div className="flex justify-between items-center">
                     <span className="font-medium">{option}</span>

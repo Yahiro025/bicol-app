@@ -48,14 +48,14 @@ export default function FlashcardsPage() {
 
   if (isActive && words.length > 0) {
     return (
-      <main className="min-h-screen bg-white dark:bg-zinc-950">
+      <main className="min-h-screen" style={{ backgroundColor: 'var(--editorial-bg)' }}>
         <Flashcards words={words} onExit={() => setIsActive(false)} />
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-white">
+    <main className="min-h-screen" style={{ backgroundColor: 'var(--editorial-bg)', color: 'var(--editorial-text)' }}>
       <div className="max-w-2xl mx-auto px-6 py-12 space-y-12">
         {/* Back link */}
         <Link

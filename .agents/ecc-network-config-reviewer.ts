@@ -11,7 +11,7 @@ const definition: AgentDefinition = {
   version: '1.0.0',
   displayName: 'ECC Network Config Reviewer',
   spawnerPrompt: "Reviews router and switch configurations for security, correctness, stale references, risky change-window commands, and missing operational guardrails.",
-  model: 'deepseek/deepseek-v4-flash',
+  model: 'deepseek/deepseek-v4-pro',
   reasoningOptions: { enabled: true, exclude: false, effort: 'medium' },
   toolNames: ['read_files', 'code_searcher', 'spawn_agents'],
   spawnableAgents: [],
