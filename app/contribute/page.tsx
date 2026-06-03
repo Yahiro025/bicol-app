@@ -8,13 +8,13 @@ export const metadata: Metadata = {
 
 export default function ContributePage() {
   return (
-    <main className="min-h-screen bg-white dark:bg-zinc-950">
+    <main className="min-h-screen" style={{ backgroundColor: 'var(--editorial-bg)' }}>
       <div className="max-w-6xl mx-auto px-6 py-16">
         <div className="text-center space-y-2 mb-12">
-          <h1 className="text-4xl font-display font-black tracking-tight text-zinc-900 dark:text-white">
+          <h1 className="text-4xl font-display font-black tracking-tight" style={{ color: 'var(--editorial-text)' }}>
             Contribute a Word
           </h1>
-          <p className="text-zinc-500 dark:text-zinc-400 text-lg">
+          <p className="text-lg" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>
             Help us document and preserve the Bikol language. All submissions are reviewed by moderators.
           </p>
         </div>

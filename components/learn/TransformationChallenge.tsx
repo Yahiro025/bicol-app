@@ -90,16 +90,16 @@ export default function TransformationChallenge({ onComplete, challenges: extern
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl backdrop-blur-sm">
+    <div className="max-w-2xl mx-auto p-6 border rounded-2xl backdrop-blur-sm" style={{ backgroundColor: 'var(--editorial-surface)', borderColor: 'var(--editorial-border)' }}>
       <div className="mb-8">
         <div className="flex justify-between items-start mb-2">
-          <h3 className="text-blue-500 font-bold uppercase tracking-widest text-xs">Phase 2: Transformation</h3>
-          <span className="text-zinc-600 text-xs font-mono">{currentIdx + 1} / {SAMPLE_CHALLENGES.length}</span>
+          <h3 className="font-bold uppercase tracking-widest text-xs" style={{ color: 'var(--editorial-accent)', fontFamily: 'var(--font-body)' }}>Phase 2: Transformation</h3>
+          <span className="text-xs font-mono" style={{ color: 'var(--editorial-muted)' }}>{currentIdx + 1} / {SAMPLE_CHALLENGES.length}</span>
         </div>
-        <h2 className="text-2xl font-bold text-zinc-100 mb-4">{challenge.prompt}</h2>
-        <div className="p-4 bg-zinc-950 rounded-xl border border-zinc-800">
-          <p className="text-sm text-zinc-500 mb-2 uppercase tracking-tighter font-bold">Target Pattern:</p>
-          <p className="text-lg italic text-zinc-400">"{challenge.sentence.replace(challenge.answer, '____')}"</p>
+        <h2 className="text-2xl font-bold mb-4" style={{ color: 'var(--editorial-text)', fontFamily: 'var(--font-display)' }}>{challenge.prompt}</h2>
+        <div className="p-4 rounded-xl border" style={{ backgroundColor: 'var(--editorial-bg)', borderColor: 'var(--editorial-border)' }}>
+          <p className="text-sm mb-2 uppercase tracking-tighter font-bold" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Target Pattern:</p>
+          <p className="text-lg italic" style={{ color: 'var(--editorial-text)' }}>"{challenge.sentence.replace(challenge.answer, '____')}"</p>
         </div>
       </div>
 
@@ -113,9 +113,10 @@ export default function TransformationChallenge({ onComplete, challenges: extern
             if (isCorrect === false) setIsCorrect(null);
           }}
           placeholder="Type the verb or the full sentence..."
-          className={`w-full bg-zinc-950 border rounded-xl px-4 py-3 text-zinc-100 focus:ring-2 outline-none transition-all ${
-            isCorrect === false ? 'border-red-500/50 ring-1 ring-red-500/20' : 'border-zinc-800 focus:ring-blue-500'
+          className={`w-full border rounded-xl px-4 py-3 focus:ring-2 outline-none transition-all ${
+            isCorrect === false ? 'border-red-500/50 ring-1 ring-red-500/20' : 'focus:ring-[var(--editorial-accent)]'
           }`}
+          style={{ backgroundColor: 'var(--editorial-bg)', borderColor: isCorrect === false ? undefined : 'var(--editorial-border)', color: 'var(--editorial-text)' }}
           disabled={showAnswer}
           autoFocus
         />
@@ -123,7 +124,7 @@ export default function TransformationChallenge({ onComplete, challenges: extern
         {!showAnswer && (
           <button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-transform active:scale-95 shadow-lg shadow-blue-500/10"
+            className="w-full text-white font-bold py-3 rounded-xl transition-transform active:scale-95 shadow-lg" style={{ backgroundColor: 'var(--editorial-accent)', fontFamily: 'var(--font-body)' }}
           >
             Check Answer
           </button>
@@ -135,7 +136,7 @@ export default function TransformationChallenge({ onComplete, challenges: extern
           <button
             type="button"
             onClick={nextChallenge}
-            className="w-full bg-zinc-100 hover:bg-white text-zinc-950 font-bold py-3 rounded-xl transition-transform active:scale-95 shadow-lg"
+            className="w-full font-bold py-3 rounded-xl transition-transform active:scale-95 shadow-lg" style={{ backgroundColor: 'var(--editorial-bg)', color: 'var(--editorial-text)', fontFamily: 'var(--font-body)', border: '1px solid var(--editorial-border)' }}
           >
             {currentIdx + 1 < SAMPLE_CHALLENGES.length ? "Next Challenge" : "Finish Lesson"}
           </button>
@@ -169,9 +170,9 @@ export default function TransformationChallenge({ onComplete, challenges: extern
         </AnimatePresence>
       </div>
 
-      <div className="mt-8 pt-6 border-t border-zinc-800 flex justify-between items-center text-zinc-500 text-sm">
-        <span>Root: <span className="text-blue-400 font-mono">{challenge.root}</span></span>
-        <span>Focus Class: <span className="text-purple-400 font-mono">{challenge.focusClass}</span></span>
+      <div className="mt-8 pt-6 flex justify-between items-center text-sm" style={{ borderTop: '1px solid var(--editorial-divider)', fontFamily: 'var(--font-body)' }}>
+        <span style={{ color: 'var(--editorial-muted)' }}>Root: <span className="font-mono" style={{ color: 'var(--editorial-accent)' }}>{challenge.root}</span></span>
+        <span style={{ color: 'var(--editorial-muted)' }}>Focus Class: <span className="font-mono" style={{ color: 'var(--editorial-accent-dim)' }}>{challenge.focusClass}</span></span>
       </div>
     </div>
   );

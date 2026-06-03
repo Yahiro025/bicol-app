@@ -18,7 +18,7 @@ const definition: AgentDefinition = {
     'Expert Python code reviewer. Use for reviewing Python scripts, Django/Flask/FastAPI apps, data pipelines, and scrapers. ' +
     'Checks idiomatic patterns, security, performance, and testing.',
 
-  model: 'deepseek/deepseek-v4-flash',
+  model: 'deepseek/deepseek-v4-pro',
 
   reasoningOptions: { enabled: true, exclude: false, effort: 'medium' },
 

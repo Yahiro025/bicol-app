@@ -18,7 +18,7 @@ const definition: AgentDefinition = {
     'End-to-end testing specialist. Use PROACTIVELY for generating, maintaining, and running E2E tests. ' +
     'Manages test journeys, quarantines flaky tests, and ensures critical user flows work.',
 
-  model: 'deepseek/deepseek-v4-flash',
+  model: 'deepseek/deepseek-v4-pro',
 
   reasoningOptions: {
     enabled: true,

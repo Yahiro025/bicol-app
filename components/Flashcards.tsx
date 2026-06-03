@@ -47,11 +47,17 @@ export default function Flashcards({ words, onExit }: FlashcardsProps) {
   const [knownWords, setKnownWords] = useState<Set<string>>(new Set());
   const [isFinished, setIsFinished] = useState(false);
 
+  const CheckIcon = () => (
+    <svg className="w-8 h-8" style={{ color: 'var(--editorial-accent)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+    </svg>
+  );
+
   if (!words || words.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center p-12 text-center">
-        <p className="text-zinc-500 mb-6">No words available for this session.</p>
-        <button onClick={onExit} className="px-6 py-2 bg-zinc-800 text-white rounded-lg">Return</button>
+        <p className="mb-6" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>No words available for this session.</p>
+        <button onClick={onExit} className="px-6 py-2 rounded-lg text-white font-semibold" style={{ backgroundColor: 'var(--editorial-accent)' }}>Return</button>
       </div>
     );
   }
@@ -81,25 +87,30 @@ export default function Flashcards({ words, onExit }: FlashcardsProps) {
     return (
       <div className="max-w-md mx-auto py-20 px-6 text-center space-y-8">
         <div className="space-y-4">
-          <div className="text-6xl">🎓</div>
-          <h2 className="text-3xl font-black text-white tracking-tighter">Session Complete</h2>
-          <p className="text-zinc-500">You've reviewed all {words.length} words in this session.</p>
+          <div className="text-6xl">
+            <span className="w-16 h-16 mx-auto flex items-center justify-center rounded-full border" style={{ backgroundColor: 'rgba(196,155,76,0.1)', borderColor: 'rgba(196,155,76,0.2)' }}>
+              <CheckIcon />
+            </span>
+          </div>
+          <h2 className="text-3xl font-black tracking-tighter" style={{ color: 'var(--editorial-text)', fontFamily: 'var(--font-display)' }}>Session Complete</h2>
+          <p style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>You've reviewed all {words.length} words in this session.</p>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <div className="p-6 bg-zinc-900 border border-zinc-800 rounded-3xl">
-            <div className="text-3xl font-black text-green-500">{knownWords.size}</div>
-            <div className="text-xs font-bold text-zinc-500 uppercase tracking-widest mt-1">Mastered</div>
+          <div className="p-6 border rounded-3xl" style={{ backgroundColor: 'var(--editorial-surface)', borderColor: 'var(--editorial-border)' }}>
+            <div className="text-3xl font-black" style={{ color: 'var(--editorial-accent)', fontFamily: 'var(--font-display)' }}>{knownWords.size}</div>
+            <div className="text-xs font-bold uppercase tracking-widest mt-1" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Mastered</div>
           </div>
-          <div className="p-6 bg-zinc-900 border border-zinc-800 rounded-3xl">
-            <div className="text-3xl font-black text-blue-500">{words.length - knownWords.size}</div>
-            <div className="text-xs font-bold text-zinc-500 uppercase tracking-widest mt-1">Reviewing</div>
+          <div className="p-6 border rounded-3xl" style={{ backgroundColor: 'var(--editorial-surface)', borderColor: 'var(--editorial-border)' }}>
+            <div className="text-3xl font-black" style={{ color: 'var(--editorial-accent-dim)', fontFamily: 'var(--font-display)' }}>{words.length - knownWords.size}</div>
+            <div className="text-xs font-bold uppercase tracking-widest mt-1" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Reviewing</div>
           </div>
         </div>
 
         <button 
           onClick={onExit}
-          className="w-full py-4 bg-zinc-800 text-white font-bold rounded-2xl hover:bg-zinc-700 transition-colors"
+          className="w-full py-4 text-white font-bold rounded-2xl transition-colors"
+          style={{ backgroundColor: 'var(--editorial-accent)', fontFamily: 'var(--font-body)' }}
         >
           Return to Menu
         </button>
@@ -112,16 +123,17 @@ export default function Flashcards({ words, onExit }: FlashcardsProps) {
       <div className="w-full space-y-4">
         <div className="flex justify-between items-end">
           <div className="space-y-1">
-            <span className="text-xs font-bold text-blue-500 uppercase tracking-widest">Flashcards</span>
-            <h3 className="text-lg font-bold text-zinc-400">Card {currentIndex + 1} of {words.length}</h3>
+            <span className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--editorial-accent)', fontFamily: 'var(--font-body)' }}>Flashcards</span>
+            <h3 className="text-lg font-bold" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-display)' }}>Card {currentIndex + 1} of {words.length}</h3>
           </div>
           <div className="text-right">
-            <span className="text-sm font-bold text-zinc-500">{Math.round((page / words.length) * 100)}% Complete</span>
+            <span className="text-sm font-bold" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>{Math.round((page / words.length) * 100)}% Complete</span>
           </div>
         </div>
-        <div className="h-1 bg-zinc-800 rounded-full overflow-hidden">
+        <div className="h-1 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--editorial-border)' }}>
           <motion.div 
-            className="h-full bg-blue-500"
+            className="h-full"
+            style={{ backgroundColor: 'var(--editorial-accent)' }}
             initial={{ width: 0 }}
             animate={{ width: `${(page / words.length) * 100}%` }}
           />
@@ -147,22 +159,22 @@ export default function Flashcards({ words, onExit }: FlashcardsProps) {
               transition={{ type: "spring", stiffness: 260, damping: 20 }}
             >
               {/* Front */}
-              <div className="absolute inset-0 backface-hidden bg-zinc-900 border border-zinc-800 rounded-[2.5rem] p-10 flex flex-col items-center justify-center text-center transition-shadow duration-500 glow-blue-hover">
-                <span className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] mb-6">Bicolano</span>
-                <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-tighter leading-none mb-4">{word.bikol}</h2>
-                <div className="h-1 w-8 bg-blue-500/20 rounded-full mb-6"></div>
-                <p className="text-zinc-600 text-xs font-bold uppercase tracking-widest animate-pulse">Tap to reveal meaning</p>
+              <div className="absolute inset-0 backface-hidden border rounded-[2.5rem] p-10 flex flex-col items-center justify-center text-center transition-shadow duration-500" style={{ backgroundColor: 'var(--editorial-surface)', borderColor: 'var(--editorial-border)' }}>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] mb-6" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Bicolano</span>
+                <h2 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter leading-none mb-4" style={{ color: 'var(--editorial-text)', fontFamily: 'var(--font-display)' }}>{word.bikol}</h2>
+                <div className="h-1 w-8 rounded-full mb-6" style={{ backgroundColor: 'rgba(196,155,76,0.2)' }}></div>
+                <p className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Tap to reveal meaning</p>
               </div>
 
               {/* Back */}
-              <div className="absolute inset-0 backface-hidden bg-[#3b82f6] rounded-[2.5rem] p-10 flex flex-col items-center justify-center text-center rotate-y-180">
-                <span className="text-[10px] font-black text-blue-100/60 uppercase tracking-[0.2em] mb-6">Translation</span>
-                <h2 className="text-4xl font-black text-white tracking-tight mb-2">{word.english}</h2>
-                {word.tagalog && <p className="text-xl font-bold text-blue-50/80 mb-6">{word.tagalog}</p>}
+              <div className="absolute inset-0 backface-hidden rounded-[2.5rem] p-10 flex flex-col items-center justify-center text-center rotate-y-180" style={{ backgroundColor: 'var(--editorial-accent)' }}>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] mb-6" style={{ color: 'rgba(255,255,255,0.6)', fontFamily: 'var(--font-body)' }}>Translation</span>
+                <h2 className="text-4xl font-black text-white tracking-tight mb-2" style={{ fontFamily: 'var(--font-display)' }}>{word.english}</h2>
+                {word.tagalog && <p className="text-xl font-bold mb-6" style={{ color: 'rgba(255,255,255,0.8)', fontFamily: 'var(--font-body)' }}>{word.tagalog}</p>}
                 
                 {word.example_bikol && (
-                  <div className="mt-4 p-4 bg-white/10 rounded-2xl border border-white/10 max-w-xs">
-                    <p className="text-sm text-blue-50 italic">"{word.example_bikol}"</p>
+                  <div className="mt-4 p-4 rounded-2xl border max-w-xs" style={{ backgroundColor: 'rgba(255,255,255,0.1)', borderColor: 'rgba(255,255,255,0.1)' }}>
+                    <p className="text-sm italic" style={{ color: 'rgba(255,255,255,0.9)' }}>"{word.example_bikol}"</p>
                   </div>
                 )}
               </div>
@@ -174,13 +186,13 @@ export default function Flashcards({ words, onExit }: FlashcardsProps) {
       <div className="flex gap-4 w-full">
         <button 
           onClick={(e) => { e.stopPropagation(); handleNext(false); }}
-          className="flex-1 py-4 bg-zinc-800 text-zinc-400 font-bold rounded-2xl hover:bg-zinc-700 hover:text-zinc-200 transition-all active:scale-95"
+          className="flex-1 py-4 font-bold rounded-2xl transition-all active:scale-95" style={{ backgroundColor: 'var(--editorial-surface)', color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)', border: '1px solid var(--editorial-border)' }}
         >
           Review Later
         </button>
         <button 
           onClick={(e) => { e.stopPropagation(); handleNext(true); }}
-          className="flex-1 py-4 bg-blue-600 text-white font-bold rounded-2xl hover:bg-blue-500 transition-all shadow-lg shadow-blue-500/20 active:scale-95"
+          className="flex-1 py-4 text-white font-bold rounded-2xl transition-all shadow-lg active:scale-95" style={{ backgroundColor: 'var(--editorial-accent)', fontFamily: 'var(--font-body)' }}
         >
           I Mastered This
         </button>

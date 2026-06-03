@@ -94,7 +94,8 @@ export default function PwaInstallPrompt() {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -100, opacity: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed top-[73px] left-0 right-0 z-40 bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-3 shadow-lg"
+            className="fixed top-[73px] left-0 right-0 z-40 px-4 py-3 shadow-lg"
+            style={{ background: 'linear-gradient(135deg, var(--editorial-accent), var(--editorial-rust))' }}
           >
             <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">

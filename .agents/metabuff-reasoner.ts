@@ -34,7 +34,7 @@
 
 import { AgentDefinition } from './types/agent-definition'
 
-const FREE_MODEL = 'deepseek/deepseek-v4-pro'  // Primary; falls back to deepseek-v4-flash when unavailable
+const FREE_MODEL = 'deepseek/deepseek-v4-pro'  // v4-pro confirmed available in free tier; v4-flash was 403 in sub-agent spawns
 
 const REASONER_SYSTEM = `You are MetaBuff's deep reasoning specialist.
 You are invoked for tasks that require genuine algorithmic thinking — not code lookup or boilerplate.
@@ -154,7 +154,7 @@ const definition: AgentDefinition = {
   ],
 
   spawnableAgents: [
-    'codebuff/thinker@0.0.1',  // escalation for especially thorny problems
+    'thinker-with-files-gemini',  // escalation for especially thorny problems
   ],
 
   includeMessageHistory: true,

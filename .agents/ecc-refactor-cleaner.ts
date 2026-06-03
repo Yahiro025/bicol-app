@@ -19,7 +19,7 @@ const definition: AgentDefinition = {
     'Use PROACTIVELY for removing unused code, duplicates, and refactoring. ' +
     'Identifies dead code and safely removes it with verification at each step.',
 
-  model: 'deepseek/deepseek-v4-flash',
+  model: 'deepseek/deepseek-v4-pro',
 
   reasoningOptions: {
     enabled: true,

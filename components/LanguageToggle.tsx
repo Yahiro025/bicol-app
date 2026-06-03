@@ -41,7 +41,7 @@ export default function LanguageToggle() {
   }, [mode]);
 
   return (
-    <div className="relative flex items-center gap-1 bg-zinc-900 border border-zinc-800 p-1 rounded-full">
+    <div className="relative flex items-center gap-1 border p-1 rounded-full" style={{ backgroundColor: 'var(--editorial-surface)', borderColor: 'var(--editorial-border)' }}>
       {/* Toast notification */}
       <AnimatePresence>
         {showToast && (
@@ -57,7 +57,7 @@ export default function LanguageToggle() {
         )}
       </AnimatePresence>
 
-      <div className="flex items-center gap-1.5 px-2 text-zinc-500">
+      <div className="flex items-center gap-1.5 px-2" style={{ color: 'var(--editorial-muted)' }}>
         <Languages size={14} />
       </div>
       <LayoutGroup>
@@ -68,9 +68,10 @@ export default function LanguageToggle() {
             onClick={() => handleToggle(m)}
             className={`px-3 py-1 rounded-full text-[10px] font-black tracking-widest transition-all relative ${
               mode === m 
-                ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' 
-                : 'text-zinc-500 hover:text-white'
+                ? 'text-white shadow-lg' 
+                : ''
             }`}
+            style={mode === m ? { backgroundColor: 'var(--editorial-accent)' } : { color: 'var(--editorial-muted)' }}
           >
             {m.toUpperCase()}
             {/* Active indicator dot */}

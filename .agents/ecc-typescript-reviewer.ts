@@ -19,7 +19,7 @@ const definition: AgentDefinition = {
     'Expert TypeScript/JavaScript code reviewer. Use PROACTIVELY for reviewing TypeScript, React, Next.js, and Node.js code. ' +
     'Checks type safety, async patterns, error handling, and idiomatic patterns.',
 
-  model: 'deepseek/deepseek-v4-flash',
+  model: 'deepseek/deepseek-v4-pro',
 
   reasoningOptions: { enabled: true, exclude: false, effort: 'medium' },
 

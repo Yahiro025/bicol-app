@@ -18,7 +18,7 @@ const definition: AgentDefinition = {
     'Autonomous loop execution specialist for continuous agent workflows. ' +
     'Use for managing long-running agent loops, monitoring progress, preventing runaway execution.',
 
-  model: 'deepseek/deepseek-v4-flash',
+  model: 'deepseek/deepseek-v4-pro',
 
   reasoningOptions: { enabled: true, exclude: false, effort: 'medium' },
 

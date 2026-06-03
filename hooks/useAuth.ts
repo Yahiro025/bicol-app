@@ -1,7 +1,7 @@
 "use client";
 
 import { createBrowserClient } from "@supabase/ssr";
-import type { User, Session } from "@supabase/supabase-js";
+import type { User, Session, AuthChangeEvent } from "@supabase/supabase-js";
 import { useEffect, useState, useCallback } from "react";
 
 export interface AuthState {
@@ -34,7 +34,8 @@ export function useAuth(): AuthState {
 
   useEffect(() => {
     // Initialize session on mount
-    getSupabase().auth.getSession().then(({ data: { session: currentSession } }) => {
+    getSupabase().auth.getSession().then(({ data }: { data: { session: Session | null } }) => {
+      const currentSession = data.session;
       setSession(currentSession);
       setUser(currentSession?.user ?? null);
       setIsLoading(false);
@@ -43,7 +44,7 @@ export function useAuth(): AuthState {
     // Listen for auth state changes
     const {
       data: { subscription },
-    } = getSupabase().auth.onAuthStateChange((_event, newSession) => {
+    } = getSupabase().auth.onAuthStateChange((_event: AuthChangeEvent, newSession: Session | null) => {
       setSession(newSession);
       setUser(newSession?.user ?? null);
       setIsLoading(false);

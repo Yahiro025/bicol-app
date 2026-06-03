@@ -20,7 +20,7 @@ const definition: AgentDefinition = {
     'Use PROACTIVELY after writing code that handles user input, authentication, API endpoints, or sensitive data. ' +
     'Flags secrets, SSRF, injection, unsafe crypto, and OWASP Top 10 vulnerabilities.',
 
-  model: 'deepseek/deepseek-v4-flash',
+  model: 'deepseek/deepseek-v4-pro',
 
   reasoningOptions: {
     enabled: true,

@@ -18,7 +18,7 @@ const definition: AgentDefinition = {
     'Test-Driven Development specialist enforcing write-tests-first methodology. ' +
     'Use PROACTIVELY when writing new features, fixing bugs, or refactoring code. Ensures 80%+ test coverage.',
 
-  model: 'deepseek/deepseek-v4-flash',
+  model: 'deepseek/deepseek-v4-pro',
 
   reasoningOptions: {
     enabled: true,

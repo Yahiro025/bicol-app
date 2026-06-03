@@ -14,7 +14,7 @@
 
 import { AgentDefinition } from './types/agent-definition'
 
-const FREE_MODEL = 'deepseek/deepseek-v4-pro'  // Primary; falls back to deepseek-v4-flash when unavailable
+const FREE_MODEL = 'deepseek/deepseek-v4-pro'  // v4-pro confirmed available in free tier; v4-flash was 403 in sub-agent spawns
 
 const definition: AgentDefinition = {
   id: 'metabuff-arch',
@@ -47,8 +47,8 @@ const definition: AgentDefinition = {
   ],
 
   spawnableAgents: [
-    'codebuff/thinker@0.0.1',
-    'codebuff/researcher@0.0.1',
+    'thinker-with-files-gemini',
+    'researcher-web',
   ],
 
   systemPrompt: `You are MetaBuff's architecture specialist.
