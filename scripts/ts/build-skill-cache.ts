@@ -61,17 +61,47 @@ function buildCache(): SkillCache {
     return cache
   }
 
-  const skillDirs = fs.readdirSync(SKILLS_DIR, { withFileTypes: true })
-    .filter(d => d.isDirectory())
-    .map(d => d.name)
-
-  console.log(`Indexing ${skillDirs.length} skill directories...`)
-
-  for (const dirName of skillDirs) {
+  /**
+   * Recursively find all SKILL.md files under SKILLS_DIR.
+   * Returns array of { dirName, filePath } where dirName is the skill's
+   * unique identifier: top-level dirs use their name; nested dirs use
+   * "parent-name/child-name" to avoid collisions.
+   */
+  function findSkillFiles(dir: string, base: string = ''): Array<{ dirName: string; filePath: string }> {
+    const results: Array<{ dirName: string; filePath: string }> = []
+    let entries: fs.Dirent[]
     try {
-      const skillFile = path.join(SKILLS_DIR, dirName, 'SKILL.md')
-      if (!fs.existsSync(skillFile)) continue
+      entries = fs.readdirSync(dir, { withFileTypes: true })
+    } catch {
+      return results
+    }
 
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue
+      if (entry.name.startsWith('.') || entry.name === 'node_modules') continue
+
+      const subDir = path.join(dir, entry.name)
+      const skillFile = path.join(subDir, 'SKILL.md')
+      const dirName = base ? `${base}/${entry.name}` : entry.name
+
+      if (fs.existsSync(skillFile)) {
+        results.push({ dirName, filePath: skillFile })
+      }
+
+      // Recurse into subdirectories for nested skill structures
+      // (e.g., superpowers/ contains both a SKILL.md and sub-skills)
+      results.push(...findSkillFiles(subDir, dirName))
+    }
+
+    return results
+  }
+
+  const skillFiles = findSkillFiles(SKILLS_DIR)
+
+  console.log(`Indexing ${skillFiles.length} skill directories...`)
+
+  for (const { dirName, filePath: skillFile } of skillFiles) {
+    try {
       const raw = fs.readFileSync(skillFile, 'utf-8')
       // Strip YAML frontmatter
       const body = raw.replace(/^---[\s\S]*?---\n?/, '').trim()

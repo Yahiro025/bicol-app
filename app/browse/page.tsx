@@ -16,9 +16,8 @@ export default async function BrowsePage({
   let words: any[] = [];
   let categories: string[] = [];
   let totalWords = 0;
-  let dbError = null;
+  let dbError: string | null = null;
 
-  // Fetch words, categories & total count independently — one failing won't block the others
   const [wordsResult, categoriesResult, totalResult] = await Promise.allSettled([
     browseWords({
       filters: { letter, category, q },
@@ -48,31 +47,48 @@ export default async function BrowsePage({
   }
 
   return (
-    <main className="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-white p-8">
+    <main
+      className="min-h-screen p-8"
+      style={{ backgroundColor: 'var(--editorial-bg)' }}
+    >
       <div className="max-w-6xl mx-auto">
-        <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
-          <h1 className="text-3xl font-bold">Browse Dictionary</h1>
+        {/* Section label + heading */}
+        <span className="section-number">Dictionary</span>
+        <div className="flex items-center justify-between mt-3 mb-8 flex-wrap gap-4">
+          <h1
+            className="text-3xl sm:text-4xl font-black tracking-tight text-[var(--editorial-text)]"
+            style={{ fontFamily: 'var(--font-display)' }}
+          >
+            Browse Dictionary
+          </h1>
           <Link
             href="/flashcards"
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-500 transition-colors active:scale-95 shadow-lg shadow-blue-500/20"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all active:scale-95"
+            style={{
+              fontFamily: 'var(--font-body)',
+              backgroundColor: 'var(--editorial-accent)',
+              color: '#fff',
+            }}
           >
             <BookOpen className="w-4 h-4" />
             Study with Flashcards
           </Link>
         </div>
-        
+        <div className="rule-divider mb-10" />
+
         {dbError && (
-          <div className="bg-red-50 dark:bg-red-900 text-red-700 dark:text-red-100 border border-red-200 dark:border-red-900/50 p-4 rounded-xl text-sm mb-6">
+          <div className="bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-200 border border-red-200 dark:border-red-900/50 p-4 rounded-xl text-sm mb-6"
+            style={{ fontFamily: 'var(--font-body)' }}>
             Database Error: {dbError}
           </div>
         )}
 
-        <BrowseClient 
-          initialWords={words} 
+        <BrowseClient
+          initialWords={words}
           initialCategories={categories}
           totalWords={totalWords}
-          initialLetter={letter || ''} 
-          initialCategory={category || ''} 
+          initialLetter={letter || ''}
+          initialCategory={category || ''}
           initialQuery={q || ''}
           initialSort={sort || ''}
         />

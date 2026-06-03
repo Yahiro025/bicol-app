@@ -216,16 +216,23 @@ export default function BrowseClient({
           value={query}
           onChange={handleSearchChange}
           placeholder={`Search dictionary...`}
-          className="w-full px-8 py-4 bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-full text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-zinc-950 text-lg transition-all duration-300 focus:bg-white dark:focus:bg-zinc-800/50"
+          className="w-full px-8 py-4 rounded-xl text-lg transition-all duration-300 focus:outline-none placeholder:opacity-50"
+          style={{
+            fontFamily: 'var(--font-body)',
+            backgroundColor: 'var(--editorial-surface)',
+            border: '1px solid var(--editorial-border)',
+            color: 'var(--editorial-text)',
+          }}
         />
         <div className="absolute right-6 top-1/2 -translate-y-1/2 flex items-center gap-3">
           {isPending && (
-            <div className="w-4 h-4 border-2 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
+            <div className="w-4 h-4 border-2 rounded-full animate-spin" style={{ borderColor: 'var(--editorial-border)', borderTopColor: 'var(--editorial-accent)' }} />
           )}
           {query && (
             <button 
               onClick={() => setQuery('')}
-              className="text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors p-1"
+              className="transition-colors p-1"
+              style={{ color: 'var(--editorial-muted)' }}
             >
               ✕
             </button>
@@ -240,42 +247,51 @@ export default function BrowseClient({
             variant="secondary"
             onClick={() => setAreFiltersVisible(!areFiltersVisible)}
             className="flex items-center gap-2"
+            style={{
+              fontFamily: 'var(--font-body)',
+              border: '1px solid var(--editorial-border)',
+              color: 'var(--editorial-text)',
+              backgroundColor: 'var(--editorial-surface)',
+            }}
           >
             <svg className={`w-4 h-4 transition-transform duration-300 ${areFiltersVisible ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
             {areFiltersVisible ? 'Hide Filters' : 'Show Filters'}
           </Button>
 
           {/* Sort Toggle */}
-          <div className="flex items-center border border-zinc-300 dark:border-zinc-800 rounded-xl overflow-hidden">
+          <div className="flex items-center rounded-xl overflow-hidden" style={{ border: '1px solid var(--editorial-border)' }}>
             {query && (
               <button
                 onClick={() => setSortMode('relevance')}
-                className={`px-4 py-2 text-xs font-bold transition-all ${
-                  sortMode === 'relevance'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-300 dark:hover:bg-zinc-700'
-                }`}
+                className="px-4 py-2 text-xs font-semibold transition-all"
+                style={{
+                  fontFamily: 'var(--font-body)',
+                  backgroundColor: sortMode === 'relevance' ? 'var(--editorial-accent)' : 'var(--editorial-surface)',
+                  color: sortMode === 'relevance' ? '#fff' : 'var(--editorial-muted)',
+                }}
               >
                 Relevance
               </button>
             )}
             <button
               onClick={() => setSortMode('alphabetical')}
-              className={`px-4 py-2 text-xs font-bold transition-all ${
-                sortMode === 'alphabetical'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-300 dark:hover:bg-zinc-700'
-              }`}
+              className="px-4 py-2 text-xs font-semibold transition-all"
+              style={{
+                fontFamily: 'var(--font-body)',
+                backgroundColor: sortMode === 'alphabetical' ? 'var(--editorial-accent)' : 'var(--editorial-surface)',
+                color: sortMode === 'alphabetical' ? '#fff' : 'var(--editorial-muted)',
+              }}
             >
               A–Z
             </button>
             <button
               onClick={() => setSortMode('frequency')}
-              className={`px-4 py-2 text-xs font-bold transition-all ${
-                sortMode === 'frequency'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-300 dark:hover:bg-zinc-700'
-              }`}
+              className="px-4 py-2 text-xs font-semibold transition-all"
+              style={{
+                fontFamily: 'var(--font-body)',
+                backgroundColor: sortMode === 'frequency' ? 'var(--editorial-accent)' : 'var(--editorial-surface)',
+                color: sortMode === 'frequency' ? '#fff' : 'var(--editorial-muted)',
+              }}
             >
               Common
             </button>
@@ -284,19 +300,33 @@ export default function BrowseClient({
 
         <div className="flex items-center gap-2 flex-wrap">
           {selectedLetter && (
-            <span className="px-4 py-1.5 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-full text-xs font-bold flex items-center gap-2">
-              Letter: {selectedLetter} 
-              <button onClick={() => handleFilterClick('letter', selectedLetter)} className="hover:text-white transition-colors">✕</button>
+            <span className="px-4 py-1.5 rounded-full text-xs font-semibold flex items-center gap-2"
+              style={{
+                fontFamily: 'var(--font-body)',
+                backgroundColor: 'rgba(196, 155, 76, 0.12)',
+                color: 'var(--editorial-accent)',
+                border: '1px solid rgba(196, 155, 76, 0.25)',
+              }}
+            >
+              Letter: {selectedLetter}
+              <button onClick={() => handleFilterClick('letter', selectedLetter)} style={{ color: 'var(--editorial-accent)' }}>✕</button>
             </span>
           )}
           {selectedCategory && (
-            <span className="px-4 py-1.5 bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded-full text-xs font-bold flex items-center gap-2">
-              {selectedCategory} 
-              <button onClick={() => handleFilterClick('category', selectedCategory)} className="hover:text-white transition-colors">✕</button>
+            <span className="px-4 py-1.5 rounded-full text-xs font-semibold flex items-center gap-2"
+              style={{
+                fontFamily: 'var(--font-body)',
+                backgroundColor: 'rgba(196, 155, 76, 0.12)',
+                color: 'var(--editorial-accent)',
+                border: '1px solid rgba(196, 155, 76, 0.25)',
+              }}
+            >
+              {selectedCategory}
+              <button onClick={() => handleFilterClick('category', selectedCategory)} style={{ color: 'var(--editorial-accent)' }}>✕</button>
             </span>
           )}
           {hasActiveFilters && (
-            <button onClick={clearFilters} className="text-xs text-zinc-500 hover:text-white underline font-medium transition-colors ml-2">
+            <button onClick={clearFilters} className="text-xs font-medium underline transition-colors ml-2" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>
               Clear all
             </button>
           )}
@@ -312,17 +342,24 @@ export default function BrowseClient({
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden"
           >
-            <div className="bg-zinc-50 dark:bg-zinc-900/50 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 p-4 sm:p-8 rounded-2xl mb-10 shadow-2xl">
+            <div className="p-4 sm:p-8 rounded-2xl mb-10"
+              style={{
+                backgroundColor: 'var(--editorial-surface)',
+                border: '1px solid var(--editorial-border)',
+                boxShadow: '0 4px 24px rgba(0,0,0,0.06)',
+              }}>
               {/* Letter Grid */}
-              <h3 className="text-xs font-bold text-zinc-400 dark:text-zinc-500 mb-4 uppercase tracking-widest">Starts with</h3>
+              <h3 className="text-xs font-bold mb-4 uppercase tracking-widest" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Starts with</h3>
               <div className="flex flex-wrap gap-2 mb-8">
                 <button
                   onClick={() => handleFilterClick('letter', '')}
-                  className={`px-5 h-10 rounded-xl flex items-center justify-center text-sm font-bold transition-all duration-200 active:scale-95 ${
-                    !selectedLetter 
-                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' 
-                      : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-300 dark:hover:bg-zinc-700 hover:text-zinc-700 dark:hover:text-zinc-200 border border-zinc-300 dark:border-zinc-700'
-                  }`}
+                  className="px-5 h-10 rounded-xl flex items-center justify-center text-sm font-semibold transition-all duration-200 active:scale-95"
+                  style={{
+                    fontFamily: 'var(--font-body)',
+                    backgroundColor: !selectedLetter ? 'var(--editorial-accent)' : 'var(--editorial-bg)',
+                    color: !selectedLetter ? '#fff' : 'var(--editorial-muted)',
+                    border: !selectedLetter ? 'none' : '1px solid var(--editorial-border)',
+                  }}
                 >
                   ALL
                 </button>
@@ -330,11 +367,13 @@ export default function BrowseClient({
                   <button
                     key={l}
                     onClick={() => handleFilterClick('letter', l)}
-                    className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold transition-all duration-200 active:scale-95 ${
-                      selectedLetter === l 
-                        ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' 
-                        : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-300 dark:hover:bg-zinc-700 hover:text-zinc-700 dark:hover:text-zinc-200 border border-zinc-300 dark:border-zinc-700'
-                    }`}
+                    className="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-semibold transition-all duration-200 active:scale-95"
+                    style={{
+                      fontFamily: 'var(--font-body)',
+                      backgroundColor: selectedLetter === l ? 'var(--editorial-accent)' : 'var(--editorial-bg)',
+                      color: selectedLetter === l ? '#fff' : 'var(--editorial-muted)',
+                      border: selectedLetter === l ? 'none' : '1px solid var(--editorial-border)',
+                    }}
                   >
                     {l}
                   </button>
@@ -342,17 +381,19 @@ export default function BrowseClient({
               </div>
 
               {/* Category Grid */}
-              <h3 className="text-xs font-bold text-zinc-400 dark:text-zinc-500 mb-4 uppercase tracking-widest">Category</h3>
+              <h3 className="text-xs font-bold mb-4 uppercase tracking-widest" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Category</h3>
               <div className="flex flex-wrap gap-2">
                 {initialCategories.map((cat) => (
                   <button
                     key={cat}
                     onClick={() => handleFilterClick('category', cat)}
-                    className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 active:scale-95 ${
-                      selectedCategory === cat 
-                        ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/30' 
-                        : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-300 dark:hover:bg-zinc-700 hover:text-zinc-700 dark:hover:text-zinc-200 border border-zinc-300 dark:border-zinc-700'
-                    }`}
+                    className="px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 active:scale-95"
+                    style={{
+                      fontFamily: 'var(--font-body)',
+                      backgroundColor: selectedCategory === cat ? 'var(--editorial-rust)' : 'var(--editorial-bg)',
+                      color: selectedCategory === cat ? '#fff' : 'var(--editorial-muted)',
+                      border: selectedCategory === cat ? 'none' : '1px solid var(--editorial-border)',
+                    }}
                   >
                     {cat}
                   </button>
@@ -371,21 +412,22 @@ export default function BrowseClient({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 z-50 bg-white/40 dark:bg-zinc-950/40 backdrop-blur-[2px] flex flex-col items-center pt-20"
+              className="absolute inset-0 z-50 flex flex-col items-center pt-20"
+              style={{ backgroundColor: 'var(--editorial-bg)', opacity: 0.7 }}
             >
               <div className="relative">
                 <div className="w-12 h-12 border-4 border-blue-500/20 rounded-full animate-pulse" />
                 <div className="absolute inset-0 w-12 h-12 border-t-4 border-blue-500 rounded-full animate-spin" />
               </div>
-              <p className="mt-4 text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-[0.2em] animate-pulse">
+              <p className="mt-4 text-[10px] font-bold uppercase tracking-[0.2em] animate-pulse" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>
                 Filtering Archive...
               </p>
             </motion.div>
           )}
         </AnimatePresence>
 
-        <div className="text-sm font-medium text-zinc-400 dark:text-zinc-500 mb-6 flex items-center gap-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+        <div className="text-sm font-medium mb-6 flex items-center gap-2" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>
+          <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--editorial-accent)' }}></span>
           Found {words.length} result{words.length !== 1 ? 's' : ''}{totalWords > 0 ? ` out of ${totalWords.toLocaleString()} total words` : ''}
         </div>
 
@@ -402,24 +444,42 @@ export default function BrowseClient({
               href={`/word/${encodeURIComponent(word.bikol)}`}
               prefetch={false}
               onMouseEnter={() => router.prefetch(`/word/${encodeURIComponent(word.bikol)}`)}
-              className="block bg-zinc-50 dark:bg-zinc-900/50 backdrop-blur-sm border border-zinc-200 dark:border-zinc-800 p-6 rounded-2xl hover:border-blue-500/30 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 group"
+              className="block p-6 rounded-2xl hover:-translate-y-1 transition-all duration-300 group"
+              style={{
+                backgroundColor: 'var(--editorial-surface)',
+                border: '1px solid var(--editorial-border)',
+              }}
             >
               <div className="flex justify-between items-start">
                 <div>
-                  <h2 className="text-2xl font-display font-bold text-blue-600 dark:text-blue-500 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors">
+                  <h2 className="text-2xl font-bold transition-colors group-hover:text-[var(--editorial-accent)]"
+                    style={{ fontFamily: 'var(--font-display)', color: 'var(--editorial-text)' }}
+                  >
                     {highlightText(word.bikol)}
                   </h2>
-                  <p className="text-zinc-800 dark:text-zinc-100 mt-1 font-medium">{highlightText(displayTranslation(word))}</p>
+                  <p className="mt-1 font-medium" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>{highlightText(displayTranslation(word))}</p>
                   {langMode === 'all' && word.tagalog && (
-                    <p className="text-zinc-500 text-xs mt-2 italic">Tagalog: {highlightText(word.tagalog)}</p>
+                    <p className="text-xs mt-2 italic" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Tagalog: {highlightText(word.tagalog)}</p>
                   )}
                 </div>
                 <div className="text-right flex flex-col items-end gap-2">
                   {word.pos && (
-                    <span className="text-[10px] uppercase tracking-widest font-black bg-zinc-200 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 px-2 py-1 rounded border border-zinc-300 dark:border-zinc-700">{normalizePOS(word.pos)}</span>
+                    <span className="text-[10px] uppercase tracking-widest font-bold px-2 py-1 rounded"
+                      style={{
+                        fontFamily: 'var(--font-body)',
+                        backgroundColor: 'var(--editorial-bg)',
+                        color: 'var(--editorial-muted)',
+                        border: '1px solid var(--editorial-border)',
+                      }}>{normalizePOS(word.pos)}</span>
                   )}
                   {word.category && (
-                    <span className="text-[10px] uppercase tracking-widest font-black bg-blue-500/10 text-blue-400 px-2 py-1 rounded border border-blue-500/20">{word.category}</span>
+                    <span className="text-[10px] uppercase tracking-widest font-bold px-2 py-1 rounded"
+                      style={{
+                        fontFamily: 'var(--font-body)',
+                        backgroundColor: 'var(--editorial-bg)',
+                        color: 'var(--editorial-accent)',
+                        border: '1px solid var(--editorial-border)',
+                      }}>{word.category}</span>
                   )}
                 </div>
               </div>
@@ -431,17 +491,17 @@ export default function BrowseClient({
         <div ref={observerTarget} className="h-20 flex items-center justify-center">
           {isLoadingMore && (
             <div className="flex flex-col items-center gap-2">
-              <div className="w-6 h-6 border-2 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
-              <p className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">Loading more...</p>
+              <div className="w-6 h-6 border-2 rounded-full animate-spin" style={{ borderColor: 'var(--editorial-border)', borderTopColor: 'var(--editorial-accent)' }} />
+              <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Loading more...</p>
             </div>
           )}
           {!hasMore && words.length > 0 && (
-            <p className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">End of Archive</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>End of Archive</p>
           )}
         </div>
 
         {words.length === 0 && !isLoadingMore && (
-           <motion.div variants={itemVariants} className="text-center text-zinc-400 dark:text-zinc-500 py-12">
+           <motion.div variants={itemVariants} className="text-center py-12" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>
              {query || hasActiveFilters ? `No matches found. Try adjusting your search or filters.` : `No words found.`}
            </motion.div>
         )}

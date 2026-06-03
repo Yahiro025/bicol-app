@@ -148,10 +148,10 @@ export default async function WordDetail({ params }: { params: Promise<{ bikol: 
     const message = e instanceof Error ? e.message : 'An unexpected error occurred';
     console.error('Error fetching word:', e);
     return (
-      <main className="min-h-screen bg-zinc-950 text-white p-8 flex items-center justify-center">
+      <main className="min-h-screen p-8 flex items-center justify-center" style={{ backgroundColor: 'var(--editorial-bg)' }}>
         <div className="text-center space-y-4">
-          <div className="text-red-500 text-xl font-bold">Error loading word</div>
-          <p className="text-zinc-400">{message}</p>
+          <div className="text-xl font-bold" style={{ color: 'var(--editorial-rust)', fontFamily: 'var(--font-display)' }}>Error loading word</div>
+          <p style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>{message}</p>
         </div>
       </main>
     );

@@ -42,6 +42,35 @@
   --color-border: #27272a;
   --color-text-main: #fafafa;
   --color-text-muted: #a1a1aa;
+
+  /* Editorial / Literary Archive palette */
+  --editorial-bg: #121210;
+  --editorial-surface: #1c1c19;
+  --editorial-text: #f5f0e8;
+  --editorial-muted: #8a8780;
+  --editorial-accent: #c49b4c;
+  --editorial-accent-dim: #8b691a;
+  --editorial-rust: #a0522d;
+  --editorial-border: #2a2a25;
+  --editorial-divider: #33332e;
+}
+
+:root {
+  /* Editorial / Literary Archive palette (light) */
+  --editorial-bg: #faf8f5;
+  --editorial-surface: #f3efe8;
+  --editorial-text: #1a1a18;
+  --editorial-muted: #6b6860;
+  --editorial-accent: #c49b4c;
+  --editorial-accent-dim: #8b691a;
+  --editorial-rust: #a0522d;
+  --editorial-border: #e8e4db;
+  --editorial-divider: #d4cfc3;
+
+  /* Display font stack (editorial serif — loaded via next/font) */
+  --font-display: var(--font-playfair), 'Cormorant Garamond', 'Georgia', serif;
+  /* Body font stack (clean sans — loaded via next/font) */
+  --font-body: var(--font-dm-sans), 'Inter', system-ui, sans-serif;
 }
 
 /* Base styles */
@@ -180,4 +209,55 @@ html.changing-theme *::after {
   .sanctuary-pulse {
     animation: none;
   }
+}
+
+/* ──────────────────────────────────────
+   Editorial / Literary Archive Utilities
+   ────────────────────────────────────── */
+
+/* Noise texture overlay */
+.noise-overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Thin rule divider */
+.rule-divider {
+  height: 1px;
+  background: var(--editorial-divider);
+  width: 100%;
+  position: relative;
+}
+
+.rule-divider::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 3rem;
+  height: 1px;
+  background: var(--editorial-accent);
+}
+
+/* Section number label */
+.section-number {
+  font-family: var(--font-display);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--editorial-muted);
+}
+
+/* Hanging indent for definitions */
+.hanging-indent {
+  padding-left: 1.5em;
+  text-indent: -1.5em;
 }

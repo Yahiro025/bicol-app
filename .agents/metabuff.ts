@@ -1,11 +1,44 @@
 /**
- * MetaBuff — Main Orchestrator v2.0.4
+ * MetaBuff — Main Orchestrator v3.1.0
  * ─────────────────────────────────────
  * Makes Freebuff (DeepSeek V4 Pro) behave closer to Claude Opus 4.8 / Antigravity 2.0
  * by enforcing chain-of-thought, routing tasks by complexity, and coordinating
  * Codebuff's built-in agents + MetaBuff's own specialist subagents.
  *
- * CHANGES FROM v2.0.3 → v2.0.4:
+ * ✦ ANTHROPIC SKILLS INTEGRATION (v3.1.0) ✦
+ * Tailored integration of anthropics/skills standard into MetaBuff:
+ *   • [WHY-OVER-MUST] Enhanced prompts explain reasoning behind instructions.
+ *   • [ANTI-PATTERNS] Inject ❌ WRONG vs ✅ CORRECT catalog when coding tasks route.
+ *   • [VERIFY-ITERATE] Reference verify-iterate loop in CoT v3 STEP 5 (VERIFY).
+ *   • [TEMPLATE] Standardized SKILL.md template with YAML frontmatter for new skills.
+ *
+ * ✦ SUPERSPOWERS INTEGRATION (v3.0.0) ✦
+ * Tailored integration of obra/superpowers methodology into MetaBuff:
+ *   • [CoT v3] Brainstorming-gate (STEP 0): design doc required before implementation
+ *     for complex/mega tasks. Adapts Superpowers' "no code until design approved" gate.
+ *   • [METABUFF-TAILORED DIFFERENCE] Brainstorming is auto-triggered via complexity
+ *     analysis, not manual user approval. MetaBuff detects ambiguity and gates
+ *     automatically. Manual approval only requested for truly novel architecture.
+ *   • [REVIEW] Formalized code review: SHA-bounded review, no performative agreement,
+ *     verify-before-implement, severity-tagged findings [CRITICAL|HIGH|MEDIUM|LOW].
+ *   • [TDD] Iron Law enforcement: when testing domain scores ≥0.6, TDD skill injected
+ *     with mandatory red-green-refactor cycle.
+ *   • [FINISH] Finishing workflow: structured completion options added to validator.
+ *   • [SDD] Two-stage review (spec compliance → code quality) in mega pipeline.
+ *   • [PLANS] Writing-plans methodology: no placeholders, checkbox format, executable steps.
+ *
+ * CHANGES FROM v3.0.0 → v3.1.0:
+ *   • [ANTHROPIC SKILLS] Integrated anthropics/skills methodology into MetaBuff.
+ *     Added 7 skill files (master doc, skill-creator, webapp-testing, mcp-builder,
+ *     anti-pattern-prevention, verify-iterate, template).
+ *   • [WHY-OVER-MUST] Enhanced systemPrompt to explain reasoning behind instructions.
+ *   • [ANTI-PATTERNS] Shared getAntiPatternInjection() helper with tightened regex
+ *     injected in both pipelines (simple + complex + reasoner path).
+ *   • [VERIFY-ITERATE] RUN→INSPECT→FIX→RE-VERIFY loop embedded in CoT v3 STEP 5.
+ *   • [TEMPLATE] Standardized YAML frontmatter template for new skill creation.
+ *   • [CACHE] build-skill-cache.ts recursively discovers nested SKILL.md files.
+ *
+ * CHANGES FROM v2.0.4 → v3.0.0:
  *   • [REFACTOR] Eliminated 14 duplicate language regexes in routeReviewer().
  *     Replaced the stale [RegExp, string][] array with direct calls to the
  *     existing detector functions (isGoTask, isRustTask, etc.) which are
@@ -173,7 +206,7 @@ import { AgentDefinition } from './types/agent-definition'
 
 const definition: AgentDefinition = {
   id: 'metabuff',
-  version: '2.0.4',
+  version: '3.1.0',
   displayName: 'MetaBuff Orchestrator',
 
   spawnerPrompt:
@@ -274,7 +307,9 @@ const definition: AgentDefinition = {
     'You are MetaBuff, an intelligent orchestration layer that coordinates AI coding agents. ' +
     'Your job is NOT to write code yourself — it is to decompose tasks, select the right agents, ' +
     'and ensure every output is verified before delivery. ' +
-    'Always prefer precision over speed.',
+    'Always prefer precision over speed. ' +
+    'Explain WHY behind your routing decisions, not just WHAT you are routing — agents perform better when they understand the reasoning. ' +
+    'This is the Anthropic Skills "why over must" philosophy: understanding beats compliance.',
 
   handleSteps: function* ({ prompt }) {
 
@@ -407,7 +442,18 @@ const definition: AgentDefinition = {
       return 'simple'
     }
 
-    // ─── HELPER: Algorithm task detector ──────────────────────────────────────
+    // ─── HELPER: Anti-pattern injection (Anthropic Skills v3.1.0) ────────────
+    /**
+     * Returns anti-pattern prevention injection when the prompt involves coding.
+     * Tightened regex: only injects for significant code-authoring verbs,
+     * not for trivial words like "add" or "change" that appear in most prompts.
+     */
+    function getAntiPatternInjection(p: string, isGen: boolean): string {
+      const isCoding = isGen ||
+        /\b(implement|create.*(?:file|component|function|class|module|endpoint|api|route|schema|test)|write.*(?:function|code|test|file|module|component)|build.*(?:system|api|component|feature)|refactor|generate.*(?:code|file))\b/i.test(p)
+      if (!isCoding) return ''
+      return `\n\n<!-- ANTI-PATTERN PREVENTION (Anthropic Skills v3.1.0) -->\nBEFORE WRITING CODE: check against ❌ WRONG vs ✅ CORRECT catalog —\nno ghost imports, no 'any' casts, no swallowed errors, no missing edge cases,\nno hardcoded magic values, no TODO placeholders.`
+    }
     /**
      * Returns true when the task involves novel algorithmic reasoning
      * that benefits from metabuff-reasoner (effort=high, Socratic 6-step).
@@ -427,11 +473,7 @@ const definition: AgentDefinition = {
       return /\b(regex|regexp|pattern|match(?:ing)?|replace(?:all)?|sanitiz|validat|parse|url.*match|email.*valid|phone.*valid|search.*pattern|string.*extract)\b/i.test(p)
     }
 
-    // ─── HELPER: Full CoT wrapper v2 ──────────────────────────────────────────
-    /**
-     * v1.4.0 upgrade: added STEP 2.5 QUESTION — Socratic pre-flight.
-     * Agents must articulate 3 failure modes before planning.
-     */
+    // ─── HELPER: CoT v2 (simple tasks — no brainstorming gate) ───────────────
     function withCoT(task: string, role = 'coding'): string {
       return `<metabuff_cot_protocol version="2">
 You are operating under MetaBuff's anti-hallucination protocol v2.
@@ -457,6 +499,7 @@ STEP 2.5 — QUESTION  ← Socratic pre-flight (do not skip)
 
 STEP 3 — PLAN
   • Write a numbered action plan (what changes in what files in what order)
+  • Each step MUST reference specific files and be verifiable — NO placeholders
   • Flag any remaining uncertainty as: "⚠ UNCERTAIN: [thing you are not sure about]"
   • Resolve all uncertainties with tool calls before proceeding
 
@@ -484,21 +527,153 @@ ${task}
 </task>`
     }
 
-    // ─── HELPER: Light review wrapper ─────────────────────────────────────────
-    function withReview(task: string): string {
-      return `<metabuff_review_protocol>
-You are a reviewer in MetaBuff's pipeline. Your job is to VERIFY, not to re-implement.
+    // ─── HELPER: CoT v3 (complex/mega — with SUPERSPOWERS brainstorming gate) ─
+    /**
+     * v3.0.0: adds STEP 0 BRAINSTORM-GATE — design doc before implementation.
+     * Adapted from obra/superpowers: "NO CODE until design is authored, committed, approved."
+     * METABUFF-TAILORED: auto-triggered by complexity analysis, not manual approval.
+     */
+    function withCoTv3(task: string, role = 'coding'): string {
+      return `<metabuff_cot_protocol version="3">
+You are operating under MetaBuff's Superpowers-enhanced anti-hallucination protocol v3.
 
-PROTOCOL:
-  1. READ every changed file in this session (use read_files + git diff HEAD)
-  2. CHECK for: syntax errors, missing imports, broken references, TODOs/placeholders
-  3. FIX issues you find using str_replace (surgical, targeted changes only)
-  4. REPORT what you checked and what (if anything) you fixed
+PROTOCOL UPGRADE v3 (SUPERSPOWERS INTEGRATION):
+  This task reached the complex threshold. A design gate is enforced before implementation.
+
+BEFORE taking any action you MUST follow these steps IN ORDER:
+
+STEP 0 — BRAINSTORM-GATE  ← SUPERSPOWERS: design before code (do not skip)
+  This is a HARD GATE. NO code shall be written until this step completes.
+  
+  0.1 — SCOPE the task:
+    • What exactly needs to change? List ALL files that will be touched.
+    • What is the desired end state? Describe the user-visible or system-visible outcome.
+    • What is OUT of scope? Guard against scope creep.
+  
+  0.2 — DESIGN the approach:
+    • Architecture: what new files, types, interfaces, or schemas are needed?
+    • Data flow: how does data move through the system after this change?
+    • Integration: how does this connect to existing code? List specific imports/exports.
+    • Edge cases: empty input, error paths, boundary conditions — enumerate ALL.
+  
+  0.3 — VALIDATE assumptions:
+    • What am I assuming that I haven't yet verified?
+    • For each assumption: resolve with a tool call (read_files, code_searcher) NOW
+    • Do NOT proceed until ALL assumptions are verified OR explicitly flagged ⚠ UNCERTAIN
+  
+  0.4 — STATE the design:
+    • Write a concise design summary: "I will [approach] by [method]."
+    • Signal readiness: "DESIGN COMPLETE → ready for implementation."
+
+STEP 1 — ORIENT
+  • State the goal in one sentence
+  • Confirm: design is complete. List every file you need to read.
+
+STEP 2 — GROUND
+  • Read all listed files via read_files
+  • Run code_searcher for any symbol, function, or type you plan to reference
+  • NEVER write an import path, class name, or API call you haven't verified
+
+STEP 2.5 — QUESTION  ← Socratic pre-flight
+  • Ask yourself: "What are 3 specific ways this implementation could be wrong?"
+  • Ask yourself: "What am I assuming that I haven't yet verified?"
+  • Does this task involve regex, string parsing, or pattern matching?
+    If yes → flag with: "⚠ REGEX RISK"
+  • For each assumption: resolve it with a tool call BEFORE proceeding to STEP 3
+
+STEP 3 — PLAN (SUPERSPOWERS writing-plans methodology)
+  • Write a checkbox-formatted action plan. Each step MUST:
+    - Reference specific files to create/modify
+    - Include a verification method (test, typecheck, or manual check)
+    - Be completable in 2–5 minutes
+  • FORMAT: "- [ ] N. [action] → File: [path] → Verify: [method]"
+  • NO PLACEHOLDERS — no "TBD", no "will figure out later"
+  • Flag uncertainties: "⚠ UNCERTAIN: [question]" and resolve with tool calls
+
+STEP 4 — EXECUTE
+  • Carry out each plan step one at a time
+  • Use str_replace for targeted edits; write_file only for new files
+  • After each edit, narrate: "✓ DONE: [what changed and why it's correct]"
+  • If TDD Iron Law applies: write the FAILING TEST FIRST, then the implementation
+
+STEP 5 — VERIFY (Anthropic Skills: verify-iterate loop)
+  • Re-read changed files to confirm the edit landed correctly
+  • Run tests via basher: each plan step's verification must pass
+  • Run typecheck: (bun run typecheck 2>/dev/null || npx tsc --noEmit)
+  • Apply the VERIFY-ITERATE loop:
+    RUN tests → INSPECT results → FIX issues → RE-VERIFY (max 3 iterations)
+  • If issues persist after 3 loops, flag ⚠ NEEDS REVIEW
+  • If anything looks wrong, fix it before calling end_turn
+  • If you flagged ⚠ REGEX RISK: explicitly state that regex-guard will follow
+
+GROUNDING RULES (never violate):
+  ✗ Do not reference a file path without having read it this session
+  ✗ Do not assume a function or type exists — verify with code_searcher
+  ✗ Do not invent package names or import paths
+  ✗ Do not leave TODOs or placeholder code in the final output
+  ✗ Do not call end_turn if there are unresolved ⚠ UNCERTAIN items
+  ✗ Do not write ANY code until STEP 0 is complete (design gate)
+</metabuff_cot_protocol>
+
+<task role="${role}">
+${task}
+</task>`
+    }
+
+    // ─── HELPER: Formalized review wrapper (SUPERSPOWERS) ───────────────────────
+    /**
+     * v3.0.0: enhanced with Superpowers formalized code review principles:
+     * SHA-bounded, no performative agreement, verify-before-implement,
+     * severity-tagged findings, technical argumentation over compromise.
+     */
+    function withReview(task: string): string {
+      return `<metabuff_review_protocol version="2">
+You are a reviewer in MetaBuff's Superpowers-enhanced review pipeline.
+
+CORE PRINCIPLE: Review is technically scoped. Examine what CHANGED, not what you
+wish the codebase looked like. Review is READ-ONLY — do NOT re-implement.
+
+FORMALIZED REVIEW PROTOCOL:
+
+1. SCOPE the review
+   • Get SHA-bounded diff: use basher to run: git diff HEAD
+   • List every changed file with line counts
+   • This review is scoped to THOSE changes only — no scope creep
+
+2. READ every changed file in full (use read_files)
+
+3. VERIFY-FIRST (do not assert without evidence):
+   • Check each import → code_searcher to verify the imported symbol exists
+   • Check each function call → code_searcher to verify the function exists
+   • Check each type reference → code_searcher to verify the type is defined
+   • Do NOT claim an issue exists without reproducing it or providing a trace
+
+4. FIND issues — tag with SEVERITY:
+   [CRITICAL] — runtime error, data loss, security breach → BLOCK merge
+   [HIGH]     — incorrect behavior, broken test → should fix
+   [MEDIUM]   — code quality, missing test, convention violation → note for follow-up
+   [LOW]      — style preference, naming suggestion → optional
+
+5. REVIEW LANGUAGE (SUPERSPOWERS: no performative agreement):
+   PROHIBITED: "Great point!", "Nice work!", "LGTM!", "Looks good to me"
+   REQUIRED: "Verified: [claim]", "Found: [issue] at [file:line] → [analysis]",
+             "Checked: [file] — no issues found"
+
+6. FIX issues (surgical str_replace only):
+   • Fix CRITICAL + HIGH issues NOW
+   • Note MEDIUM issues for follow-up
+   • Skip LOW issues (do not block)
+
+7. REPORT: one of:
+   ✅ REVIEW PASSED — [N] files checked, [M] issues fixed
+   ❌ REVIEW BLOCKED — [CRITICAL/HIGH issues that must be addressed]
 
 RULES:
-  ✗ Do not re-write large sections unless there is a concrete bug
-  ✗ Do not call end_turn while there are unfixed issues
+  ✗ Do not re-write large sections unless there is a concrete [CRITICAL] bug
+  ✗ Do not call end_turn while [CRITICAL] or [HIGH] issues are unfixed
   ✗ Do not invent problems that aren't there
+  ✗ Do not use performative praise — technical language only
+  ✗ Verify every claim before asserting it
 </metabuff_review_protocol>
 
 <review_task>
@@ -1314,7 +1489,7 @@ ${task}
       const promptWithContext = promptBody + secondaryContext
       return {
         agentType,
-        prompt: cap.requiresCoT ? withCoT(promptWithContext) : promptWithContext,
+        prompt: promptWithContext,  // CoT wrapping handled by pipeline (v2 for simple, v3 for complex)
         secondaryContext,
       }
     }
@@ -1461,17 +1636,24 @@ ${task}
           fs.writeFileSync(kip, '# MetaBuff Known Issues & Learned Instincts\n\n## Instincts (Self-Learning)\n' + entry + '\n')
         }
       } catch { /* best-effort */ }
-    }
-
-    // ── SIMPLE ────────────────────────────────────────────────────────────────
+    }      // ── SIMPLE ────────────────────────────────────────────────────────────────
     if (complexity === 'simple') {
+
+      // Anthropic Skills: anti-pattern prevention (shared helper, tightened regex)
+      const antiPatternInjection = getAntiPatternInjection(prompt, isGenerationTask)
+
+      // TDD Iron Law enforcement (Superpowers) for simple pipeline
+      const tddScoreSimple = domainScores.get('testing') || 0
+      const tddInjectionSimple = tddScoreSimple >= 0.6
+        ? `\n\n<!-- TDD IRON LAW (Superpowers integration v3.0.0) -->\n⚠ TDD IRON LAW ENFORCED: Testing domain score = ${(tddScoreSimple*100).toFixed(0)}%.\nWrite the FAILING test FIRST before any implementation. No production code without\na prior, failing test that demonstrates the desired behavior.`
+        : ''
 
       yield {
         toolName: 'spawn_agents',
         input: {
           agents: [{
             agent_type: 'codebuff/base@0.0.1',
-            prompt: withECCContext(withCoT(prompt), prompt),
+            prompt: withECCContext(withCoT(prompt) + tddInjectionSimple + antiPatternInjection, prompt),
           }],
         },
       }
@@ -1567,24 +1749,50 @@ ${task}
         },
       }
 
-      // v1.8.0: Skill hot-reload is implicit — each subsequent agent spawn
-      // re-queries the in-memory skill cache with its own context keywords.
-      // No explicit reload step needed since withECCContext() calls
-      // querySkillCache() fresh for every agent prompt.
-
-      // ─── PHASE 2: SCORE-BASED AGENT ROUTING (v2.0.0) ────────────────────
-      // Replaces the old rigid if-else chain. All 30+ detectors contribute
-      // scores (0-1). Semantic enrichment supplements keyword matching.
-      // Vague prompts (e.g., "make this faster") correctly route via synonym
-      // expansion. Multi-domain prompts get secondary context injected.
+      // ─── PHASE 2: SCORE-BASED AGENT ROUTING (v2.0.0, enhanced v3.0.0) ──
+      // v3.0.0: complex tasks get CoT v3 (with brainstorming gate) + TDD iron law
+      // injection when testing domain scores ≥0.6.
 
       const isBuildErr = isBuildErrorTask(prompt)
       const { agentType, prompt: routedPrompt } = routeTask(domainScores, prompt, isBuildErr)
 
+      // Anthropic Skills: anti-pattern prevention (shared helper, tightened regex)
+      const antiPatternInjection = getAntiPatternInjection(prompt, isGenerationTask)
+
+      // TDD Iron Law enforcement (Superpowers)
+      const tddScore = domainScores.get('testing') || 0
+      const tddInjection = tddScore >= 0.6
+        ? `\n\n<!-- TDD IRON LAW (Superpowers integration v3.0.0) -->\n⚠ TDD IRON LAW ENFORCED: Testing domain score = ${(tddScore*100).toFixed(0)}%.\nWrite the FAILING test FIRST before any implementation. No production code without\na prior, failing test that demonstrates the desired behavior.`
+        : ''
+
+      // CoT version selection: reasoner gets its own 6-step Socratic protocol.
+      // Wrapping it in CoT v3's STEP 0 would conflict. Instead, inject the
+      // brainstorming gate as a pre-flight note that complements the reasoner's
+      // existing UNDERSTAND step.
+      const isReasoner = agentType === 'metabuff-reasoner'
+      let finalPrompt: string
+      if (isReasoner) {
+        finalPrompt = withECCContext(
+          routedPrompt +
+          `\n\n<!-- BRAINSTORMING PRE-FLIGHT (Superpowers) — complements reasoner's UNDERSTAND step -->\n` +
+          `Before STEP 1 (UNDERSTAND), do a quick design scoping: list all files that will change,\n` +
+          `enumerate edge cases, and flag assumptions. This complements (does not replace) your\n` +
+          `6-step Socratic protocol.` +
+          tddInjection +
+          antiPatternInjection,
+          prompt
+        )
+      } else {
+        finalPrompt = withECCContext(
+          withCoTv3(routedPrompt) + tddInjection + antiInjection,
+          prompt
+        )
+      }
+
       yield {
         toolName: 'spawn_agents', input: { agents: [{
           agent_type: agentType,
-          prompt: withECCContext(routedPrompt, prompt),
+          prompt: finalPrompt,
         }]},
       }
 
