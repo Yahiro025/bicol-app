@@ -179,7 +179,7 @@ export default function AppliedFluency({ onComplete }: { onComplete: () => void 
             </div>
             <div className="text-right">
               <div className="text-4xl font-black" style={{ color: 'var(--editorial-accent)', fontFamily: 'var(--font-display)' }}>{audit.score}%</div>
-              <div className="text-zinc-500 text-xs uppercase tracking-widest font-bold">Accuracy Score</div>
+              <div className="text-xs uppercase tracking-widest font-bold" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Accuracy Score</div>
             </div>
           </div>
 
@@ -188,19 +188,19 @@ export default function AppliedFluency({ onComplete }: { onComplete: () => void 
               <h4 className="text-xs font-bold uppercase tracking-widest flex items-center gap-2" style={{ color: 'var(--editorial-accent)', fontFamily: 'var(--font-body)' }}>
                 <CheckCircle2 className="w-3 h-3" /> Comprehension
               </h4>
-              <p className="text-zinc-300 text-sm leading-relaxed">{audit.comprehension}</p>
+              <p className="text-sm leading-relaxed" style={{ color: 'var(--editorial-text)', fontFamily: 'var(--font-body)' }}>{audit.comprehension}</p>
             </div>
             <div className="p-6 rounded-2xl space-y-3" style={{ backgroundColor: 'var(--editorial-bg)', border: '1px solid var(--editorial-border)' }}>
               <h4 className="text-xs font-bold uppercase tracking-widest flex items-center gap-2" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>
                 <BookOpen className="w-3 h-3" /> Focus & Affixes
               </h4>
-              <p className="text-sm leading-relaxed" style={{ color: 'var(--editorial-text)', fontFamily: 'var(--font-body)' }}>{audit.focus}
+              <p className="text-sm leading-relaxed" style={{ color: 'var(--editorial-text)', fontFamily: 'var(--font-body)' }}>{audit.focus}</p>
             </div>
             <div className="p-6 rounded-2xl space-y-3" style={{ backgroundColor: 'var(--editorial-bg)', border: '1px solid var(--editorial-border)' }}>
               <h4 className="text-xs font-bold uppercase tracking-widest flex items-center gap-2" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>
                 <ShieldCheck className="w-3 h-3" /> Particles & Markers
               </h4>
-              <p className="text-sm leading-relaxed" style={{ color: 'var(--editorial-text)', fontFamily: 'var(--font-body)' }}>{audit.particles}
+              <p className="text-sm leading-relaxed" style={{ color: 'var(--editorial-text)', fontFamily: 'var(--font-body)' }}>{audit.particles}</p>
             </div>
           </div>
 
@@ -230,19 +230,19 @@ export default function AppliedFluency({ onComplete }: { onComplete: () => void 
 
   if (selectedScenario) {
     return (
-      <div className="flex flex-col h-[600px] bg-zinc-900/50 border border-white/5 rounded-[32px] overflow-hidden shadow-2xl relative">
+      <div className="flex flex-col h-[600px] rounded-[32px] overflow-hidden shadow-2xl relative" style={{ backgroundColor: 'var(--editorial-bg)', border: '1px solid var(--editorial-border)' }}>
         {/* Scenario Header */}
         <div className="p-6 border-b z-10 flex items-center justify-between" style={{ backgroundColor: 'var(--editorial-surface)', borderColor: 'var(--editorial-border)', backdropFilter: 'blur(12px)' }}>
           <div className="flex items-center gap-4">
             <button 
               onClick={() => setSelectedScenario(null)}
-              className="p-2 hover:bg-white/5 rounded-full transition-colors text-zinc-500 hover:text-white"
+              className="p-2 rounded-full transition-colors" style={{ color: 'var(--editorial-muted)' }}
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
             <div>
-              <h3 className="text-white font-bold">{selectedScenario.title}</h3>
-              <p className="text-zinc-500 text-xs truncate max-w-[200px]">{selectedScenario.goal}</p>
+              <h3 className="font-bold" style={{ color: 'var(--editorial-text)', fontFamily: 'var(--font-display)' }}>{selectedScenario.title}</h3>
+              <p className="text-xs truncate max-w-[200px]" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>{selectedScenario.goal}</p>
             </div>
           </div>
           {isFinished && (
@@ -251,7 +251,7 @@ export default function AppliedFluency({ onComplete }: { onComplete: () => void 
               animate={{ opacity: 1, scale: 1 }}
               onClick={runAudit}
               disabled={isEvaluating}
-              className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-black uppercase tracking-widest rounded-full flex items-center gap-2 transition-all shadow-lg shadow-emerald-500/20"
+              className="px-4 py-2 text-white text-xs font-black uppercase tracking-widest rounded-full flex items-center gap-2 transition-all" style={{ backgroundColor: 'var(--editorial-accent)', fontFamily: 'var(--font-body)' }}
             >
               {isEvaluating ? <RefreshCw className="w-3 h-3 animate-spin" /> : <ShieldCheck className="w-3 h-3" />}
               {isEvaluating ? 'Auditing...' : 'Review Session'}
@@ -281,7 +281,7 @@ export default function AppliedFluency({ onComplete }: { onComplete: () => void 
                   fontFamily: 'var(--font-body)',
                   backgroundColor: m.role === 'user' ? 'var(--editorial-accent)' : 'var(--editorial-surface)',
                   color: m.role === 'user' ? '#fff' : 'var(--editorial-text)',
-                }}
+                }}>
                   <p className="text-sm leading-relaxed">{m.content}</p>
                 </div>
               </motion.div>
@@ -289,11 +289,11 @@ export default function AppliedFluency({ onComplete }: { onComplete: () => void 
           </AnimatePresence>
           {isLoading && (
             <div className="flex justify-start">
-              <div className="bg-zinc-800 p-4 rounded-2xl rounded-tl-none animate-pulse">
+              <div className="p-4 rounded-2xl rounded-tl-none animate-pulse" style={{ backgroundColor: 'var(--editorial-surface)' }}>
                 <div className="flex gap-1">
-                  <div className="w-1.5 h-1.5 bg-zinc-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                  <div className="w-1.5 h-1.5 bg-zinc-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                  <div className="w-1.5 h-1.5 bg-zinc-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                  <div className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ backgroundColor: 'var(--editorial-muted)', animationDelay: '0ms' }} />
+                  <div className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ backgroundColor: 'var(--editorial-muted)', animationDelay: '150ms' }} />
+                  <div className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ backgroundColor: 'var(--editorial-muted)', animationDelay: '300ms' }} />
                 </div>
               </div>
             </div>
@@ -315,14 +315,14 @@ export default function AppliedFluency({ onComplete }: { onComplete: () => void 
             <button 
               onClick={handleSend}
               disabled={!input.trim() || isLoading || audit !== null}
-              className="absolute right-2 top-2 w-10 h-10hover:bg-[var(--editorial-accent-dim)] disabled:bg-zinc-800 text-white rounded-xl flex items-center justify-center transition-all active:scale-95" style={{ backgroundColor: 'var(--editorial-accent)' }}
+              className="absolute right-2 top-2 w-10 h-10 text-white rounded-xl flex items-center justify-center transition-all active:scale-95 disabled:opacity-50" style={{ backgroundColor: 'var(--editorial-accent)' }}
             >
               <Send className="w-4 h-4" />
             </button>
           </div>
           <div className="mt-4 flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
             {selectedScenario.vocabulary.map((vocab, i) => (
-              <span key={i} className="px-3 py-1 bg-white/5 border border-white/5 rounded-full text-[10px] font-bold text-zinc-500 uppercase tracking-widest whitespace-nowrap">
+              <span key={i} className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest whitespace-nowrap" style={{ backgroundColor: 'rgba(196,155,76,0.08)', border: '1px solid var(--editorial-border)', color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>
                 {vocab}
               </span>
             ))}
@@ -340,7 +340,7 @@ export default function AppliedFluency({ onComplete }: { onComplete: () => void 
           onClick={() => startScenario(scenario)}
           className="text-left p-8 rounded-[32px] transition-all group relative overflow-hidden" style={{ backgroundColor: 'var(--editorial-surface)', border: '1px solid var(--editorial-border)' }}
         >
-          <div className="absolute top-0 right-0 p-8 text-white/5 group-hover:text-blue-500/10 transition-colors">
+          <div className="absolute top-0 right-0 p-8 transition-colors">
             <MessageSquare className="w-24 h-24" style={{ color: 'rgba(196,155,76,0.1)' }} />
           </div>
           <div className="space-y-4 relative z-10">
@@ -360,13 +360,13 @@ export default function AppliedFluency({ onComplete }: { onComplete: () => void 
                 ) : (
                   <div className="w-1.5 h-1.5 bg-red-500 rounded-full" />
                 )}
-                <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+                <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>
                   {scenario.difficulty === 'beginner' ? 'Low Energy' :
                    scenario.difficulty === 'intermediate' ? 'Moderate Energy' :
                    'High Energy'}
                 </span>
               </div>
-              <div className="flex items-center gap-2 text-blue-500 text-xs font-bold">
+              <div className="flex items-center gap-2 text-xs font-bold" style={{ color: 'var(--editorial-accent)', fontFamily: 'var(--font-body)' }}>
                 Start Session <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
               </div>
             </div>
