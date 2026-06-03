@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "motion/react";
+import { motion } from "framer-motion";
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { BookOpen } from "lucide-react";
@@ -25,7 +25,7 @@ const fadeUp = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] },
+    transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] as const },
   },
 };
 
@@ -34,7 +34,7 @@ const fadeUpSlow = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] },
+    transition: { duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] as const },
   },
 };
 
@@ -43,7 +43,7 @@ const ruleReveal = {
   visible: {
     scaleX: 1,
     opacity: 1,
-    transition: { duration: 0.7, ease: [0.65, 0, 0.35, 1] },
+    transition: { duration: 0.7, ease: [0.65, 0, 0.35, 1] as const },
   },
 };
 
