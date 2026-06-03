@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Mail, KeyRound, Loader2 } from "lucide-react";
-import { useAuth, supabase } from "@/hooks/useAuth";
+import { useAuth, supabase as getSupabase } from "@/hooks/useAuth";
 
 type SignInModalProps = {
   isOpen: boolean;
@@ -59,7 +59,7 @@ export default function SignInModal({ isOpen, onClose }: SignInModalProps) {
     setError(null);
 
     try {
-      const { error: authError } = await supabase.auth.signInWithPassword({
+      const { error: authError } = await getSupabase().auth.signInWithPassword({
         email: email.trim(),
         password,
       });
@@ -83,7 +83,7 @@ export default function SignInModal({ isOpen, onClose }: SignInModalProps) {
     setError(null);
 
     try {
-      const { error: authError } = await supabase.auth.signUp({
+      const { error: authError } = await getSupabase().auth.signUp({
         email: email.trim(),
         password,
         options: {
@@ -113,7 +113,7 @@ export default function SignInModal({ isOpen, onClose }: SignInModalProps) {
     setError(null);
 
     try {
-      const { error: authError } = await supabase.auth.signInWithOtp({
+      const { error: authError } = await getSupabase().auth.signInWithOtp({
         email: email.trim(),
         options: {
           emailRedirectTo: `${window.location.origin}/auth/callback`,

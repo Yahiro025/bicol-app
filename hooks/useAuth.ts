@@ -11,10 +11,17 @@ export interface AuthState {
   signOut: () => Promise<void>;
 }
 
-const supabase = createBrowserClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-);
+let _supabase: ReturnType<typeof createBrowserClient> | null = null;
+
+function getSupabase() {
+  if (!_supabase) {
+    _supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    );
+  }
+  return _supabase;
+}
 
 /**
  * Client-side auth hook providing user, session, loading state, and signOut.
@@ -27,7 +34,7 @@ export function useAuth(): AuthState {
 
   useEffect(() => {
     // Initialize session on mount
-    supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
+    getSupabase().auth.getSession().then(({ data: { session: currentSession } }) => {
       setSession(currentSession);
       setUser(currentSession?.user ?? null);
       setIsLoading(false);
@@ -36,7 +43,7 @@ export function useAuth(): AuthState {
     // Listen for auth state changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, newSession) => {
+    } = getSupabase().auth.onAuthStateChange((_event, newSession) => {
       setSession(newSession);
       setUser(newSession?.user ?? null);
       setIsLoading(false);
@@ -49,7 +56,7 @@ export function useAuth(): AuthState {
 
   const signOut = useCallback(async () => {
     try {
-      await supabase.auth.signOut();
+      await getSupabase().auth.signOut();
     } catch (err) {
       console.error("Sign out failed:", err);
     } finally {
@@ -62,4 +69,4 @@ export function useAuth(): AuthState {
 }
 
 /** Re-export the singleton browser client for direct use where needed */
-export { supabase };
+export { getSupabase as supabase };
