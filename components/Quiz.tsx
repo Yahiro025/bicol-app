@@ -20,7 +20,7 @@ export default function Quiz({ questions, onComplete, onExit }: QuizProps) {
     return (
       <div className="flex flex-col items-center justify-center p-12 text-center">
         <p className="text-zinc-500 mb-6">No questions available for this quiz.</p>
-        <button onClick={onExit} className="px-6 py-2 bg-zinc-800 text-white rounded-lg">Return</button>
+        <button onClick={onExit} className="px-6 py-2 rounded-lg font-semibold" style={{ backgroundColor: 'var(--editorial-surface)', color: 'var(--editorial-text)', fontFamily: 'var(--font-body)' }}>Return</button>
       </div>
     );
   }
@@ -67,20 +67,21 @@ export default function Quiz({ questions, onComplete, onExit }: QuizProps) {
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <div className="p-6 bg-zinc-900 border border-zinc-800 rounded-3xl">
-            <div className="text-3xl font-black text-blue-500">{score}/{questions.length}</div>
-            <div className="text-xs font-bold text-zinc-500 uppercase tracking-widest mt-1">Final Score</div>
+          <div className="p-6 rounded-3xl" style={{ backgroundColor: 'var(--editorial-surface)', border: '1px solid var(--editorial-border)' }}>
+            <div className="text-3xl font-black" style={{ color: 'var(--editorial-accent)', fontFamily: 'var(--font-display)' }}>{score}/{questions.length}</div>
+            <div className="text-xs font-bold uppercase tracking-widest mt-1" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Final Score</div>
           </div>
-          <div className="p-6 bg-zinc-900 border border-zinc-800 rounded-3xl">
-            <div className="text-3xl font-black text-purple-500">{Math.round((score / questions.length) * 100)}%</div>
-            <div className="text-xs font-bold text-zinc-500 uppercase tracking-widest mt-1">Accuracy</div>
+          <div className="p-6 rounded-3xl" style={{ backgroundColor: 'var(--editorial-surface)', border: '1px solid var(--editorial-border)' }}>
+            <div className="text-3xl font-black" style={{ color: 'var(--editorial-rust)', fontFamily: 'var(--font-display)' }}>{Math.round((score / questions.length) * 100)}%</div>
+            <div className="text-xs font-bold uppercase tracking-widest mt-1" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Accuracy</div>
           </div>
         </div>
 
         <div className="pt-4">
           <button 
             onClick={onExit}
-            className="w-full py-4 bg-zinc-800 text-white font-bold rounded-2xl hover:bg-zinc-700 transition-colors shadow-lg active:scale-95"
+            className="w-full py-4 font-bold rounded-2xl transition-colors active:scale-95"
+            style={{ backgroundColor: 'var(--editorial-accent)', color: '#fff', fontFamily: 'var(--font-body)' }}
           >
             Return to Laboratory
           </button>
@@ -92,13 +93,13 @@ export default function Quiz({ questions, onComplete, onExit }: QuizProps) {
   return (
     <div className="max-w-2xl mx-auto py-10 px-6">
       <div className="mb-8 space-y-4">
-        <div className="flex justify-between items-center text-sm font-medium text-zinc-500">
+        <div className="flex justify-between items-center text-sm font-medium" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>
           <span>Question {currentIndex + 1} of {questions.length}</span>
           <span>Score: {score}</span>
         </div>
         <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
           <motion.div 
-            className="h-full bg-blue-500"
+            className="h-full" style={{ backgroundColor: 'var(--editorial-accent)' }}
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
           />
@@ -114,7 +115,7 @@ export default function Quiz({ questions, onComplete, onExit }: QuizProps) {
           className="space-y-8"
         >
           <div className="space-y-2">
-            <span className="text-xs font-bold text-blue-500 uppercase tracking-widest">Knowledge Check</span>
+            <span className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--editorial-accent)', fontFamily: 'var(--font-body)' }}>Knowledge Check</span>
             <h2 className="text-3xl font-bold leading-tight">{currentQuestion.question}</h2>
           </div>
 
@@ -135,12 +136,13 @@ export default function Quiz({ questions, onComplete, onExit }: QuizProps) {
                   onClick={() => handleOptionClick(option)}
                   disabled={isAnswered}
                   className={`w-full text-left p-5 rounded-2xl border transition-all duration-300 active:scale-[0.98] ${
-                    variant === 'correct' ? 'bg-green-500/10 border-green-500 text-green-400' :
-                    variant === 'incorrect' ? 'bg-amber-400/10 border-amber-400 text-amber-400' :
-                    variant === 'selected' ? 'bg-blue-500/10 border-blue-500 text-blue-400 glow-blue-selected' :
-                    variant === 'dimmed' ? 'bg-zinc-900/50 border-zinc-800/50 opacity-40' :
-                    'bg-zinc-900/50 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:bg-zinc-900 hover:text-zinc-200 glow-black-hover'
+                    variant === 'correct' ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' :
+                    variant === 'incorrect' ? 'bg-amber-400/10 border-amber-400/30 text-amber-400' :
+                    variant === 'selected' ? 'text-[var(--editorial-accent)]' :
+                    variant === 'dimmed' ? 'opacity-40' :
+                    'text-[var(--editorial-muted)] hover:border-[var(--editorial-muted)] hover:text-[var(--editorial-text)]'
                   }`}
+                  style={variant === 'selected' ? { borderColor: 'var(--editorial-accent)', backgroundColor: 'rgba(196,155,76,0.08)', fontFamily: 'var(--font-body)' } : variant === 'dimmed' ? { backgroundColor: 'var(--editorial-bg)', borderColor: 'var(--editorial-border)', fontFamily: 'var(--font-body)' } : variant === 'correct' || variant === 'incorrect' ? { fontFamily: 'var(--font-body)' } : { backgroundColor: 'var(--editorial-bg)', borderColor: 'var(--editorial-border)', fontFamily: 'var(--font-body)' }}
                 >
                   <div className="flex justify-between items-center">
                     <span className="font-medium">{option}</span>
@@ -164,17 +166,17 @@ export default function Quiz({ questions, onComplete, onExit }: QuizProps) {
             <motion.div 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl space-y-2"
+              className="p-6 rounded-2xl space-y-2" style={{ backgroundColor: 'var(--editorial-surface)', border: '1px solid var(--editorial-border)' }}
             >
-              <h3 className="text-xs font-black text-zinc-500 uppercase tracking-widest">Etymology & Usage</h3>
-              <p className="text-zinc-300 text-sm leading-relaxed">{currentQuestion.explanation}</p>
+              <h3 className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Etymology & Usage</h3>
+              <p className="text-sm leading-relaxed" style={{ color: 'var(--editorial-text)', fontFamily: 'var(--font-body)' }}>{currentQuestion.explanation}</p>
             </motion.div>
           )}
 
           <div className="flex gap-4 pt-4">
             <button 
               onClick={onExit}
-              className="px-8 py-4 bg-zinc-900 border border-zinc-800 text-zinc-500 font-bold rounded-2xl hover:bg-zinc-800 hover:text-zinc-300 transition-all"
+              className="px-8 py-4 font-bold rounded-2xl transition-all" style={{ backgroundColor: 'var(--editorial-bg)', border: '1px solid var(--editorial-border)', color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}
             >
               Exit
             </button>
@@ -182,14 +184,14 @@ export default function Quiz({ questions, onComplete, onExit }: QuizProps) {
               <button 
                 onClick={checkAnswer}
                 disabled={!selectedOption}
-                className="flex-1 py-4 bg-[#3b82f6] disabled:bg-zinc-900 disabled:border-zinc-800 disabled:text-zinc-700 text-white font-bold rounded-2xl hover:bg-blue-500 glow-blue-button transition-all active:scale-95"
+                className="flex-1 py-4 text-white font-bold rounded-2xl transition-all active:scale-95" style={{ backgroundColor: 'var(--editorial-accent)', fontFamily: 'var(--font-body)' }}
               >
                 Check Answer
               </button>
             ) : (
               <button 
                 onClick={handleNext}
-                className="flex-1 py-4 bg-[#3b82f6] text-white font-bold rounded-2xl hover:bg-blue-500 glow-blue-button transition-all active:scale-95"
+                className="flex-1 py-4 text-white font-bold rounded-2xl transition-all active:scale-95" style={{ backgroundColor: 'var(--editorial-accent)', fontFamily: 'var(--font-body)' }}
               >
                 {currentIndex + 1 < questions.length ? 'Next Question' : 'View Results'}
               </button>

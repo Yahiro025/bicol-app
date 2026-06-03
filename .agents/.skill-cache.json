@@ -20,6 +20,14 @@
       "agentic-engineering",
       "agentic-os",
       "ai-first-engineering",
+      "anthropic-skills",
+      "anthropic-skills/canvas-design",
+      "anthropic-skills/frontend-design",
+      "anthropic-skills/mcp-builder",
+      "anthropic-skills/skill-creator",
+      "anthropic-skills/template",
+      "anthropic-skills/web-artifacts-builder",
+      "anthropic-skills/webapp-testing",
       "architecture-decision-records",
       "automation-audit-ops",
       "autonomous-loops",
@@ -105,6 +113,7 @@
       "skill-stocktake",
       "social-graph-ranker",
       "strategic-compact",
+      "superpowers/tdd-iron-law",
       "tdd-workflow",
       "terminal-ops",
       "uncloud",
@@ -125,6 +134,7 @@
     "interfaces": [
       "accessibility",
       "ai-first-engineering",
+      "anthropic-skills/frontend-design",
       "frontend-patterns",
       "hexagonal-architecture",
       "make-interfaces-feel-better",
@@ -156,6 +166,7 @@
     ],
     "users": [
       "accessibility",
+      "anthropic-skills/skill-creator",
       "api-design",
       "benchmark",
       "configure-ecc",
@@ -176,6 +187,8 @@
     ],
     "using": [
       "accessibility",
+      "anthropic-skills/skill-creator",
+      "anthropic-skills/webapp-testing",
       "autonomous-agent-harness",
       "compose-multiplatform-patterns",
       "content-hash-cache-pattern",
@@ -259,6 +272,7 @@
     "implementation": [
       "accessibility",
       "agentic-engineering",
+      "anthropic-skills/frontend-design",
       "council",
       "hipaa-compliance",
       "ito-data-atlas-agent",
@@ -267,6 +281,8 @@
       "product-capability",
       "product-lens",
       "ralphinho-rfc-pipeline",
+      "superpowers/brainstorming-gate",
+      "superpowers/writing-plans",
       "tinystruct-patterns",
       "workspace-surface-audit"
     ],
@@ -288,6 +304,7 @@
     ],
     "component": [
       "accessibility",
+      "anthropic-skills/web-artifacts-builder",
       "context-budget",
       "make-interfaces-feel-better",
       "motion-foundations",
@@ -319,6 +336,7 @@
     ],
     "existing": [
       "accessibility",
+      "anthropic-skills/skill-creator",
       "api-connector-builder",
       "api-design",
       "article-writing",
@@ -347,6 +365,7 @@
       "security-scan",
       "skill-scout",
       "social-graph-ranker",
+      "superpowers",
       "tdd-workflow",
       "video-editing"
     ],
@@ -360,7 +379,8 @@
       "hipaa-compliance",
       "perl-patterns",
       "santa-method",
-      "skill-comply"
+      "skill-comply",
+      "superpowers/sdd-methodology"
     ],
     "gaps": [
       "accessibility",
@@ -427,6 +447,9 @@
       "agentic-os",
       "ai-first-engineering",
       "ai-regression-testing",
+      "anthropic-skills",
+      "anthropic-skills/template",
+      "anthropic-skills/webapp-testing",
       "autonomous-agent-harness",
       "autonomous-loops",
       "blueprint",
@@ -451,6 +474,7 @@
       "santa-method",
       "skill-comply",
       "social-publisher",
+      "superpowers",
       "team-builder"
     ],
     "architecture": [
@@ -458,6 +482,8 @@
       "agentic-os",
       "ai-first-engineering",
       "android-clean-architecture",
+      "anthropic-skills/mcp-builder",
+      "anthropic-skills/web-artifacts-builder",
       "architecture-decision-records",
       "backend-patterns",
       "coding-standards",
@@ -499,6 +525,9 @@
       "agent-architecture-audit",
       "agent-introspection-debugging",
       "agentic-os",
+      "anthropic-skills/skill-creator",
+      "anthropic-skills/template",
+      "anthropic-skills/web-artifacts-builder",
       "automation-audit-ops",
       "blender-motion-state-inspection",
       "cpp-testing",
@@ -529,6 +558,7 @@
       "skill-scout",
       "springboot-tdd",
       "strategic-compact",
+      "superpowers/finishing-workflow",
       "tdd-workflow",
       "terminal-ops",
       "ui-demo"
@@ -579,7 +609,8 @@
     "wrapper": [
       "agent-architecture-audit",
       "research-ops",
-      "scientific-db-uspto-database"
+      "scientific-db-uspto-database",
+      "superpowers/formalized-code-review"
     ],
     "layers": [
       "agent-architecture-audit",
@@ -752,7 +783,8 @@
       "x-api"
     ],
     "mandatory": [
-      "agent-architecture-audit"
+      "agent-architecture-audit",
+      "superpowers/sdd-methodology"
     ],
     "releasing": [
       "agent-architecture-audit"
@@ -783,6 +815,7 @@
     "production": [
       "agent-architecture-audit",
       "agentic-os",
+      "anthropic-skills/frontend-design",
       "canary-watch",
       "continuous-agent-loop",
       "data-scraper-agent",
@@ -812,6 +845,7 @@
       "safety-guard",
       "springboot-patterns",
       "springboot-verification",
+      "superpowers/tdd-iron-law",
       "vite-patterns"
     ],
     "shipping": [
@@ -821,6 +855,7 @@
     ],
     "features": [
       "agent-architecture-audit",
+      "anthropic-skills/web-artifacts-builder",
       "autonomous-agent-harness",
       "e2e-testing",
       "foundation-models-on-device",
@@ -861,6 +896,7 @@
     "multi": [
       "agent-architecture-audit",
       "agentic-os",
+      "anthropic-skills/web-artifacts-builder",
       "autonomous-loops",
       "claude-devfleet",
       "dmux-workflows",
@@ -879,13 +915,17 @@
     ],
     "step": [
       "agent-architecture-audit",
+      "anthropic-skills/template",
+      "anthropic-skills/verify-iterate",
       "blueprint",
       "configure-ecc",
       "django-tdd",
       "ecc-tools-cost-audit",
       "homelab-vlan-segmentation",
       "plan-orchestrate",
-      "redis-patterns"
+      "redis-patterns",
+      "superpowers/brainstorming-gate",
+      "superpowers/writing-plans"
     ],
     "workflows": [
       "agent-architecture-audit",
@@ -911,7 +951,8 @@
       "hipaa-compliance",
       "latency-critical-systems",
       "python-testing",
-      "react-testing"
+      "react-testing",
+      "superpowers/tdd-iron-law"
     ],
     "degrades": [
       "agent-architecture-audit"
@@ -933,6 +974,8 @@
       "security-scan",
       "springboot-verification",
       "strategic-compact",
+      "superpowers/brainstorming-gate",
+      "superpowers/sdd-methodology",
       "terminal-ops",
       "verification-loop"
     ],
@@ -1034,6 +1077,7 @@
       "skill-scout",
       "social-graph-ranker",
       "springboot-security",
+      "superpowers/brainstorming-gate",
       "swiftui-patterns",
       "terminal-ops",
       "token-budget-advisor",
@@ -1062,6 +1106,7 @@
       "agent-harness-construction",
       "agent-introspection-debugging",
       "agent-payment-x402",
+      "anthropic-skills/mcp-builder",
       "deep-research",
       "documentation-lookup",
       "ecc-tools-cost-audit",
@@ -1083,6 +1128,7 @@
       "agent-harness-construction",
       "agentic-engineering",
       "ai-regression-testing",
+      "anthropic-skills/mcp-builder",
       "api-connector-builder",
       "blender-motion-state-inspection",
       "cost-aware-llm-pipeline",
@@ -1102,6 +1148,7 @@
     ],
     "works": [
       "agent-architecture-audit",
+      "anthropic-skills/anti-pattern-prevention",
       "benchmark",
       "browser-qa",
       "canary-watch",
@@ -1137,6 +1184,7 @@
       "agent-eval",
       "agentic-engineering",
       "ai-first-engineering",
+      "anthropic-skills/skill-creator",
       "eval-harness",
       "healthcare-eval-harness"
     ],
@@ -1157,6 +1205,7 @@
     ],
     "coding": [
       "agent-eval",
+      "anthropic-skills/anti-pattern-prevention",
       "architecture-decision-records",
       "blueprint",
       "claude-devfleet",
@@ -1168,6 +1217,7 @@
       "product-capability",
       "project-flow-ops",
       "skill-comply",
+      "superpowers",
       "terminal-ops"
     ],
     "agents": [
@@ -1175,6 +1225,8 @@
       "agent-payment-x402",
       "agentic-engineering",
       "agentic-os",
+      "anthropic-skills",
+      "anthropic-skills/anti-pattern-prevention",
       "autonomous-agent-harness",
       "blueprint",
       "claude-devfleet",
@@ -1185,10 +1237,13 @@
       "plankton-code-quality",
       "safety-guard",
       "skill-comply",
+      "superpowers",
+      "superpowers/formalized-code-review",
       "team-builder"
     ],
     "head": [
-      "agent-eval"
+      "agent-eval",
+      "superpowers/formalized-code-review"
     ],
     "reproducible": [
       "agent-eval",
@@ -1270,6 +1325,7 @@
       "agent-eval",
       "agentic-os",
       "ai-regression-testing",
+      "anthropic-skills/web-artifacts-builder",
       "autonomous-agent-harness",
       "autonomous-loops",
       "browser-qa",
@@ -1316,7 +1372,8 @@
       "design-system",
       "gateguard",
       "iterative-retrieval",
-      "repo-scan"
+      "repo-scan",
+      "superpowers/formalized-code-review"
     ],
     "measuring": [
       "agent-eval",
@@ -1346,6 +1403,8 @@
       "agent-eval",
       "agent-introspection-debugging",
       "agentic-engineering",
+      "anthropic-skills/verify-iterate",
+      "anthropic-skills/webapp-testing",
       "automation-audit-ops",
       "benchmark",
       "browser-qa",
@@ -1389,6 +1448,9 @@
       "skill-scout",
       "social-publisher",
       "springboot-verification",
+      "superpowers/brainstorming-gate",
+      "superpowers/finishing-workflow",
+      "superpowers/writing-plans",
       "tdd-workflow",
       "team-builder",
       "token-budget-advisor",
@@ -1556,6 +1618,7 @@
     ],
     "harness": [
       "agent-harness-construction",
+      "anthropic-skills/skill-creator",
       "autonomous-agent-harness",
       "eval-harness",
       "gan-style-harness",
@@ -1567,15 +1630,18 @@
     ],
     "improving": [
       "agent-harness-construction",
+      "anthropic-skills/skill-creator",
       "frontend-slides",
       "seo"
     ],
     "plans": [
       "agent-harness-construction",
-      "google-workspace-ops"
+      "google-workspace-ops",
+      "superpowers/writing-plans"
     ],
     "calls": [
       "agent-harness-construction",
+      "anthropic-skills/template",
       "blueprint",
       "click-path-audit",
       "django-celery",
@@ -1587,9 +1653,11 @@
     ],
     "errors": [
       "agent-harness-construction",
+      "anthropic-skills/verify-iterate",
       "canary-watch",
       "click-path-audit",
       "santa-method",
+      "superpowers/finishing-workflow",
       "swift-concurrency-6-2"
     ],
     "converges": [
@@ -1598,10 +1666,13 @@
     "completion": [
       "agent-harness-construction",
       "agentic-engineering",
-      "eval-harness"
+      "eval-harness",
+      "superpowers/finishing-workflow"
     ],
     "core": [
       "agent-harness-construction",
+      "anthropic-skills/anti-pattern-prevention",
+      "anthropic-skills/verify-iterate",
       "article-writing",
       "benchmark",
       "blender-motion-state-inspection",
@@ -1625,6 +1696,12 @@
       "repo-scan",
       "santa-method",
       "seo",
+      "superpowers",
+      "superpowers/brainstorming-gate",
+      "superpowers/finishing-workflow",
+      "superpowers/formalized-code-review",
+      "superpowers/sdd-methodology",
+      "superpowers/writing-plans",
       "swift-actor-persistence",
       "tdd-workflow",
       "tinystruct-patterns"
@@ -1649,6 +1726,8 @@
       "agent-introspection-debugging",
       "agentic-engineering",
       "ai-first-engineering",
+      "anthropic-skills/mcp-builder",
+      "anthropic-skills/skill-creator",
       "context-budget",
       "cost-aware-llm-pipeline",
       "csharp-testing",
@@ -1691,6 +1770,7 @@
     "context": [
       "agent-harness-construction",
       "agent-introspection-debugging",
+      "anthropic-skills/mcp-builder",
       "blueprint",
       "carrier-relationship-management",
       "ck",
@@ -1716,6 +1796,7 @@
       "rules-distill",
       "santa-method",
       "strategic-compact",
+      "superpowers/sdd-methodology",
       "videodb"
     ],
     "budget": [
@@ -1728,6 +1809,8 @@
     "design": [
       "agent-harness-construction",
       "android-clean-architecture",
+      "anthropic-skills/canvas-design",
+      "anthropic-skills/frontend-design",
       "api-design",
       "architecture-decision-records",
       "coding-standards",
@@ -1744,6 +1827,8 @@
       "make-interfaces-feel-better",
       "mysql-patterns",
       "scientific-thinking-scholar-evaluation",
+      "superpowers",
+      "superpowers/brainstorming-gate",
       "ui-to-vue"
     ],
     "stable": [
@@ -1798,6 +1883,8 @@
       "agent-harness-construction",
       "agentic-engineering",
       "ai-first-engineering",
+      "anthropic-skills/verify-iterate",
+      "anthropic-skills/webapp-testing",
       "automation-audit-ops",
       "codebase-onboarding",
       "connections-optimizer",
@@ -1837,6 +1924,7 @@
     "avoid": [
       "agent-harness-construction",
       "ai-first-engineering",
+      "anthropic-skills/frontend-design",
       "autonomous-loops",
       "openclaw-persona-forge",
       "skill-scout"
@@ -1867,6 +1955,7 @@
     ],
     "debugging": [
       "agent-introspection-debugging",
+      "anthropic-skills/webapp-testing",
       "click-path-audit",
       "csharp-testing",
       "django-celery",
@@ -1886,6 +1975,7 @@
       "laravel-tdd",
       "perl-testing",
       "python-testing",
+      "superpowers/tdd-iron-law",
       "windows-desktop-e2e"
     ],
     "repeatedly": [
@@ -1916,6 +2006,7 @@
       "homelab-network-setup",
       "pytorch-patterns",
       "scientific-pkg-gget",
+      "superpowers/tdd-iron-law",
       "swift-concurrency-6-2",
       "swift-protocol-di-testing",
       "tinystruct-patterns",
@@ -1945,6 +2036,7 @@
       "agent-introspection-debugging",
       "agent-payment-x402",
       "agentic-engineering",
+      "anthropic-skills/template",
       "blueprint",
       "cost-aware-llm-pipeline",
       "dashboard-builder",
@@ -1959,6 +2051,9 @@
       "scientific-db-uspto-database",
       "scientific-pkg-gget",
       "scientific-thinking-literature-review",
+      "superpowers/brainstorming-gate",
+      "superpowers/sdd-methodology",
+      "superpowers/writing-plans",
       "team-builder"
     ],
     "hidden": [
@@ -2013,6 +2108,7 @@
     "loop": [
       "agent-introspection-debugging",
       "agentic-engineering",
+      "anthropic-skills/verify-iterate",
       "autonomous-loops",
       "benchmark-optimization-loop",
       "canary-watch",
@@ -2099,6 +2195,7 @@
     ],
     "enable": [
       "agent-payment-x402",
+      "anthropic-skills/mcp-builder",
       "workspace-surface-audit"
     ],
     "policy": [
@@ -2114,6 +2211,7 @@
     ],
     "built": [
       "agent-payment-x402",
+      "anthropic-skills/skill-creator",
       "flox-environments",
       "motion-patterns"
     ],
@@ -2147,14 +2245,18 @@
     ],
     "protocol": [
       "agent-payment-x402",
+      "anthropic-skills/mcp-builder",
       "defi-amm-security",
       "homelab-wireguard-vpn",
       "mcp-server-patterns",
+      "superpowers/formalized-code-review",
+      "superpowers/sdd-methodology",
       "swift-concurrency-6-2",
       "swift-protocol-di-testing"
     ],
     "external": [
       "agent-payment-x402",
+      "anthropic-skills/mcp-builder",
       "error-handling",
       "fastapi-patterns",
       "production-audit",
@@ -2165,6 +2267,7 @@
     "services": [
       "agent-payment-x402",
       "angular-developer",
+      "anthropic-skills/mcp-builder",
       "docker-patterns",
       "fastapi-patterns",
       "java-coding-standards",
@@ -2306,6 +2409,8 @@
     ],
     "pipeline": [
       "agent-payment-x402",
+      "anthropic-skills/mcp-builder",
+      "anthropic-skills/verify-iterate",
       "cost-aware-llm-pipeline",
       "data-throughput-accelerator",
       "django-verification",
@@ -2317,7 +2422,11 @@
       "ralphinho-rfc-pipeline",
       "recsys-pipeline-architect",
       "scientific-pkg-gget",
-      "springboot-verification"
+      "springboot-verification",
+      "superpowers",
+      "superpowers/finishing-workflow",
+      "superpowers/sdd-methodology",
+      "superpowers/tdd-iron-law"
     ],
     "security": [
       "agent-payment-x402",
@@ -2348,6 +2457,7 @@
       "agent-payment-x402",
       "ai-first-engineering",
       "ai-regression-testing",
+      "anthropic-skills/mcp-builder",
       "connections-optimizer",
       "council",
       "ecc-tools-cost-audit",
@@ -2375,6 +2485,9 @@
       "security-review",
       "skill-stocktake",
       "springboot-security",
+      "superpowers/brainstorming-gate",
+      "superpowers/formalized-code-review",
+      "superpowers/sdd-methodology",
       "unified-notifications-ops"
     ],
     "sort": [
@@ -2382,6 +2495,7 @@
     ],
     "repo": [
       "agent-sort",
+      "anthropic-skills",
       "api-connector-builder",
       "codebase-onboarding",
       "ecc-tools-cost-audit",
@@ -2399,6 +2513,8 @@
       "ai-regression-testing",
       "android-clean-architecture",
       "angular-developer",
+      "anthropic-skills/frontend-design",
+      "anthropic-skills/web-artifacts-builder",
       "api-connector-builder",
       "benchmark",
       "claude-devfleet",
@@ -2429,10 +2545,12 @@
       "safety-guard",
       "security-scan",
       "skill-stocktake",
+      "superpowers/finishing-workflow",
       "verification-loop"
     ],
     "specific": [
       "agent-sort",
+      "anthropic-skills/template",
       "brand-voice",
       "clickhouse-io",
       "code-tour",
@@ -2509,7 +2627,8 @@
       "safety-guard",
       "scientific-pkg-gget",
       "skill-stocktake",
-      "springboot-verification"
+      "springboot-verification",
+      "superpowers/finishing-workflow"
     ],
     "install": [
       "agent-sort",
@@ -2593,6 +2712,7 @@
     ],
     "stack": [
       "agent-sort",
+      "anthropic-skills/frontend-design",
       "automation-audit-ops",
       "benchmark",
       "continuous-agent-loop",
@@ -2654,6 +2774,16 @@
     ],
     "skills": [
       "agent-sort",
+      "anthropic-skills",
+      "anthropic-skills/anti-pattern-prevention",
+      "anthropic-skills/canvas-design",
+      "anthropic-skills/frontend-design",
+      "anthropic-skills/mcp-builder",
+      "anthropic-skills/skill-creator",
+      "anthropic-skills/template",
+      "anthropic-skills/verify-iterate",
+      "anthropic-skills/web-artifacts-builder",
+      "anthropic-skills/webapp-testing",
       "automation-audit-ops",
       "ck",
       "configure-ecc",
@@ -2713,7 +2843,8 @@
       "latency-critical-systems",
       "make-interfaces-feel-better",
       "mle-workflow",
-      "product-capability"
+      "product-capability",
+      "superpowers"
     ],
     "where": [
       "agentic-engineering",
@@ -2766,6 +2897,7 @@
       "scientific-thinking-scholar-evaluation",
       "skill-scout",
       "strategic-compact",
+      "superpowers/sdd-methodology",
       "swift-concurrency-6-2",
       "swift-protocol-di-testing"
     ],
@@ -2794,6 +2926,8 @@
       "pytorch-patterns",
       "rules-distill",
       "seo",
+      "superpowers",
+      "superpowers/formalized-code-review",
       "tdd-workflow"
     ],
     "define": [
@@ -2825,6 +2959,7 @@
     ],
     "tiers": [
       "agentic-engineering",
+      "superpowers/finishing-workflow",
       "x-api"
     ],
     "complexity": [
@@ -2894,6 +3029,7 @@
     "system": [
       "agentic-os",
       "ai-first-engineering",
+      "anthropic-skills",
       "autonomous-agent-harness",
       "benchmark-optimization-loop",
       "brand-voice",
@@ -2913,6 +3049,7 @@
       "perl-security",
       "plankton-code-quality",
       "ralphinho-rfc-pipeline",
+      "superpowers",
       "swift-protocol-di-testing",
       "unified-notifications-ops",
       "verification-loop",
@@ -2937,6 +3074,7 @@
       "network-bgp-diagnostics",
       "springboot-security",
       "strategic-compact",
+      "superpowers/finishing-workflow",
       "token-budget-advisor",
       "videodb"
     ],
@@ -3152,6 +3290,8 @@
       "agentic-os",
       "ai-regression-testing",
       "angular-developer",
+      "anthropic-skills/canvas-design",
+      "anthropic-skills/skill-creator",
       "database-migrations",
       "ecc-tools-cost-audit",
       "eval-harness",
@@ -3216,11 +3356,13 @@
       "cisco-ios-patterns",
       "investor-outreach",
       "nutrient-document-processing",
+      "superpowers/brainstorming-gate",
       "ui-demo"
     ],
     "reviews": [
       "ai-first-engineering",
-      "ai-regression-testing"
+      "ai-regression-testing",
+      "superpowers/formalized-code-review"
     ],
     "teams": [
       "ai-first-engineering",
@@ -3231,6 +3373,7 @@
     "assisted": [
       "ai-first-engineering",
       "ai-regression-testing",
+      "anthropic-skills/skill-creator",
       "eval-harness",
       "video-editing"
     ],
@@ -3313,6 +3456,7 @@
     ],
     "syntax": [
       "ai-first-engineering",
+      "anthropic-skills/verify-iterate",
       "csharp-testing",
       "fsharp-testing"
     ],
@@ -3377,6 +3521,7 @@
       "react-testing",
       "rust-testing",
       "springboot-tdd",
+      "superpowers/finishing-workflow",
       "swift-protocol-di-testing",
       "tdd-workflow",
       "windows-desktop-e2e"
@@ -3387,6 +3532,7 @@
     ],
     "testing": [
       "ai-regression-testing",
+      "anthropic-skills/webapp-testing",
       "browser-qa",
       "cpp-testing",
       "csharp-testing",
@@ -3405,12 +3551,15 @@
       "quarkus-verification",
       "react-testing",
       "rust-testing",
+      "superpowers/tdd-iron-law",
       "swift-protocol-di-testing",
       "windows-desktop-e2e"
     ],
     "patterns": [
       "ai-regression-testing",
       "android-clean-architecture",
+      "anthropic-skills/anti-pattern-prevention",
+      "anthropic-skills/web-artifacts-builder",
       "api-design",
       "autonomous-loops",
       "backend-patterns",
@@ -3492,10 +3641,14 @@
     ],
     "designed": [
       "ai-regression-testing",
+      "anthropic-skills/mcp-builder",
       "codebase-onboarding"
     ],
     "development": [
       "ai-regression-testing",
+      "anthropic-skills/mcp-builder",
+      "anthropic-skills/skill-creator",
+      "anthropic-skills/web-artifacts-builder",
       "backend-patterns",
       "django-patterns",
       "django-tdd",
@@ -3521,6 +3674,8 @@
       "quarkus-patterns",
       "rust-patterns",
       "springboot-patterns",
+      "superpowers/finishing-workflow",
+      "superpowers/sdd-methodology",
       "tdd-workflow",
       "tinystruct-patterns"
     ],
@@ -3563,6 +3718,7 @@
     ],
     "logic": [
       "ai-regression-testing",
+      "anthropic-skills/verify-iterate",
       "cost-aware-llm-pipeline",
       "error-handling",
       "finance-billing-ops",
@@ -3647,6 +3803,7 @@
     ],
     "projects": [
       "android-clean-architecture",
+      "anthropic-skills/frontend-design",
       "bun-runtime",
       "ck",
       "coding-standards",
@@ -3703,6 +3860,7 @@
       "repo-scan",
       "search-first",
       "springboot-verification",
+      "superpowers/writing-plans",
       "swift-protocol-di-testing",
       "vite-patterns"
     ],
@@ -3808,6 +3966,7 @@
       "homelab-pihole-dns",
       "laravel-patterns",
       "remotion-video-creation",
+      "superpowers/tdd-iron-law",
       "team-builder"
     ],
     "presentation": [
@@ -3822,6 +3981,7 @@
       "kotlin-ktor-patterns",
       "llm-trading-agent-security",
       "perl-security",
+      "superpowers/tdd-iron-law",
       "swift-protocol-di-testing"
     ],
     "koin": [
@@ -3938,10 +4098,13 @@
     ],
     "template": [
       "angular-developer",
+      "anthropic-skills/template",
       "ralphinho-rfc-pipeline"
     ],
     "driven": [
       "angular-developer",
+      "anthropic-skills/canvas-design",
+      "anthropic-skills/webapp-testing",
       "autonomous-loops",
       "django-tdd",
       "eval-harness",
@@ -3951,6 +4114,7 @@
       "quarkus-tdd",
       "social-publisher",
       "springboot-patterns",
+      "superpowers/sdd-methodology",
       "tdd-workflow"
     ],
     "routing": [
@@ -3965,6 +4129,7 @@
       "netmiko-ssh-automation",
       "nuxt4-patterns",
       "returns-reverse-logistics",
+      "superpowers/writing-plans",
       "unified-notifications-ops"
     ],
     "lazy": [
@@ -3979,14 +4144,1429 @@
       "nanoclaw-repl",
       "nuxt4-patterns"
     ],
-    "connector": [
+    "anthropic": [
+      "anthropic-skills",
+      "anthropic-skills/anti-pattern-prevention",
+      "anthropic-skills/canvas-design",
+      "anthropic-skills/frontend-design",
+      "anthropic-skills/mcp-builder",
+      "anthropic-skills/skill-creator",
+      "anthropic-skills/template",
+      "anthropic-skills/verify-iterate",
+      "anthropic-skills/web-artifacts-builder",
+      "anthropic-skills/webapp-testing",
+      "frontend-design-direction",
+      "gan-style-harness"
+    ],
+    "standard": [
+      "anthropic-skills",
+      "anthropic-skills/web-artifacts-builder",
+      "docker-patterns",
+      "fsharp-testing",
+      "kotlin-ktor-patterns"
+    ],
+    "integrated": [
+      "anthropic-skills",
+      "anthropic-skills/mcp-builder",
+      "anthropic-skills/skill-creator",
+      "anthropic-skills/verify-iterate",
+      "anthropic-skills/webapp-testing",
+      "superpowers"
+    ],
+    "metabuff": [
+      "anthropic-skills",
+      "anthropic-skills/anti-pattern-prevention",
+      "anthropic-skills/canvas-design",
+      "anthropic-skills/frontend-design",
+      "anthropic-skills/mcp-builder",
+      "anthropic-skills/skill-creator",
+      "anthropic-skills/verify-iterate",
+      "anthropic-skills/web-artifacts-builder",
+      "anthropic-skills/webapp-testing",
+      "superpowers",
+      "superpowers/brainstorming-gate",
+      "superpowers/finishing-workflow",
+      "superpowers/formalized-code-review",
+      "superpowers/sdd-methodology",
+      "superpowers/tdd-iron-law"
+    ],
+    "source": [
+      "anthropic-skills",
+      "brand-voice",
+      "ck",
+      "code-tour",
+      "content-engine",
+      "cost-tracking",
+      "data-scraper-agent",
+      "data-throughput-accelerator",
+      "deep-research",
+      "frontend-design-direction",
+      "github-ops",
+      "investor-materials",
+      "ios-icon-gen",
+      "make-interfaces-feel-better",
+      "market-research",
+      "opensource-pipeline",
+      "prediction-market-oracle-research",
+      "recsys-pipeline-architect",
+      "repo-scan",
+      "skill-scout",
+      "superpowers"
+    ],
+    "https": [
+      "anthropic-skills",
+      "anthropic-skills/canvas-design",
+      "anthropic-skills/frontend-design",
+      "anthropic-skills/mcp-builder",
+      "anthropic-skills/skill-creator",
+      "anthropic-skills/web-artifacts-builder",
+      "anthropic-skills/webapp-testing",
+      "cpp-coding-standards",
+      "gan-style-harness",
+      "homelab-pihole-dns",
+      "nutrient-document-processing",
+      "ralphinho-rfc-pipeline",
+      "react-performance",
+      "recsys-pipeline-architect",
+      "security-scan",
+      "social-publisher",
+      "superpowers",
+      "uncloud"
+    ],
+    "github": [
+      "anthropic-skills",
+      "anthropic-skills/canvas-design",
+      "anthropic-skills/frontend-design",
+      "anthropic-skills/mcp-builder",
+      "anthropic-skills/skill-creator",
+      "anthropic-skills/web-artifacts-builder",
+      "anthropic-skills/webapp-testing",
+      "cpp-coding-standards",
+      "data-scraper-agent",
+      "ecc-tools-cost-audit",
+      "git-workflow",
+      "github-ops",
+      "knowledge-ops",
+      "opensource-pipeline",
+      "project-flow-ops",
+      "ralphinho-rfc-pipeline",
+      "react-performance",
+      "recsys-pipeline-architect",
+      "security-scan",
+      "superpowers",
+      "unified-notifications-ops"
+    ],
+    "anthropics": [
+      "anthropic-skills",
+      "anthropic-skills/canvas-design",
+      "anthropic-skills/frontend-design",
+      "anthropic-skills/mcp-builder",
+      "anthropic-skills/skill-creator",
+      "anthropic-skills/web-artifacts-builder",
+      "anthropic-skills/webapp-testing",
+      "frontend-design-direction"
+    ],
+    "integration": [
+      "anthropic-skills",
+      "anthropic-skills/verify-iterate",
       "api-connector-builder",
-      "automation-audit-ops"
+      "clickhouse-io",
+      "cpp-testing",
+      "dart-flutter-patterns",
+      "jira-integration",
+      "kotlin-ktor-patterns",
+      "liquid-glass-design",
+      "plankton-code-quality",
+      "quarkus-tdd",
+      "ralphinho-rfc-pipeline",
+      "search-first",
+      "springboot-tdd",
+      "superpowers",
+      "tdd-workflow"
+    ],
+    "tailored": [
+      "anthropic-skills",
+      "anthropic-skills/anti-pattern-prevention",
+      "anthropic-skills/canvas-design",
+      "anthropic-skills/frontend-design",
+      "anthropic-skills/mcp-builder",
+      "anthropic-skills/skill-creator",
+      "anthropic-skills/verify-iterate",
+      "anthropic-skills/web-artifacts-builder",
+      "anthropic-skills/webapp-testing",
+      "superpowers"
+    ],
+    "orchestration": [
+      "anthropic-skills",
+      "autonomous-loops",
+      "claude-devfleet",
+      "dmux-workflows",
+      "ralphinho-rfc-pipeline",
+      "superpowers"
+    ],
+    "version": [
+      "anthropic-skills",
+      "git-workflow",
+      "laravel-plugin-discovery",
+      "mysql-patterns",
+      "nextjs-turbopack",
+      "prisma-patterns",
+      "superpowers",
+      "token-budget-advisor"
+    ],
+    "provides": [
+      "anthropic-skills",
+      "laravel-security",
+      "react-performance",
+      "ui-to-vue",
+      "visa-doc-translate"
+    ],
+    "standardized": [
+      "anthropic-skills",
+      "nodejs-keccak256"
+    ],
+    "portable": [
+      "anthropic-skills"
+    ],
+    "format": [
+      "anthropic-skills",
+      "code-tour",
+      "fal-ai-media",
+      "hookify-rules",
+      "ios-icon-gen",
+      "superpowers/writing-plans",
+      "visa-doc-translate"
+    ],
+    "modular": [
+      "anthropic-skills",
+      "nestjs-patterns"
+    ],
+    "files": [
+      "anthropic-skills",
+      "code-tour",
+      "content-hash-cache-pattern",
+      "gateguard",
+      "hookify-rules",
+      "knowledge-ops",
+      "react-patterns",
+      "remotion-video-creation",
+      "rules-distill",
+      "team-builder",
+      "uncloud",
+      "vite-patterns",
+      "workspace-surface-audit"
+    ],
+    "yaml": [
+      "anthropic-skills",
+      "docker-patterns",
+      "hookify-rules"
+    ],
+    "frontmatter": [
+      "anthropic-skills",
+      "hookify-rules"
+    ],
+    "load": [
+      "anthropic-skills",
+      "anthropic-skills/skill-creator",
+      "data-throughput-accelerator",
+      "motion-foundations",
+      "nanoclaw-repl",
+      "prisma-patterns"
+    ],
+    "demand": [
+      "anthropic-skills",
+      "energy-procurement",
+      "inventory-demand-planning",
+      "team-builder"
+    ],
+    "adapts": [
+      "anthropic-skills",
+      "superpowers"
+    ],
+    "innovations": [
+      "anthropic-skills"
+    ],
+    "skil": [
+      "anthropic-skills"
+    ],
+    "anti": [
+      "anthropic-skills/anti-pattern-prevention",
+      "anthropic-skills/template"
+    ],
+    "pattern": [
+      "anthropic-skills/anti-pattern-prevention",
+      "api-connector-builder",
+      "architecture-decision-records",
+      "content-hash-cache-pattern",
+      "continuous-agent-loop",
+      "hookify-rules",
+      "iterative-retrieval",
+      "java-coding-standards",
+      "kotlin-exposed-patterns",
+      "motion-patterns",
+      "mysql-patterns",
+      "parallel-execution-optimizer",
+      "postgres-patterns",
+      "recsys-pipeline-architect",
+      "swift-actor-persistence"
+    ],
+    "prevention": [
+      "anthropic-skills/anti-pattern-prevention",
+      "hipaa-compliance",
+      "jpa-patterns",
+      "perl-security"
+    ],
+    "wrong": [
+      "anthropic-skills/anti-pattern-prevention"
+    ],
+    "correct": [
+      "anthropic-skills/anti-pattern-prevention",
+      "data-throughput-accelerator"
+    ],
+    "adapted": [
+      "anthropic-skills/anti-pattern-prevention",
+      "anthropic-skills/canvas-design",
+      "anthropic-skills/frontend-design",
+      "anthropic-skills/mcp-builder",
+      "anthropic-skills/skill-creator",
+      "anthropic-skills/verify-iterate",
+      "anthropic-skills/web-artifacts-builder",
+      "anthropic-skills/webapp-testing",
+      "react-performance"
+    ],
+    "methodology": [
+      "anthropic-skills/anti-pattern-prevention",
+      "anthropic-skills/verify-iterate",
+      "golang-testing",
+      "kotlin-testing",
+      "perl-testing",
+      "python-testing",
+      "rust-testing",
+      "scientific-thinking-scholar-evaluation",
+      "superpowers",
+      "superpowers/sdd-methodology"
+    ],
+    "explain": [
+      "anthropic-skills/anti-pattern-prevention"
+    ],
+    "reasoning": [
+      "anthropic-skills/anti-pattern-prevention"
+    ],
+    "show": [
+      "anthropic-skills/anti-pattern-prevention",
+      "cisco-ios-patterns",
+      "dashboard-builder",
+      "homelab-wireguard-vpn",
+      "hookify-rules",
+      "netmiko-ssh-automation"
+    ],
+    "counterexamples": [
+      "anthropic-skills/anti-pattern-prevention"
+    ],
+    "applied": [
+      "anthropic-skills/anti-pattern-prevention",
+      "superpowers/brainstorming-gate",
+      "superpowers/finishing-workflow",
+      "superpowers/formalized-code-review",
+      "superpowers/sdd-methodology",
+      "superpowers/tdd-iron-law",
+      "superpowers/writing-plans"
+    ],
+    "across": [
+      "anthropic-skills/anti-pattern-prevention",
+      "blueprint",
+      "brand-voice",
+      "browser-qa",
+      "carrier-relationship-management",
+      "coding-standards",
+      "compose-multiplatform-patterns",
+      "context-budget",
+      "cpp-coding-standards",
+      "crosspost",
+      "customs-trade-compliance",
+      "dmux-workflows",
+      "energy-procurement",
+      "eval-harness",
+      "evm-token-decimals",
+      "flox-environments",
+      "inventory-demand-planning",
+      "ios-icon-gen",
+      "knowledge-ops",
+      "kotlin-patterns",
+      "logistics-exception-management",
+      "marketing-campaign",
+      "netmiko-ssh-automation",
+      "production-scheduling",
+      "redis-patterns",
+      "repo-scan",
+      "returns-reverse-logistics",
+      "rust-patterns",
+      "scientific-pkg-gget",
+      "scientific-thinking-literature-review",
+      "social-graph-ranker",
+      "social-publisher",
+      "swift-protocol-di-testing",
+      "unified-notifications-ops"
+    ],
+    "principle": [
+      "anthropic-skills/anti-pattern-prevention",
+      "anthropic-skills/verify-iterate",
+      "rules-distill",
+      "superpowers/finishing-workflow",
+      "superpowers/sdd-methodology",
+      "tinystruct-patterns"
+    ],
+    "tell": [
+      "anthropic-skills/anti-pattern-prevention",
+      "ito-basket-compare",
+      "repo-scan"
+    ],
+    "instruction": [
+      "anthropic-skills/anti-pattern-prevention"
+    ],
+    "provide": [
+      "anthropic-skills/anti-pattern-prevention",
+      "ito-basket-compare",
+      "ito-market-intelligence",
+      "ito-trade-planner",
+      "kotlin-exposed-patterns",
+      "prediction-market-oracle-research"
+    ],
+    "concrete": [
+      "anthropic-skills/anti-pattern-prevention",
+      "anthropic-skills/template",
+      "gateguard",
+      "investor-outreach"
+    ],
+    "examples": [
+      "anthropic-skills/anti-pattern-prevention",
+      "article-writing",
+      "exa-search",
+      "fastapi-patterns",
+      "healthcare-eval-harness",
+      "homelab-wireguard-vpn",
+      "remotion-video-creation"
+    ],
+    "alongside": [
+      "anthropic-skills/anti-pattern-prevention",
+      "architecture-decision-records"
+    ],
+    "llms": [
+      "anthropic-skills/anti-pattern-prevention",
+      "anthropic-skills/mcp-builder"
+    ],
+    "learn": [
+      "anthropic-skills/anti-pattern-prevention"
+    ],
+    "reliably": [
+      "anthropic-skills/anti-pattern-prevention"
+    ],
+    "positive": [
+      "anthropic-skills/anti-pattern-prevention"
+    ],
+    "alone": [
+      "anthropic-skills/anti-pattern-prevention"
+    ],
+    "philosophy": [
+      "anthropic-skills/anti-pattern-prevention",
+      "anthropic-skills/canvas-design",
+      "anthropic-skills/frontend-design",
+      "eval-harness",
+      "python-testing"
+    ],
+    "theory": [
+      "anthropic-skills/anti-pattern-prevention"
+    ],
+    "mind": [
+      "anthropic-skills/anti-pattern-prevention"
+    ],
+    "canvas": [
+      "anthropic-skills/canvas-design"
+    ],
+    "visual": [
+      "anthropic-skills/canvas-design",
+      "anthropic-skills/webapp-testing",
+      "browser-qa",
+      "design-system",
+      "frontend-slides",
+      "manim-video"
+    ],
+    "blob": [
+      "anthropic-skills/canvas-design",
+      "anthropic-skills/frontend-design",
+      "anthropic-skills/mcp-builder",
+      "anthropic-skills/skill-creator",
+      "anthropic-skills/web-artifacts-builder",
+      "anthropic-skills/webapp-testing"
+    ],
+    "main": [
+      "anthropic-skills/canvas-design",
+      "anthropic-skills/frontend-design",
+      "anthropic-skills/mcp-builder",
+      "anthropic-skills/skill-creator",
+      "anthropic-skills/web-artifacts-builder",
+      "anthropic-skills/webapp-testing",
+      "homelab-vlan-segmentation",
+      "kotlin-ktor-patterns",
+      "nestjs-patterns",
+      "react-performance",
+      "tinystruct-patterns"
+    ],
+    "elements": [
+      "anthropic-skills/canvas-design",
+      "frontend-a11y",
+      "liquid-glass-design"
+    ],
+    "next": [
+      "anthropic-skills/canvas-design",
+      "anthropic-skills/frontend-design",
+      "anthropic-skills/template",
+      "anthropic-skills/web-artifacts-builder",
+      "automation-audit-ops",
+      "code-tour",
+      "documentation-lookup",
+      "frontend-a11y",
+      "frontend-patterns",
+      "motion-patterns",
+      "motion-ui",
+      "nextjs-turbopack",
+      "react-patterns",
+      "react-performance",
+      "workspace-surface-audit"
+    ],
+    "react": [
+      "anthropic-skills/canvas-design",
+      "anthropic-skills/frontend-design",
+      "anthropic-skills/web-artifacts-builder",
+      "coding-standards",
+      "continuous-learning-v2",
+      "frontend-a11y",
+      "frontend-patterns",
+      "motion-ui",
+      "react-patterns",
+      "react-performance",
+      "react-testing",
+      "remotion-video-creation"
+    ],
+    "apps": [
+      "anthropic-skills/canvas-design",
+      "foundation-models-on-device",
+      "gan-style-harness",
+      "liquid-glass-design",
+      "llm-trading-agent-security",
+      "nextjs-turbopack",
+      "nuxt4-patterns",
+      "swift-actor-persistence"
+    ],
+    "approach": [
+      "anthropic-skills/canvas-design",
+      "content-hash-cache-pattern",
+      "frontend-slides",
+      "strategic-compact"
+    ],
+    "applies": [
+      "anthropic-skills/canvas-design",
+      "anthropic-skills/frontend-design",
+      "rules-distill"
+    ],
+    "hero": [
+      "anthropic-skills/canvas-design"
+    ],
+    "section": [
+      "anthropic-skills/canvas-design",
+      "windows-desktop-e2e"
+    ],
+    "compositions": [
+      "anthropic-skills/canvas-design"
+    ],
+    "decorative": [
+      "anthropic-skills/canvas-design"
+    ],
+    "background": [
+      "anthropic-skills/canvas-design",
+      "backend-patterns",
+      "django-celery",
+      "laravel-patterns",
+      "scientific-thinking-literature-review",
+      "swift-concurrency-6-2"
+    ],
+    "poster": [
+      "anthropic-skills/canvas-design"
+    ],
+    "style": [
+      "anthropic-skills/canvas-design",
+      "api-connector-builder",
+      "brand-voice",
+      "coding-standards",
+      "cpp-coding-standards",
+      "gan-style-harness",
+      "liquid-glass-design",
+      "mysql-patterns",
+      "network-config-validation",
+      "ralphinho-rfc-pipeline",
+      "recursive-decision-ledger"
+    ],
+    "feature": [
+      "anthropic-skills/canvas-design",
+      "blueprint",
+      "browser-qa",
+      "dart-flutter-patterns",
+      "flutter-dart-code-review",
+      "healthcare-phi-compliance",
+      "laravel-plugin-discovery",
+      "laravel-tdd",
+      "marketing-campaign",
+      "mle-workflow",
+      "mysql-patterns",
+      "product-capability",
+      "product-lens",
+      "ralphinho-rfc-pipeline",
+      "search-first",
+      "ui-demo",
+      "verification-loop"
+    ],
+    "cards": [
+      "anthropic-skills/canvas-design",
+      "liquid-glass-design",
+      "make-interfaces-feel-better"
+    ],
+    "static": [
+      "anthropic-skills/canvas-design",
+      "click-path-audit",
+      "homelab-network-setup"
+    ],
+    "benefits": [
+      "anthropic-skills/canvas-design"
+    ],
+    "artistic": [
+      "anthropic-skills/canvas-design"
+    ],
+    "direction": [
+      "anthropic-skills/canvas-design",
+      "cisco-ios-patterns",
+      "frontend-design-direction"
+    ],
+    "purpose": [
+      "anthropic-skills/canvas-design",
+      "anthropic-skills/frontend-design",
+      "anthropic-skills/mcp-builder",
+      "anthropic-skills/skill-creator",
+      "anthropic-skills/template",
+      "anthropic-skills/web-artifacts-builder",
+      "anthropic-skills/webapp-testing",
+      "csharp-testing",
+      "fsharp-testing"
+    ],
+    "create": [
+      "anthropic-skills/canvas-design",
+      "anthropic-skills/frontend-design",
+      "api-connector-builder",
+      "autonomous-agent-harness",
+      "code-tour",
+      "dashboard-builder",
+      "django-tdd",
+      "dmux-workflows",
+      "e2e-testing",
+      "frontend-slides",
+      "investor-materials",
+      "postgres-patterns",
+      "skill-scout"
+    ],
+    "frontend": [
+      "anthropic-skills/frontend-design",
+      "browser-qa",
+      "coding-standards",
+      "frontend-a11y",
+      "frontend-design-direction",
+      "frontend-patterns",
+      "frontend-slides",
+      "make-interfaces-feel-better"
+    ],
+    "distinctive": [
+      "anthropic-skills/frontend-design"
+    ],
+    "grade": [
+      "anthropic-skills/frontend-design",
+      "django-celery",
+      "django-patterns",
+      "laravel-patterns",
+      "nestjs-patterns",
+      "springboot-patterns"
+    ],
+    "tailwind": [
+      "anthropic-skills/frontend-design",
+      "anthropic-skills/web-artifacts-builder",
+      "design-system"
+    ],
+    "universally": [
+      "anthropic-skills/frontend-design"
+    ],
+    "details": [
+      "anthropic-skills/frontend-design",
+      "hexagonal-architecture",
+      "make-interfaces-feel-better",
+      "mysql-patterns",
+      "scientific-pkg-gget"
+    ],
+    "target": [
+      "anthropic-skills/frontend-design",
+      "autonomous-agent-harness",
+      "benchmark",
+      "homelab-network-readiness",
+      "kotlin-testing",
+      "rust-testing",
+      "social-graph-ranker",
+      "ui-to-vue"
+    ],
+    "generic": [
+      "anthropic-skills/frontend-design",
+      "api-connector-builder",
+      "brand-voice",
+      "content-engine",
+      "customer-billing-ops",
+      "ecc-tools-cost-audit",
+      "email-ops",
+      "make-interfaces-feel-better"
+    ],
+    "slop": [
+      "anthropic-skills/frontend-design",
+      "content-engine"
+    ],
+    "aesthetics": [
+      "anthropic-skills/frontend-design"
+    ],
+    "implement": [
+      "anthropic-skills/frontend-design",
+      "anthropic-skills/mcp-builder",
+      "hexagonal-architecture",
+      "laravel-tdd",
+      "springboot-tdd",
+      "strategic-compact",
+      "superpowers/writing-plans",
+      "tdd-workflow"
+    ],
+    "real": [
+      "anthropic-skills/frontend-design",
+      "benchmark",
+      "brand-voice",
+      "browser-qa",
+      "code-tour",
+      "connections-optimizer",
+      "content-engine",
+      "customer-billing-ops",
+      "dashboard-builder",
+      "email-ops",
+      "knowledge-ops",
+      "swift-protocol-di-testing",
+      "terminal-ops",
+      "unified-notifications-ops",
+      "video-editing",
+      "videodb"
     ],
     "builder": [
+      "anthropic-skills/mcp-builder",
+      "anthropic-skills/web-artifacts-builder",
       "api-connector-builder",
       "dashboard-builder",
       "team-builder"
+    ],
+    "structured": [
+      "anthropic-skills/mcp-builder",
+      "anthropic-skills/skill-creator",
+      "architecture-decision-records",
+      "blender-motion-state-inspection",
+      "ck",
+      "codebase-onboarding",
+      "foundation-models-on-device",
+      "healthcare-emr-patterns",
+      "ito-trade-planner",
+      "kotlin-coroutines-flows",
+      "regex-vs-llm-structured-text",
+      "scientific-thinking-scholar-evaluation",
+      "seo",
+      "superpowers",
+      "superpowers/finishing-workflow"
+    ],
+    "server": [
+      "anthropic-skills/mcp-builder",
+      "anthropic-skills/webapp-testing",
+      "backend-patterns",
+      "coding-standards",
+      "documentation-lookup",
+      "exa-search",
+      "frontend-patterns",
+      "homelab-network-readiness",
+      "homelab-network-setup",
+      "homelab-pihole-dns",
+      "homelab-wireguard-vpn",
+      "kotlin-ktor-patterns",
+      "laravel-plugin-discovery",
+      "mcp-server-patterns",
+      "nuxt4-patterns",
+      "react-patterns",
+      "vite-patterns"
+    ],
+    "guide": [
+      "anthropic-skills/mcp-builder",
+      "anthropic-skills/skill-creator",
+      "codebase-onboarding",
+      "configure-ecc",
+      "ecc-guide",
+      "superpowers/tdd-iron-law"
+    ],
+    "creation": [
+      "anthropic-skills/mcp-builder",
+      "django-tdd",
+      "remotion-video-creation"
+    ],
+    "high": [
+      "anthropic-skills/mcp-builder",
+      "anthropic-skills/skill-creator",
+      "clickhouse-io",
+      "content-hash-cache-pattern",
+      "lead-intelligence",
+      "nanoclaw-repl",
+      "react-performance",
+      "tinystruct-patterns"
+    ],
+    "servers": [
+      "anthropic-skills/mcp-builder",
+      "autonomous-agent-harness",
+      "context-budget",
+      "homelab-network-setup",
+      "kotlin-ktor-patterns",
+      "mcp-server-patterns"
+    ],
+    "interact": [
+      "anthropic-skills/mcp-builder",
+      "browser-qa"
+    ],
+    "through": [
+      "anthropic-skills/mcp-builder",
+      "anthropic-skills/skill-creator",
+      "anthropic-skills/verify-iterate",
+      "codebase-onboarding",
+      "configure-ecc",
+      "continuous-learning-v2",
+      "ito-market-intelligence",
+      "laravel-verification",
+      "lead-intelligence",
+      "opensource-pipeline",
+      "plan-orchestrate",
+      "quality-nonconformance",
+      "recursive-decision-ledger",
+      "scientific-pkg-gget",
+      "seo",
+      "social-publisher",
+      "ui-demo",
+      "uncloud"
+    ],
+    "well": [
+      "anthropic-skills/mcp-builder"
+    ],
+    "follows": [
+      "anthropic-skills/mcp-builder",
+      "flutter-dart-code-review",
+      "security-review",
+      "tdd-workflow"
+    ],
+    "plan": [
+      "anthropic-skills/mcp-builder",
+      "blueprint",
+      "claude-devfleet",
+      "customer-billing-ops",
+      "investor-materials",
+      "ito-trade-planner",
+      "marketing-campaign",
+      "netmiko-ssh-automation",
+      "plan-orchestrate",
+      "production-scheduling",
+      "strategic-compact",
+      "superpowers/writing-plans"
+    ],
+    "revi": [
+      "anthropic-skills/mcp-builder"
+    ],
+    "creator": [
+      "anthropic-skills/skill-creator"
+    ],
+    "cache": [
+      "anthropic-skills/skill-creator",
+      "backend-patterns",
+      "content-hash-cache-pattern",
+      "latency-critical-systems"
+    ],
+    "ones": [
+      "anthropic-skills/skill-creator",
+      "team-builder"
+    ],
+    "interview": [
+      "anthropic-skills/skill-creator"
+    ],
+    "iteration": [
+      "anthropic-skills/skill-creator"
+    ],
+    "evaluation": [
+      "anthropic-skills/skill-creator",
+      "deep-research",
+      "eval-harness",
+      "gan-style-harness",
+      "gateguard",
+      "mle-workflow",
+      "scientific-thinking-scholar-evaluation"
+    ],
+    "benchmarks": [
+      "anthropic-skills/skill-creator",
+      "golang-testing",
+      "rust-testing"
+    ],
+    "phase": [
+      "anthropic-skills/skill-creator",
+      "anthropic-skills/template",
+      "browser-qa",
+      "django-verification",
+      "quarkus-verification",
+      "springboot-verification",
+      "strategic-compact",
+      "superpowers/writing-plans",
+      "ui-demo",
+      "verification-loop"
+    ],
+    "discovery": [
+      "anthropic-skills/skill-creator",
+      "api-connector-builder",
+      "ito-market-intelligence",
+      "laravel-plugin-discovery",
+      "lead-intelligence",
+      "research-ops",
+      "security-bounty-hunter"
+    ],
+    "title": [
+      "anthropic-skills/template",
+      "seo"
+    ],
+    "sentence": [
+      "anthropic-skills/template"
+    ],
+    "describing": [
+      "anthropic-skills/template"
+    ],
+    "accomplishes": [
+      "anthropic-skills/template"
+    ],
+    "list": [
+      "anthropic-skills/template",
+      "connections-optimizer",
+      "dashboard-builder",
+      "lead-intelligence",
+      "motion-patterns",
+      "network-bgp-diagnostics",
+      "python-patterns",
+      "santa-method",
+      "social-graph-ranker"
+    ],
+    "conditions": [
+      "anthropic-skills/template",
+      "click-path-audit"
+    ],
+    "keywords": [
+      "anthropic-skills/template",
+      "seo"
+    ],
+    "types": [
+      "anthropic-skills/template",
+      "dart-flutter-patterns",
+      "error-handling",
+      "marketing-campaign",
+      "scientific-db-pubmed-database"
+    ],
+    "trigger": [
+      "anthropic-skills/template",
+      "search-first",
+      "token-budget-advisor"
+    ],
+    "instructions": [
+      "anthropic-skills/template",
+      "visa-doc-translate"
+    ],
+    "imperative": [
+      "anthropic-skills/template"
+    ],
+    "language": [
+      "anthropic-skills/template",
+      "foundation-models-on-device",
+      "liquid-glass-design"
+    ],
+    "each": [
+      "anthropic-skills/template",
+      "benchmark",
+      "claude-devfleet",
+      "click-path-audit",
+      "homelab-vlan-segmentation",
+      "homelab-wireguard-vpn",
+      "investor-materials",
+      "laravel-verification",
+      "parallel-execution-optimizer",
+      "plan-orchestrate",
+      "ralphinho-rfc-pipeline"
+    ],
+    "verifiable": [
+      "anthropic-skills/template",
+      "ralphinho-rfc-pipeline"
+    ],
+    "name": [
+      "anthropic-skills/template",
+      "autonomous-loops",
+      "ck",
+      "continuous-agent-loop",
+      "documentation-lookup",
+      "hookify-rules",
+      "superpowers/writing-plans"
+    ],
+    "include": [
+      "anthropic-skills/template",
+      "carrier-relationship-management",
+      "customs-trade-compliance",
+      "hookify-rules",
+      "inventory-demand-planning",
+      "logistics-exception-management",
+      "market-research",
+      "production-scheduling",
+      "quality-nonconformance",
+      "returns-reverse-logistics"
+    ],
+    "commands": [
+      "anthropic-skills/template",
+      "cisco-ios-patterns",
+      "ck",
+      "ecc-guide",
+      "healthcare-eval-harness",
+      "network-config-validation",
+      "opensource-pipeline",
+      "perl-security",
+      "redis-patterns",
+      "safety-guard",
+      "skill-stocktake",
+      "terminal-ops"
+    ],
+    "paths": [
+      "anthropic-skills/template",
+      "council",
+      "ecc-tools-cost-audit",
+      "latency-critical-systems",
+      "motion-advanced",
+      "perl-security",
+      "security-bounty-hunter",
+      "skill-stocktake",
+      "social-graph-ranker",
+      "swift-protocol-di-testing"
+    ],
+    "builds": [
+      "anthropic-skills/template",
+      "ito-data-atlas-agent",
+      "kotlin-patterns",
+      "laravel-verification",
+      "terminal-ops",
+      "verification-loop"
+    ],
+    "previous": [
+      "anthropic-skills/template",
+      "superpowers/sdd-methodology"
+    ],
+    "verify": [
+      "anthropic-skills/verify-iterate",
+      "browser-qa",
+      "canary-watch",
+      "configure-ecc",
+      "deep-research",
+      "homelab-vlan-segmentation",
+      "laravel-plugin-discovery",
+      "opensource-pipeline",
+      "quarkus-verification",
+      "springboot-verification",
+      "superpowers/finishing-workflow",
+      "x-api"
+    ],
+    "iterate": [
+      "anthropic-skills/verify-iterate"
+    ],
+    "inspect": [
+      "anthropic-skills/verify-iterate",
+      "ito-basket-compare",
+      "terminal-ops"
+    ],
+    "verification": [
+      "anthropic-skills/verify-iterate",
+      "anthropic-skills/webapp-testing",
+      "django-verification",
+      "healthcare-eval-harness",
+      "laravel-verification",
+      "quarkus-verification",
+      "ralphinho-rfc-pipeline",
+      "santa-method",
+      "springboot-verification",
+      "superpowers/tdd-iron-law",
+      "terminal-ops",
+      "verification-loop"
+    ],
+    "cycle": [
+      "anthropic-skills/verify-iterate",
+      "django-celery",
+      "django-tdd",
+      "golang-testing",
+      "laravel-tdd",
+      "perl-testing",
+      "python-testing",
+      "superpowers/tdd-iron-law"
+    ],
+    "validator": [
+      "anthropic-skills/verify-iterate",
+      "superpowers/finishing-workflow"
+    ],
+    "never": [
+      "anthropic-skills/verify-iterate",
+      "database-migrations",
+      "evm-token-decimals",
+      "gateguard",
+      "investor-outreach",
+      "plan-orchestrate",
+      "security-review",
+      "superpowers/finishing-workflow"
+    ],
+    "ship": [
+      "anthropic-skills/verify-iterate",
+      "evm-token-decimals",
+      "hermes-imports",
+      "marketing-campaign",
+      "production-audit"
+    ],
+    "attempt": [
+      "anthropic-skills/verify-iterate"
+    ],
+    "must": [
+      "anthropic-skills/verify-iterate",
+      "autonomous-agent-harness",
+      "benchmark-optimization-loop",
+      "gateguard",
+      "investor-materials",
+      "product-capability",
+      "production-audit",
+      "ralphinho-rfc-pipeline",
+      "superpowers/finishing-workflow",
+      "superpowers/writing-plans",
+      "team-builder"
+    ],
+    "pass": [
+      "anthropic-skills/verify-iterate",
+      "ecc-tools-cost-audit",
+      "eval-harness",
+      "golang-testing",
+      "healthcare-eval-harness",
+      "hipaa-compliance",
+      "laravel-tdd",
+      "plankton-code-quality",
+      "ralphinho-rfc-pipeline",
+      "springboot-tdd",
+      "superpowers/finishing-workflow",
+      "tdd-workflow",
+      "ui-to-vue",
+      "verification-loop"
+    ],
+    "being": [
+      "anthropic-skills/verify-iterate",
+      "benchmark-optimization-loop",
+      "prediction-market-oracle-research"
+    ],
+    "considered": [
+      "anthropic-skills/verify-iterate",
+      "prediction-market-oracle-research"
+    ],
+    "complete": [
+      "anthropic-skills/verify-iterate",
+      "prompt-optimizer",
+      "skill-stocktake",
+      "superpowers/writing-plans"
+    ],
+    "catches": [
+      "anthropic-skills/verify-iterate"
+    ],
+    "typos": [
+      "anthropic-skills/verify-iterate"
+    ],
+    "caught": [
+      "anthropic-skills/verify-iterate"
+    ],
+    "compile": [
+      "anthropic-skills/verify-iterate",
+      "rust-patterns",
+      "swift-actor-persistence"
+    ],
+    "time": [
+      "anthropic-skills/verify-iterate",
+      "benchmark-optimization-loop",
+      "codebase-onboarding",
+      "data-scraper-agent",
+      "homelab-vlan-segmentation",
+      "latency-critical-systems",
+      "messages-ops",
+      "parallel-execution-optimizer",
+      "plankton-code-quality",
+      "rust-patterns",
+      "superpowers/brainstorming-gate",
+      "swift-actor-persistence",
+      "token-budget-advisor",
+      "videodb"
+    ],
+    "test": [
+      "anthropic-skills/verify-iterate",
+      "anthropic-skills/webapp-testing",
+      "api-connector-builder",
+      "browser-qa",
+      "bun-runtime",
+      "cpp-testing",
+      "csharp-testing",
+      "django-tdd",
+      "django-verification",
+      "e2e-testing",
+      "eval-harness",
+      "fsharp-testing",
+      "golang-testing",
+      "healthcare-eval-harness",
+      "kotlin-testing",
+      "laravel-tdd",
+      "laravel-verification",
+      "parallel-execution-optimizer",
+      "perl-testing",
+      "python-testing",
+      "quarkus-verification",
+      "react-testing",
+      "rust-testing",
+      "springboot-verification",
+      "strategic-compact",
+      "superpowers/finishing-workflow",
+      "superpowers/tdd-iron-law",
+      "swift-protocol-di-testing",
+      "tdd-workflow",
+      "windows-desktop-e2e"
+    ],
+    "assertions": [
+      "anthropic-skills/verify-iterate",
+      "react-testing"
+    ],
+    "issues": [
+      "anthropic-skills/verify-iterate",
+      "article-writing",
+      "bun-runtime",
+      "django-security",
+      "docker-patterns",
+      "frontend-a11y",
+      "github-ops",
+      "jira-integration",
+      "nuxt4-patterns",
+      "project-flow-ops",
+      "security-scan",
+      "tdd-workflow"
+    ],
+    "artifacts": [
+      "anthropic-skills/web-artifacts-builder",
+      "enterprise-agent-ops",
+      "mle-workflow"
+    ],
+    "complex": [
+      "anthropic-skills/web-artifacts-builder",
+      "cost-aware-llm-pipeline",
+      "dmux-workflows",
+      "kotlin-exposed-patterns",
+      "motion-advanced",
+      "superpowers/brainstorming-gate",
+      "swiftui-patterns"
+    ],
+    "replaces": [
+      "anthropic-skills/web-artifacts-builder"
+    ],
+    "artifact": [
+      "anthropic-skills/web-artifacts-builder",
+      "product-lens",
+      "scientific-thinking-scholar-evaluation"
+    ],
+    "build": [
+      "anthropic-skills/web-artifacts-builder",
+      "api-connector-builder",
+      "brand-voice",
+      "bun-runtime",
+      "claude-devfleet",
+      "content-engine",
+      "dashboard-builder",
+      "data-scraper-agent",
+      "docker-patterns",
+      "investor-materials",
+      "parallel-execution-optimizer",
+      "product-capability",
+      "product-lens",
+      "quarkus-verification",
+      "skill-scout",
+      "springboot-verification",
+      "verification-loop",
+      "vite-patterns"
+    ],
+    "elaborate": [
+      "anthropic-skills/web-artifacts-builder"
+    ],
+    "require": [
+      "anthropic-skills/web-artifacts-builder",
+      "ito-data-atlas-agent",
+      "redis-patterns"
+    ],
+    "coordinated": [
+      "anthropic-skills/web-artifacts-builder"
+    ],
+    "state": [
+      "anthropic-skills/web-artifacts-builder",
+      "blender-motion-state-inspection",
+      "click-path-audit",
+      "coding-standards",
+      "compose-multiplatform-patterns",
+      "dart-flutter-patterns",
+      "finance-billing-ops",
+      "flutter-dart-code-review",
+      "frontend-patterns",
+      "hermes-imports",
+      "motion-ui",
+      "nuxt4-patterns",
+      "react-patterns",
+      "scientific-thinking-literature-review",
+      "superpowers/finishing-workflow",
+      "swift-actor-persistence",
+      "swiftui-patterns",
+      "terminal-ops"
+    ],
+    "webapp": [
+      "anthropic-skills/webapp-testing"
+    ],
+    "playwright": [
+      "anthropic-skills/webapp-testing",
+      "browser-qa",
+      "e2e-testing",
+      "ui-demo"
+    ],
+    "reconnaissance": [
+      "anthropic-skills/webapp-testing"
+    ],
+    "basher": [
+      "anthropic-skills/webapp-testing"
+    ],
+    "local": [
+      "anthropic-skills/webapp-testing",
+      "cost-tracking",
+      "dart-flutter-patterns",
+      "docker-patterns",
+      "frontend-design-direction",
+      "hermes-imports",
+      "homelab-network-readiness",
+      "homelab-pihole-dns",
+      "hookify-rules",
+      "knowledge-ops",
+      "nextjs-turbopack",
+      "react-patterns",
+      "scientific-pkg-gget",
+      "swift-actor-persistence",
+      "unified-notifications-ops"
+    ],
+    "management": [
+      "anthropic-skills/webapp-testing",
+      "carrier-relationship-management",
+      "compose-multiplatform-patterns",
+      "customs-trade-compliance",
+      "dart-flutter-patterns",
+      "energy-procurement",
+      "enterprise-agent-ops",
+      "flox-environments",
+      "flutter-dart-code-review",
+      "llm-trading-agent-security",
+      "logistics-exception-management",
+      "quality-nonconformance",
+      "returns-reverse-logistics",
+      "security-review",
+      "uncloud"
+    ],
+    "applications": [
+      "anthropic-skills/webapp-testing",
+      "backend-patterns",
+      "cost-aware-llm-pipeline",
+      "csharp-testing",
+      "django-patterns",
+      "django-security",
+      "django-tdd",
+      "dotnet-patterns",
+      "error-handling",
+      "flutter-dart-code-review",
+      "fsharp-testing",
+      "golang-patterns",
+      "healthcare-eval-harness",
+      "healthcare-phi-compliance",
+      "kotlin-patterns",
+      "laravel-patterns",
+      "laravel-security",
+      "laravel-tdd",
+      "perl-patterns",
+      "perl-security",
+      "perl-testing",
+      "python-patterns",
+      "python-testing",
+      "pytorch-patterns",
+      "quarkus-security",
+      "rust-patterns",
+      "ui-demo",
+      "visa-doc-translate",
+      "windows-desktop-e2e"
+    ],
+    "understand": [
+      "anthropic-skills/webapp-testing",
+      "codebase-onboarding",
+      "design-system",
+      "finance-billing-ops",
+      "jira-integration",
+      "python-patterns",
+      "social-graph-ranker"
+    ],
+    "page": [
+      "anthropic-skills/webapp-testing",
+      "benchmark",
+      "canary-watch",
+      "e2e-testing",
+      "manim-video",
+      "motion-patterns",
+      "nuxt4-patterns",
+      "react-performance",
+      "ui-to-vue"
+    ],
+    "structure": [
+      "anthropic-skills/webapp-testing",
+      "api-design",
+      "article-writing",
+      "django-patterns",
+      "flutter-dart-code-review",
+      "hookify-rules",
+      "kotlin-ktor-patterns",
+      "laravel-patterns",
+      "manim-video",
+      "nestjs-patterns",
+      "redis-patterns",
+      "rust-patterns",
+      "scientific-pkg-gget",
+      "seo",
+      "video-editing"
+    ],
+    "interacting": [
+      "anthropic-skills/webapp-testing"
+    ],
+    "screenshot": [
+      "anthropic-skills/webapp-testing",
+      "ui-to-vue"
+    ],
+    "connector": [
+      "api-connector-builder",
+      "automation-audit-ops"
     ],
     "native": [
       "api-connector-builder",
@@ -4003,30 +5583,6 @@
       "terminal-ops",
       "windows-desktop-e2e",
       "workspace-surface-audit"
-    ],
-    "integration": [
-      "api-connector-builder",
-      "clickhouse-io",
-      "cpp-testing",
-      "dart-flutter-patterns",
-      "jira-integration",
-      "kotlin-ktor-patterns",
-      "liquid-glass-design",
-      "plankton-code-quality",
-      "quarkus-tdd",
-      "ralphinho-rfc-pipeline",
-      "search-first",
-      "springboot-tdd",
-      "tdd-workflow"
-    ],
-    "generic": [
-      "api-connector-builder",
-      "brand-voice",
-      "content-engine",
-      "customer-billing-ops",
-      "ecc-tools-cost-audit",
-      "email-ops",
-      "make-interfaces-feel-better"
     ],
     "client": [
       "api-connector-builder",
@@ -4053,22 +5609,6 @@
       "homelab-pihole-dns",
       "homelab-wireguard-vpn",
       "network-interface-health"
-    ],
-    "pattern": [
-      "api-connector-builder",
-      "architecture-decision-records",
-      "content-hash-cache-pattern",
-      "continuous-agent-loop",
-      "hookify-rules",
-      "iterative-retrieval",
-      "java-coding-standards",
-      "kotlin-exposed-patterns",
-      "motion-patterns",
-      "mysql-patterns",
-      "parallel-execution-optimizer",
-      "postgres-patterns",
-      "recsys-pipeline-architect",
-      "swift-actor-persistence"
     ],
     "layout": [
       "api-connector-builder",
@@ -4124,80 +5664,13 @@
       "springboot-security",
       "swift-protocol-di-testing"
     ],
-    "test": [
-      "api-connector-builder",
-      "browser-qa",
-      "bun-runtime",
-      "cpp-testing",
-      "csharp-testing",
-      "django-tdd",
-      "django-verification",
-      "e2e-testing",
-      "eval-harness",
-      "fsharp-testing",
-      "golang-testing",
-      "healthcare-eval-harness",
-      "kotlin-testing",
-      "laravel-tdd",
-      "laravel-verification",
-      "parallel-execution-optimizer",
-      "perl-testing",
-      "python-testing",
-      "quarkus-verification",
-      "react-testing",
-      "rust-testing",
-      "springboot-verification",
-      "strategic-compact",
-      "swift-protocol-di-testing",
-      "tdd-workflow",
-      "windows-desktop-e2e"
-    ],
-    "style": [
-      "api-connector-builder",
-      "brand-voice",
-      "coding-standards",
-      "cpp-coding-standards",
-      "gan-style-harness",
-      "liquid-glass-design",
-      "mysql-patterns",
-      "network-config-validation",
-      "ralphinho-rfc-pipeline",
-      "recursive-decision-ledger"
-    ],
     "registration": [
       "api-connector-builder"
-    ],
-    "discovery": [
-      "api-connector-builder",
-      "ito-market-intelligence",
-      "laravel-plugin-discovery",
-      "lead-intelligence",
-      "research-ops",
-      "security-bounty-hunter"
     ],
     "wiring": [
       "api-connector-builder",
       "click-path-audit",
       "ui-to-vue"
-    ],
-    "build": [
-      "api-connector-builder",
-      "brand-voice",
-      "bun-runtime",
-      "claude-devfleet",
-      "content-engine",
-      "dashboard-builder",
-      "data-scraper-agent",
-      "docker-patterns",
-      "investor-materials",
-      "parallel-execution-optimizer",
-      "product-capability",
-      "product-lens",
-      "quarkus-verification",
-      "skill-scout",
-      "springboot-verification",
-      "verification-loop",
-      "vite-patterns"
     ],
     "jira": [
       "api-connector-builder",
@@ -4220,19 +5693,6 @@
       "rust-testing",
       "skill-stocktake",
       "visa-doc-translate"
-    ],
-    "create": [
-      "api-connector-builder",
-      "autonomous-agent-harness",
-      "code-tour",
-      "dashboard-builder",
-      "django-tdd",
-      "dmux-workflows",
-      "e2e-testing",
-      "frontend-slides",
-      "investor-materials",
-      "postgres-patterns",
-      "skill-scout"
     ],
     "plugin": [
       "api-connector-builder",
@@ -4400,22 +5860,6 @@
       "investor-materials",
       "knowledge-ops"
     ],
-    "structure": [
-      "api-design",
-      "article-writing",
-      "django-patterns",
-      "flutter-dart-code-review",
-      "hookify-rules",
-      "kotlin-ktor-patterns",
-      "laravel-patterns",
-      "manim-video",
-      "nestjs-patterns",
-      "redis-patterns",
-      "rust-patterns",
-      "scientific-pkg-gget",
-      "seo",
-      "video-editing"
-    ],
     "resources": [
       "api-design",
       "autonomous-agent-harness",
@@ -4451,7 +5895,8 @@
       "cpp-coding-standards"
     ],
     "happen": [
-      "architecture-decision-records"
+      "architecture-decision-records",
+      "superpowers/tdd-iron-law"
     ],
     "during": [
       "architecture-decision-records",
@@ -4496,19 +5941,6 @@
       "ito-trade-planner",
       "rules-distill"
     ],
-    "structured": [
-      "architecture-decision-records",
-      "blender-motion-state-inspection",
-      "ck",
-      "codebase-onboarding",
-      "foundation-models-on-device",
-      "healthcare-emr-patterns",
-      "ito-trade-planner",
-      "kotlin-coroutines-flows",
-      "regex-vs-llm-structured-text",
-      "scientific-thinking-scholar-evaluation",
-      "seo"
-    ],
     "documents": [
       "architecture-decision-records",
       "nutrient-document-processing",
@@ -4535,9 +5967,6 @@
       "social-publisher",
       "videodb"
     ],
-    "alongside": [
-      "architecture-decision-records"
-    ],
     "explicitly": [
       "architecture-decision-records",
       "autonomous-agent-harness",
@@ -4561,6 +5990,7 @@
       "plan-orchestrate",
       "prompt-optimizer",
       "skill-scout",
+      "superpowers/writing-plans",
       "token-budget-advisor",
       "video-editing",
       "workspace-surface-audit"
@@ -4672,6 +6102,7 @@
       "react-testing",
       "rust-patterns",
       "rust-testing",
+      "superpowers/writing-plans",
       "swift-protocol-di-testing",
       "tdd-workflow",
       "windows-desktop-e2e"
@@ -4789,19 +6220,6 @@
     "newsletter": [
       "article-writing"
     ],
-    "issues": [
-      "article-writing",
-      "bun-runtime",
-      "django-security",
-      "docker-patterns",
-      "frontend-a11y",
-      "github-ops",
-      "jira-integration",
-      "nuxt4-patterns",
-      "project-flow-ops",
-      "security-scan",
-      "tdd-workflow"
-    ],
     "turning": [
       "article-writing",
       "crosspost",
@@ -4882,14 +6300,6 @@
       "email-ops",
       "healthcare-emr-patterns"
     ],
-    "examples": [
-      "article-writing",
-      "exa-search",
-      "fastapi-patterns",
-      "healthcare-eval-harness",
-      "homelab-wireguard-vpn",
-      "remotion-video-creation"
-    ],
     "tightening": [
       "article-writing"
     ],
@@ -4905,7 +6315,9 @@
     ],
     "written": [
       "article-writing",
-      "nextjs-turbopack"
+      "nextjs-turbopack",
+      "superpowers/brainstorming-gate",
+      "superpowers/tdd-iron-law"
     ],
     "copy": [
       "article-writing",
@@ -5043,19 +6455,6 @@
       "project-flow-ops",
       "ralphinho-rfc-pipeline"
     ],
-    "next": [
-      "automation-audit-ops",
-      "code-tour",
-      "documentation-lookup",
-      "frontend-a11y",
-      "frontend-patterns",
-      "motion-patterns",
-      "motion-ui",
-      "nextjs-turbopack",
-      "react-patterns",
-      "react-performance",
-      "workspace-surface-audit"
-    ],
     "recommendation": [
       "automation-audit-ops",
       "recsys-pipeline-architect"
@@ -5102,6 +6501,7 @@
       "finance-billing-ops",
       "messages-ops",
       "research-ops",
+      "superpowers/sdd-methodology",
       "terminal-ops"
     ],
     "workspace": [
@@ -5138,13 +6538,6 @@
     "directing": [
       "autonomous-agent-harness"
     ],
-    "servers": [
-      "autonomous-agent-harness",
-      "context-budget",
-      "homelab-network-setup",
-      "kotlin-ktor-patterns",
-      "mcp-server-patterns"
-    ],
     "consent": [
       "autonomous-agent-harness"
     ],
@@ -5165,23 +6558,14 @@
       "autonomous-agent-harness",
       "benchmark-optimization-loop"
     ],
-    "must": [
-      "autonomous-agent-harness",
-      "benchmark-optimization-loop",
-      "gateguard",
-      "investor-materials",
-      "product-capability",
-      "production-audit",
-      "ralphinho-rfc-pipeline",
-      "team-builder"
-    ],
     "requested": [
       "autonomous-agent-harness"
     ],
     "scoped": [
       "autonomous-agent-harness",
       "continuous-learning",
-      "continuous-learning-v2"
+      "continuous-learning-v2",
+      "superpowers/formalized-code-review"
     ],
     "schedules": [
       "autonomous-agent-harness"
@@ -5212,6 +6596,7 @@
       "crosspost",
       "manim-video",
       "social-publisher",
+      "superpowers/finishing-workflow",
       "x-api"
     ],
     "externally": [
@@ -5246,16 +6631,8 @@
       "autonomous-agent-harness"
     ],
     "approved": [
-      "autonomous-agent-harness"
-    ],
-    "target": [
       "autonomous-agent-harness",
-      "benchmark",
-      "homelab-network-readiness",
-      "kotlin-testing",
-      "rust-testing",
-      "social-graph-ranker",
-      "ui-to-vue"
+      "superpowers/brainstorming-gate"
     ],
     "compatibility": [
       "autonomous-loops",
@@ -5290,13 +6667,6 @@
       "hipaa-compliance",
       "social-graph-ranker"
     ],
-    "name": [
-      "autonomous-loops",
-      "ck",
-      "continuous-agent-loop",
-      "documentation-lookup",
-      "hookify-rules"
-    ],
     "continuous": [
       "autonomous-loops",
       "canary-watch",
@@ -5318,7 +6688,8 @@
       "windows-desktop-e2e"
     ],
     "authored": [
-      "autonomous-loops"
+      "autonomous-loops",
+      "superpowers/brainstorming-gate"
     ],
     "while": [
       "autonomous-loops",
@@ -5375,13 +6746,9 @@
       "iterative-retrieval",
       "pytorch-patterns",
       "recsys-pipeline-architect",
-      "regex-vs-llm-structured-text"
-    ],
-    "orchestration": [
-      "autonomous-loops",
-      "claude-devfleet",
-      "dmux-workflows",
-      "ralphinho-rfc-pipeline"
+      "regex-vs-llm-structured-text",
+      "superpowers/brainstorming-gate",
+      "superpowers/tdd-iron-law"
     ],
     "scalable": [
       "backend-patterns",
@@ -5389,57 +6756,10 @@
       "laravel-patterns",
       "springboot-patterns"
     ],
-    "server": [
-      "backend-patterns",
-      "coding-standards",
-      "documentation-lookup",
-      "exa-search",
-      "frontend-patterns",
-      "homelab-network-readiness",
-      "homelab-network-setup",
-      "homelab-pihole-dns",
-      "homelab-wireguard-vpn",
-      "kotlin-ktor-patterns",
-      "laravel-plugin-discovery",
-      "mcp-server-patterns",
-      "nuxt4-patterns",
-      "react-patterns",
-      "vite-patterns"
-    ],
     "side": [
       "backend-patterns",
       "click-path-audit",
       "frontend-patterns"
-    ],
-    "applications": [
-      "backend-patterns",
-      "cost-aware-llm-pipeline",
-      "csharp-testing",
-      "django-patterns",
-      "django-security",
-      "django-tdd",
-      "dotnet-patterns",
-      "error-handling",
-      "flutter-dart-code-review",
-      "fsharp-testing",
-      "golang-patterns",
-      "healthcare-eval-harness",
-      "healthcare-phi-compliance",
-      "kotlin-patterns",
-      "laravel-patterns",
-      "laravel-security",
-      "laravel-tdd",
-      "perl-patterns",
-      "perl-security",
-      "perl-testing",
-      "python-patterns",
-      "python-testing",
-      "pytorch-patterns",
-      "quarkus-security",
-      "rust-patterns",
-      "ui-demo",
-      "visa-doc-translate",
-      "windows-desktop-e2e"
     ],
     "graphql": [
       "backend-patterns"
@@ -5505,23 +6825,11 @@
       "django-celery",
       "redis-patterns"
     ],
-    "cache": [
-      "backend-patterns",
-      "content-hash-cache-pattern",
-      "latency-critical-systems"
-    ],
     "headers": [
       "backend-patterns",
       "laravel-security",
       "quarkus-security",
       "springboot-security"
-    ],
-    "background": [
-      "backend-patterns",
-      "django-celery",
-      "laravel-patterns",
-      "scientific-thinking-literature-review",
-      "swift-concurrency-6-2"
     ],
     "async": [
       "backend-patterns",
@@ -5616,36 +6924,9 @@
       "prisma-patterns",
       "skill-comply"
     ],
-    "page": [
-      "benchmark",
-      "canary-watch",
-      "e2e-testing",
-      "manim-video",
-      "motion-patterns",
-      "nuxt4-patterns",
-      "react-performance",
-      "ui-to-vue"
-    ],
     "measures": [
       "benchmark",
       "skill-comply"
-    ],
-    "real": [
-      "benchmark",
-      "brand-voice",
-      "browser-qa",
-      "code-tour",
-      "connections-optimizer",
-      "content-engine",
-      "customer-billing-ops",
-      "dashboard-builder",
-      "email-ops",
-      "knowledge-ops",
-      "swift-protocol-di-testing",
-      "terminal-ops",
-      "unified-notifications-ops",
-      "video-editing",
-      "videodb"
     ],
     "browser": [
       "benchmark",
@@ -5666,18 +6947,6 @@
     ],
     "navigate": [
       "benchmark"
-    ],
-    "each": [
-      "benchmark",
-      "claude-devfleet",
-      "click-path-audit",
-      "homelab-vlan-segmentation",
-      "homelab-wireguard-vpn",
-      "investor-materials",
-      "laravel-verification",
-      "parallel-execution-optimizer",
-      "plan-orchestrate",
-      "ralphinho-rfc-pipeline"
     ],
     "vitals": [
       "benchmark",
@@ -5719,7 +6988,8 @@
     ],
     "bounded": [
       "benchmark-optimization-loop",
-      "ecc-tools-cost-audit"
+      "ecc-tools-cost-audit",
+      "superpowers/formalized-code-review"
     ],
     "measured": [
       "benchmark-optimization-loop"
@@ -5730,7 +7000,8 @@
       "seo"
     ],
     "required": [
-      "benchmark-optimization-loop"
+      "benchmark-optimization-loop",
+      "superpowers/writing-plans"
     ],
     "optimize": [
       "benchmark-optimization-loop",
@@ -5740,16 +7011,13 @@
       "benchmark-optimization-loop",
       "canary-watch",
       "iterative-retrieval",
-      "santa-method"
+      "santa-method",
+      "superpowers/brainstorming-gate"
     ],
     "exist": [
       "benchmark-optimization-loop",
       "click-path-audit",
       "skill-scout"
-    ],
-    "being": [
-      "benchmark-optimization-loop",
-      "prediction-market-oracle-research"
     ],
     "optimized": [
       "benchmark-optimization-loop",
@@ -5764,7 +7032,9 @@
     "gate": [
       "benchmark-optimization-loop",
       "gateguard",
-      "laravel-verification"
+      "laravel-verification",
+      "superpowers",
+      "superpowers/brainstorming-gate"
     ],
     "stay": [
       "benchmark-optimization-loop",
@@ -5782,7 +7052,8 @@
       "laravel-tdd",
       "perl-testing",
       "python-testing",
-      "springboot-tdd"
+      "springboot-tdd",
+      "superpowers/tdd-iron-law"
     ],
     "metric": [
       "benchmark-optimization-loop",
@@ -5791,20 +7062,6 @@
     ],
     "wall": [
       "benchmark-optimization-loop"
-    ],
-    "time": [
-      "benchmark-optimization-loop",
-      "codebase-onboarding",
-      "data-scraper-agent",
-      "homelab-vlan-segmentation",
-      "latency-critical-systems",
-      "messages-ops",
-      "parallel-execution-optimizer",
-      "plankton-code-quality",
-      "rust-patterns",
-      "swift-actor-persistence",
-      "token-budget-advisor",
-      "videodb"
     ],
     "latency": [
       "benchmark-optimization-loop",
@@ -5832,6 +7089,7 @@
       "homelab-network-readiness",
       "mcp-server-patterns",
       "research-ops",
+      "superpowers/formalized-code-review",
       "x-api"
     ],
     "search": [
@@ -5866,24 +7124,6 @@
       "motion-foundations",
       "motion-patterns",
       "motion-ui"
-    ],
-    "state": [
-      "blender-motion-state-inspection",
-      "click-path-audit",
-      "coding-standards",
-      "compose-multiplatform-patterns",
-      "dart-flutter-patterns",
-      "finance-billing-ops",
-      "flutter-dart-code-review",
-      "frontend-patterns",
-      "hermes-imports",
-      "motion-ui",
-      "nuxt4-patterns",
-      "react-patterns",
-      "scientific-thinking-literature-review",
-      "swift-actor-persistence",
-      "swiftui-patterns",
-      "terminal-ops"
     ],
     "inspection": [
       "blender-motion-state-inspection",
@@ -6023,18 +7263,6 @@
     "blueprint": [
       "blueprint"
     ],
-    "plan": [
-      "blueprint",
-      "claude-devfleet",
-      "customer-billing-ops",
-      "investor-materials",
-      "ito-trade-planner",
-      "marketing-campaign",
-      "netmiko-ssh-automation",
-      "plan-orchestrate",
-      "production-scheduling",
-      "strategic-compact"
-    ],
     "generator": [
       "blueprint",
       "ios-icon-gen"
@@ -6068,24 +7296,6 @@
       "nextjs-turbopack",
       "ralphinho-rfc-pipeline",
       "repo-scan"
-    ],
-    "feature": [
-      "blueprint",
-      "browser-qa",
-      "dart-flutter-patterns",
-      "flutter-dart-code-review",
-      "healthcare-phi-compliance",
-      "laravel-plugin-discovery",
-      "laravel-tdd",
-      "marketing-campaign",
-      "mle-workflow",
-      "mysql-patterns",
-      "product-capability",
-      "product-lens",
-      "ralphinho-rfc-pipeline",
-      "search-first",
-      "ui-demo",
-      "verification-loop"
     ],
     "multiple": [
       "blueprint",
@@ -6121,7 +7331,8 @@
       "laravel-tdd",
       "perl-testing",
       "python-testing",
-      "springboot-tdd"
+      "springboot-tdd",
+      "superpowers/tdd-iron-law"
     ],
     "migration": [
       "blueprint",
@@ -6145,41 +7356,6 @@
     ],
     "workstreams": [
       "blueprint"
-    ],
-    "across": [
-      "blueprint",
-      "brand-voice",
-      "browser-qa",
-      "carrier-relationship-management",
-      "coding-standards",
-      "compose-multiplatform-patterns",
-      "context-budget",
-      "cpp-coding-standards",
-      "crosspost",
-      "customs-trade-compliance",
-      "dmux-workflows",
-      "energy-procurement",
-      "eval-harness",
-      "evm-token-decimals",
-      "flox-environments",
-      "inventory-demand-planning",
-      "ios-icon-gen",
-      "knowledge-ops",
-      "kotlin-patterns",
-      "logistics-exception-management",
-      "marketing-campaign",
-      "netmiko-ssh-automation",
-      "production-scheduling",
-      "redis-patterns",
-      "repo-scan",
-      "returns-reverse-logistics",
-      "rust-patterns",
-      "scientific-pkg-gget",
-      "scientific-thinking-literature-review",
-      "social-graph-ranker",
-      "social-publisher",
-      "swift-protocol-di-testing",
-      "unified-notifications-ops"
     ],
     "loss": [
       "blueprint",
@@ -6223,27 +7399,6 @@
     "profile": [
       "brand-voice",
       "ecc-guide"
-    ],
-    "source": [
-      "brand-voice",
-      "ck",
-      "code-tour",
-      "content-engine",
-      "cost-tracking",
-      "data-scraper-agent",
-      "data-throughput-accelerator",
-      "deep-research",
-      "frontend-design-direction",
-      "github-ops",
-      "investor-materials",
-      "ios-icon-gen",
-      "make-interfaces-feel-better",
-      "market-research",
-      "opensource-pipeline",
-      "prediction-market-oracle-research",
-      "recsys-pipeline-architect",
-      "repo-scan",
-      "skill-scout"
     ],
     "material": [
       "brand-voice",
@@ -6341,12 +7496,6 @@
       "brand-voice",
       "react-performance"
     ],
-    "visual": [
-      "browser-qa",
-      "design-system",
-      "frontend-slides",
-      "manim-video"
-    ],
     "interaction": [
       "browser-qa",
       "click-path-audit",
@@ -6374,18 +7523,6 @@
       "browser-qa",
       "swift-protocol-di-testing"
     ],
-    "verify": [
-      "browser-qa",
-      "canary-watch",
-      "configure-ecc",
-      "deep-research",
-      "homelab-vlan-segmentation",
-      "laravel-plugin-discovery",
-      "opensource-pipeline",
-      "quarkus-verification",
-      "springboot-verification",
-      "x-api"
-    ],
     "pages": [
       "browser-qa",
       "react-testing"
@@ -6410,15 +7547,6 @@
       "design-system",
       "liquid-glass-design"
     ],
-    "frontend": [
-      "browser-qa",
-      "coding-standards",
-      "frontend-a11y",
-      "frontend-design-direction",
-      "frontend-patterns",
-      "frontend-slides",
-      "make-interfaces-feel-better"
-    ],
     "audits": [
       "browser-qa",
       "ecc-tools-cost-audit",
@@ -6430,25 +7558,8 @@
     "chrome": [
       "browser-qa"
     ],
-    "playwright": [
-      "browser-qa",
-      "e2e-testing",
-      "ui-demo"
-    ],
     "puppeteer": [
       "browser-qa"
-    ],
-    "interact": [
-      "browser-qa"
-    ],
-    "phase": [
-      "browser-qa",
-      "django-verification",
-      "quarkus-verification",
-      "springboot-verification",
-      "strategic-compact",
-      "ui-demo",
-      "verification-loop"
     ],
     "smoke": [
       "browser-qa"
@@ -6642,22 +7753,6 @@
     "relationship": [
       "carrier-relationship-management"
     ],
-    "management": [
-      "carrier-relationship-management",
-      "compose-multiplatform-patterns",
-      "customs-trade-compliance",
-      "dart-flutter-patterns",
-      "energy-procurement",
-      "enterprise-agent-ops",
-      "flox-environments",
-      "flutter-dart-code-review",
-      "llm-trading-agent-security",
-      "logistics-exception-management",
-      "quality-nonconformance",
-      "returns-reverse-logistics",
-      "security-review",
-      "uncloud"
-    ],
     "role": [
       "carrier-relationship-management",
       "customs-trade-compliance",
@@ -6789,17 +7884,6 @@
     "allocation": [
       "carrier-relationship-management"
     ],
-    "include": [
-      "carrier-relationship-management",
-      "customs-trade-compliance",
-      "hookify-rules",
-      "inventory-demand-planning",
-      "logistics-exception-management",
-      "market-research",
-      "production-scheduling",
-      "quality-nonconformance",
-      "returns-reverse-logistics"
-    ],
     "manag": [
       "carrier-relationship-management"
     ],
@@ -6815,7 +7899,8 @@
       "cisco-ios-patterns",
       "flutter-dart-code-review",
       "security-review",
-      "skill-stocktake"
+      "skill-stocktake",
+      "superpowers/finishing-workflow"
     ],
     "explaining": [
       "cisco-ios-patterns"
@@ -6874,26 +7959,6 @@
       "remotion-video-creation",
       "workspace-surface-audit"
     ],
-    "show": [
-      "cisco-ios-patterns",
-      "dashboard-builder",
-      "homelab-wireguard-vpn",
-      "hookify-rules",
-      "netmiko-ssh-automation"
-    ],
-    "commands": [
-      "cisco-ios-patterns",
-      "ck",
-      "ecc-guide",
-      "healthcare-eval-harness",
-      "network-config-validation",
-      "opensource-pipeline",
-      "perl-security",
-      "redis-patterns",
-      "safety-guard",
-      "skill-stocktake",
-      "terminal-ops"
-    ],
     "troubleshooting": [
       "cisco-ios-patterns",
       "docker-patterns",
@@ -6923,10 +7988,6 @@
       "netmiko-ssh-automation",
       "network-interface-health",
       "scientific-pkg-gget"
-    ],
-    "direction": [
-      "cisco-ios-patterns",
-      "frontend-design-direction"
     ],
     "global": [
       "cisco-ios-patterns",
@@ -7077,11 +8138,8 @@
     ],
     "bugs": [
       "click-path-audit",
+      "superpowers/tdd-iron-law",
       "tdd-workflow"
-    ],
-    "static": [
-      "click-path-audit",
-      "homelab-network-setup"
     ],
     "reading": [
       "click-path-audit",
@@ -7099,9 +8157,6 @@
       "click-path-audit",
       "cpp-testing",
       "swift-concurrency-6-2"
-    ],
-    "conditions": [
-      "click-path-audit"
     ],
     "sequential": [
       "click-path-audit",
@@ -7185,14 +8240,6 @@
       "clickhouse-io",
       "social-publisher",
       "x-api"
-    ],
-    "high": [
-      "clickhouse-io",
-      "content-hash-cache-pattern",
-      "lead-intelligence",
-      "nanoclaw-repl",
-      "react-performance",
-      "tinystruct-patterns"
     ],
     "table": [
       "clickhouse-io",
@@ -7297,20 +8344,6 @@
     "codetour": [
       "code-tour"
     ],
-    "files": [
-      "code-tour",
-      "content-hash-cache-pattern",
-      "gateguard",
-      "hookify-rules",
-      "knowledge-ops",
-      "react-patterns",
-      "remotion-video-creation",
-      "rules-distill",
-      "team-builder",
-      "uncloud",
-      "vite-patterns",
-      "workspace-surface-audit"
-    ],
     "walkthroughs": [
       "code-tour"
     ],
@@ -7340,13 +8373,6 @@
     ],
     "meant": [
       "code-tour"
-    ],
-    "format": [
-      "code-tour",
-      "fal-ai-media",
-      "hookify-rules",
-      "ios-icon-gen",
-      "visa-doc-translate"
     ],
     "good": [
       "code-tour",
@@ -7402,11 +8428,6 @@
     "unfamiliar": [
       "codebase-onboarding"
     ],
-    "guide": [
-      "codebase-onboarding",
-      "configure-ecc",
-      "ecc-guide"
-    ],
     "developers": [
       "codebase-onboarding"
     ],
@@ -7427,14 +8448,6 @@
       "ecc-guide",
       "prompt-optimizer"
     ],
-    "understand": [
-      "codebase-onboarding",
-      "design-system",
-      "finance-billing-ops",
-      "jira-integration",
-      "python-patterns",
-      "social-graph-ranker"
-    ],
     "generate": [
       "codebase-onboarding",
       "design-system",
@@ -7446,23 +8459,6 @@
     ],
     "walk": [
       "codebase-onboarding"
-    ],
-    "through": [
-      "codebase-onboarding",
-      "configure-ecc",
-      "continuous-learning-v2",
-      "ito-market-intelligence",
-      "laravel-verification",
-      "lead-intelligence",
-      "opensource-pipeline",
-      "plan-orchestrate",
-      "quality-nonconformance",
-      "recursive-decision-ledger",
-      "scientific-pkg-gget",
-      "seo",
-      "social-publisher",
-      "ui-demo",
-      "uncloud"
     ],
     "applicable": [
       "coding-standards",
@@ -7488,17 +8484,6 @@
     ],
     "playbook": [
       "coding-standards"
-    ],
-    "react": [
-      "coding-standards",
-      "continuous-learning-v2",
-      "frontend-a11y",
-      "frontend-patterns",
-      "motion-ui",
-      "react-patterns",
-      "react-performance",
-      "react-testing",
-      "remotion-video-creation"
     ],
     "endpoint": [
       "coding-standards"
@@ -7530,7 +8515,9 @@
       "mcp-server-patterns",
       "motion-foundations",
       "remotion-video-creation",
-      "rules-distill"
+      "rules-distill",
+      "superpowers/brainstorming-gate",
+      "superpowers/writing-plans"
     ],
     "walkthrough": [
       "coding-standards",
@@ -7655,16 +8642,6 @@
     "prospecting": [
       "connections-optimizer"
     ],
-    "list": [
-      "connections-optimizer",
-      "dashboard-builder",
-      "lead-intelligence",
-      "motion-patterns",
-      "network-bgp-diagnostics",
-      "python-patterns",
-      "santa-method",
-      "social-graph-ranker"
-    ],
     "handles": [
       "connections-optimizer",
       "regex-vs-llm-structured-text"
@@ -7729,9 +8706,6 @@
       "uncloud"
     ],
     "flattening": [
-      "content-engine"
-    ],
-    "slop": [
       "content-engine"
     ],
     "scripting": [
@@ -7871,11 +8845,6 @@
     ],
     "unlike": [
       "content-hash-cache-pattern"
-    ],
-    "approach": [
-      "content-hash-cache-pattern",
-      "frontend-slides",
-      "strategic-compact"
     ],
     "moves": [
       "content-hash-cache-pattern"
@@ -8232,13 +9201,6 @@
       "cost-aware-llm-pipeline",
       "swift-concurrency-6-2"
     ],
-    "complex": [
-      "cost-aware-llm-pipeline",
-      "dmux-workflows",
-      "kotlin-exposed-patterns",
-      "motion-advanced",
-      "swiftui-patterns"
-    ],
     "concepts": [
       "cost-aware-llm-pipeline",
       "documentation-lookup"
@@ -8254,22 +9216,6 @@
       "cost-tracking",
       "nanoclaw-repl",
       "scientific-db-uspto-database"
-    ],
-    "local": [
-      "cost-tracking",
-      "dart-flutter-patterns",
-      "docker-patterns",
-      "frontend-design-direction",
-      "hermes-imports",
-      "homelab-network-readiness",
-      "homelab-pihole-dns",
-      "hookify-rules",
-      "knowledge-ops",
-      "nextjs-turbopack",
-      "react-patterns",
-      "scientific-pkg-gget",
-      "swift-actor-persistence",
-      "unified-notifications-ops"
     ],
     "sqlite": [
       "cost-tracking"
@@ -8323,13 +9269,15 @@
     ],
     "ambiguous": [
       "council",
-      "prediction-market-oracle-research"
+      "prediction-market-oracle-research",
+      "superpowers/brainstorming-gate"
     ],
     "skeptic": [
       "council"
     ],
     "subagent": [
-      "council"
+      "council",
+      "superpowers/sdd-methodology"
     ],
     "pragmatist": [
       "council"
@@ -8346,17 +9294,6 @@
     "credible": [
       "council",
       "investor-materials"
-    ],
-    "paths": [
-      "council",
-      "ecc-tools-cost-audit",
-      "latency-critical-systems",
-      "motion-advanced",
-      "perl-security",
-      "security-bounty-hunter",
-      "skill-stocktake",
-      "social-graph-ranker",
-      "swift-protocol-di-testing"
     ],
     "obvious": [
       "council",
@@ -8381,7 +9318,8 @@
       "social-graph-ranker"
     ],
     "opinions": [
-      "council"
+      "council",
+      "superpowers/formalized-code-review"
     ],
     "dissent": [
       "council"
@@ -8428,35 +9366,8 @@
     "derived": [
       "cpp-coding-standards"
     ],
-    "https": [
-      "cpp-coding-standards",
-      "gan-style-harness",
-      "homelab-pihole-dns",
-      "nutrient-document-processing",
-      "ralphinho-rfc-pipeline",
-      "react-performance",
-      "recsys-pipeline-architect",
-      "security-scan",
-      "social-publisher",
-      "uncloud"
-    ],
     "isocpp": [
       "cpp-coding-standards"
-    ],
-    "github": [
-      "cpp-coding-standards",
-      "data-scraper-agent",
-      "ecc-tools-cost-audit",
-      "git-workflow",
-      "github-ops",
-      "knowledge-ops",
-      "opensource-pipeline",
-      "project-flow-ops",
-      "ralphinho-rfc-pipeline",
-      "react-performance",
-      "recsys-pipeline-architect",
-      "security-scan",
-      "unified-notifications-ops"
     ],
     "cppcoreguidelines": [
       "cpp-coding-standards"
@@ -8464,7 +9375,8 @@
     "enforces": [
       "cpp-coding-standards",
       "kotlin-patterns",
-      "rust-patterns"
+      "rust-patterns",
+      "superpowers"
     ],
     "immutability": [
       "cpp-coding-standards",
@@ -8660,10 +9572,6 @@
       "perl-testing",
       "python-testing"
     ],
-    "purpose": [
-      "csharp-testing",
-      "fsharp-testing"
-    ],
     "preferred": [
       "csharp-testing"
     ],
@@ -8707,6 +9615,7 @@
     "answer": [
       "customer-billing-ops",
       "dashboard-builder",
+      "superpowers/brainstorming-gate",
       "workspace-surface-audit"
     ],
     "happened": [
@@ -8908,12 +9817,6 @@
       "dotnet-patterns",
       "java-coding-standards"
     ],
-    "types": [
-      "dart-flutter-patterns",
-      "error-handling",
-      "marketing-campaign",
-      "scientific-db-pubmed-database"
-    ],
     "composition": [
       "dart-flutter-patterns",
       "frontend-patterns",
@@ -8973,6 +9876,7 @@
     "changed": [
       "dashboard-builder",
       "skill-stocktake",
+      "superpowers/formalized-code-review",
       "terminal-ops"
     ],
     "take": [
@@ -9093,9 +9997,6 @@
     "lots": [
       "data-throughput-accelerator"
     ],
-    "correct": [
-      "data-throughput-accelerator"
-    ],
     "landing": [
       "data-throughput-accelerator",
       "manim-video"
@@ -9127,12 +10028,6 @@
       "data-throughput-accelerator",
       "logistics-exception-management",
       "returns-reverse-logistics"
-    ],
-    "load": [
-      "data-throughput-accelerator",
-      "motion-foundations",
-      "nanoclaw-repl",
-      "prisma-patterns"
     ],
     "transform": [
       "data-throughput-accelerator",
@@ -9212,14 +10107,6 @@
     ],
     "downtime": [
       "database-migrations"
-    ],
-    "never": [
-      "database-migrations",
-      "evm-token-decimals",
-      "gateguard",
-      "investor-outreach",
-      "plan-orchestrate",
-      "security-review"
     ],
     "alter": [
       "database-migrations"
@@ -9301,14 +10188,6 @@
     "technology": [
       "deep-research",
       "market-research"
-    ],
-    "evaluation": [
-      "deep-research",
-      "eval-harness",
-      "gan-style-harness",
-      "gateguard",
-      "mle-workflow",
-      "scientific-thinking-scholar-evaluation"
     ],
     "market": [
       "deep-research",
@@ -9551,9 +10430,6 @@
       "skill-stocktake",
       "springboot-verification"
     ],
-    "tailwind": [
-      "design-system"
-    ],
     "styled": [
       "design-system"
     ],
@@ -9569,13 +10445,6 @@
     ],
     "celery": [
       "django-celery"
-    ],
-    "grade": [
-      "django-celery",
-      "django-patterns",
-      "laravel-patterns",
-      "nestjs-patterns",
-      "springboot-patterns"
     ],
     "rabbitmq": [
       "django-celery",
@@ -9599,14 +10468,6 @@
       "laravel-verification",
       "quarkus-verification",
       "springboot-verification"
-    ],
-    "cycle": [
-      "django-celery",
-      "django-tdd",
-      "golang-testing",
-      "laravel-tdd",
-      "perl-testing",
-      "python-testing"
     ],
     "beat": [
       "django-celery"
@@ -9666,7 +10527,8 @@
       "django-patterns",
       "ito-basket-compare",
       "knowledge-ops",
-      "motion-foundations"
+      "motion-foundations",
+      "superpowers/formalized-code-review"
     ],
     "protect": [
       "django-security",
@@ -9687,7 +10549,8 @@
       "prediction-market-risk-review",
       "quarkus-security",
       "security-review",
-      "springboot-security"
+      "springboot-security",
+      "superpowers/writing-plans"
     ],
     "authorization": [
       "django-security",
@@ -9712,7 +10575,8 @@
     "pytest": [
       "django-tdd",
       "healthcare-eval-harness",
-      "python-testing"
+      "python-testing",
+      "superpowers/finishing-workflow"
     ],
     "factory": [
       "django-tdd"
@@ -9720,23 +10584,8 @@
     "serializers": [
       "django-tdd"
     ],
-    "creation": [
-      "django-tdd",
-      "remotion-video-creation"
-    ],
     "objects": [
       "django-tdd"
-    ],
-    "verification": [
-      "django-verification",
-      "healthcare-eval-harness",
-      "laravel-verification",
-      "quarkus-verification",
-      "ralphinho-rfc-pipeline",
-      "santa-method",
-      "springboot-verification",
-      "terminal-ops",
-      "verification-loop"
     ],
     "major": [
       "django-verification",
@@ -9834,15 +10683,6 @@
       "prediction-market-risk-review",
       "recursive-decision-ledger"
     ],
-    "standard": [
-      "docker-patterns",
-      "fsharp-testing",
-      "kotlin-ktor-patterns"
-    ],
-    "yaml": [
-      "docker-patterns",
-      "hookify-rules"
-    ],
     "lookup": [
       "documentation-lookup",
       "scientific-pkg-gget"
@@ -9919,6 +10759,7 @@
       "dotnet-patterns",
       "fsharp-testing",
       "homelab-wireguard-vpn",
+      "superpowers/finishing-workflow",
       "token-budget-advisor"
     ],
     "immutable": [
@@ -9953,7 +10794,8 @@
       "kotlin-testing",
       "ralphinho-rfc-pipeline",
       "recsys-pipeline-architect",
-      "skill-comply"
+      "skill-comply",
+      "superpowers/sdd-methodology"
     ],
     "logout": [
       "e2e-testing"
@@ -10025,20 +10867,6 @@
     "wide": [
       "ecc-tools-cost-audit",
       "homelab-pihole-dns"
-    ],
-    "pass": [
-      "ecc-tools-cost-audit",
-      "eval-harness",
-      "golang-testing",
-      "healthcare-eval-harness",
-      "hipaa-compliance",
-      "laravel-tdd",
-      "plankton-code-quality",
-      "ralphinho-rfc-pipeline",
-      "springboot-tdd",
-      "tdd-workflow",
-      "ui-to-vue",
-      "verification-loop"
     ],
     "mailbox": [
       "email-ops",
@@ -10160,11 +10988,6 @@
     "negotiation": [
       "energy-procurement"
     ],
-    "demand": [
-      "energy-procurement",
-      "inventory-demand-planning",
-      "team-builder"
-    ],
     "charge": [
       "energy-procurement"
     ],
@@ -10229,10 +11052,6 @@
       "homelab-network-readiness",
       "netmiko-ssh-automation"
     ],
-    "artifacts": [
-      "enterprise-agent-ops",
-      "mle-workflow"
-    ],
     "least": [
       "enterprise-agent-ops"
     ],
@@ -10283,6 +11102,7 @@
       "fastapi-patterns",
       "repo-scan",
       "springboot-security",
+      "superpowers/writing-plans",
       "swift-protocol-di-testing"
     ],
     "messages": [
@@ -10326,10 +11146,6 @@
     "benchmarking": [
       "eval-harness"
     ],
-    "philosophy": [
-      "eval-harness",
-      "python-testing"
-    ],
     "treats": [
       "eval-harness",
       "tinystruct-patterns"
@@ -10350,12 +11166,6 @@
     ],
     "ways": [
       "evm-token-decimals"
-    ],
-    "ship": [
-      "evm-token-decimals",
-      "hermes-imports",
-      "marketing-campaign",
-      "production-audit"
     ],
     "values": [
       "evm-token-decimals",
@@ -10379,7 +11189,8 @@
       "evm-token-decimals",
       "nestjs-patterns",
       "prisma-patterns",
-      "security-review"
+      "security-review",
+      "superpowers/finishing-workflow"
     ],
     "calculating": [
       "evm-token-decimals"
@@ -10621,7 +11432,8 @@
     ],
     "gets": [
       "flox-environments",
-      "homelab-pihole-dns"
+      "homelab-pihole-dns",
+      "superpowers/sdd-methodology"
     ],
     "packages": [
       "flox-environments",
@@ -10676,11 +11488,6 @@
       "scientific-db-pubmed-database",
       "terminal-ops"
     ],
-    "follows": [
-      "flutter-dart-code-review",
-      "security-review",
-      "tdd-workflow"
-    ],
     "folder": [
       "flutter-dart-code-review",
       "knowledge-ops"
@@ -10717,19 +11524,6 @@
       "healthcare-cdss-patterns",
       "healthcare-emr-patterns",
       "security-review"
-    ],
-    "language": [
-      "foundation-models-on-device",
-      "liquid-glass-design"
-    ],
-    "apps": [
-      "foundation-models-on-device",
-      "gan-style-harness",
-      "liquid-glass-design",
-      "llm-trading-agent-security",
-      "nextjs-turbopack",
-      "nuxt4-patterns",
-      "swift-actor-persistence"
     ],
     "generable": [
       "foundation-models-on-device"
@@ -10800,10 +11594,6 @@
     "semantic": [
       "frontend-a11y"
     ],
-    "elements": [
-      "frontend-a11y",
-      "liquid-glass-design"
-    ],
     "select": [
       "frontend-a11y"
     ],
@@ -10856,13 +11646,6 @@
       "terminal-ops"
     ],
     "rebundle": [
-      "frontend-design-direction"
-    ],
-    "anthropic": [
-      "frontend-design-direction",
-      "gan-style-harness"
-    ],
-    "anthropics": [
       "frontend-design-direction"
     ],
     "official": [
@@ -11052,10 +11835,6 @@
     "demands": [
       "gateguard"
     ],
-    "concrete": [
-      "gateguard",
-      "investor-outreach"
-    ],
     "investigation": [
       "gateguard",
       "mysql-patterns"
@@ -11080,14 +11859,6 @@
     "generated": [
       "gateguard",
       "network-config-validation"
-    ],
-    "version": [
-      "git-workflow",
-      "laravel-plugin-discovery",
-      "mysql-patterns",
-      "nextjs-turbopack",
-      "prisma-patterns",
-      "token-budget-advisor"
     ],
     "branching": [
       "git-workflow",
@@ -11213,21 +11984,9 @@
       "kotlin-testing",
       "rust-testing"
     ],
-    "methodology": [
-      "golang-testing",
-      "kotlin-testing",
-      "perl-testing",
-      "python-testing",
-      "rust-testing",
-      "scientific-thinking-scholar-evaluation"
-    ],
     "methods": [
       "golang-testing",
       "jpa-patterns",
-      "rust-testing"
-    ],
-    "benchmarks": [
-      "golang-testing",
       "rust-testing"
     ],
     "fuzz": [
@@ -11406,14 +12165,17 @@
       "healthcare-emr-patterns"
     ],
     "blocks": [
-      "healthcare-eval-harness"
+      "healthcare-eval-harness",
+      "superpowers/writing-plans"
     ],
     "negotiable": [
-      "healthcare-eval-harness"
+      "healthcare-eval-harness",
+      "superpowers/tdd-iron-law"
     ],
     "jest": [
       "healthcare-eval-harness",
-      "react-testing"
+      "react-testing",
+      "superpowers/finishing-workflow"
     ],
     "vitest": [
       "healthcare-eval-harness",
@@ -11526,21 +12288,8 @@
       "hexagonal-architecture",
       "swift-actor-persistence"
     ],
-    "details": [
-      "hexagonal-architecture",
-      "make-interfaces-feel-better",
-      "mysql-patterns",
-      "scientific-pkg-gget"
-    ],
     "abstract": [
       "hexagonal-architecture"
-    ],
-    "implement": [
-      "hexagonal-architecture",
-      "laravel-tdd",
-      "springboot-tdd",
-      "strategic-compact",
-      "tdd-workflow"
     ],
     "edges": [
       "hexagonal-architecture"
@@ -11597,14 +12346,10 @@
     "leak": [
       "hipaa-compliance"
     ],
-    "prevention": [
-      "hipaa-compliance",
-      "jpa-patterns",
-      "perl-security"
-    ],
     "reviewer": [
       "hipaa-compliance",
-      "postgres-patterns"
+      "postgres-patterns",
+      "superpowers/formalized-code-review"
     ],
     "specialized": [
       "hipaa-compliance"
@@ -11737,13 +12482,6 @@
     "guests": [
       "homelab-vlan-segmentation"
     ],
-    "main": [
-      "homelab-vlan-segmentation",
-      "kotlin-ktor-patterns",
-      "nestjs-patterns",
-      "react-performance",
-      "tinystruct-patterns"
-    ],
     "impactful": [
       "homelab-vlan-segmentation"
     ],
@@ -11808,9 +12546,6 @@
       "hookify-rules",
       "repo-scan"
     ],
-    "frontmatter": [
-      "hookify-rules"
-    ],
     "basic": [
       "hookify-rules",
       "quarkus-security"
@@ -11855,7 +12590,8 @@
     ],
     "planner": [
       "inventory-demand-planning",
-      "ito-trade-planner"
+      "ito-trade-planner",
+      "superpowers/writing-plans"
     ],
     "location": [
       "inventory-demand-planning"
@@ -11888,6 +12624,7 @@
     "suite": [
       "inventory-demand-planning",
       "marketing-campaign",
+      "superpowers/finishing-workflow",
       "windows-desktop-e2e"
     ],
     "yonder": [
@@ -12046,7 +12783,8 @@
       "messages-ops"
     ],
     "subagents": [
-      "iterative-retrieval"
+      "iterative-retrieval",
+      "superpowers/sdd-methodology"
     ],
     "spawning": [
       "iterative-retrieval"
@@ -12089,10 +12827,6 @@
     "helps": [
       "ito-basket-compare"
     ],
-    "inspect": [
-      "ito-basket-compare",
-      "terminal-ops"
-    ],
     "exposure": [
       "ito-basket-compare"
     ],
@@ -12103,13 +12837,6 @@
       "ito-basket-compare",
       "project-flow-ops",
       "social-graph-ranker"
-    ],
-    "provide": [
-      "ito-basket-compare",
-      "ito-market-intelligence",
-      "ito-trade-planner",
-      "kotlin-exposed-patterns",
-      "prediction-market-oracle-research"
     ],
     "investment": [
       "ito-basket-compare",
@@ -12124,10 +12851,6 @@
       "latency-critical-systems",
       "prediction-market-oracle-research",
       "prediction-market-risk-review"
-    ],
-    "tell": [
-      "ito-basket-compare",
-      "repo-scan"
     ],
     "sell": [
       "ito-basket-compare",
@@ -12145,13 +12868,6 @@
     ],
     "submit": [
       "ito-basket-compare"
-    ],
-    "builds": [
-      "ito-data-atlas-agent",
-      "kotlin-patterns",
-      "laravel-verification",
-      "terminal-ops",
-      "verification-loop"
     ],
     "candidate": [
       "ito-data-atlas-agent"
@@ -12185,10 +12901,6 @@
     ],
     "approval": [
       "ito-data-atlas-agent"
-    ],
-    "require": [
-      "ito-data-atlas-agent",
-      "redis-patterns"
     ],
     "persis": [
       "ito-data-atlas-agent"
@@ -12484,7 +13196,9 @@
     "scope": [
       "kotlin-coroutines-flows",
       "scientific-thinking-scholar-evaluation",
-      "skill-stocktake"
+      "skill-stocktake",
+      "superpowers/brainstorming-gate",
+      "superpowers/formalized-code-review"
     ],
     "hierarchy": [
       "kotlin-coroutines-flows"
@@ -12607,12 +13321,6 @@
     ],
     "hardening": [
       "laravel-security"
-    ],
-    "provides": [
-      "laravel-security",
-      "react-performance",
-      "ui-to-vue",
-      "visa-doc-translate"
     ],
     "csrf": [
       "laravel-security",
@@ -12776,10 +13484,6 @@
     "buttons": [
       "liquid-glass-design",
       "motion-ui"
-    ],
-    "cards": [
-      "liquid-glass-design",
-      "make-interfaces-feel-better"
     ],
     "toolbars": [
       "liquid-glass-design",
@@ -13128,7 +13832,8 @@
       "motion-foundations"
     ],
     "begins": [
-      "motion-foundations"
+      "motion-foundations",
+      "superpowers/brainstorming-gate"
     ],
     "animated": [
       "motion-foundations"
@@ -13276,7 +13981,9 @@
       "strategic-compact"
     ],
     "branch": [
-      "nanoclaw-repl"
+      "nanoclaw-repl",
+      "superpowers/finishing-workflow",
+      "superpowers/formalized-code-review"
     ],
     "compaction": [
       "nanoclaw-repl",
@@ -13292,9 +13999,6 @@
       "ui-to-vue"
     ],
     "nestjs": [
-      "nestjs-patterns"
-    ],
-    "modular": [
       "nestjs-patterns"
     ],
     "backends": [
@@ -13529,9 +14233,6 @@
     "nist": [
       "nodejs-keccak256"
     ],
-    "standardized": [
-      "nodejs-keccak256"
-    ],
     "variant": [
       "nodejs-keccak256"
     ],
@@ -13581,7 +14282,8 @@
     ],
     "document": [
       "nutrient-document-processing",
-      "plan-orchestrate"
+      "plan-orchestrate",
+      "superpowers/brainstorming-gate"
     ],
     "integrates": [
       "nutrient-document-processing"
@@ -13681,7 +14383,8 @@
     ],
     "stage": [
       "opensource-pipeline",
-      "recsys-pipeline-architect"
+      "recsys-pipeline-architect",
+      "superpowers/sdd-methodology"
     ],
     "fork": [
       "opensource-pipeline"
@@ -13717,7 +14420,9 @@
     ],
     "passes": [
       "parallel-execution-optimizer",
-      "scientific-db-pubmed-database"
+      "scientific-db-pubmed-database",
+      "superpowers/brainstorming-gate",
+      "superpowers/finishing-workflow"
     ],
     "urgency": [
       "parallel-execution-optimizer"
@@ -13821,7 +14526,8 @@
       "plankton-code-quality"
     ],
     "violations": [
-      "plankton-code-quality"
+      "plankton-code-quality",
+      "superpowers/tdd-iron-law"
     ],
     "didn": [
       "plankton-code-quality"
@@ -13860,9 +14566,6 @@
     "tree": [
       "postgres-patterns",
       "react-performance"
-    ],
-    "considered": [
-      "prediction-market-oracle-research"
     ],
     "prices": [
       "prediction-market-oracle-research"
@@ -13963,13 +14666,16 @@
     ],
     "exactly": [
       "product-capability",
+      "superpowers/sdd-methodology",
       "terminal-ops"
     ],
     "roadmap": [
       "product-capability"
     ],
     "item": [
-      "product-capability"
+      "product-capability",
+      "superpowers/finishing-workflow",
+      "superpowers/writing-plans"
     ],
     "discussion": [
       "product-capability"
@@ -13990,15 +14696,12 @@
     "specification": [
       "product-lens"
     ],
-    "artifact": [
-      "product-lens",
-      "scientific-thinking-scholar-evaluation"
-    ],
     "weekly": [
       "product-lens"
     ],
     "thing": [
-      "product-lens"
+      "product-lens",
+      "superpowers/sdd-methodology"
     ],
     "sanity": [
       "product-lens"
@@ -14075,7 +14778,8 @@
       "production-scheduling"
     ],
     "finishing": [
-      "production-scheduling"
+      "production-scheduling",
+      "superpowers/finishing-workflow"
     ],
     "packaging": [
       "production-scheduling"
@@ -14110,10 +14814,6 @@
     "critique": [
       "prompt-optimizer"
     ],
-    "complete": [
-      "prompt-optimizer",
-      "skill-stocktake"
-    ],
     "enhancement": [
       "prompt-optimizer"
     ],
@@ -14121,7 +14821,8 @@
       "python-patterns"
     ],
     "desired": [
-      "python-testing"
+      "python-testing",
+      "superpowers/tdd-iron-law"
     ],
     "pytorch": [
       "pytorch-patterns"
@@ -14167,7 +14868,8 @@
       "quality-nonconformance"
     ],
     "software": [
-      "quality-nonconformance"
+      "quality-nonconformance",
+      "superpowers"
     ],
     "minitab": [
       "quality-nonconformance"
@@ -14268,9 +14970,6 @@
       "ralphinho-rfc-pipeline",
       "social-graph-ranker"
     ],
-    "verifiable": [
-      "ralphinho-rfc-pipeline"
-    ],
     "stages": [
       "ralphinho-rfc-pipeline"
     ],
@@ -14303,9 +15002,6 @@
     "lifted": [
       "react-patterns"
     ],
-    "adapted": [
-      "react-performance"
-    ],
     "labs": [
       "react-performance"
     ],
@@ -14321,9 +15017,6 @@
     ],
     "clien": [
       "react-performance"
-    ],
-    "assertions": [
-      "react-testing"
     ],
     "mocking": [
       "react-testing"
@@ -14417,10 +15110,12 @@
     ],
     "prior": [
       "recursive-decision-ledger",
-      "scientific-db-uspto-database"
+      "scientific-db-uspto-database",
+      "superpowers/tdd-iron-law"
     ],
     "fresh": [
-      "recursive-decision-ledger"
+      "recursive-decision-ledger",
+      "superpowers/sdd-methodology"
     ],
     "marks": [
       "recursive-decision-ledger"
@@ -14632,16 +15327,9 @@
     "outdated": [
       "rules-distill"
     ],
-    "applies": [
-      "rules-distill"
-    ],
     "judgment": [
       "rules-distill",
       "skill-stocktake"
-    ],
-    "principle": [
-      "rules-distill",
-      "tinystruct-patterns"
     ],
     "exhaustively": [
       "rules-distill"
@@ -14663,10 +15351,6 @@
       "rust-patterns"
     ],
     "races": [
-      "rust-patterns",
-      "swift-actor-persistence"
-    ],
-    "compile": [
       "rust-patterns",
       "swift-actor-persistence"
     ],
@@ -14929,6 +15613,7 @@
     "question": [
       "scientific-thinking-literature-review",
       "security-bounty-hunter",
+      "superpowers/brainstorming-gate",
       "workspace-surface-audit"
     ],
     "contradictions": [
@@ -14992,10 +15677,6 @@
     ],
     "solutions": [
       "search-first"
-    ],
-    "trigger": [
-      "search-first",
-      "token-budget-advisor"
     ],
     "likely": [
       "search-first"
@@ -15112,19 +15793,14 @@
     "redirects": [
       "seo"
     ],
-    "title": [
-      "seo"
-    ],
     "meta": [
-      "seo"
+      "seo",
+      "superpowers/writing-plans"
     ],
     "heading": [
       "seo"
     ],
     "keyword": [
-      "seo"
-    ],
-    "keywords": [
       "seo"
     ],
     "urls": [
@@ -15222,7 +15898,8 @@
       "skill-stocktake"
     ],
     "description": [
-      "skill-stocktake"
+      "skill-stocktake",
+      "superpowers/sdd-methodology"
     ],
     "ranker": [
       "social-graph-ranker"
@@ -15353,6 +16030,180 @@
     "stra": [
       "strategic-compact"
     ],
+    "superpowers": [
+      "superpowers",
+      "superpowers/brainstorming-gate",
+      "superpowers/finishing-workflow",
+      "superpowers/formalized-code-review",
+      "superpowers/sdd-methodology",
+      "superpowers/tdd-iron-law",
+      "superpowers/writing-plans"
+    ],
+    "obra": [
+      "superpowers"
+    ],
+    "jesse": [
+      "superpowers"
+    ],
+    "vincent": [
+      "superpowers"
+    ],
+    "rigorous": [
+      "superpowers"
+    ],
+    "processes": [
+      "superpowers"
+    ],
+    "brainstorming": [
+      "superpowers",
+      "superpowers/brainstorming-gate"
+    ],
+    "enhanced": [
+      "superpowers",
+      "superpowers/formalized-code-review"
+    ],
+    "mega": [
+      "superpowers/brainstorming-gate",
+      "superpowers/sdd-methodology"
+    ],
+    "reasoner": [
+      "superpowers/brainstorming-gate"
+    ],
+    "flight": [
+      "superpowers/brainstorming-gate"
+    ],
+    "shall": [
+      "superpowers/brainstorming-gate",
+      "superpowers/tdd-iron-law"
+    ],
+    "committed": [
+      "superpowers/brainstorming-gate"
+    ],
+    "hard": [
+      "superpowers/brainstorming-gate"
+    ],
+    "unclear": [
+      "superpowers/brainstorming-gate"
+    ],
+    "clarifying": [
+      "superpowers/brainstorming-gate"
+    ],
+    "wait": [
+      "superpowers/brainstorming-gate"
+    ],
+    "asking": [
+      "superpowers/brainstorming-gate",
+      "visa-doc-translate"
+    ],
+    "anot": [
+      "superpowers/brainstorming-gate"
+    ],
+    "leave": [
+      "superpowers/finishing-workflow"
+    ],
+    "undefined": [
+      "superpowers/finishing-workflow"
+    ],
+    "deliberate": [
+      "superpowers/finishing-workflow"
+    ],
+    "verified": [
+      "superpowers/finishing-workflow",
+      "terminal-ops"
+    ],
+    "typecheck": [
+      "superpowers/finishing-workflow"
+    ],
+    "compiler": [
+      "superpowers/finishing-workflow",
+      "swift-concurrency-6-2"
+    ],
+    "formalized": [
+      "superpowers/formalized-code-review"
+    ],
+    "performative": [
+      "superpowers/formalized-code-review"
+    ],
+    "agreement": [
+      "superpowers/formalized-code-review"
+    ],
+    "codebuff": [
+      "superpowers/formalized-code-review"
+    ],
+    "enforced": [
+      "superpowers/formalized-code-review",
+      "superpowers/tdd-iron-law"
+    ],
+    "withreview": [
+      "superpowers/formalized-code-review"
+    ],
+    "technically": [
+      "superpowers/formalized-code-review"
+    ],
+    "shas": [
+      "superpowers/formalized-code-review"
+    ],
+    "examines": [
+      "superpowers/formalized-code-review"
+    ],
+    "wish": [
+      "superpowers/formalized-code-review",
+      "superpowers/writing-plans"
+    ],
+    "looked": [
+      "superpowers/formalized-code-review"
+    ],
+    "inter": [
+      "superpowers/sdd-methodology"
+    ],
+    "wave": [
+      "superpowers/sdd-methodology"
+    ],
+    "synthesis": [
+      "superpowers/sdd-methodology"
+    ],
+    "baggage": [
+      "superpowers/sdd-methodology"
+    ],
+    "disposable": [
+      "superpowers/sdd-methodology"
+    ],
+    "receive": [
+      "superpowers/sdd-methodology"
+    ],
+    "terminate": [
+      "superpowers/sdd-methodology"
+    ],
+    "completes": [
+      "superpowers/sdd-methodology"
+    ],
+    "iron": [
+      "superpowers/tdd-iron-law"
+    ],
+    "detected": [
+      "superpowers/tdd-iron-law"
+    ],
+    "demonstrates": [
+      "superpowers/tdd-iron-law"
+    ],
+    "waiting": [
+      "superpowers/tdd-iron-law"
+    ],
+    "granular": [
+      "superpowers/writing-plans"
+    ],
+    "executable": [
+      "superpowers/writing-plans"
+    ],
+    "placeholders": [
+      "superpowers/writing-plans"
+    ],
+    "concretely": [
+      "superpowers/writing-plans"
+    ],
+    "dependent": [
+      "superpowers/writing-plans"
+    ],
     "swift": [
       "swift-actor-persistence",
       "swift-concurrency-6-2",
@@ -15386,9 +16237,6 @@
       "swift-concurrency-6-2"
     ],
     "eliminates": [
-      "swift-concurrency-6-2"
-    ],
-    "compiler": [
       "swift-concurrency-6-2"
     ],
     "mainactor": [
@@ -15454,9 +16302,6 @@
     "pick": [
       "team-builder"
     ],
-    "ones": [
-      "team-builder"
-    ],
     "prerequisites": [
       "team-builder"
     ],
@@ -15466,9 +16311,6 @@
     "terminal": [
       "terminal-ops",
       "tinystruct-patterns"
-    ],
-    "verified": [
-      "terminal-ops"
     ],
     "narrower": [
       "terminal-ops"
@@ -15577,9 +16419,6 @@
       "ui-to-vue"
     ],
     "element": [
-      "ui-to-vue"
-    ],
-    "screenshot": [
       "ui-to-vue"
     ],
     "bespoke": [
@@ -15703,12 +16542,6 @@
     "helping": [
       "visa-doc-translate"
     ],
-    "instructions": [
-      "visa-doc-translate"
-    ],
-    "asking": [
-      "visa-doc-translate"
-    ],
     "confirmation": [
       "visa-doc-translate"
     ],
@@ -15763,9 +16596,6 @@
     "dedicated": [
       "windows-desktop-e2e"
     ],
-    "section": [
-      "windows-desktop-e2e"
-    ],
     "automationid": [
       "windows-desktop-e2e"
     ],
@@ -15814,6 +16644,16 @@
     "ai-regression-testing": "# AI Regression Testing\n\nTesting patterns specifically designed for AI-assisted development, where the same model writes code and reviews it — creating systematic blind spots that only automated tests can catch.\n\n## When to Activate\n\n- AI agent (Claude Code, Cursor, Codex) has modified API routes or backend logic\n- A bug was found and fixed — need to prevent re-introduction\n- Project has a sandbox/mock mode that can be leveraged for DB-free testing\n- Running `/bug-check` or similar review commands after code changes\n- Multiple code paths exist (sandbox vs production, feature flags, etc.)\n\n## The Core Problem\n\nWhen an AI writes code and then reviews its own work, it carries the same assumptions into both steps. This creates a predictable failure pattern:\n\n```\nAI writes fix → AI reviews fix → AI says \"looks correct\" → Bug still exists\n```\n\n**Real-world example** (observed in production):\n\n```\nFix 1: Added notification_settings to API response\n  → Forgot to add it to the SELECT query\n  → AI reviewed and missed it (same blind spot)\n\nFix 2: Added it to SELECT query\n  → TypeScript build error (column not in generated types)\n  → AI reviewed Fix 1 but didn't catch the SELECT issue\n\nFix 3: Changed to SELECT *\n  → Fixed production path, forgot sandbox path\n  → AI reviewed and missed it AGAIN (4th occurrence)\n\nFix 4: Test caught it instantly on first run PASS:\n```\n\nThe pattern: **sandbox/production path inconsistency** is the #1 AI-introduced regression.\n\n## Sandbox-Mode API Testing\n\nMost projects with AI-friendly architecture have a sandbox/mock mode. This is the key to fast, DB-free API testing.\n\n### Setup (Vitest + Next.js App Router)\n\n```typescript\n// vitest.config.ts\nimport { defineConfig } from \"vitest/config\";\nimport path from \"path\";\n\nexport default defineConfig({\n  test: {\n    environment: \"node\",\n    globals: true,\n    include: [\"__tests__/**/*.test.ts\"],\n    setupFiles: [\"__tests__/setup.ts\"],\n  },\n  resolve: {\n    alias: {\n      \"@\": path.resolve(__dirname, \".\"),\n \n\n[truncated]",
     "android-clean-architecture": "# Android Clean Architecture\n\nClean Architecture patterns for Android and KMP projects. Covers module boundaries, dependency inversion, UseCase/Repository patterns, and data layer design with Room, SQLDelight, and Ktor.\n\n## When to Activate\n\n- Structuring Android or KMP project modules\n- Implementing UseCases, Repositories, or DataSources\n- Designing data flow between layers (domain, data, presentation)\n- Setting up dependency injection with Koin or Hilt\n- Working with Room, SQLDelight, or Ktor in a layered architecture\n\n## Module Structure\n\n### Recommended Layout\n\n```\nproject/\n├── app/                  # Android entry point, DI wiring, Application class\n├── core/                 # Shared utilities, base classes, error types\n├── domain/               # UseCases, domain models, repository interfaces (pure Kotlin)\n├── data/                 # Repository implementations, DataSources, DB, network\n├── presentation/         # Screens, ViewModels, UI models, navigation\n├── design-system/        # Reusable Compose components, theme, typography\n└── feature/              # Feature modules (optional, for larger projects)\n    ├── auth/\n    ├── settings/\n    └── profile/\n```\n\n### Dependency Rules\n\n```\napp → presentation, domain, data, core\npresentation → domain, design-system, core\ndata → domain, core\ndomain → core (or no dependencies)\ncore → (nothing)\n```\n\n**Critical**: `domain` must NEVER depend on `data`, `presentation`, or any framework. It contains pure Kotlin only.\n\n## Domain Layer\n\n### UseCase Pattern\n\nEach UseCase represents one business operation. Use `operator fun invoke` for clean call sites:\n\n```kotlin\nclass GetItemsByCategoryUseCase(\n    private val repository: ItemRepository\n) {\n    suspend operator fun invoke(category: String): Result<List<Item>> {\n        return repository.getItemsByCategory(category)\n    }\n}\n\n// Flow-based UseCase for reactive streams\nclass ObserveUserProgressUseCase(\n    private val repository: UserRepository\n) {\n    operator fun invoke(userId: \n\n[truncated]",
     "angular-developer": "# Angular Developer Guidelines\n\n## When to Activate\n\n- Working in any Angular project or codebase\n- Creating or scaffolding a new Angular project, application, or library\n- Generating components, services, directives, pipes, guards, or resolvers\n- Implementing reactivity with Angular Signals, `linkedSignal`, or `resource`\n- Working with Angular forms (signal forms, reactive forms, or template-driven)\n- Setting up dependency injection, routing, lazy loading, or route guards\n- Adding accessibility (ARIA), animations, or component styling\n- Writing or debugging Angular-specific tests (unit, component harness, E2E)\n- Configuring Angular CLI tooling or the Angular MCP server\n\n1. Always analyze the project's Angular version before providing guidance, as best practices and available features can vary significantly between versions. If creating a new project with Angular CLI, do not specify a version unless prompted by the user.\n\n2. When generating code, follow Angular's style guide and best practices for maintainability and performance. Use the Angular CLI for scaffolding components, services, directives, pipes, and routes to ensure consistency.\n\n3. Once you finish generating code, run `ng build` to ensure there are no build errors. If there are errors, analyze the error messages and fix them before proceeding. Do not skip this step, as it is critical for ensuring the generated code is correct and functional.\n\n## Creating New Projects\n\nIf no guidelines are provided by the user, use these defaults when creating a new Angular project:\n\n1. Use the latest stable version of Angular unless the user specifies otherwise.\n2. Prefer Signal Forms for new projects only when the target Angular version supports them. [Find out more](references/signal-forms.md).\n\n**Execution Rules for `ng new`:**\nWhen asked to create a new Angular project, you must determine the correct execution command by following these strict steps:\n\n**Step 1: Check for an explicit user version.**\n\n- **IF** the user \n\n[truncated]",
+    "anthropic-skills": "# Anthropic Skills Standard — Integrated into MetaBuff\n\n> **Source**: [https://github.com/anthropics/skills](https://github.com/anthropics/skills) by Anthropic  \n> **Integration**: Tailored for MetaBuff's agent orchestration system  \n> **Version**: 1.2.0\n\n## What This Is\n\nThe Anthropic Skills repo provides a **standardized, portable skill format** for AI agents —\nmodular `SKILL.md` files with YAML frontmatter that agents load on-demand.\nThis integration adapts its format innovations and key skills to MetaBuff's existing\nskill hot-load system.\n\n## Core Innovations Adapted\n\n| Anthropic Concept | MetaBuff Implementation |\n|---|---|\n| YAML Frontmatter Standard | `template/SKILL.md` with `name` + `description` frontmatter for all new MetaBuff skills |\n| Progressive Disclosure | Metadata always loaded via cache; full body loaded on keyword match |\n| \"Why over Must\" Philosophy | Enhanced agent prompts explain reasoning, not just commands |\n| Anti-Pattern Prevention | `anti-pattern-prevention/` skill with ❌ WRONG vs ✅ CORRECT patterns |\n| Verification Loops | `verify-iterate/` skill: run → inspect → fix → re-verify cycle |\n| Skill Creator | `skill-creator/` skill: AI-assisted skill creation with eval benchmarks |\n| Bundled Resources | Convention: `scripts/`, `references/`, `assets/` per skill directory |\n| Webapp Testing | `webapp-testing/` skill: Playwright reconnaissance-then-action |\n| MCP Builder | `mcp-builder/` skill: structured MCP server development protocol |\n| Frontend Design | `frontend-design/` skill: bold, distinctive UI design with anti-AI-slop principles |\n| Web Artifacts Builder | `web-artifacts-builder/` skill: architecture-first complex multi-component features |\n| Canvas Design | `canvas-design/` skill: philosophy-driven visual art and design compositions |\n\n## Key Tailored Differences from Upstream Anthropic Skills\n\n- **Hot-load integration**: Skills are discovered via MetaBuff's O(1) inverted index cache, not filesystem reads on every trigger\n- **Coding\n\n[truncated]",
+    "anthropic-skills/anti-pattern-prevention": "# Anti-Pattern Prevention — ❌ WRONG vs ✅ CORRECT\n\n> **Adapted from**: Anthropic Skills methodology (explain reasoning, show counterexamples)  \n> **Metabuff-Tailored**: Applied across all MetaBuff coding agents\n\n## Core Principle\n\n**Show, don't just tell.** For every instruction, provide concrete examples of what NOT\nto do alongside what TO do. LLMs learn patterns more reliably from counterexamples than\nfrom positive examples alone.\n\n## Why This Works (Anthropic Philosophy)\n\n- **Theory of mind**: The model understands WHY a pattern is wrong when shown the consequence\n- **Pattern recognition**: LLMs are pattern matchers; negative examples define pattern boundaries\n- **Error prevention**: Showing the mistake prevents it before it happens\n- **Self-correction**: The model can recognize when it's about to make a known anti-pattern\n\n## MetaBuff Anti-Pattern Catalog\n\n### 1. Ghost Imports\n\n```typescript\n// ❌ WRONG — imports module that doesn't exist\nimport { doSomething } from '@/utils/helper'  // file doesn't exist!\n\n// ✅ CORRECT — verify with code_searcher first, then import\nimport { doSomething } from '@/lib/utils'  // verified: file exists, export confirmed\n```\n\n### 2. Type Casting to 'any'\n\n```typescript\n// ❌ WRONG — swallows type errors, hides bugs\nconst data = response as any\n\n// ✅ CORRECT — define the expected type\ninterface ApiResponse { items: Item[]; total: number }\nconst data = response as ApiResponse  // type-safe\n```\n\n### 3. Swallowed Errors\n\n```typescript\n// ❌ WRONG — error disappears silently\ntry { await fetchData() } catch (e) {}\n\n// ✅ CORRECT — log, rethrow, or handle explicitly\ntry {\n  await fetchData()\n} catch (e) {\n  console.error('Data fetch failed:', e)\n  throw new DataFetchError('Unable to load data', { cause: e })\n}\n```\n\n### 4. Missing Edge Cases\n\n```typescript\n// ❌ WRONG — assumes input is always valid\nfunction getFirst(items: string[]): string {\n  return items[0]  // undefined if array is empty!\n}\n\n// ✅ CORRECT — handles edge case explicitly\nfuncti\n\n[truncated]",
+    "anthropic-skills/canvas-design": "# Canvas Design — Philosophy-Driven Visual Art\n\n> **Adapted from**: [anthropics/skills/canvas-design](https://github.com/anthropics/skills/blob/main/skills/canvas-design/SKILL.md)\n> **MetaBuff-Tailored**: Adapted for creating visual design elements in Next.js/React\n> web apps. The philosophy-driven approach applies to: hero section compositions,\n> decorative background elements, poster-style feature cards, and any static visual\n> design that benefits from artistic direction.\n\n## Purpose\n\nCreate beautiful, original visual designs using a philosophy-first approach. Rather\nthan starting with layouts or templates, begin by defining an aesthetic movement —\nthen express it visually. The result is design that feels intentional, crafted, and\nartistically coherent rather than assembled from generic patterns.\n\n## When to Use\n\n- Designing a hero section or landing area that needs artistic impact\n- Creating decorative background elements, patterns, or textures\n- Designing poster-style promotional cards or feature highlights\n- Building a visual identity for a section or page\n- User asks for something \"artistic\", \"beautiful\", \"museum-quality\", or \"poster-like\"\n- Creating SVG illustrations or CSS art for the web app\n\n## Two-Step Process\n\n### Step 1: Design Philosophy Creation\n\nBefore any visual work, create a **design philosophy** — a 4-6 paragraph manifesto\nthat defines the aesthetic movement. This is NOT a layout or template. It describes:\n\n- **Space and form**: How elements occupy the canvas. Dense? Sparse? Overlapping?\n  Floating? Anchored to a grid?\n- **Color and material**: What palette? What textures? Matte? Glossy? Grain?\n  Translucent layers?\n- **Scale and rhythm**: What's oversized? What's tiny? Where does the eye travel?\n  Is there repetition, pattern, sequence?\n- **Composition and balance**: Symmetrical? Asymmetrical? Radial? Diagonal flow?\n  How does tension resolve?\n- **Visual hierarchy**: What dominates? What whispers? How does information encode\n  spatially rather \n\n[truncated]",
+    "anthropic-skills/frontend-design": "# Frontend Design — Distinctive, Production-Grade Interfaces\n\n> **Adapted from**: [anthropics/skills/frontend-design](https://github.com/anthropics/skills/blob/main/skills/frontend-design/SKILL.md)\n> **MetaBuff-Tailored**: Adapted for Next.js + React + Tailwind CSS v4 projects. Design philosophy\n> applies universally; implementation details target this project's stack.\n\n## Purpose\n\nCreate distinctive, production-grade frontend interfaces that avoid generic \"AI slop\"\naesthetics. Implement real working code with exceptional attention to aesthetic\ndetails and creative choices.\n\n## When to Use\n\n- Building or redesigning any web component, page, or application\n- Styling/beautifying existing UI\n- Creating landing pages, dashboards, or feature pages\n- User asks for \"beautiful\", \"polished\", \"stunning\", \"modern\" design\n- Any time visual quality and distinctiveness matters\n\n## Design Thinking (MANDATORY — Before Writing Any Code)\n\nBefore coding, understand the context and commit to a **BOLD aesthetic direction**:\n\n### 1. Purpose\nWhat problem does this interface solve? Who uses it? What's the emotional response\nit should evoke?\n\n### 2. Tone (Pick ONE Extreme)\n- **Brutally minimal** — black/white/monochrome, generous negative space, single accent\n- **Maximalist chaos** — dense layouts, overlapping elements, pattern-rich backgrounds\n- **Retro-futuristic** — neon accents, dark backgrounds, monospace typography, scanlines\n- **Organic/natural** — earth tones, soft curves, grain textures, botanical motifs\n- **Luxury/refined** — gold/cream/navy, serif typography, restrained motion, elegant spacing\n- **Playful/toy-like** — bright primaries, rounded everything, bouncy animations, cheerful\n- **Editorial/magazine** — strong typographic hierarchy, dramatic scale shifts, bold imagery\n- **Brutalist/raw** — default fonts, harsh borders, visible grid lines, anti-polish\n- **Art deco/geometric** — gold/black, geometric patterns, symmetrical layouts, elegance\n- **Soft/pastel** — pastel gradients\n\n[truncated]",
+    "anthropic-skills/mcp-builder": "# MCP Builder — Structured Model Context Protocol Server Development\n\n> **Adapted from**: [anthropics/skills/mcp-builder](https://github.com/anthropics/skills/blob/main/skills/mcp-builder/SKILL.md)  \n> **Metabuff-Tailored**: Integrated with MetaBuff's architecture and code review pipeline\n\n## Purpose\n\nGuide the creation of high-quality MCP (Model Context Protocol) servers that enable\nLLMs to interact with external services through well-designed tools. Follows a\nstructured Plan → Implement → Review → Test workflow.\n\n## When to Use\n\n- Building a new MCP server for an external API or service\n- Adding tools to an existing MCP server\n- Designing tool interfaces for LLM-consumable APIs\n- Auditing MCP server security and error handling\n\n## Instructions\n\n### Phase 1: Planning\n\nBefore writing code, answer these questions:\n\n```\nMCP SERVER DESIGN BRIEF:\n\n  1. SERVICE: What external service/API is being wrapped?\n  2. TOOLS: List each tool the server will expose:\n     - Tool name (camelCase, verb-led: getWeather, searchDocs, createIssue)\n     - Input schema (JSON Schema for parameters)\n     - Output description (what the tool returns)\n     - Error modes (what can go wrong)\n  3. AUTH: How does the server authenticate? (API key, OAuth, etc.)\n     - NEVER hardcode credentials — use environment variables\n  4. RESOURCES: What static/dynamic resources does the server expose?\n  5. TRANSPORT: stdio, SSE, or streamable HTTP?\n```\n\n### Phase 2: Implementation\n\nFollow MetaBuff's architecture guidelines:\n\n```\nIMPLEMENTATION ORDER:\n  1. Type definitions (tool schemas, response types) — NO 'any' types\n  2. Service client (API wrapper with error handling)\n  3. Tool handlers (one function per tool)\n  4. Server setup (transport, logging, error boundaries)\n  5. Tests (unit + integration for each tool)\n```\n\n**Key principles:**\n- **Descriptive tool names AND descriptions**: The LLM uses descriptions to decide when to call a tool. Be specific about what the tool does, when to use it, and what it retu\n\n[truncated]",
+    "anthropic-skills/skill-creator": "# Skill Creator — AI-Assisted Skill Development\n\n> **Adapted from**: [anthropics/skills/skill-creator](https://github.com/anthropics/skills/blob/main/skills/skill-creator/SKILL.md)  \n> **Metabuff-Tailored**: Integrated with skill hot-load cache and eval harness\n\n## Purpose\n\nGuide users through creating high-quality MetaBuff skills (or improving existing ones)\nusing a structured interview-and-iteration workflow with built-in evaluation benchmarks.\n\n## Workflow\n\n### Phase 1: Discovery Interview\n\nAsk the user ONE question at a time to understand the skill they need:\n\n```\n1. \"What specific task should this skill accomplish? Describe the input and desired output.\"\n2. \"What are 3 concrete examples of this task? (include edge cases)\"\n3. \"What common mistakes should the skill prevent?\"\n4. \"What tools, libraries, or APIs does the skill need access to?\"\n5. \"What existing MetaBuff skills or agents could this complement?\"\n```\n\nWait for each answer before asking the next. Accumulate answers into a design brief.\n\n### Phase 2: Skill Scaffolding\n\nCreate the skill directory structure:\n\n```\n.agents/skills/ecc/<skill-name>/\n├── SKILL.md          # Required: YAML frontmatter + instructions\n├── scripts/          # Optional: executable helpers (Python/Bash/JS)\n├── references/       # Optional: documentation loaded as context\n└── assets/           # Optional: templates, icons, configs\n```\n\n### Phase 3: Write SKILL.md\n\nUse the standardized format:\n\n```yaml\n---\nname: <skill-name>\ndescription: >\n  Clear description of WHEN this skill triggers and WHAT it accomplishes.\n  Include trigger keywords that help the routing system match this skill.\n---\n\n# <Skill Title>\n\n## Purpose\n[One sentence describing what this skill does]\n\n## When to Use\n[Specific conditions/triggers that activate this skill]\n\n## Instructions\n[Step-by-step workflow — use imperative language]\n\n## Anti-Patterns\n### ❌ WRONG\n[Common mistakes with concrete examples]\n\n### ✅ CORRECT\n[The right way with concrete examples]\n\n## Verificat\n\n[truncated]",
+    "anthropic-skills/template": "# <Skill Title>\n\n## Purpose\n\n[One sentence describing what this skill accomplishes.]\n\n## When to Use\n\n[List specific conditions, keywords, or task types that trigger this skill.]\n\n## Instructions\n\n[Step-by-step workflow. Use imperative language. Each step should be concrete\nand verifiable.]\n\n### 1. [Phase Name]\n\n[What the agent should do. Include specific commands, file paths, or API calls.]\n\n### 2. [Phase Name]\n\n[What the agent should do next. Each phase builds on the previous one.]\n\n## Anti-Patterns\n\n### ❌ WRONG\n\n[Concrete example of a common mistake, with code/specifics.]\n\n### ✅ CORRECT\n\n[The right way to do it, with code/specifics.]\n\n## Verification\n\n[How to confirm the skill was applied correctly. Include test commands, assertions,\nor manual checks.]\n\n## Resources (Optional)\n\n- `scripts/` — Executable helpers used by this skill\n- `references/` — Documentation loaded as context\n- `assets/` — Templates, icons, or configuration files",
+    "anthropic-skills/verify-iterate": "# Verify-Iterate — Run → Inspect → Fix → Re-verify Loop\n\n> **Adapted from**: Anthropic Skills verification cycle methodology  \n> **Metabuff-Tailored**: Integrated into CoT v3 STEP 5 (VERIFY) and validator pipeline\n\n## Core Principle\n\n**Never ship on the first attempt.** Every change must pass through a verification loop\nbefore being considered complete. The loop catches:\n- Typos and syntax errors (caught at compile/run time)\n- Logic errors (caught by test assertions)\n- Integration issues (caught by typecheck + test suite)\n- Visual regressions (caught by screenshot comparison)\n- Accessibility regressions (caught by a11y audit)\n\n## The Verify-Iterate Loop\n\n```\n┌─────────────────────────────────────────────┐\n│           VERIFY-ITERATE LOOP               │\n│                                             │\n│   RUN: Execute the change (compile, test)   │\n│     ↓                                       │\n│   INSPECT: Examine results, find issues     │\n│     ↓                                       │\n│   FIX: Apply minimal, targeted fix          │\n│     ↓                                       │\n│   RE-VERIFY: Confirm fix resolved issue     │\n│     ↓                                       │\n│   No more issues? → MERGE READY             │\n│     └── Issues remain? → Loop again ──────┘ │\n│                                             │\n│   MAX ITERATIONS: 3 (after 3 loops, flag    │\n│   as ⚠ NEEDS REVIEW — human decision needed) │\n└─────────────────────────────────────────────┘\n```\n\n## When to Apply\n\n| Change Type | Verification Method | Iteration Target |\n|---|---|---|\n| New function | Unit test → typecheck → lint | 1 loop |\n| API change | Integration test → typecheck → all tests | 1–2 loops |\n| UI change | Screenshot compare → a11y audit → console check | 2–3 loops |\n| Refactoring | Full test suite → typecheck → lint | 1–2 loops |\n| Bug fix | Reproduction test → fix → full suite | 1–3 loops |\n\n## Verification Checklist (per iteration)\n\n```\nVERIFICATION CHECKLIST (run EVERY iteration\n\n[truncated]",
+    "anthropic-skills/web-artifacts-builder": "# Web Artifacts Builder — Complex Multi-Component Features\n\n> **Adapted from**: [anthropics/skills/web-artifacts-builder](https://github.com/anthropics/skills/blob/main/skills/web-artifacts-builder/SKILL.md)\n> **MetaBuff-Tailored**: Adapted for Next.js + React + Tailwind CSS v4 + this project's\n> component architecture. Replaces the claude.ai artifact workflow with standard\n> Next.js development patterns.\n\n## Purpose\n\nBuild elaborate, multi-component web features that require coordinated state,\nrouting, and advanced UI patterns. The systematic approach ensures complex\nfeatures are built with proper architecture rather than ad-hoc composition.\n\n## When to Use\n\n- Building dashboards with multiple interconnected widgets\n- Creating complex interactive tools (calculators, configurators, builders)\n- Implementing multi-step wizards or flows with shared state\n- Building data visualization dashboards with filters and controls\n- Any feature requiring 3+ components with shared state or routing\n- NOT for simple single-component tasks (use direct implementation instead)\n\n## Architecture First Approach\n\n### Step 1: Plan the Component Tree\n\nBefore writing code, map out:\n```\nFeature: [Name]\n├── Layout: [Shell/Container component]\n├── State: [What state is shared vs local?]\n├── Components:\n│   ├── [Component A] — [Responsibility]\n│   ├── [Component B] — [Responsibility]\n│   └── [Component C] — [Responsibility]\n└── Data Flow: [Parent→Child props] / [URL params] / [Context]\n```\n\n### Step 2: Choose State Architecture\n\nFor this project (no Redux/Zustand — per knowledge.md):\n\n**Simple (1-2 components):**\n- React `useState` + prop drilling\n- URL search params for shareable state\n\n**Medium (3-5 components, one page):**\n- React Context + reducer pattern\n- URL search params via `useSearchParams()` for filter/pagination state\n- `useReducer` for complex state transitions\n\n**Complex (6+ components, multi-page):**\n- Multiple Context providers composed at layout level\n- URL as primary state (sear\n\n[truncated]",
+    "anthropic-skills/webapp-testing": "# Webapp Testing — Playwright Reconnaissance-First Testing\n\n> **Adapted from**: [anthropics/skills/webapp-testing](https://github.com/anthropics/skills/blob/main/skills/webapp-testing/SKILL.md)  \n> **Metabuff-Tailored**: Integrated with MetaBuff's basher agent for local server management\n\n## Purpose\n\nTest local web applications using Playwright. **Reconnaissance-first**: understand the page\nstructure BEFORE interacting. Screenshot-driven debugging for visual verification.\n\n## When to Use\n\n- Testing a locally running Next.js, React, or other web app\n- Verifying UI changes render correctly\n- Debugging browser-specific issues\n- Running end-to-end test scenarios\n- Validating form submissions, navigation flows, or state changes\n\n## Instructions\n\n### 1. Start the Application (if not running)\n\n```bash\n# Next.js\ncd /path/to/project && npm run dev &\n# Wait for server to be ready\nsleep 3\n```\n\nUse MetaBuff's `basher` agent to manage the server process.\n\n### 2. Reconnaissance Phase (ALWAYS FIRST)\n\nBefore any interaction, understand the page:\n\n```\nRECONNAISSANCE CHECKLIST:\n  □ Screenshot: Take a full-page screenshot for visual context\n  □ DOM snapshot: Dump the page's HTML structure\n  □ Console: Check for JavaScript errors (consoleErrors)\n  □ Network: Verify all resources loaded (no 404s)\n  □ Accessibility: Run axe-core or similar for a11y violations\n```\n\n**Use Playwright's `browser_use` agent from MetaBuff for this phase.**\n\n### 3. Interaction Phase\n\nOnly after reconnaissance is complete:\n\n```\nINTERACTION PATTERN (for each test step):\n  1. LOCATE: Find the target element using semantic selectors\n     • Prefer: data-testid, role, aria-label\n     • Avoid: CSS class names, XPath, nth-child\n  2. VERIFY: Confirm the element is visible and enabled\n  3. ACT: Click, type, select — the single interaction\n  4. WAIT: Wait for the result (network idle, element visible, timeout)\n  5. ASSERT: Screenshot + text assertion to confirm expected state\n```\n\n### 4. Common Test Patterns\n\n**Form Submi\n\n[truncated]",
     "api-connector-builder": "# API Connector Builder\n\nUse this when the job is to add a repo-native integration surface, not just a generic HTTP client.\n\nThe point is to match the host repository's pattern:\n\n- connector layout\n- config schema\n- auth model\n- error handling\n- test style\n- registration/discovery wiring\n\n## When to Use\n\n- \"Build a Jira connector for this project\"\n- \"Add a Slack provider following the existing pattern\"\n- \"Create a new integration for this API\"\n- \"Build a plugin that matches the repo's connector style\"\n\n## Guardrails\n\n- do not invent a new integration architecture when the repo already has one\n- do not start from vendor docs alone; start from existing in-repo connectors first\n- do not stop at transport code if the repo expects registry wiring, tests, and docs\n- do not cargo-cult old connectors if the repo has a newer current pattern\n\n## Workflow\n\n### 1. Learn the house style\n\nInspect at least 2 existing connectors/providers and map:\n\n- file layout\n- abstraction boundaries\n- config model\n- retry / pagination conventions\n- registry hooks\n- test fixtures and naming\n\n### 2. Narrow the target integration\n\nDefine only the surface the repo actually needs:\n\n- auth flow\n- key entities\n- core read/write operations\n- pagination and rate limits\n- webhook or polling model\n\n### 3. Build in repo-native layers\n\nTypical slices:\n\n- config/schema\n- client/transport\n- mapping layer\n- connector/provider entrypoint\n- registration\n- tests\n\n### 4. Validate against the source pattern\n\nThe new connector should look obvious in the codebase, not imported from a different ecosystem.\n\n## Reference Shapes\n\n### Provider-style\n\n```text\nproviders/\n  existing_provider/\n    __init__.py\n    provider.py\n    config.py\n```\n\n### Connector-style\n\n```text\nintegrations/\n  existing/\n    client.py\n    models.py\n    connector.py\n```\n\n### TypeScript plugin-style\n\n```text\nsrc/integrations/\n  existing/\n    index.ts\n    client.ts\n    types.ts\n    test.ts\n```\n\n## Quality Checklist\n\n- [ ] matches an existing in-repo in\n\n[truncated]",
     "api-design": "# API Design Patterns\n\nConventions and best practices for designing consistent, developer-friendly REST APIs.\n\n## When to Activate\n\n- Designing new API endpoints\n- Reviewing existing API contracts\n- Adding pagination, filtering, or sorting\n- Implementing error handling for APIs\n- Planning API versioning strategy\n- Building public or partner-facing APIs\n\n## Resource Design\n\n### URL Structure\n\n```\n# Resources are nouns, plural, lowercase, kebab-case\nGET    /api/v1/users\nGET    /api/v1/users/:id\nPOST   /api/v1/users\nPUT    /api/v1/users/:id\nPATCH  /api/v1/users/:id\nDELETE /api/v1/users/:id\n\n# Sub-resources for relationships\nGET    /api/v1/users/:id/orders\nPOST   /api/v1/users/:id/orders\n\n# Actions that don't map to CRUD (use verbs sparingly)\nPOST   /api/v1/orders/:id/cancel\nPOST   /api/v1/auth/login\nPOST   /api/v1/auth/refresh\n```\n\n### Naming Rules\n\n```\n# GOOD\n/api/v1/team-members          # kebab-case for multi-word resources\n/api/v1/orders?status=active  # query params for filtering\n/api/v1/users/123/orders      # nested resources for ownership\n\n# BAD\n/api/v1/getUsers              # verb in URL\n/api/v1/user                  # singular (use plural)\n/api/v1/team_members          # snake_case in URLs\n/api/v1/users/123/getOrders   # verb in nested resource\n```\n\n## HTTP Methods and Status Codes\n\n### Method Semantics\n\n| Method | Idempotent | Safe | Use For |\n|--------|-----------|------|---------|\n| GET | Yes | Yes | Retrieve resources |\n| POST | No | No | Create resources, trigger actions |\n| PUT | Yes | No | Full replacement of a resource |\n| PATCH | No* | No | Partial update of a resource |\n| DELETE | Yes | No | Remove a resource |\n\n*PATCH can be made idempotent with proper implementation\n\n### Status Code Reference\n\n```\n# Success\n200 OK                    — GET, PUT, PATCH (with response body)\n201 Created               — POST (include Location header)\n204 No Content            — DELETE, PUT (no response body)\n\n# Client Errors\n400 Bad Request           — Validation failu\n\n[truncated]",
     "architecture-decision-records": "# Architecture Decision Records\n\nCapture architectural decisions as they happen during coding sessions. Instead of decisions living only in Slack threads, PR comments, or someone's memory, this skill produces structured ADR documents that live alongside the code.\n\n## When to Activate\n\n- User explicitly says \"let's record this decision\" or \"ADR this\"\n- User chooses between significant alternatives (framework, library, pattern, database, API design)\n- User says \"we decided to...\" or \"the reason we're doing X instead of Y is...\"\n- User asks \"why did we choose X?\" (read existing ADRs)\n- During planning phases when architectural trade-offs are discussed\n\n## ADR Format\n\nUse the lightweight ADR format proposed by Michael Nygard, adapted for AI-assisted development:\n\n```markdown\n# ADR-NNNN: [Decision Title]\n\n**Date**: YYYY-MM-DD\n**Status**: proposed | accepted | deprecated | superseded by ADR-NNNN\n**Deciders**: [who was involved]\n\n## Context\n\nWhat is the issue that we're seeing that is motivating this decision or change?\n\n[2-5 sentences describing the situation, constraints, and forces at play]\n\n## Decision\n\nWhat is the change that we're proposing and/or doing?\n\n[1-3 sentences stating the decision clearly]\n\n## Alternatives Considered\n\n### Alternative 1: [Name]\n- **Pros**: [benefits]\n- **Cons**: [drawbacks]\n- **Why not**: [specific reason this was rejected]\n\n### Alternative 2: [Name]\n- **Pros**: [benefits]\n- **Cons**: [drawbacks]\n- **Why not**: [specific reason this was rejected]\n\n## Consequences\n\nWhat becomes easier or more difficult to do because of this change?\n\n### Positive\n- [benefit 1]\n- [benefit 2]\n\n### Negative\n- [trade-off 1]\n- [trade-off 2]\n\n### Risks\n- [risk and mitigation]\n```\n\n## Workflow\n\n### Capturing a New ADR\n\nWhen a decision moment is detected:\n\n1. **Initialize (first time only)** — if `docs/adr/` does not exist, ask the user for confirmation before creating the directory, a `README.md` seeded with the index table header (see ADR Index Format below), and a \n\n[truncated]",
@@ -16029,6 +16869,13 @@
     "springboot-tdd": "# Spring Boot TDD Workflow\n\nTDD guidance for Spring Boot services with 80%+ coverage (unit + integration).\n\n## When to Use\n\n- New features or endpoints\n- Bug fixes or refactors\n- Adding data access logic or security rules\n\n## Workflow\n\n1) Write tests first (they should fail)\n2) Implement minimal code to pass\n3) Refactor with tests green\n4) Enforce coverage (JaCoCo)\n\n## Unit Tests (JUnit 5 + Mockito)\n\n```java\n@ExtendWith(MockitoExtension.class)\nclass MarketServiceTest {\n  @Mock MarketRepository repo;\n  @InjectMocks MarketService service;\n\n  @Test\n  void createsMarket() {\n    CreateMarketRequest req = new CreateMarketRequest(\"name\", \"desc\", Instant.now(), List.of(\"cat\"));\n    when(repo.save(any())).thenAnswer(inv -> inv.getArgument(0));\n\n    Market result = service.create(req);\n\n    assertThat(result.name()).isEqualTo(\"name\");\n    verify(repo).save(any());\n  }\n}\n```\n\nPatterns:\n- Arrange-Act-Assert\n- Avoid partial mocks; prefer explicit stubbing\n- Use `@ParameterizedTest` for variants\n\n## Web Layer Tests (MockMvc)\n\n```java\n@WebMvcTest(MarketController.class)\nclass MarketControllerTest {\n  @Autowired MockMvc mockMvc;\n  @MockBean MarketService marketService;\n\n  @Test\n  void returnsMarkets() throws Exception {\n    when(marketService.list(any())).thenReturn(Page.empty());\n\n    mockMvc.perform(get(\"/api/markets\"))\n        .andExpect(status().isOk())\n        .andExpect(jsonPath(\"$.content\").isArray());\n  }\n}\n```\n\n## Integration Tests (SpringBootTest)\n\n```java\n@SpringBootTest\n@AutoConfigureMockMvc\n@ActiveProfiles(\"test\")\nclass MarketIntegrationTest {\n  @Autowired MockMvc mockMvc;\n\n  @Test\n  void createsMarket() throws Exception {\n    mockMvc.perform(post(\"/api/markets\")\n        .contentType(MediaType.APPLICATION_JSON)\n        .content(\"\"\"\n          {\"name\":\"Test\",\"description\":\"Desc\",\"endDate\":\"2030-01-01T00:00:00Z\",\"categories\":[\"general\"]}\n        \"\"\"))\n      .andExpect(status().isCreated());\n  }\n}\n```\n\n## Persistence Tests (DataJpaTest)\n\n```java\n@DataJpaTest\n@AutoConfigure\n\n[truncated]",
     "springboot-verification": "# Spring Boot Verification Loop\n\nRun before PRs, after major changes, and pre-deploy.\n\n## When to Activate\n\n- Before opening a pull request for a Spring Boot service\n- After major refactoring or dependency upgrades\n- Pre-deployment verification for staging or production\n- Running full build → lint → test → security scan pipeline\n- Validating test coverage meets thresholds\n\n## Phase 1: Build\n\n```bash\nmvn -T 4 clean verify -DskipTests\n# or\n./gradlew clean assemble -x test\n```\n\nIf build fails, stop and fix.\n\n## Phase 2: Static Analysis\n\nMaven (common plugins):\n```bash\nmvn -T 4 spotbugs:check pmd:check checkstyle:check\n```\n\nGradle (if configured):\n```bash\n./gradlew checkstyleMain pmdMain spotbugsMain\n```\n\n## Phase 3: Tests + Coverage\n\n```bash\nmvn -T 4 test\nmvn jacoco:report   # verify 80%+ coverage\n# or\n./gradlew test jacocoTestReport\n```\n\nReport:\n- Total tests, passed/failed\n- Coverage % (lines/branches)\n\n### Unit Tests\n\nTest service logic in isolation with mocked dependencies:\n\n```java\n@ExtendWith(MockitoExtension.class)\nclass UserServiceTest {\n\n  @Mock private UserRepository userRepository;\n  @InjectMocks private UserService userService;\n\n  @Test\n  void createUser_validInput_returnsUser() {\n    var dto = new CreateUserDto(\"Alice\", \"alice@example.com\");\n    var expected = new User(1L, \"Alice\", \"alice@example.com\");\n    when(userRepository.save(any(User.class))).thenReturn(expected);\n\n    var result = userService.create(dto);\n\n    assertThat(result.name()).isEqualTo(\"Alice\");\n    verify(userRepository).save(any(User.class));\n  }\n\n  @Test\n  void createUser_duplicateEmail_throwsException() {\n    var dto = new CreateUserDto(\"Alice\", \"existing@example.com\");\n    when(userRepository.existsByEmail(dto.email())).thenReturn(true);\n\n    assertThatThrownBy(() -> userService.create(dto))\n        .isInstanceOf(DuplicateEmailException.class);\n  }\n}\n```\n\n### Integration Tests with Testcontainers\n\nTest against a real database instead of H2:\n\n```java\n@SpringBootTest\n@Testcontainers\ncl\n\n[truncated]",
     "strategic-compact": "# Strategic Compact Skill\n\nSuggests manual `/compact` at strategic points in your workflow rather than relying on arbitrary auto-compaction.\n\n## When to Activate\n\n- Running long sessions that approach context limits (200K+ tokens)\n- Working on multi-phase tasks (research → plan → implement → test)\n- Switching between unrelated tasks within the same session\n- After completing a major milestone and starting new work\n- When responses slow down or become less coherent (context pressure)\n\n## Why Strategic Compaction?\n\nAuto-compaction triggers at arbitrary points:\n- Often mid-task, losing important context\n- No awareness of logical task boundaries\n- Can interrupt complex multi-step operations\n\nStrategic compaction at logical boundaries:\n- **After exploration, before execution** — Compact research context, keep implementation plan\n- **After completing a milestone** — Fresh start for next phase\n- **Before major context shifts** — Clear exploration context before different task\n\n## How It Works\n\nThe `suggest-compact.js` script runs on PreToolUse (Edit/Write) and:\n\n1. **Tracks tool calls** — Counts tool invocations in session\n2. **Threshold detection** — Suggests at configurable threshold (default: 50 calls)\n3. **Periodic reminders** — Reminds every 25 calls after threshold\n\n## Hook Setup\n\nAdd to your `~/.claude/settings.json`:\n\n```json\n{\n  \"hooks\": {\n    \"PreToolUse\": [\n      {\n        \"matcher\": \"Edit\",\n        \"hooks\": [{ \"type\": \"command\", \"command\": \"node ~/.claude/scripts/hooks/suggest-compact.js\" }]\n      },\n      {\n        \"matcher\": \"Write\",\n        \"hooks\": [{ \"type\": \"command\", \"command\": \"node ~/.claude/scripts/hooks/suggest-compact.js\" }]\n      }\n    ]\n  }\n}\n```\n\n## Configuration\n\nEnvironment variables:\n- `COMPACT_THRESHOLD` — Tool calls before first suggestion (default: 50)\n\n## Compaction Decision Guide\n\nUse this table to decide when to compact:\n\n| Phase Transition | Compact? | Why |\n|-----------------|----------|-----|\n| Research → Planning | Yes | Research con\n\n[truncated]",
+    "superpowers": "# Superpowers Methodology — Integrated into MetaBuff\n\n> **Source**: [obra/superpowers](https://github.com/obra/superpowers) by Jesse Vincent\n> **Integration**: Tailored for MetaBuff's agent orchestration system\n> **Version**: 1.0.0\n\n## What This Is\n\nSuperpowers is a structured methodology for AI coding agents that enforces rigorous\nsoftware engineering processes. This integration adapts its core principles to MetaBuff's\nexisting agent pipeline:\n\n- **Brainstorming Gate** → Enhanced CoT v3: Design doc before implementation\n- **Writing Plans** → Granular, checkbox-formatted plans with no placeholders\n- **Subagent-Driven Development (SDD)** → Two-stage review per task in mega pipeline\n- **TDD Iron Law** → No production code without a failing test\n- **Formalized Code Review** → SHA-bounded, no performative agreement, verify-before-implement\n- **Finishing Workflow** → Structured completion: verify → choose merge/PR/keep/discard\n\n## Core Philosophy\n\n```\nQUESTION → DESIGN → PLAN → IMPLEMENT (TDD) → REVIEW → FINISH\n   ↑                                              ↓\n   └────────── CRITICAL FEEDBACK ONLY ←───────────┘\n```\n\n1. **No action without a plan.** Implementation is the LAST step in a chain of deliberation.\n2. **Tests are not optional.** The TDD Iron Law: red → green → refactor, always.\n3. **Reviews block progress.** Critical feedback must be resolved before advancing.\n4. **Subagents are disposable.** Each subagent gets exactly one task, fresh context, no baggage.\n5. **Finishing is deliberate.** Choose merge, PR, keep, or discard — never leave a branch dangling.\n\n## How MetaBuff Integrates This\n\n| Superpowers Concept | MetaBuff Implementation |\n|----|----|\n| Brainstorming Gate | CoT v3 STEP 0: mandatory design doc for complex/mega tasks |\n| Writing Plans | Enhanced planner prompts: checkbox format, no placeholders |\n| SDD | Mega pipeline: two-stage review (spec compliance → code quality) |\n| TDD Iron Law | Skill injection into ecc-tdd-guide + pipeline enforcement |\n| F\n\n[truncated]",
+    "superpowers/brainstorming-gate": "# Brainstorming Gate — Design Before Implementation\n\n> **Applied in**: CoT v3 STEP 0 (complex/mega pipelines), metabuff-reasoner pre-flight\n\n## Core Rule\n\n**NO CODE SHALL BE WRITTEN until a design document is authored, committed, and approved.**\n\nThis is a hard gate. Implementation begins only after the design passes review.\n\n## Process\n\n### 1. One Question at a Time\n\nWhen the task is ambiguous or the scope is unclear:\n- Ask ONE clarifying question\n- Wait for the user's answer before asking another\n- Accumulate answers into the design document\n- Do NOT assume — every ambiguity is a question\n\n### 2. Design Document (Mandatory)\n\nBefore writing ANY code, produce a design document covering:\n\n```\nDESIGN DOCUMENT: [task name]\n\nGOAL:\n  One-sentence statement of what this accomplishes.\n\nSCOPE:\n  ✅ In scope: [list]\n  ❌ Out of scope: [list]\n\nASSUMPTIONS:\n  • [Verified assumption 1]\n  • [Verified assumption 2]\n  • [⚠ Assumption to validate before implementation]\n\nARCHITECTURE:\n  • Files to create: [list with roles]\n  • Files to modify: [list with what changes]\n  • Data flow: [describe]\n\nCONSTRAINTS:\n  • [Performance, compatibility, API contract, etc.]\n\nEDGE CASES:\n  • [What happens when input is empty?]\n  • [What happens when it fails?]\n  • [What are the boundaries?]\n\nTEST STRATEGY (TDD Iron Law applies):\n  • [What tests will be written FIRST?]\n  • [What edge cases must pass?]\n\nRISKS:\n  • [Risk 1] → Mitigation: [plan]\n  • [Risk 2] → Mitigation: [plan]\n```\n\n### 3. Transition Gate\n\nOnce the design document is complete:\n1. Review it for completeness (no blank sections)\n2. Commit it: `git add . && git commit -m \"design: [task name]\"`\n3. **Only then** transition to implementation planning\n\n## When This Applies\n\n- **Complex pipeline**: CoT v3 enforces this gate before STEP 3 (PLAN)\n- **Mega pipeline**: enforced before decomposition\n- **Reasoner**: enforced as pre-flight before STEP 1 (UNDERSTAND)\n- **Simple pipeline**: optional — applies when `isAmbiguousTask()` returns true\n\n## Ant\n\n[truncated]",
+    "superpowers/finishing-workflow": "# Finishing Workflow — Structured Branch Completion\n\n> **Applied in**: MetaBuff validator post-pipeline (all tiers)\n\n## Core Principle\n\n**Never leave a branch in an undefined state.** Every development session must end with a deliberate, verified completion choice.\n\n## Completion Checklist\n\nBefore finishing, verify EVERY item:\n\n```\nFINISHING CHECKLIST:\n\n  □ TESTS PASS: Full project test suite passes (bun test / npx jest / pytest)\n  □ TYPECHECK: No TypeScript/compiler errors (bun run typecheck / tsc --noEmit)\n  □ NO TODOS: No TODO, FIXME, HACK, or placeholder comments remain\n  □ IMPORTS VERIFIED: Every import resolves to an existing module\n  □ NO DEAD CODE: No unused variables, imports, or functions\n  □ EDGE CASES: Explicitly verified at least 3 edge cases\n  □ DESIGN DOC: Design document matches final implementation\n  □ REGEX SAFE: All regex patterns validated by regex-guard\n  □ GIT STATUS CLEAN: All changes are staged or committed\n  □ BRANCH UP TO DATE: No merge conflicts with base branch\n```\n\n## Structured Completion Options\n\nAfter verification, choose exactly ONE:\n\n### Option A: Merge (Ready)\n```\n✅ All checks pass → Ready to merge\n\n  git add .\n  git commit -m \"[final commit message]\"\n  git checkout main\n  git merge --no-ff [branch]\n  git push origin main\n  git branch -d [branch]\n```\n\n### Option B: Create PR (Needs Review)\n```\n⚠ Some checks pass, but human review needed\n\n  git add .\n  git commit -m \"[draft commit message]\"\n  git push origin [branch]\n  # Create PR on GitHub/GitLab with:\n  #   - Link to design document\n  #   - Summary of changes\n  #   - Test results\n  #   - Known limitations\n```\n\n### Option C: Keep Branch (Work in Progress)\n```\n⏳ More work needed → Keep branch alive\n\n  git add .\n  git commit -m \"WIP: [description of current state]\"\n  git push origin [branch]\n  # Document what remains to be done in the commit message\n\n  REMAINING WORK:\n    • [Item 1]\n    • [Item 2]\n```\n\n### Option D: Discard (Not Worth Keeping)\n```\n❌ Experimental / wrong approach → Di\n\n[truncated]",
+    "superpowers/formalized-code-review": "# Formalized Code Review — SHA-Bounded, No Performative Agreement\n\n> **Applied in**: All MetaBuff review agents (ecc-code-reviewer, ecc-*-reviewer, codebuff/reviewer)\n> **Enforced by**: Enhanced review protocol in withReview() wrapper\n\n## Core Principles\n\n### 1. Review is Technically Scoped\n\nReviews are bounded by Git SHAs, not opinions. The reviewer examines what CHANGED,\nnot what they wish the codebase looked like.\n\n```\nREVIEW SCOPE:\n  From: [base SHA or branch]\n  To:   [current HEAD]\n  Changes: [list of changed files from git diff]\n```\n\n### 2. No Performative Agreement\n\n**PROHIBITED PHRASES** (immediate review invalidation):\n- \"Great point!\" — acknowledge technically, not socially\n- \"Good catch!\" — state what's wrong, not praise\n- \"Nice work!\" — irrelevant to code correctness\n- \"LGTM!\" — meaningless without verification\n- \"Looks good to me\" — not evidence of review\n\n**REQUIRED PHRASES** (replacements):\n- \"Verified: [specific claim about the code]\"\n- \"Checked: [specific file/line] — [finding]\"\n- \"Found: [issue] at [file:line]. Root cause: [analysis]\"\n- \"Confirmed: [assertion] by running [test/check]\"\n\n### 3. Verify Before Implementing\n\nWhen receiving a review suggestion:\n1. First, reproduce/verify the claimed issue:\n   - Run the test that demonstrates the failure\n   - Trace the code path with the reviewer's inputs\n   - Ask: \"Can I prove this is actually a problem?\"\n2. THEN implement the fix\n3. Re-verify that the fix resolves the issue without regressions\n\n### 4. Technical Argumentation over Social Compromise\n\nDisagreeing with a review is VALID and EXPECTED when technically justified:\n\n```\nACCEPTABLE DISAGREEMENT:\n  \"I considered [reviewer's suggestion]. The reason I chose [alternative]\n   is [technical justification]. Here's the test that validates my approach:\n   [test]. Trade-off: [what we give up].\"\n\nUNACCEPTABLE DISAGREEMENT:\n  \"I think it's fine as-is.\"\n  \"That would be too much work.\"\n  \"Nobody will encounter that edge case.\"\n```\n\n## Review Checklist (Mandat\n\n[truncated]",
+    "superpowers/sdd-methodology": "# Subagent-Driven Development (SDD) — Two-Stage Review\n\n> **Applied in**: MetaBuff Mega pipeline (inter-wave + synthesis review)\n\n## Core Principle\n\n**Every task gets a FRESH subagent with NO context baggage from previous work.**\n\nSubagents are disposable. They receive exactly: the task description, the spec,\nand relevant code context. They do ONE thing, then terminate.\n\n## Two-Stage Review Protocol\n\n### Stage 1: Spec Compliance Review (MANDATORY)\n\nAfter a subagent completes its task, review against the SPECIFICATION:\n\n```\nSPEC COMPLIANCE CHECKLIST:\n  □ Does the implementation match the task description EXACTLY?\n  □ Are all acceptance criteria met?\n  □ Does the output match the contract/interface defined in the spec?\n  □ Are there any extra changes beyond the spec? (→ flag as scope creep)\n  □ Does it handle the edge cases listed in the design document?\n\nRESULT: PASSS / FAILS\n  If FAILS → return to subagent with: \"Spec mismatch: [specific finding]\"\n```\n\n### Stage 2: Code Quality Review\n\nOnly after Stage 1 PASSES:\n\n```\nCODE QUALITY CHECKLIST:\n  □ Are all imports valid and verified? (no ghost imports)\n  □ Are there any TODOs, FIXMEs, or placeholder comments?\n  □ Is error handling present for all failure modes?\n  □ Are types explicit (no `any`, no `unknown` without justification)?\n  □ Does it follow existing codebase conventions?\n  □ Are there performance concerns (N+1 queries, unnecessary allocations)?\n  □ Is there test coverage for the new/changed behavior?\n\nRESULT: PASS ✓ / FAIL ✗\n  If FAILS → return to subagent with severity-tagged issues:\n    [CRITICAL] → block merge, must fix\n    [MEDIUM]   → should fix before merge\n    [LOW]      → can address in follow-up\n```\n\n## Context Isolation (Critical)\n\nEach subagent receives ONLY:\n1. The task description\n2. The design document / spec\n3. Relevant file contents (via read_files)\n4. Anti-hallucination protocol instructions\n\nSubagents MUST NOT:\n- Access conversation history from other subagents\n- Assume knowledge of work done \n\n[truncated]",
+    "superpowers/tdd-iron-law": "# TDD Iron Law — Red-Green-Refactor\n\n> **Applied in**: All MetaBuff pipelines when testing domain is detected\n> **Enforced by**: ecc-tdd-guide + skill injection + pipeline verification\n\n## The Iron Law\n\n**Production code SHALL NOT be written without a prior, failing test that demonstrates the desired behavior.**\n\nThis is non-negotiable. Violations are bugs waiting to happen.\n\n## The Cycle\n\n```\n┌──────────────────────────────────────────┐\n│           TDD IRON LAW CYCLE             │\n│                                          │\n│   RED      →    GREEN    →   REFACTOR    │\n│   │              │              │        │\n│   └── mandatory ─┴── mandatory ─┘        │\n│         (no code before RED)             │\n└──────────────────────────────────────────┘\n```\n\n### RED Phase\n\n1. Write a test that specifies the desired behavior\n2. The test must FAIL (confirm it fails for the right reason)\n3. The test name should document the behavior:\n   ```\n   ✓ \"returns empty array when input is null\"\n   ✓ \"throws ValidationError when email format is invalid\"\n   ✓ \"handles concurrent writes without data loss\"\n   ```\n\n**Rule**: If the test passes before writing implementation code, the test is wrong.\n\n### GREEN Phase\n\n1. Write the MINIMAL code to make the test pass\n2. Do NOT write code for future requirements\n3. Do NOT optimize prematurely\n4. Hard-coding the expected value is acceptable if it makes the test pass\n5. Run ALL tests — make sure nothing else broke\n\n**Rule**: If you wrote more code than needed to pass the test, you violated the Iron Law.\n\n### REFACTOR Phase\n\n1. Clean up the code WHILE ALL TESTS STAY GREEN\n2. Remove duplication\n3. Improve names\n4. Extract helpers\n5. Do NOT add new behavior during refactoring\n\n**Rule**: If any test goes red during refactoring, revert to the last green state and try again.\n\n## Enforcement in MetaBuff\n\n### Detecting TDD Tasks\n\nMetaBuff's orchestrator detects TDD tasks via keyword matching:\n- \"test\", \"tests\", \"testing\", \"tdd\", \"test-driven\"\n- \"write tes\n\n[truncated]",
+    "superpowers/writing-plans": "# Writing Plans — Granular, Executable, No Placeholders\n\n> **Applied in**: ecc-planner, meta planner routing, CoT v3 STEP 3 (PLAN)\n\n## Core Rule\n\n**Every plan item must be a concretely executable step. No placeholders. No \"TBD\".**\n\nIf a step says \"implement authentication\", it's not a plan — it's a wish.\n\n## Plan Format (Required)\n\n```\nIMPLEMENTATION PLAN: [task name]\n\nDEPENDENCIES:\n  • [dependency 1] must complete before [dependent task]\n  • [dependency 2] blocks [dependent task]\n\n  ─── PHASE 1: Foundation ───\n\n  - [ ] 1. [explicit action with specific file and expected change]\n         → Creates/modifies: [file path]\n         → Command: [exact command if applicable]\n         → Verification: [how to verify this step succeeded]\n\n  - [ ] 2. [next explicit action]\n         → Creates/modifies: [file path]\n         → Verification: [test or check]\n\n  ─── PHASE 2: Core Implementation ───\n\n  - [ ] 3. ...\n  ...\n\n  ─── PHASE N: Verification & Polish ───\n\n  - [ ] N-1. Run full test suite\n         → Command: bun test\n         → Expected: all tests pass\n\n  - [ ] N. Run typecheck\n         → Command: bun run typecheck\n         → Expected: no errors\n```\n\n## Plan Requirements\n\n### Each Step Must Include:\n\n1. **Specific file path** — which file(s) are modified/created\n2. **Expected change** — what exactly changes (not \"improve\", but \"add parameter `timeout: number`\")\n3. **Verification method** — how to confirm the step worked\n4. **Dependencies** — which other steps must complete first\n\n### Prohibited in Plans:\n\n✗ \"TBD\" — every section must be complete\n✗ \"Implement X\" without specifying files, interfaces, or approach\n✗ \"Add tests\" without specifying what behaviors are tested\n✗ \"Refactor\" without specifying what changes and why\n✗ \"Clean up\" without specifying what is being cleaned\n✗ Placeholder code comments like `// TODO: implement this`\n\n### Plan Sizing\n\n- Each step should be completable in 2–5 minutes\n- If a step takes longer, it should be decomposed further\n- Maximum 12 steps per \n\n[truncated]",
     "swift-actor-persistence": "# Swift Actors for Thread-Safe Persistence\n\nPatterns for building thread-safe data persistence layers using Swift actors. Combines in-memory caching with file-backed storage, leveraging the actor model to eliminate data races at compile time.\n\n## When to Activate\n\n- Building a data persistence layer in Swift 5.5+\n- Need thread-safe access to shared mutable state\n- Want to eliminate manual synchronization (locks, DispatchQueues)\n- Building offline-first apps with local storage\n\n## Core Pattern\n\n### Actor-Based Repository\n\nThe actor model guarantees serialized access — no data races, enforced by the compiler.\n\n```swift\npublic actor LocalRepository<T: Codable & Identifiable> where T.ID == String {\n    private var cache: [String: T] = [:]\n    private let fileURL: URL\n\n    public init(directory: URL = .documentsDirectory, filename: String = \"data.json\") {\n        self.fileURL = directory.appendingPathComponent(filename)\n        // Synchronous load during init (actor isolation not yet active)\n        self.cache = Self.loadSynchronously(from: fileURL)\n    }\n\n    // MARK: - Public API\n\n    public func save(_ item: T) throws {\n        cache[item.id] = item\n        try persistToFile()\n    }\n\n    public func delete(_ id: String) throws {\n        cache[id] = nil\n        try persistToFile()\n    }\n\n    public func find(by id: String) -> T? {\n        cache[id]\n    }\n\n    public func loadAll() -> [T] {\n        Array(cache.values)\n    }\n\n    // MARK: - Private\n\n    private func persistToFile() throws {\n        let data = try JSONEncoder().encode(Array(cache.values))\n        try data.write(to: fileURL, options: .atomic)\n    }\n\n    private static func loadSynchronously(from url: URL) -> [String: T] {\n        guard let data = try? Data(contentsOf: url),\n              let items = try? JSONDecoder().decode([T].self, from: data) else {\n            return [:]\n        }\n        return Dictionary(uniqueKeysWithValues: items.map { ($0.id, $0) })\n    }\n}\n```\n\n### Usage\n\nAll calls are automatic\n\n[truncated]",
     "swift-concurrency-6-2": "# Swift 6.2 Approachable Concurrency\n\nPatterns for adopting Swift 6.2's concurrency model where code runs single-threaded by default and concurrency is introduced explicitly. Eliminates common data-race errors without sacrificing performance.\n\n## When to Activate\n\n- Migrating Swift 5.x or 6.0/6.1 projects to Swift 6.2\n- Resolving data-race safety compiler errors\n- Designing MainActor-based app architecture\n- Offloading CPU-intensive work to background threads\n- Implementing protocol conformances on MainActor-isolated types\n- Enabling Approachable Concurrency build settings in Xcode 26\n\n## Core Problem: Implicit Background Offloading\n\nIn Swift 6.1 and earlier, async functions could be implicitly offloaded to background threads, causing data-race errors even in seemingly safe code:\n\n```swift\n// Swift 6.1: ERROR\n@MainActor\nfinal class StickerModel {\n    let photoProcessor = PhotoProcessor()\n\n    func extractSticker(_ item: PhotosPickerItem) async throws -> Sticker? {\n        guard let data = try await item.loadTransferable(type: Data.self) else { return nil }\n\n        // Error: Sending 'self.photoProcessor' risks causing data races\n        return await photoProcessor.extractSticker(data: data, with: item.itemIdentifier)\n    }\n}\n```\n\nSwift 6.2 fixes this: async functions stay on the calling actor by default.\n\n```swift\n// Swift 6.2: OK — async stays on MainActor, no data race\n@MainActor\nfinal class StickerModel {\n    let photoProcessor = PhotoProcessor()\n\n    func extractSticker(_ item: PhotosPickerItem) async throws -> Sticker? {\n        guard let data = try await item.loadTransferable(type: Data.self) else { return nil }\n        return await photoProcessor.extractSticker(data: data, with: item.itemIdentifier)\n    }\n}\n```\n\n## Core Pattern — Isolated Conformances\n\nMainActor types can now conform to non-isolated protocols safely:\n\n```swift\nprotocol Exportable {\n    func export()\n}\n\n// Swift 6.1: ERROR — crosses into main actor-isolated code\n// Swift 6.2: OK with isolated \n\n[truncated]",
     "swift-protocol-di-testing": "# Swift Protocol-Based Dependency Injection for Testing\n\nPatterns for making Swift code testable by abstracting external dependencies (file system, network, iCloud) behind small, focused protocols. Enables deterministic tests without I/O.\n\n## When to Activate\n\n- Writing Swift code that accesses file system, network, or external APIs\n- Need to test error handling paths without triggering real failures\n- Building modules that work across environments (app, test, SwiftUI preview)\n- Designing testable architecture with Swift concurrency (actors, Sendable)\n\n## Core Pattern\n\n### 1. Define Small, Focused Protocols\n\nEach protocol handles exactly one external concern.\n\n```swift\n// File system access\npublic protocol FileSystemProviding: Sendable {\n    func containerURL(for purpose: Purpose) -> URL?\n}\n\n// File read/write operations\npublic protocol FileAccessorProviding: Sendable {\n    func read(from url: URL) throws -> Data\n    func write(_ data: Data, to url: URL) throws\n    func fileExists(at url: URL) -> Bool\n}\n\n// Bookmark storage (e.g., for sandboxed apps)\npublic protocol BookmarkStorageProviding: Sendable {\n    func saveBookmark(_ data: Data, for key: String) throws\n    func loadBookmark(for key: String) throws -> Data?\n}\n```\n\n### 2. Create Default (Production) Implementations\n\n```swift\npublic struct DefaultFileSystemProvider: FileSystemProviding {\n    public init() {}\n\n    public func containerURL(for purpose: Purpose) -> URL? {\n        FileManager.default.url(forUbiquityContainerIdentifier: nil)\n    }\n}\n\npublic struct DefaultFileAccessor: FileAccessorProviding {\n    public init() {}\n\n    public func read(from url: URL) throws -> Data {\n        try Data(contentsOf: url)\n    }\n\n    public func write(_ data: Data, to url: URL) throws {\n        try data.write(to: url, options: .atomic)\n    }\n\n    public func fileExists(at url: URL) -> Bool {\n        FileManager.default.fileExists(atPath: url.path)\n    }\n}\n```\n\n### 3. Create Mock Implementations for Testing\n\n```swift\npublic\n\n[truncated]",
@@ -16051,6 +16898,6 @@
     "workspace-surface-audit": "# Workspace Surface Audit\n\nRead-only audit skill for answering the question \"what can this workspace and machine actually do right now, and what should we add or enable next?\"\n\nThis is the ECC-native answer to setup-audit plugins. It does not modify files unless the user explicitly asks for follow-up implementation.\n\n## When to Use\n\n- User says \"set up Claude Code\", \"recommend automations\", \"what plugins or MCPs should I use?\", or \"what am I missing?\"\n- Auditing a machine or repo before installing more skills, hooks, or connectors\n- Comparing official marketplace plugins against ECC-native coverage\n- Reviewing `.env`, `.mcp.json`, plugin settings, or connected-app surfaces to find missing workflow layers\n- Deciding whether a capability should be a skill, hook, agent, MCP, or external connector\n\n## Non-Negotiable Rules\n\n- Never print secret values. Surface only provider names, capability names, file paths, and whether a key or config exists.\n- Prefer ECC-native workflows over generic \"install another plugin\" advice when ECC can reasonably own the surface.\n- Treat external plugins as benchmarks and inspiration, not authoritative product boundaries.\n- Separate three things clearly:\n  - already available now\n  - available but not wrapped well in ECC\n  - not available and would require a new integration\n\n## Audit Inputs\n\nInspect only the files and settings needed to answer the question well:\n\n1. Repo surface\n   - `package.json`, lockfiles, language markers, framework config, `README.md`\n   - `.mcp.json`, `.lsp.json`, `.claude/settings*.json`, `.codex/*`\n   - `AGENTS.md`, `CLAUDE.md`, install manifests, hook configs\n2. Environment surface\n   - `.env*` files in the active repo and obvious adjacent ECC workspaces\n   - Surface only key names such as `STRIPE_API_KEY`, `TWILIO_AUTH_TOKEN`, `FAL_KEY`\n3. Connected tool surface\n   - Installed plugins, enabled connectors, MCP servers, LSPs, and app integrations\n4. ECC surface\n   - Existing skills, commands, hooks, agents, and inst\n\n[truncated]",
     "x-api": "# X API\n\n> **Drift-prone skill.** X API endpoints, access tiers, quotas, and write\n> permissions change frequently. Verify current developer docs and account\n> access before quoting rate limits or implementing a posting/search flow.\n\nProgrammatic interaction with X (Twitter) for posting, reading, searching, and analytics.\n\n## When to Activate\n\n- User wants to post tweets or threads programmatically\n- Reading timeline, mentions, or user data from X\n- Searching X for content, trends, or conversations\n- Building X integrations or bots\n- Analytics and engagement tracking\n- User says \"post to X\", \"tweet\", \"X API\", or \"Twitter API\"\n\n## Authentication\n\n### OAuth 2.0 Bearer Token (App-Only)\n\nBest for: read-heavy operations, search, public data.\n\n```bash\n# Environment setup\nexport X_BEARER_TOKEN=\"your-bearer-token\"\n```\n\n```python\nimport os\nimport requests\n\nbearer = os.environ[\"X_BEARER_TOKEN\"]\nheaders = {\"Authorization\": f\"Bearer {bearer}\"}\n\n# Search recent tweets\nresp = requests.get(\n    \"https://api.x.com/2/tweets/search/recent\",\n    headers=headers,\n    params={\"query\": \"claude code\", \"max_results\": 10}\n)\ntweets = resp.json()\n```\n\n### OAuth 1.0a (User Context)\n\nRequired for: posting tweets, managing account, DMs, and any write flow.\n\n```bash\n# Environment setup — source before use\nexport X_CONSUMER_KEY=\"your-consumer-key\"\nexport X_CONSUMER_SECRET=\"your-consumer-secret\"\nexport X_ACCESS_TOKEN=\"your-access-token\"\nexport X_ACCESS_TOKEN_SECRET=\"your-access-token-secret\"\n```\n\nLegacy aliases such as `X_API_KEY`, `X_API_SECRET`, and `X_ACCESS_SECRET` may exist in older setups. Prefer the `X_CONSUMER_*` and `X_ACCESS_TOKEN_SECRET` names when documenting or wiring new flows.\n\n```python\nimport os\nfrom requests_oauthlib import OAuth1Session\n\noauth = OAuth1Session(\n    os.environ[\"X_CONSUMER_KEY\"],\n    client_secret=os.environ[\"X_CONSUMER_SECRET\"],\n    resource_owner_key=os.environ[\"X_ACCESS_TOKEN\"],\n    resource_owner_secret=os.environ[\"X_ACCESS_TOKEN_SECRET\"],\n)\n```\n\n## Core Operati\n\n[truncated]"
   },
-  "builtAt": "2026-06-02T13:04:41.036Z",
-  "skillCount": 249
+  "builtAt": "2026-06-03T15:37:16.422Z",
+  "skillCount": 266
 }

@@ -1,18 +1,28 @@
 /**
- * MetaBuff Validator — Anti-Hallucination Layer v1.1.0
+ * MetaBuff Validator — Superpowers-Enhanced v1.2.0
  * ──────────────────────────────────────────────────────
  * Runs after every MetaBuff pipeline to catch and fix the most common
- * DeepSeek Flash failure modes:
+ * DeepSeek Flash failure modes. Enhanced with Superpowers finishing workflow.
  *
  *   1. Ghost imports       — references to non-existent modules/types
  *   2. Phantom edits       — str_replace that claims success but left file unchanged
  *   3. Broken tests        — changes that silently break existing tests
  *   4. Incomplete TODOs    — placeholder code left in production paths
  *   5. Type drift          — new code inconsistent with existing type contracts
- *   6. [NEW v1.1.0] Regex errors — runtime-invalid patterns TypeScript misses
- *   7. [NEW v1.1.0] Consistency assertions — exports match their declared shapes
+ *   6. Regex errors        — runtime-invalid patterns TypeScript misses
+ *   7. Consistency assertions — exports match their declared shapes
+ *   8. [NEW v1.2.0] Finishing workflow — structured completion verification
+ *   9. [NEW v1.2.0] Formalized review checks — SHA-bounded, severity-tagged
  *
- * CHANGES FROM v1.0.0:
+ * ✦ SUPERSPOWERS INTEGRATION (v1.2.0) ✦
+ *   • [FINISH] Finishing workflow: full test suite pass, typecheck pass,
+ *     workspace detection, structured completion options (merge/PR/keep/discard).
+ *   • [REVIEW] Formalized review language check: validates that reviews used
+ *     technical language only (no "Great point!" or "LGTM!" performative praise).
+ *   • [TDD] TDD Iron Law verification: checks that tests exist and would FAIL
+ *     without the new/changed implementation code.
+ *
+ * CHANGES FROM v1.1.0 → v1.2.0:
  *   • [SAFETY] Regex check added to AUDIT CHECKLIST — flags regex-containing
  *     changed files so metabuff-regex-guard can be spawned if needed.
  *   • [QUAL] Ghost import detection strengthened — now checks both named imports
@@ -27,8 +37,9 @@ import { AgentDefinition } from './types/agent-definition'
 
 const FREE_MODEL = 'deepseek/deepseek-v4-pro'  // Primary; falls back to deepseek-v4-flash when unavailable
 
-const VALIDATOR_SYSTEM_PROMPT = `You are MetaBuff's anti-hallucination validator.
+const VALIDATOR_SYSTEM_PROMPT = `You are MetaBuff's Superpowers-enhanced anti-hallucination validator.
 Your ONLY job is to audit changes made by other agents and fix any problems.
+You also enforce the finishing workflow — no branch left in an undefined state.
 
 You are skeptical. You assume errors exist until proven otherwise.
 
@@ -43,6 +54,25 @@ AUDIT CHECKLIST (run every time — check each box explicitly):
   □ Run the TypeScript/language compiler           — spawn a basher agent
   □ Check for syntax errors by re-reading with fresh eyes
 
+FINISHING WORKFLOW (SUPERSPOWERS v1.2.0 — run after standard audit):
+  □ Run FULL project test suite — NOT just changed files
+  □ Run FULL typecheck — report any remaining errors
+  □ Count remaining TODO/FIXME/HACK comments
+  □ Detect workspace type (git repo / non-git / monorepo)
+  □ Verify git status is clean OR intentional
+  □ Choose structured completion: ✅ MERGE READY / ⚠ NEEDS REVIEW / ⏳ WIP / ❌ DISCARD
+  □ Document the completion decision in known-issues.md as an instinct
+
+TDD IRON LAW VERIFICATION (SUPERSPOWERS):
+  □ Do new/changed behaviors have corresponding tests?
+  □ Would those tests FAIL without the implementation? (verify by checking coverage)
+  □ If tests are missing for new behavior → flag [HIGH] and add them
+
+FORMALIZED REVIEW LANGUAGE CHECK:
+  □ Scan review comments for banned performative phrases:
+    "Great point!", "Nice work!", "LGTM!", "Looks good to me"
+  □ If found → flag as [MEDIUM] and suggest technical replacements
+
 FIX PROTOCOL:
   • If you find a ghost import → correct it or remove it
   • If you find a TODO/placeholder → implement it or raise an error
@@ -54,7 +84,8 @@ FIX PROTOCOL:
 
 OUTPUT FORMAT:
   After your audit, end with one of:
-  ✅ VALIDATION PASSED — list what you checked
+  ✅ VALIDATION PASSED — ✅ MERGE READY — list what you checked
+  ⚠ VALIDATION PASSED — ⚠ NEEDS REVIEW — list caveats
   ❌ VALIDATION FAILED — list what you found and what you fixed`
 
 const VALIDATOR_INSTRUCTIONS = `
@@ -79,35 +110,61 @@ STEPS:
    c. Search for TODO/FIXME/placeholder strings
    d. Search for /regex/ literals or new RegExp( in changed files
 
-4. REGEX CHECK (v1.1.0):
+4. REGEX CHECK:
    If any changed file contains regex literals (/pattern/flags) or new RegExp() calls,
    spawn metabuff-regex-guard BEFORE calling end_turn:
    spawn_agents([{ agent_type: 'metabuff-regex-guard', prompt: 'Scan changes for regex safety.' }])
 
-5. CONSISTENCY CHECK (v1.1.0):
+5. CONSISTENCY CHECK:
    If any changed file exports a function/type, check whether callers in other changed
    files still match the updated signature. Use code_searcher to find callers.
    Fix any mismatches with str_replace.
 
-6. If issues are found, fix them using str_replace (prefer) or write_file.
+6. TDD IRON LAW CHECK (v1.2.0 — Superpowers):
+   Use basher to verify test coverage for changed behaviors:
+     git diff HEAD --name-only | while read f; do
+       if [ -f "tests/${f%.ts}.test.ts" ] || [ -f "tests/${f%.ts}.test.tsx" ]; then
+         echo "✓ Test file exists for $f"
+       else
+         echo "⚠ No test file found for $f — TDD Iron Law may be violated"
+       fi
+     done
+   If new behavior has no test → flag [HIGH] and add test if possible
 
-7. Re-run tests and compilation using basher after any fix:
+7. FINISHING WORKFLOW (v1.2.0 — Superpowers):
+   a. Run FULL test suite:
+      bun test 2>&1 || npx vitest run 2>&1 || npx jest 2>&1
+   b. Run FULL typecheck:
+      (bun run typecheck 2>/dev/null || npx tsc --noEmit 2>&1) | tail -10
+   c. Count remaining TODOs:
+      git diff HEAD | grep -c 'TODO\\|FIXME\\|HACK' 2>/dev/null || echo "0"
+   d. Detect workspace type:
+      [ -d .git ] && echo "GIT_REPO" || echo "NON_GIT"
+   e. Choose completion:
+      All tests pass + no errors + no TODOs → ✅ MERGE READY
+      Tests pass but minor issues remain → ⚠ NEEDS REVIEW
+      Known unfinished work → ⏳ WIP
+      Not worth keeping → ❌ DISCARD
+   f. Record completion instinct in known-issues.md
+
+8. If issues are found, fix them using str_replace (prefer) or write_file.
+
+9. Re-run tests and compilation using basher after any fix:
    • TypeScript: (bun run typecheck 2>/dev/null || npx tsc --noEmit 2>&1) | head -50
-   • Jest/Vitest: (npx vitest run 2>&1 || npx jest 2>&1) | tail -30
-   • Bun: bun test 2>&1 | tail -30
-   • Go: go build ./... && go test ./...
-   • Python: python -m pytest --tb=short 2>&1 | tail -40
+   • Tests: (bun test 2>&1 || npx vitest run 2>&1 || npx jest 2>&1) | tail -30
 
-8. Report your findings in the format described in your system prompt.`
+10. Report your findings with the FINISHING WORKFLOW decision.`
 
 const definition: AgentDefinition = {
   id: 'metabuff-validator',
-  version: '1.1.0',
-  displayName: 'MetaBuff Anti-Hallucination Validator',
+  version: '1.2.0',
+  displayName: 'MetaBuff Superpowers-Enhanced Validator',
 
   spawnerPrompt:
-    'Spawn after any MetaBuff coding pipeline to validate changes, ' +
-    'catch ghost imports, phantom edits, broken tests, incomplete TODOs, ' +
+    'Spawn after any MetaBuff coding pipeline to validate changes. ' +
+    'Enhanced with Superpowers finishing workflow: structured completion options ' +
+    '(merge/PR/keep/discard) with full test + typecheck verification. ' +
+    'Catches ghost imports, phantom edits, broken tests, incomplete TODOs, ' +
     'runtime-invalid regex patterns, and function signature mismatches.',
 
   model: FREE_MODEL,

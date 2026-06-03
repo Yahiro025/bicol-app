@@ -166,41 +166,41 @@ export default function AppliedFluency({ onComplete }: { onComplete: () => void 
   if (audit) {
     return (
       <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <div className="p-8 bg-zinc-900/50 border border-emerald-500/20 rounded-[32px] space-y-8 glow-emerald-tiny">
+        <div className="p-8 rounded-[32px] space-y-8" style={{ backgroundColor: 'var(--editorial-surface)', border: '1px solid var(--editorial-border)' }}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center border border-emerald-500/20">
-                <ShieldCheck className="w-6 h-6 text-emerald-500" />
+              <div className="w-12 h-12 rounded-2xl flex items-center justify-center border" style={{ backgroundColor: 'rgba(196,155,76,0.1)', borderColor: 'rgba(196,155,76,0.2)' }}>
+                <ShieldCheck className="w-6 h-6" style={{ color: 'var(--editorial-accent)' }} />
               </div>
               <div>
-                <h3 className="text-2xl font-display font-bold text-white">Linguistic Audit</h3>
-                <p className="text-zinc-500 text-sm">Post-Session Performance Review</p>
+                <h3 className="text-2xl font-display font-bold" style={{ color: 'var(--editorial-text)' }}>Linguistic Audit</h3>
+                <p className="text-sm" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Post-Session Performance Review</p>
               </div>
             </div>
             <div className="text-right">
-              <div className="text-4xl font-black text-emerald-500">{audit.score}%</div>
+              <div className="text-4xl font-black" style={{ color: 'var(--editorial-accent)', fontFamily: 'var(--font-display)' }}>{audit.score}%</div>
               <div className="text-zinc-500 text-xs uppercase tracking-widest font-bold">Accuracy Score</div>
             </div>
           </div>
 
           <div className="grid gap-6 md:grid-cols-3">
-            <div className="p-6 bg-zinc-950/50 border border-white/5 rounded-2xl space-y-3">
-              <h4 className="text-emerald-500 text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+            <div className="p-6 rounded-2xl space-y-3" style={{ backgroundColor: 'var(--editorial-bg)', border: '1px solid var(--editorial-border)' }}>
+              <h4 className="text-xs font-bold uppercase tracking-widest flex items-center gap-2" style={{ color: 'var(--editorial-accent)', fontFamily: 'var(--font-body)' }}>
                 <CheckCircle2 className="w-3 h-3" /> Comprehension
               </h4>
               <p className="text-zinc-300 text-sm leading-relaxed">{audit.comprehension}</p>
             </div>
-            <div className="p-6 bg-zinc-950/50 border border-white/5 rounded-2xl space-y-3">
-              <h4 className="text-blue-500 text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+            <div className="p-6 rounded-2xl space-y-3" style={{ backgroundColor: 'var(--editorial-bg)', border: '1px solid var(--editorial-border)' }}>
+              <h4 className="text-xs font-bold uppercase tracking-widest flex items-center gap-2" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>
                 <BookOpen className="w-3 h-3" /> Focus & Affixes
               </h4>
-              <p className="text-zinc-300 text-sm leading-relaxed">{audit.focus}</p>
+              <p className="text-sm leading-relaxed" style={{ color: 'var(--editorial-text)', fontFamily: 'var(--font-body)' }}>{audit.focus}
             </div>
-            <div className="p-6 bg-zinc-950/50 border border-white/5 rounded-2xl space-y-3">
-              <h4 className="text-purple-500 text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+            <div className="p-6 rounded-2xl space-y-3" style={{ backgroundColor: 'var(--editorial-bg)', border: '1px solid var(--editorial-border)' }}>
+              <h4 className="text-xs font-bold uppercase tracking-widest flex items-center gap-2" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>
                 <ShieldCheck className="w-3 h-3" /> Particles & Markers
               </h4>
-              <p className="text-zinc-300 text-sm leading-relaxed">{audit.particles}</p>
+              <p className="text-sm leading-relaxed" style={{ color: 'var(--editorial-text)', fontFamily: 'var(--font-body)' }}>{audit.particles}
             </div>
           </div>
 
@@ -212,13 +212,13 @@ export default function AppliedFluency({ onComplete }: { onComplete: () => void 
                 setMessages([]);
                 setIsFinished(false);
               }}
-              className="flex-1 py-4 bg-zinc-800 hover:bg-zinc-700 text-white font-bold rounded-2xl transition-all"
+              className="flex-1 py-4 font-bold rounded-2xl transition-all" style={{ backgroundColor: 'var(--editorial-surface)', color: 'var(--editorial-text)', fontFamily: 'var(--font-body)' }}
             >
               New Scenario
             </button>
             <button 
               onClick={onComplete}
-              className="flex-1 py-4 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-2xl transition-all"
+              className="flex-1 py-4 text-white font-bold rounded-2xl transition-all" style={{ backgroundColor: 'var(--editorial-accent)', fontFamily: 'var(--font-body)' }}
             >
               Complete Module
             </button>
@@ -232,7 +232,7 @@ export default function AppliedFluency({ onComplete }: { onComplete: () => void 
     return (
       <div className="flex flex-col h-[600px] bg-zinc-900/50 border border-white/5 rounded-[32px] overflow-hidden shadow-2xl relative">
         {/* Scenario Header */}
-        <div className="p-6 border-b border-white/5 bg-zinc-900/80 backdrop-blur-xl flex items-center justify-between z-10">
+        <div className="p-6 border-b z-10 flex items-center justify-between" style={{ backgroundColor: 'var(--editorial-surface)', borderColor: 'var(--editorial-border)', backdropFilter: 'blur(12px)' }}>
           <div className="flex items-center gap-4">
             <button 
               onClick={() => setSelectedScenario(null)}
@@ -274,9 +274,14 @@ export default function AppliedFluency({ onComplete }: { onComplete: () => void 
               >
                 <div className={`max-w-[80%] p-4 rounded-2xl ${
                   m.role === 'user' 
-                    ? 'bg-blue-500 text-white rounded-tr-none' 
-                    : 'bg-zinc-800 text-zinc-100 rounded-tl-none border border-white/5'
-                }`}>
+                    ? 'text-white rounded-tr-none' 
+                    : 'rounded-tl-none'
+                }`}
+                style={{
+                  fontFamily: 'var(--font-body)',
+                  backgroundColor: m.role === 'user' ? 'var(--editorial-accent)' : 'var(--editorial-surface)',
+                  color: m.role === 'user' ? '#fff' : 'var(--editorial-text)',
+                }}
                   <p className="text-sm leading-relaxed">{m.content}</p>
                 </div>
               </motion.div>
@@ -296,7 +301,7 @@ export default function AppliedFluency({ onComplete }: { onComplete: () => void 
         </div>
 
         {/* Input Area */}
-        <div className="p-6 bg-zinc-900/80 backdrop-blur-xl border-t border-white/5">
+        <div className="p-6 border-t" style={{ backgroundColor: 'var(--editorial-surface)', borderColor: 'var(--editorial-border)', backdropFilter: 'blur(12px)' }}>
           <div className="relative">
             <input 
               type="text"
@@ -305,12 +310,12 @@ export default function AppliedFluency({ onComplete }: { onComplete: () => void 
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
               placeholder="Simbag sa Bikol..."
               disabled={isLoading || audit !== null}
-              className="w-full bg-zinc-950 border border-white/5 rounded-2xl py-4 pl-6 pr-14 text-white placeholder:text-zinc-600 focus:outline-none focus:border-blue-500/50 transition-colors disabled:opacity-50"
+              className="w-full border rounded-2xl py-4 pl-6 pr-14 text-[var(--editorial-text)] placeholder:text-zinc-600 focus:outline-none focus:border-[var(--editorial-accent)] transition-colors disabled:opacity-50" style={{ backgroundColor: 'var(--editorial-bg)', borderColor: 'var(--editorial-border)' }}
             />
             <button 
               onClick={handleSend}
               disabled={!input.trim() || isLoading || audit !== null}
-              className="absolute right-2 top-2 w-10 h-10 bg-blue-500 hover:bg-blue-600 disabled:bg-zinc-800 text-white rounded-xl flex items-center justify-center transition-all active:scale-95"
+              className="absolute right-2 top-2 w-10 h-10hover:bg-[var(--editorial-accent-dim)] disabled:bg-zinc-800 text-white rounded-xl flex items-center justify-center transition-all active:scale-95" style={{ backgroundColor: 'var(--editorial-accent)' }}
             >
               <Send className="w-4 h-4" />
             </button>
@@ -333,18 +338,18 @@ export default function AppliedFluency({ onComplete }: { onComplete: () => void 
         <button
           key={scenario.id}
           onClick={() => startScenario(scenario)}
-          className="text-left p-8 bg-zinc-900/50 border border-white/5 rounded-[32px] hover:border-blue-500/30 transition-all group relative overflow-hidden"
+          className="text-left p-8 rounded-[32px] transition-all group relative overflow-hidden" style={{ backgroundColor: 'var(--editorial-surface)', border: '1px solid var(--editorial-border)' }}
         >
           <div className="absolute top-0 right-0 p-8 text-white/5 group-hover:text-blue-500/10 transition-colors">
-            <MessageSquare className="w-24 h-24" />
+            <MessageSquare className="w-24 h-24" style={{ color: 'rgba(196,155,76,0.1)' }} />
           </div>
           <div className="space-y-4 relative z-10">
-            <div className="w-12 h-12 bg-blue-500/10 rounded-2xl flex items-center justify-center border border-blue-500/20 group-hover:scale-110 transition-transform">
-              <MessageSquare className="w-6 h-6 text-blue-500" />
+            <div className="w-12 h-12 rounded-2xl flex items-center justify-center border group-hover:scale-110 transition-transform" style={{ backgroundColor: 'rgba(196,155,76,0.1)', borderColor: 'rgba(196,155,76,0.2)' }}>
+              <MessageSquare className="w-6 h-6" style={{ color: 'var(--editorial-accent)' }} />
             </div>
             <div>
-              <h3 className="text-xl font-bold text-white group-hover:text-blue-400 transition-colors">{scenario.title}</h3>
-              <p className="text-zinc-500 text-sm mt-1 leading-relaxed">{scenario.description}</p>
+              <h3 className="text-xl font-bold group-hover:text-[var(--editorial-accent)] transition-colors" style={{ color: 'var(--editorial-text)', fontFamily: 'var(--font-display)' }}>{scenario.title}</h3>
+              <p className="text-sm mt-1 leading-relaxed" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>{scenario.description}</p>
             </div>
             <div className="flex items-center gap-4 pt-2">
               <div className="flex items-center gap-1.5">

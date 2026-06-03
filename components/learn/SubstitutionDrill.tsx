@@ -74,7 +74,7 @@ export default function SubstitutionDrillComponent({
         <motion.span 
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-xs font-bold text-purple-500 uppercase tracking-[0.2em]"
+          className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: 'var(--editorial-accent)', fontFamily: 'var(--font-body)' }}
         >
           Substitution Drill
         </motion.span>
@@ -82,7 +82,7 @@ export default function SubstitutionDrillComponent({
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="text-3xl font-display font-bold tracking-tight text-white"
+          className="text-3xl font-display font-bold tracking-tight" style={{ color: 'var(--editorial-text)' }}
         >
           Mintz Lesson 1
         </motion.h2>
@@ -107,9 +107,9 @@ export default function SubstitutionDrillComponent({
       >
         {/* Base Sentence */}
         <div className="space-y-4 text-center">
-          <p className="text-zinc-500 text-sm font-medium uppercase tracking-widest">Base Sentence</p>
-          <div className="p-6 bg-zinc-900/30 rounded-2xl border border-zinc-800/50">
-            <p className="text-2xl md:text-3xl font-mono text-zinc-300 leading-relaxed italic">
+          <p className="text-sm font-medium uppercase tracking-widest" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Base Sentence</p>
+          <div className="p-6 rounded-2xl" style={{ backgroundColor: 'var(--editorial-bg)', border: '1px solid var(--editorial-border)' }}>
+            <p className="text-2xl md:text-3xl font-mono leading-relaxed italic" style={{ color: 'var(--editorial-text)' }}>
               "{currentDrill.baseSentence}"
             </p>
           </div>
@@ -117,10 +117,11 @@ export default function SubstitutionDrillComponent({
 
         {/* Cue Pill */}
         <div className="flex flex-col items-center gap-3">
-          <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest">Cue Word</p>
+          <p className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Cue Word</p>
           <motion.div 
             whileHover={{ scale: 1.05 }}
-            className="px-8 py-4 bg-zinc-900 border border-zinc-800 rounded-full text-blue-400 font-bold text-xl shadow-sm"
+            className="px-8 py-4 rounded-full font-bold text-xl shadow-sm"
+            style={{ backgroundColor: 'var(--editorial-surface)', border: '1px solid var(--editorial-border)', color: 'var(--editorial-accent)' }}
           >
             {currentDrill.cue}
           </motion.div>
@@ -135,11 +136,12 @@ export default function SubstitutionDrillComponent({
             onKeyDown={handleKeyDown}
             disabled={isAnswered && isCorrect}
             placeholder="Type the new sentence..."
-            className={`w-full bg-zinc-950 border-2 p-6 rounded-2xl text-xl text-center focus:outline-none transition-all duration-300 placeholder:text-zinc-700 ${
-              isAnswered && isCorrect ? "border-emerald-500/50 text-emerald-400" :
-              isAnswered && !isCorrect ? "border-amber-400/30 text-amber-400" :
-              "border-zinc-800 focus:border-blue-500 text-white"
+            className={`w-full border-2 p-6 rounded-2xl text-xl text-center focus:outline-none transition-all duration-300 placeholder:text-zinc-700 ${
+              isAnswered && isCorrect ? "border-emerald-500/50 text-[var(--editorial-text)]" :
+              isAnswered && !isCorrect ? "border-amber-400/30 text-[var(--editorial-text)]" :
+              "border-[var(--editorial-border)] focus:border-[var(--editorial-accent)] text-[var(--editorial-text)]"
             }`}
+            style={{ backgroundColor: 'var(--editorial-bg)' }}
             autoFocus
           />
           
@@ -188,7 +190,7 @@ export default function SubstitutionDrillComponent({
                 setIsAnswered(false);
                 setUserInput("");
               }}
-              className="w-full py-5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 font-bold rounded-2xl transition-all active:scale-[0.98] border border-amber-500/20"
+              className="w-full py-5 font-bold rounded-2xl transition-all active:scale-[0.98]" style={{ backgroundColor: 'rgba(196,155,76,0.1)', color: 'var(--editorial-accent)', fontFamily: 'var(--font-body)', border: '1px solid rgba(196,155,76,0.2)' }}
             >
               Try Again
             </button>
@@ -196,14 +198,14 @@ export default function SubstitutionDrillComponent({
             <button
               onClick={handleCheck}
               disabled={userInput.trim() === ""}
-              className="w-full py-5 bg-blue-500 hover:bg-blue-600 disabled:bg-zinc-800 disabled:text-zinc-600 text-white font-bold rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-blue-500/10"
+              className="w-full py-5 text-white font-bold rounded-2xl transition-all active:scale-[0.98]" style={{ backgroundColor: 'var(--editorial-accent)', fontFamily: 'var(--font-body)' }}
             >
               Check Answer
             </button>
           ) : (
             <button
               onClick={handleNext}
-              className="w-full py-5 bg-zinc-100 hover:bg-white text-zinc-950 font-bold rounded-2xl transition-all active:scale-[0.98] shadow-lg"
+              className="w-full py-5 font-bold rounded-2xl transition-all active:scale-[0.98]" style={{ backgroundColor: 'var(--editorial-surface)', color: 'var(--editorial-text)', fontFamily: 'var(--font-body)' }}
             >
               {currentIndex + 1 < drills.length ? "Next Drill" : "Finish Lesson"}
             </button>
@@ -216,19 +218,19 @@ export default function SubstitutionDrillComponent({
         <div className="flex items-center gap-4">
            <div className="h-1.5 w-32 bg-zinc-900 rounded-full overflow-hidden">
              <motion.div 
-               className="h-full bg-purple-500"
+               className="h-full" style={{ backgroundColor: 'var(--editorial-accent)' }}
                initial={{ width: 0 }}
                animate={{ width: `${((currentIndex + 1) / drills.length) * 100}%` }}
                transition={{ type: "spring", stiffness: 100, damping: 20 }}
              />
            </div>
-           <span className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">
+           <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>
              {currentIndex + 1} of {drills.length}
            </span>
         </div>
         <button 
           onClick={onComplete}
-          className="text-zinc-600 hover:text-zinc-400 text-[10px] font-bold uppercase tracking-widest transition-colors"
+          className="text-[10px] font-bold uppercase tracking-widest transition-colors" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}
         >
           Skip Session
         </button>

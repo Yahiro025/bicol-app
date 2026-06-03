@@ -18,17 +18,17 @@ const SOURCE_LABELS: Record<string, { label: string; icon: string; color: string
   mintz_book: {
     label: 'Mintz Dictionary',
     icon: '📖',
-    color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 border-blue-200 dark:border-blue-800',
+    color: 'border-[var(--editorial-border)]',
   },
   wiktionary: {
     label: 'Wiktionary',
     icon: '🌐',
-    color: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800',
+    color: 'border-[var(--editorial-border)]',
   },
   learnbikol: {
     label: 'LearnBikol.com',
     icon: '🎓',
-    color: 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 border-purple-200 dark:border-purple-800',
+    color: 'border-[var(--editorial-border)]',
   },
 };
 
@@ -37,7 +37,12 @@ function SourceBadge({ source, sourceUrl }: { source: string; sourceUrl?: string
   if (!info) return null;
 
   return (
-    <span className={`inline-flex items-center gap-1.5 mt-2 px-2.5 py-1 rounded-full text-[11px] font-bold border transition-all hover:-translate-y-0.5 hover:shadow-md ${info.color}`}>
+    <span className={`inline-flex items-center gap-1.5 mt-2 px-2.5 py-1 rounded-full text-[11px] font-semibold border transition-all ${info.color}`}
+      style={{
+        fontFamily: 'var(--font-body)',
+        backgroundColor: 'var(--editorial-bg)',
+        color: 'var(--editorial-muted)',
+      }}>
       <span>{info.icon}</span>
       <span>{info.label}</span>
       {sourceUrl && (
@@ -53,10 +58,10 @@ function Breadcrumbs({ bikol, pos }: { bikol: string; pos: string | null }) {
   const browseHref = `/browse?q=${encodeURIComponent(bikol.charAt(0).toLowerCase())}`;
 
   return (
-    <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest flex-wrap mb-2">
+    <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest flex-wrap mb-2" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>
       <Link
         href="/"
-        className="inline-flex items-center gap-1 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
+        className="inline-flex items-center gap-1 transition-colors hover:text-[var(--editorial-accent)]"
       >
         <Home className="w-3 h-3" />
         Home
@@ -64,18 +69,18 @@ function Breadcrumbs({ bikol, pos }: { bikol: string; pos: string | null }) {
       <ChevronRight className="w-3 h-3" />
       <Link
         href="/browse"
-        className="hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
+        className="transition-colors hover:text-[var(--editorial-accent)]"
       >
         Browse
       </Link>
       <ChevronRight className="w-3 h-3" />
-      <span className="text-zinc-700 dark:text-zinc-300 truncate max-w-[160px]">
+      <span className="truncate max-w-[160px]" style={{ color: 'var(--editorial-text)' }}>
         {bikol}
       </span>
       {normalizedPos && (
         <>
           <ChevronRight className="w-3 h-3" />
-          <span className="text-zinc-500 dark:text-zinc-600 hidden sm:inline">
+          <span className="hidden sm:inline" style={{ color: 'var(--editorial-muted)' }}>
             {normalizedPos}
           </span>
         </>
@@ -184,7 +189,7 @@ export default function WordClientPage({ word, isNormalized }: { word: WordDispl
   }, [word]);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-zinc-950 p-3 sm:p-4 md:p-8">
+    <div className="min-h-screen p-3 sm:p-4 md:p-8" style={{ backgroundColor: 'var(--editorial-bg)' }}>
       <WordJsonLd
         bikol={bikol}
         english={definitions[0]?.english || ''}
@@ -199,17 +204,21 @@ export default function WordClientPage({ word, isNormalized }: { word: WordDispl
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         className="max-w-4xl mx-auto space-y-8"
       >
+        {/* ─── Section Label ──────────────────────────────────────────── */}
+        <span className="section-number">Word Entry</span>
+
         {/* ─── Breadcrumb + Back Navigation ────────────────────────────── */}
-        <div className="space-y-2">
+        <div className="space-y-2 mt-3">
           <Breadcrumbs bikol={bikol} pos={pos} />
 
           <div className="flex items-center justify-between flex-wrap gap-4">
-            <Link href="/" className="inline-flex items-center gap-2 text-zinc-500 hover:text-zinc-900 dark:hover:text-white font-bold transition-all hover:-translate-x-1 active:scale-95">
+            <Link href="/" className="inline-flex items-center gap-2 font-semibold transition-all hover:-translate-x-1 active:scale-95" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>
               <ArrowLeft className="h-5 w-5" /> Back to Search
             </Link>
             <Link
               href="/flashcards"
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-500 transition-colors active:scale-95 shadow-lg shadow-blue-500/20"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors active:scale-95"
+              style={{ fontFamily: 'var(--font-body)', backgroundColor: 'var(--editorial-accent)', color: '#fff' }}
             >
               <BookOpen className="w-4 h-4" />
               Study with Flashcards
@@ -217,31 +226,51 @@ export default function WordClientPage({ word, isNormalized }: { word: WordDispl
           </div>
         </div>
 
-        <section className="bg-zinc-50 dark:bg-zinc-900/50 backdrop-blur-xl border border-zinc-200 dark:border-white/5 rounded-[28px] sm:rounded-[40px] p-6 sm:p-8 md:p-12 shadow-2xl space-y-8 relative overflow-hidden">
-          {/* Background Decorative Glow */}
-          <div className="absolute -top-24 -right-24 w-64 h-64 bg-blue-500/10 blur-[100px] rounded-full pointer-events-none" />
+        <section className="rounded-[28px] sm:rounded-[40px] p-6 sm:p-8 md:p-12 space-y-8 relative overflow-hidden"
+          style={{
+            backgroundColor: 'var(--editorial-surface)',
+            border: '1px solid var(--editorial-border)',
+          }}>
+          {/* Subtle accent glow */}
+          <div className="absolute -top-24 -right-24 w-64 h-64 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(196,155,76,0.06) 0%, transparent 70%)' }} />
           
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 relative z-10">
             <div className="flex-1">
-              <span className="px-4 py-1 bg-blue-500/10 text-blue-400 text-xs font-black uppercase tracking-widest rounded-full border border-blue-500/20">
+              <span className="px-4 py-1 text-xs font-bold uppercase tracking-widest rounded-full"
+                style={{
+                  fontFamily: 'var(--font-body)',
+                  backgroundColor: 'rgba(196,155,76,0.1)',
+                  color: 'var(--editorial-accent)',
+                  border: '1px solid rgba(196,155,76,0.2)',
+                }}>
                 {normalizePOS(pos) || 'Word'}{formatDialect(definitions[0]?.dialect) ? ` • ${formatDialect(definitions[0]?.dialect)}` : ''}
               </span>
-              <h2 className="text-4xl sm:text-6xl md:text-8xl font-black tracking-tighter mt-4 bg-clip-text text-transparent bg-gradient-to-b from-zinc-900 dark:from-white to-zinc-400">{bikol}</h2>
+              <h2 className="text-4xl sm:text-6xl md:text-8xl font-black tracking-tighter mt-4" style={{ fontFamily: 'var(--font-display)', color: 'var(--editorial-text)' }}>{bikol}</h2>
               <div className="flex items-center gap-6 mt-4">
-                {pronunciation && <p className="text-2xl text-zinc-400 dark:text-zinc-500 font-medium font-mono">/ {pronunciation} /</p>}
+                {pronunciation && <p className="text-2xl font-medium font-mono" style={{ color: 'var(--editorial-muted)' }}>/ {pronunciation} /</p>}
                 {audio_url && <AudioPlayer url={audio_url} />}
               </div>
             </div>
             <div className="flex gap-3 flex-wrap">
               <button 
-                className="px-5 py-4 bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-white/5 rounded-2xl hover:bg-zinc-200 dark:hover:bg-zinc-700 active:scale-95 transition-all shadow-lg flex items-center gap-2 font-bold text-sm text-zinc-700 dark:text-zinc-300"
+                className="px-5 py-4 rounded-2xl hover:bg-zinc-200 dark:hover:bg-zinc-700 active:scale-95 transition-all flex items-center gap-2 font-semibold text-sm"
+                style={{
+                  fontFamily: 'var(--font-body)',
+                  backgroundColor: 'var(--editorial-bg)',
+                  border: '1px solid var(--editorial-border)',
+                  color: 'var(--editorial-muted)',
+                }}
                 onClick={() => setIsEditModalOpen(true)}
               >
                 <span>📝</span>
                 <span>Suggest Edit</span>
               </button>
               <button 
-                className="p-4 bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-white/5 rounded-2xl hover:bg-zinc-200 dark:hover:bg-zinc-700 active:scale-90 transition-all shadow-lg" 
+                className="p-4 rounded-2xl active:scale-90 transition-all"
+                style={{
+                  backgroundColor: 'var(--editorial-bg)',
+                  border: '1px solid var(--editorial-border)',
+                }}
                 onClick={() => {
                   if (navigator.share) {
                     navigator.share({
@@ -252,7 +281,7 @@ export default function WordClientPage({ word, isNormalized }: { word: WordDispl
                   }
                 }}
               >
-                <Share2 className="h-6 w-6 text-zinc-500 dark:text-zinc-400" />
+                <Share2 className="h-6 w-6" style={{ color: 'var(--editorial-muted)' }} />
               </button>
             </div>
           </div>
@@ -260,13 +289,13 @@ export default function WordClientPage({ word, isNormalized }: { word: WordDispl
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 relative z-10">
             {/* Definitions Column */}
             <div className="space-y-8">
-              <h3 className="text-sm font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest flex items-center gap-2"><Info className="h-4 w-4" /> Definitions</h3>
+              <h3 className="text-sm font-bold uppercase tracking-widest flex items-center gap-2" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}><Info className="h-4 w-4" /> Definitions</h3>
               <div className="space-y-10">
                 {definitions.map((def, idx: number) => (
                   <div key={idx} className="space-y-4">
                     <div className="flex items-center gap-3 flex-wrap">
                       {definitions.length > 1 && (
-                        <span className="text-blue-500 font-black text-xs">{idx + 1}.</span>
+                        <span className="font-bold text-xs" style={{ color: 'var(--editorial-accent)', fontFamily: 'var(--font-display)' }}>{idx + 1}.</span>
                       )}
                       {def.source && def.source !== 'unknown' && (
                         <SourceBadge source={def.source} sourceUrl={def.source_url} />
@@ -274,20 +303,20 @@ export default function WordClientPage({ word, isNormalized }: { word: WordDispl
                     </div>
                     {(langMode === 'en' || langMode === 'all') && def.english && (
                       <div>
-                        <p className="text-xs text-zinc-400 dark:text-zinc-500 font-black uppercase tracking-widest mb-1 opacity-50">ENGLISH</p>
-                        <p className="text-2xl font-bold leading-tight text-zinc-800 dark:text-zinc-100">{normalizeDefinitionText(def.english)}</p>
+                        <p className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)', opacity: 0.6 }}>ENGLISH</p>
+                        <p className="text-2xl font-bold leading-tight" style={{ color: 'var(--editorial-text)', fontFamily: 'var(--font-body)' }}>{normalizeDefinitionText(def.english)}</p>
                       </div>
                     )}
                     {(langMode === 'tl' || langMode === 'all') && def.tagalog && (
                       <div>
-                        <p className="text-xs text-zinc-400 dark:text-zinc-500 font-black uppercase tracking-widest mb-1 opacity-50">TAGALOG</p>
-                        <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 leading-tight">{normalizeDefinitionText(def.tagalog)}</p>
+                        <p className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)', opacity: 0.6 }}>TAGALOG</p>
+                        <p className="text-2xl font-bold leading-tight" style={{ color: 'var(--editorial-accent)', fontFamily: 'var(--font-body)' }}>{normalizeDefinitionText(def.tagalog)}</p>
                       </div>
                     )}
                     {langMode === 'tl' && !def.tagalog && def.english && (
                       <div>
-                        <p className="text-xs text-zinc-400 dark:text-zinc-500 font-black uppercase tracking-widest mb-1 opacity-50">ENGLISH (Fallback)</p>
-                        <p className="text-2xl font-bold leading-tight text-zinc-800 dark:text-zinc-100">{normalizeDefinitionText(def.english)}</p>
+                        <p className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)', opacity: 0.6 }}>ENGLISH (Fallback)</p>
+                        <p className="text-2xl font-bold leading-tight" style={{ color: 'var(--editorial-text)', fontFamily: 'var(--font-body)' }}>{normalizeDefinitionText(def.english)}</p>
                       </div>
                     )}
                   </div>
@@ -297,20 +326,24 @@ export default function WordClientPage({ word, isNormalized }: { word: WordDispl
 
             {/* Usage Column */}
             <div className="space-y-6">
-              <h3 className="text-sm font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest flex items-center gap-2"><Book className="h-4 w-4" /> Usage</h3>
+              <h3 className="text-sm font-bold uppercase tracking-widest flex items-center gap-2" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}><Book className="h-4 w-4" /> Usage</h3>
               <div className="space-y-4">
                 {definitions.flatMap((d) => d.exampleSentences || []).map((ex, i: number) => (
-                  <div key={i} className="p-8 bg-blue-50 dark:bg-blue-500/5 rounded-3xl border border-blue-100 dark:border-white/5 italic relative overflow-hidden group">
-                    <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <p className="text-xl font-bold text-zinc-800 dark:text-zinc-100 relative z-10">
+                  <div key={i} className="p-8 rounded-3xl italic relative overflow-hidden group"
+                    style={{
+                      backgroundColor: 'var(--editorial-bg)',
+                      border: '1px solid var(--editorial-border)',
+                    }}>
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: 'rgba(196,155,76,0.03)' }} />
+                    <p className="text-xl font-bold relative z-10" style={{ color: 'var(--editorial-text)', fontFamily: 'var(--font-body)' }}>
                       "<GrammarHighlight text={ex.bikol ?? ''} />"
                     </p>
-                    <p className="text-zinc-500 dark:text-zinc-500 mt-2 relative z-10">— {ex.english ?? ''}</p>
+                    <p className="mt-2 relative z-10" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>— {ex.english ?? ''}</p>
                   </div>
                 ))}
                 {definitions.every((d) => !d.exampleSentences || d.exampleSentences.length === 0) && (
-                  <div className="p-8 bg-zinc-50 dark:bg-zinc-900/50 rounded-3xl border border-dashed border-zinc-200 dark:border-white/10 text-center">
-                    <p className="text-zinc-400 dark:text-zinc-500 italic">No example sentences available.</p>
+                  <div className="p-8 rounded-3xl border border-dashed text-center" style={{ backgroundColor: 'var(--editorial-bg)', borderColor: 'var(--editorial-border)' }}>
+                    <p className="italic" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>No example sentences available.</p>
                   </div>
                 )}
               </div>
@@ -319,8 +352,8 @@ export default function WordClientPage({ word, isNormalized }: { word: WordDispl
 
           {/* Verb Conjugator Section */}
           {showConjugator && affixGroups.length > 0 && (
-            <div className="pt-12 border-t border-zinc-200 dark:border-white/5 space-y-6 relative z-10">
-              <h3 className="text-sm font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest flex items-center gap-2">Verb Conjugation</h3>
+            <div className="pt-12 space-y-6 relative z-10" style={{ borderTop: '1px solid var(--editorial-divider)' }}>
+              <h3 className="text-sm font-bold uppercase tracking-widest flex items-center gap-2" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Verb Conjugation</h3>
               <VerbConjugator rootWord={bikol} affixGroups={affixGroups} />
             </div>
           )}
@@ -339,22 +372,28 @@ export default function WordClientPage({ word, isNormalized }: { word: WordDispl
             const uniqueSynonyms = Array.from(new Set(allSynonyms));
             
             return (etymology || uniqueSynonyms.length > 0) && (
-              <div className="pt-8 border-t border-zinc-200 dark:border-white/5 grid grid-cols-1 md:grid-cols-2 gap-12 relative z-10">
+              <div className="pt-8 grid grid-cols-1 md:grid-cols-2 gap-12 relative z-10" style={{ borderTop: '1px solid var(--editorial-divider)' }}>
                 {etymology && (
                   <div className="space-y-4">
-                    <h3 className="text-sm font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest flex items-center gap-2">Etymology</h3>
-                    <p className="text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed">{etymology}</p>
+                    <h3 className="text-sm font-bold uppercase tracking-widest flex items-center gap-2" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Etymology</h3>
+                    <p className="text-sm leading-relaxed" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>{etymology}</p>
                   </div>
                 )}
                 {uniqueSynonyms.length > 0 && (
                   <div className="space-y-4">
-                    <h3 className="text-sm font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest flex items-center gap-2">Synonyms</h3>
+                    <h3 className="text-sm font-bold uppercase tracking-widest flex items-center gap-2" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Synonyms</h3>
                     <div className="flex flex-wrap gap-2">
                       {uniqueSynonyms.map((s: string, i: number) => (
                         <Link 
                           key={i} 
                           href={`/word/${encodeURIComponent(s)}`}
-                          className="px-4 py-2 bg-zinc-100 dark:bg-zinc-800 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 hover:text-blue-700 dark:hover:text-blue-300 border border-zinc-200 dark:border-white/5 hover:border-blue-300 dark:hover:border-blue-500/30 rounded-xl text-sm font-bold transition-all hover:scale-105 active:scale-95 shadow-sm"
+                          className="px-4 py-2 rounded-xl text-sm font-semibold transition-all hover:scale-105 active:scale-95"
+                          style={{
+                            fontFamily: 'var(--font-body)',
+                            backgroundColor: 'var(--editorial-bg)',
+                            color: 'var(--editorial-accent)',
+                            border: '1px solid var(--editorial-border)',
+                          }}
                         >
                           {s}
                         </Link>

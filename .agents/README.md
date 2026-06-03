@@ -2,6 +2,50 @@
 
 This directory contains the **MetaBuff agent orchestration system** — a set of AI coding agents that work together to decompose, implement, validate, and test complex coding tasks.
 
+## ✦ v3.1.0 — Anthropic Skills Integration ✦
+
+MetaBuff v3.1.0 integrates the [anthropics/skills](https://github.com/anthropics/skills) standard
+by Anthropic — a standardized, portable skill format for AI agents with YAML frontmatter,
+progressive disclosure, and "why over must" instructional design.
+
+| Anthropic Concept | MetaBuff Implementation |
+|----|----|
+| YAML Frontmatter Standard | `template/SKILL.md` for all new MetaBuff skills |
+| Progressive Disclosure | Metadata always loaded; body loaded on keyword match |
+| "Why over Must" Philosophy | Enhanced prompts explain reasoning behind instructions |
+| Anti-Pattern Prevention | ❌ WRONG vs ✅ CORRECT catalog injected into agent context |
+| Verification Loops | Run → Inspect → Fix → Re-verify in CoT STEP 5 |
+| Skill Creator | AI-assisted skill creation with eval benchmarks |
+| Webapp Testing | Playwright reconnaissance-first browser testing |
+| MCP Builder | Structured MCP server development protocol |
+
+### Key Tailored Differences from Upstream Anthropic Skills
+
+- **Coding-focused**: Document skills (docx/pptx/xlsx/pdf) are NOT imported — MetaBuff is a coding agent
+- **Hot-load integrated**: Skills discovered via O(1) inverted index cache, not filesystem reads
+- **Pipeline-integrated**: Skills inject via `withECCContext()` in complexity-aware pipeline
+
+MetaBuff v3.0.0 integrates the [obra/superpowers](https://github.com/obra/superpowers) methodology
+by Jesse Vincent — a structured approach to agentic software development with enforced TDD,
+formalized code review, brainstorming gates, and structured finishing workflows.
+
+| Superpowers Concept | MetaBuff Implementation |
+|----|----|
+| Brainstorming Gate | CoT v3 STEP 0: design-doc-before-code for complex/mega tasks |
+| Writing Plans | Granular checkbox plans with verification per step |
+| Subagent-Driven Development | Mega pipeline: two-stage review (spec compliance → code quality) |
+| TDD Iron Law | Skill injection + pipeline enforcement (red-green-refactor) |
+| Formalized Code Review | SHA-bounded, no performative agreement, severity-tagged |
+| Finishing Workflow | Validator v1.2.0: full test pass + structured completion |
+| Session-start Hooks | hooks.json: auto-inject methodology on session start |
+
+### Key Tailored Differences from Upstream Superpowers
+
+- **Auto-triggered gates**: Brainstorming is triggered by complexity analysis, not manual approval
+- **Pipeline-integrated TDD**: Iron Law enforced via skill injection, not external hooks
+- **Severity-tagged reviews**: [CRITICAL|HIGH|MEDIUM|LOW] instead of pass/fail only
+- **Structured completion**: merge/PR/keep/discard options with workspace auto-detection
+
 ## Architecture Overview
 
 ```

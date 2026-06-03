@@ -139,10 +139,9 @@ export default function LearnPage() {
 
   if (isFinished) {
     return (
-      <main className="min-h-screen flex items-center justify-center p-6 bg-white dark:bg-zinc-950">
+      <main className="min-h-screen flex items-center justify-center p-6" style={{ backgroundColor: 'var(--editorial-bg)' }}>
         <div className="absolute inset-0 overflow-hidden -z-10">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[120px]" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-purple-500/10 rounded-full blur-[100px]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full blur-[120px]" style={{ background: 'rgba(196,155,76,0.05)' }} />
         </div>
 
         <motion.div 
@@ -161,8 +160,8 @@ export default function LearnPage() {
             </motion.div>
             
             <div className="space-y-2">
-              <h1 className="text-5xl font-display font-black text-zinc-900 dark:text-white tracking-tight">Well Done!</h1>
-              <p className="text-zinc-500 dark:text-zinc-400 text-lg leading-relaxed">
+              <h1 className="text-5xl font-display font-black tracking-tight" style={{ color: 'var(--editorial-text)' }}>Well Done!</h1>
+              <p className="text-lg leading-relaxed" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>
                 You've mastered the substitution patterns and transformation challenges. Your Bikol fluency is reaching a new level.
               </p>
             </div>
@@ -171,7 +170,7 @@ export default function LearnPage() {
           <div className="grid gap-4">
             <button 
               onClick={() => router.push("/")}
-              className="w-full py-5 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-2xl transition-all active:scale-[0.98] flex items-center justify-center gap-3 shadow-lg shadow-blue-500/20"
+              className="w-full py-5 text-white font-bold rounded-2xl transition-all active:scale-[0.98] flex items-center justify-center gap-3" style={{ backgroundColor: 'var(--editorial-accent)', fontFamily: 'var(--font-body)' }}
             >
               <Home className="w-5 h-5" />
               Return to Archive
@@ -181,7 +180,7 @@ export default function LearnPage() {
                 setIsFinished(false);
                 setActivePhase(1);
               }}
-              className="w-full py-5 bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-bold rounded-2xl transition-all active:scale-[0.98] flex items-center justify-center gap-3 border border-zinc-200 dark:border-zinc-800"
+              className="w-full py-5 font-bold rounded-2xl transition-all active:scale-[0.98] flex items-center justify-center gap-3" style={{ backgroundColor: 'var(--editorial-surface)', color: 'var(--editorial-text)', fontFamily: 'var(--font-body)', border: '1px solid var(--editorial-border)' }}
             >
               <RefreshCw className="w-5 h-5" />
               Practice Again
@@ -193,28 +192,26 @@ export default function LearnPage() {
   }
 
   return (
-    <main className="min-h-screen pt-12 pb-32 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-white">
+    <main className="min-h-screen pt-12 pb-32 text-zinc-900 dark:text-white" style={{ backgroundColor: 'var(--editorial-bg)' }}>
       <div className="max-w-4xl mx-auto px-6 space-y-12">
         <header className="space-y-6 pt-12">
           <Link 
             href="/"
-            className="group flex items-center gap-2 text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors mb-4 w-fit"
+            className="group flex items-center gap-2 transition-colors mb-4 w-fit"
+            style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
             <span className="text-xs font-bold uppercase tracking-widest">Back to Archive</span>
           </Link>
 
           <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <div className="h-px w-8 bg-purple-500/50" />
-              <span className="text-purple-500 text-xs font-bold uppercase tracking-[0.3em]">Learning Module</span>
-            </div>
-            <h1 className="text-4xl sm:text-5xl font-display font-black tracking-tight md:text-7xl">
-              Mintz Drills: <span className="text-zinc-400 dark:text-zinc-500">
+            <span className="section-number">Learning Module</span>
+            <h1 className="text-4xl sm:text-5xl font-display font-black tracking-tight md:text-7xl" style={{ color: 'var(--editorial-text)' }}>
+              Mintz Drills: <span style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-display)' }}>
                 {activePhase === 1 ? 'Warm-up' : activePhase === 2 ? 'Build' : 'Flow'}
               </span>
             </h1>
-            <p className="text-zinc-500 dark:text-zinc-400 text-lg max-w-xl leading-relaxed text-balance">
+            <p className="text-lg max-w-xl leading-relaxed text-balance" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>
               {activePhase === 1 
                 ? "Master sentence structure through rapid substitution. Based on Malcolm Mintz's functional fluency course."
                 : activePhase === 2
@@ -225,12 +222,11 @@ export default function LearnPage() {
         </header>
 
         <section className="relative">
-          <div className="absolute -top-24 -right-24 w-96 h-96 bg-purple-500/5 rounded-full blur-[120px] -z-10" />
-          <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-blue-500/5 rounded-full blur-[120px] -z-10" />
+          <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full blur-[120px] -z-10" style={{ background: 'rgba(196,155,76,0.04)' }} />
           
           {isLoadingDrills && activePhase === 1 ? (
             <div className="flex flex-col items-center gap-4 py-20">
-              <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+              <Loader2 className="w-8 h-8 animate-spin" style={{ color: 'var(--editorial-accent)' }} />
               <p className="text-zinc-500 text-sm">Loading drills from the dictionary...</p>
             </div>
           ) : activePhase === 1 ? (
@@ -245,8 +241,8 @@ export default function LearnPage() {
         <section className="space-y-8 pt-20">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
-              <h2 className="text-3xl font-display font-bold tracking-tight">Curriculum Path</h2>
-              <p className="text-zinc-500 mt-1">Our 3-Phase approach to Bikol fluency</p>
+              <h2 className="text-3xl font-display font-bold tracking-tight" style={{ color: 'var(--editorial-text)' }}>Curriculum Path</h2>
+              <p className="mt-1" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Our 3-Phase approach to Bikol fluency</p>
             </div>
           </div>
           
@@ -255,75 +251,78 @@ export default function LearnPage() {
               onClick={() => setActivePhase(1)}
               className={`text-left p-8 border rounded-[32px] space-y-4 transition-all ${
                 activePhase === 1 
-                ? 'bg-blue-500/10 border-blue-500/40' 
-                : 'bg-zinc-50 dark:bg-zinc-900/50 border-zinc-200 dark:border-white/5 hover:border-zinc-300 dark:hover:border-white/10'
+                ? 'border-[var(--editorial-accent)]' 
+                : 'border-[var(--editorial-border)]'
               }`}
+              style={activePhase === 1 ? { backgroundColor: 'rgba(196,155,76,0.08)' } : { backgroundColor: 'var(--editorial-surface)' }}
             >
               <div className="flex items-center gap-2 mb-2">
                 <div className={`w-2 h-2 rounded-full ${activePhase === 1 ? 'bg-emerald-500' : 'bg-zinc-700'}`} />
                 <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Warm-up</span>
               </div>
               <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black ${
-                activePhase === 1 ? 'bg-blue-500 text-white' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-500'
-              }`}>1</div>
-              <h3 className="text-xl font-bold">Substitution</h3>
-              <p className="text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed">Master core sentence structures by swapping key components.</p>
+                activePhase === 1 ? 'text-white' : ''
+              }`} style={activePhase === 1 ? { backgroundColor: 'var(--editorial-accent)' } : { backgroundColor: 'var(--editorial-bg)', color: 'var(--editorial-muted)' }}>1</div>
+              <h3 className="text-xl font-bold" style={{ color: 'var(--editorial-text)', fontFamily: 'var(--font-display)' }}>Substitution</h3>
+              <p className="text-sm leading-relaxed" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Master core sentence structures by swapping key components.</p>
             </button>
             
             <button 
               onClick={() => setActivePhase(2)}
               className={`text-left p-8 border rounded-[32px] space-y-4 transition-all ${
                 activePhase === 2 
-                ? 'bg-blue-500/10 border-blue-500/40' 
-                : 'bg-zinc-50 dark:bg-zinc-900/50 border-zinc-200 dark:border-white/5 hover:border-zinc-300 dark:hover:border-white/10'
+                ? 'border-[var(--editorial-accent)]' 
+                : 'border-[var(--editorial-border)]'
               }`}
+              style={activePhase === 2 ? { backgroundColor: 'rgba(196,155,76,0.08)' } : { backgroundColor: 'var(--editorial-surface)' }}
             >
               <div className="flex items-center gap-2 mb-2">
                 <div className={`w-2 h-2 rounded-full ${activePhase === 2 ? 'bg-amber-500' : 'bg-zinc-700'}`} />
                 <span className="text-[10px] font-bold text-amber-500 uppercase tracking-widest">Build</span>
               </div>
               <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black ${
-                activePhase === 2 ? 'bg-blue-500 text-white' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-500'
-              }`}>2</div>
-              <h3 className="text-xl font-bold">Transformation</h3>
-              <p className="text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed">Change tenses and focus patterns (Actor vs Object) dynamically.</p>
+                activePhase === 2 ? 'text-white' : ''
+              }`} style={activePhase === 2 ? { backgroundColor: 'var(--editorial-accent)' } : { backgroundColor: 'var(--editorial-bg)', color: 'var(--editorial-muted)' }}>2</div>
+              <h3 className="text-xl font-bold" style={{ color: 'var(--editorial-text)', fontFamily: 'var(--font-display)' }}>Transformation</h3>
+              <p className="text-sm leading-relaxed" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Change tenses and focus patterns (Actor vs Object) dynamically.</p>
             </button>
             
             <button 
               onClick={() => setActivePhase(3)}
               className={`text-left p-8 border rounded-[32px] space-y-4 transition-all ${
                 activePhase === 3 
-                ? 'bg-blue-500/10 border-blue-500/40' 
-                : 'bg-zinc-50 dark:bg-zinc-900/50 border-zinc-200 dark:border-white/5 hover:border-zinc-300 dark:hover:border-white/10'
+                ? 'border-[var(--editorial-accent)]' 
+                : 'border-[var(--editorial-border)]'
               }`}
+              style={activePhase === 3 ? { backgroundColor: 'rgba(196,155,76,0.08)' } : { backgroundColor: 'var(--editorial-surface)' }}
             >
               <div className="flex items-center gap-2 mb-2">
                 <div className={`w-2 h-2 rounded-full ${activePhase === 3 ? 'bg-red-500' : 'bg-zinc-700'}`} />
                 <span className="text-[10px] font-bold text-red-500 uppercase tracking-widest">Flow</span>
               </div>
               <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black ${
-                activePhase === 3 ? 'bg-blue-500 text-white' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-500'
-              }`}>3</div>
-              <h3 className="text-xl font-bold">Response</h3>
-              <p className="text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed">Engage in functional dialogue based on visual cues and prompts.</p>
+                activePhase === 3 ? 'text-white' : ''
+              }`} style={activePhase === 3 ? { backgroundColor: 'var(--editorial-accent)' } : { backgroundColor: 'var(--editorial-bg)', color: 'var(--editorial-muted)' }}>3</div>
+              <h3 className="text-xl font-bold" style={{ color: 'var(--editorial-text)', fontFamily: 'var(--font-display)' }}>Response</h3>
+              <p className="text-sm leading-relaxed" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Engage in functional dialogue based on visual cues and prompts.</p>
             </button>
           </div>
         </section>
 
         <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 pt-12">
-           <div className="p-6 bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/50 rounded-2xl space-y-2 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors group">
-              <h3 className="font-bold text-sm uppercase tracking-widest group-hover:text-blue-400 transition-colors">Vocabulary Bloom</h3>
-              <p className="text-blue-500 text-2xl font-black">12 Words</p>
-              <p className="text-zinc-500 text-xs font-medium">Progress since yesterday</p>
+           <div className="p-6 rounded-2xl space-y-2 transition-colors group" style={{ backgroundColor: 'var(--editorial-surface)', border: '1px solid var(--editorial-border)' }}>
+              <h3 className="font-bold text-sm uppercase tracking-widest group-hover:text-[var(--editorial-accent)] transition-colors" style={{ fontFamily: 'var(--font-body)', color: 'var(--editorial-muted)' }}>Vocabulary Bloom</h3>
+              <p className="text-2xl font-black" style={{ color: 'var(--editorial-accent)', fontFamily: 'var(--font-display)' }}>12 Words</p>
+              <p className="text-xs font-medium" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Progress since yesterday</p>
            </div>
-           <div className="p-6 bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/50 rounded-2xl space-y-2 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors group">
-              <h3 className="font-bold text-sm uppercase tracking-widest group-hover:text-purple-400 transition-colors">Mastery Streak</h3>
-              <p className="text-purple-500 text-2xl font-black">3 Days</p>
-              <p className="text-zinc-500 text-xs font-medium">Keep the momentum</p>
+           <div className="p-6 rounded-2xl space-y-2 transition-colors group" style={{ backgroundColor: 'var(--editorial-surface)', border: '1px solid var(--editorial-border)' }}>
+              <h3 className="font-bold text-sm uppercase tracking-widest group-hover:text-[var(--editorial-rust)] transition-colors" style={{ fontFamily: 'var(--font-body)', color: 'var(--editorial-muted)' }}>Mastery Streak</h3>
+              <p className="text-2xl font-black" style={{ color: 'var(--editorial-rust)', fontFamily: 'var(--font-display)' }}>3 Days</p>
+              <p className="text-xs font-medium" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Keep the momentum</p>
            </div>
-           <div className="p-6 bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/50 rounded-2xl space-y-2 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors group sm:col-span-2 md:col-span-1">
-              <h3 className="font-bold text-sm uppercase tracking-widest group-hover:text-zinc-700 dark:group-hover:text-white transition-colors">Accuracy</h3>
-              <p className="text-2xl font-black">88%</p>
+           <div className="p-6 rounded-2xl space-y-2 transition-colors group sm:col-span-2 md:col-span-1" style={{ backgroundColor: 'var(--editorial-surface)', border: '1px solid var(--editorial-border)' }}>
+              <h3 className="font-bold text-sm uppercase tracking-widest group-hover:text-[var(--editorial-text)] transition-colors" style={{ fontFamily: 'var(--font-body)', color: 'var(--editorial-muted)' }}>Accuracy</h3>
+              <p className="text-2xl font-black" style={{ color: 'var(--editorial-text)', fontFamily: 'var(--font-display)' }}>88%</p>
               <div className="w-full h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full mt-2 overflow-hidden">
                 <motion.div 
                   initial={{ width: 0 }}

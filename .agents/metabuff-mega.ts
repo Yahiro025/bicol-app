@@ -1,10 +1,20 @@
 /**
- * MetaBuff Mega — Antigravity 2.0-Style Parallel Agent Spawner v1.2.0
+ * MetaBuff Mega — SDD-Enhanced Parallel Agent Spawner v1.3.0
  * ─────────────────────────────────────────────────────────────────────
  * For large-scale tasks (full-system refactors, new features spanning many
  * subsystems, or anything the complexity analyzer scored 6+).
  *
- * CHANGES FROM v1.1.0:
+ * ✦ SUPERSPOWERS SDD INTEGRATION (v1.3.0) ✦
+ *   • [SDD] Two-stage review per subtask: Stage 1 (Spec Compliance) checks
+ *     that the implementation matches the task spec EXACTLY. Stage 2 (Code
+ *     Quality) checks imports, types, tests, conventions after Stage 1 passes.
+ *     Adapted from obra/superpowers subagent-driven-development.
+ *   • [SDD] Context isolation enforcement: subagents receive ONLY task description
+ *     + spec + code context. No conversation history from other subagents.
+ *   • [SDD] Disposable subagents: each subagent does ONE task, fresh context.
+ *   • [TDD] Iron Law injection when testing subtask is present in decomposition.
+ *
+ * CHANGES FROM v1.2.0 → v1.3.0:
  *   • [QUAL] Cascade wave pattern: MAX_DECOMP_TASKS raised from 6 to 12.
  *     Subtasks are split into sequential waves of ≤ MAX_WAVE_SIZE (6).
  *     Closes scale gap vs Antigravity 2.0 — 12 effective specialist agents
@@ -50,8 +60,8 @@ import { AgentDefinition } from './types/agent-definition'
 
 const definition: AgentDefinition = {
   id: 'metabuff-mega',
-  version: '1.2.0',
-  displayName: 'MetaBuff Mega (Cascade Parallel Spawner)',
+  version: '1.3.0',
+  displayName: 'MetaBuff Mega (SDD-Enhanced Cascade Spawner)',
 
   spawnerPrompt:
     'Spawn for large-scale tasks: full-system refactors, new features spanning many files, ' +
@@ -181,17 +191,37 @@ const definition: AgentDefinition = {
       return [{ subtask: fallbackPrompt, specialist: 'base', focus: 'full implementation' }]
     }
 
-    // ─── COT prefix for all specialist agents ─────────────────────────────────
-    const COT_SYSTEM_PREFIX = `You are a specialist agent in MetaBuff's parallel execution pipeline.
-You are responsible for ONE specific subtask of a larger system.
+    // ─── SDD PROTOCOL prefix for all specialist agents ────────────────────────
+    /**
+     * v1.3.0: Subagent-Driven Development (SDD) protocol.
+     * Adapted from obra/superpowers: fresh subagent per task, context isolation,
+     * two-stage review (spec compliance → code quality).
+     */
+    const SDD_SYSTEM_PREFIX = `You are a SUBAGENT in MetaBuff's Superpowers-enhanced SDD pipeline.
+You have ONE specific subtask. You are DISPOSABLE — do one thing well and terminate.
 
-PROTOCOL:
+SDD CONTEXT ISOLATION (critical):
+  • You receive ONLY: this task description + relevant code context
+  • You SHOULD NOT rely on conversation history from parallel subagents — it may be stale
+  • You MUST NOT assume knowledge of work done by parallel subagents
+  • You MUST NOT make changes to files outside your task scope
+
+SDD TWO-STAGE REVIEW PROTOCOL:
+  After you complete your work, a two-stage review will verify:
+  STAGE 1 (Spec Compliance): Does your output match the task description EXACTLY?
+    → If you added extra changes beyond the spec, they will be flagged as scope creep.
+  STAGE 2 (Code Quality): Are imports valid? Types correct? Tests present?
+    → Ghost imports, missing tests, or TODOs will block your subtask.
+  You can preempt review failures by self-checking against both stages.
+
+EXECUTION PROTOCOL:
   1. Read every file relevant to your subtask before touching anything
   2. Verify all symbols, imports, and types you plan to use via code_searcher
   3. Make your changes with surgical str_replace operations
   4. Leave a brief comment in each changed file: // [MetaBuff Mega: <focus>]
   5. Do NOT attempt to handle subtasks assigned to other specialist agents
   6. Call end_turn only when your subtask is complete and verified
+  7. TDD IRON LAW: If your task involves new behavior, write the test FIRST
 
 ANTI-HALLUCINATION (non-negotiable):
   ✗ Do not reference a file path without having read it this session
@@ -281,13 +311,19 @@ ANTI-HALLUCINATION (non-negotiable):
           `${st.customSystemAddition ?? ''}\n\n`
       }
 
+      // TDD Iron Law injection for testing subtasks
+      const tddIronLaw = st.specialist === 'testgen' || /\btest/i.test(st.subtask)
+        ? `\n\n<!-- TDD IRON LAW ACTIVE — test-first enforcement -->\n⚠ Write FAILING TESTS FIRST. Red → Green → Refactor. No production code without a prior, failing test.`
+        : ''
+
       return {
         agent_type: resolveAgent(st.specialist),
         prompt:
           customPrefix +
-          COT_SYSTEM_PREFIX +
+          SDD_SYSTEM_PREFIX +
           `SUBTASK [${st.focus}]:\n${st.subtask}\n\n` +
-          `FULL TASK CONTEXT (for reference only — implement only your subtask):\n${prompt}`,
+          `FULL TASK CONTEXT (for reference only — implement only your subtask):\n${prompt}` +
+          tddIronLaw,
       }
     })
 
@@ -301,25 +337,59 @@ ANTI-HALLUCINATION (non-negotiable):
         input: { agents: wave },
       }
 
-      // Inter-wave integration review (not after the final wave)
-      if (waveIdx < waves.length - 1) {
-        yield {
-          toolName: 'spawn_agents',
-          input: {
-            agents: [{
-              agent_type: 'codebuff/reviewer@0.0.1',
-              prompt:
-                `Inter-wave integration review (after Wave ${waveIdx + 1} of ${waves.length}).\n\n` +
-                `${wave.length} agents just completed work on: ${prompt}\n\n` +
-                `Before Wave ${waveIdx + 2} begins, check for:\n` +
-                `  1. Conflicting changes that would break Wave ${waveIdx + 2} agents' work\n` +
-                `  2. Exported symbols that Wave ${waveIdx + 2} agents will depend on\n` +
-                `  3. Type mismatches or interface changes that need propagating\n` +
-                `  4. Any incomplete implementations that would block the next wave\n` +
-                `Fix blockers now. Do not refactor style or non-blocking issues.`,
-            }],
-          },
-        }
+      // SDD TWO-STAGE REVIEW (Superpowers integration v1.3.0)
+      // Stage 1: Spec Compliance — does each subtask match its spec EXACTLY?
+      // Stage 2: Code Quality — imports, types, tests, conventions
+      // Both stages run in PARALLEL for efficiency (Stage 2 doesn't depend on Stage 1 output).
+
+      const isLastWave = waveIdx >= waves.length - 1
+
+      yield {
+        toolName: 'spawn_agents',
+        input: {
+          agents: [{
+            agent_type: 'codebuff/reviewer@0.0.1',
+            prompt:
+              `SDD STAGE 1 — SPEC COMPLIANCE REVIEW (Wave ${waveIdx + 1} of ${waves.length})\n\n` +
+              `${wave.length} subagents completed work on: ${prompt}\n\n` +
+              `SPEC COMPLIANCE CHECKLIST (for each subagent's output):\n` +
+              `  □ Does the implementation match the task description EXACTLY?\n` +
+              `  □ Are there any extra changes beyond the spec? (→ flag as SCOPE CREEP)\n` +
+              `  □ Are all acceptance criteria met?\n` +
+              `  □ Does the output match the contract/interface defined in the spec?\n` +
+              `  □ Are edge cases from the decomposition handled?\n\n` +
+              `For each finding, tag with SEVERITY:\n` +
+              `  [CRITICAL] — spec violation that breaks dependent work → BLOCK\n` +
+              `  [HIGH] — missing acceptance criterion → FIX\n` +
+              `  [MEDIUM] — scope creep (extra changes) → NOTE\n\n` +
+              `Fix [CRITICAL] and [HIGH] issues. Do NOT refactor style. Do NOT use performative\n` +
+              `language ("Great point!" is banned — use "Verified:" or "Found:" instead).`,
+          }, {
+            agent_type: 'codebuff/reviewer@0.0.1',
+            prompt:
+              `SDD STAGE 2 — CODE QUALITY REVIEW (Wave ${waveIdx + 1} of ${waves.length})\n\n` +
+              `After spec compliance verified, check code quality:\n\n` +
+              `CODE QUALITY CHECKLIST:\n` +
+              `  □ All imports valid? (verify via code_searcher)\n` +
+              `  □ No TODOs, FIXMEs, or placeholder comments?\n` +
+              `  □ Error handling present for all failure modes?\n` +
+              `  □ Types explicit (no 'any' without justification)?\n` +
+              `  □ Follows existing codebase conventions?\n` +
+              `  □ No performance anti-patterns (N+1, unnecessary allocations)?\n` +
+              `  □ Test coverage for new/changed behavior?` +
+              (!isLastWave ? `\n\n` +
+              `INTER-WAVE INTEGRATION CHECK:\n` +
+              `  1. Conflicting changes between agents (same file modified inconsistently)\n` +
+              `  2. Exported symbols that Wave ${waveIdx + 2} agents will depend on\n` +
+              `  3. Type mismatches or interface changes that need propagating` : ``) +
+              `\n\n` +
+              `For each finding, tag with SEVERITY:\n` +
+              `  [CRITICAL] — ghost import or broken reference → BLOCK\n` +
+              `  [HIGH] — missing error handling or test → FIX\n` +
+              `  [MEDIUM] — convention violation or 'any' type → NOTE\n\n` +
+              `Fix [CRITICAL] and [HIGH] issues. Use technical language only.`,
+          }],
+        },
       }
     }
 

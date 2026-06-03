@@ -63,15 +63,16 @@ export function VerbConjugator({ rootWord, affixGroups }: VerbConjugatorProps) {
             className={cn(
               "relative px-5 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 outline-none min-h-[44px] flex items-center justify-center border",
               activeTab === index
-                ? "text-white border-blue-500/50 bg-blue-500/10 shadow-sm"
-                : "text-zinc-400 border-zinc-800 hover:border-zinc-700 hover:text-zinc-200 bg-transparent"
+                ? "border-[var(--editorial-accent)] bg-[rgba(196,155,76,0.1)] shadow-sm"
+                : "border-[var(--editorial-border)] hover:border-[var(--editorial-muted)] hover:text-[var(--editorial-text)] bg-transparent"
             )}
           >
             <span className="relative z-10">{group.affixPair}</span>
             {activeTab === index && (
               <motion.div
                 layoutId="active-tab-indicator"
-                className="absolute inset-0 rounded-xl bg-blue-500/10"
+                className="absolute inset-0 rounded-xl"
+                style={{ background: 'rgba(196,155,76,0.1)' }}
                 initial={false}
                 transition={springTransition}
               />
@@ -88,19 +89,19 @@ export function VerbConjugator({ rootWord, affixGroups }: VerbConjugatorProps) {
         transition={{ duration: 0.3, ease: "easeOut" }}
         className="px-2 md:px-0"
       >
-        <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-400 font-bold mb-1">
+        <p className="text-[10px] uppercase tracking-[0.2em] text-[var(--editorial-muted)] font-bold mb-1">
           Focus Category
         </p>
         <div className="flex items-center gap-3">
-           <div className="w-1.5 h-6 rounded-full bg-blue-500" />
-           <h3 className="text-xl font-semibold text-zinc-100 tracking-tight">
+           <div className="w-1.5 h-6 rounded-full" style={{ backgroundColor: 'var(--editorial-accent)' }} />
+           <h3 className="text-xl font-semibold tracking-tight" style={{ color: 'var(--editorial-text)' }}>
              {currentGroup.focusType}
            </h3>
         </div>
       </motion.div>
 
       {/* Conjugation Grid (Semantic Definition List) */}
-      <dl className="grid grid-cols-1 border border-zinc-800 rounded-2xl overflow-hidden bg-zinc-950/30 backdrop-blur-md">
+      <dl className="grid grid-cols-1 rounded-2xl overflow-hidden" style={{ border: '1px solid var(--editorial-border)', backgroundColor: 'var(--editorial-surface)' }}>
         <AnimatePresence mode="wait">
           <motion.div
             key={currentGroup.affixPair}
@@ -108,7 +109,7 @@ export function VerbConjugator({ rootWord, affixGroups }: VerbConjugatorProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -5 }}
             transition={{ duration: 0.2, ease: "easeInOut" }}
-            className="divide-y divide-zinc-800/50"
+            className="divide-y relative" style={{ borderColor: 'var(--editorial-divider)' }}
           >
             {TENSE_ORDER.map((tenseKey) => {
               // 1. Try to find pre-stored conjugation
@@ -128,19 +129,19 @@ export function VerbConjugator({ rootWord, affixGroups }: VerbConjugatorProps) {
               return (
                 <motion.div
                   key={tenseKey}
-                  whileHover={{ backgroundColor: "rgba(39, 39, 42, 0.3)" }}
+                  whileHover={{ backgroundColor: "var(--editorial-surface)" }}
                   className={cn(
                     "group flex flex-col md:flex-row md:items-center justify-between p-5 transition-all duration-300",
-                    "border-zinc-800/50 z-10 relative cursor-default"
+                    "z-10 relative cursor-default"
                   )}
                 >
                   <dt className="flex flex-col">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 group-hover:text-blue-400/60 transition-colors">
+                    <span className="text-[10px] font-black uppercase tracking-widest group-hover:text-[var(--editorial-accent)] transition-colors" style={{ color: 'var(--editorial-muted)' }}>
                       {TENSE_LABELS[tenseKey]}
                     </span>
                   </dt>
                   <dd className="mt-1.5 md:mt-0">
-                    <span className="text-2xl font-medium text-zinc-100 font-display italic tracking-tight group-hover:text-white transition-colors">
+                    <span className="text-2xl font-medium font-display italic tracking-tight group-hover:text-[var(--editorial-text)] transition-colors" style={{ color: 'var(--editorial-text)' }}>
                       {conj?.form || '—'}
                     </span>
                   </dd>
@@ -152,11 +153,11 @@ export function VerbConjugator({ rootWord, affixGroups }: VerbConjugatorProps) {
       </dl>
       
       {/* Footer / Root Word Reference */}
-      <div className="flex items-center justify-between px-2 pt-2 border-t border-zinc-900">
-        <p className="text-[11px] text-zinc-600 font-medium">
-          ROOT WORD: <span className="text-zinc-300 tracking-wider font-bold ml-1">{rootWord.toUpperCase()}</span>
+      <div className="flex items-center justify-between px-2 pt-2" style={{ borderTop: '1px solid var(--editorial-divider)' }}>
+        <p className="text-[11px] font-medium" style={{ color: 'var(--editorial-muted)' }}>
+          ROOT WORD: <span className="tracking-wider font-bold ml-1" style={{ color: 'var(--editorial-accent)' }}>{rootWord.toUpperCase()}</span>
         </p>
-        <span className="text-[10px] text-zinc-700 font-mono">LEXICON ARCHIVE V1</span>
+        <span className="text-[10px] font-mono" style={{ color: 'var(--editorial-muted)' }}>LEXICON ARCHIVE V1</span>
       </div>
     </div>
   );
