@@ -123,7 +123,7 @@ STEPS:
 6. TDD IRON LAW CHECK (v1.2.0 — Superpowers):
    Use basher to verify test coverage for changed behaviors:
      git diff HEAD --name-only | while read f; do
-       if [ -f "tests/${f%.ts}.test.ts" ] || [ -f "tests/${f%.ts}.test.tsx" ]; then
+       if [ -f "tests/\${f%.ts}.test.ts" ] || [ -f "tests/\${f%.ts}.test.tsx" ]; then
          echo "✓ Test file exists for $f"
        else
          echo "⚠ No test file found for $f — TDD Iron Law may be violated"
