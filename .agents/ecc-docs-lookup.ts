@@ -22,7 +22,7 @@ const definition: AgentDefinition = {
 
   reasoningOptions: { enabled: true, exclude: false, effort: 'low' },
 
-  toolNames: ['read_files', 'spawn_agents'],
+  toolNames: ['read_files', 'spawn_agents', 'end_turn'],
 
   spawnableAgents: ['researcher-web'],
 

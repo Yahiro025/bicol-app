@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import Link from 'next/link';
 import { CATEGORY_META } from '@/lib/constants';
 import { Book } from 'lucide-react';

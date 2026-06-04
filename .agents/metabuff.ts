@@ -241,7 +241,6 @@ const definition: AgentDefinition = {
     'code-reviewer-deepseek',    // review / synthesis
     'researcher-web',            // documentation research
     'researcher-docs',           // API docs research
-    'basher',
     'metabuff-validator',
     'metabuff-reasoner',     // v1.4.0: algorithm/logic specialist
     'metabuff-regex-guard',  // v1.4.0: runtime regex safety
@@ -251,7 +250,6 @@ const definition: AgentDefinition = {
     'ecc-architect',
     'ecc-build-error-resolver',
     'ecc-chief-of-staff',
-    'ecc-code-architect',
     'ecc-code-explorer',
     'ecc-code-reviewer',
     'ecc-code-simplifier',
@@ -698,24 +696,15 @@ ${task}
 
     // ─── PHASE 0: INTER-SESSION MEMORY ────────────────────────────────────────
     yield {
-      toolName: 'spawn_agents',
+      toolName: 'run_terminal_command',
       input: {
-        agents: [{
-          agent_type: 'basher',
-          params: {
-            command:
-              'if [ -f .agents/known-issues.md ]; then ' +
-              '  echo "=== INTER-SESSION MEMORY ===" && ' +
-              '  cat .agents/known-issues.md; ' +
-              'else ' +
-              '  echo "No known-issues.md found — first session."; ' +
-              'fi',
-            what_to_summarize:
-              'List all known issues from previous sessions. ' +
-              'These will inform how all subsequent agents approach this task.',
-            timeout_seconds: 10,
-          },
-        }],
+        command:
+          'if [ -f .agents/known-issues.md ]; then ' +
+          '  echo "=== INTER-SESSION MEMORY ===" && ' +
+          '  cat .agents/known-issues.md; ' +
+          'else ' +
+          '  echo "No known-issues.md found — first session."; ' +
+          'fi',
       },
     }
 
@@ -730,12 +719,9 @@ ${task}
       .slice(0, 400)
 
     yield {
-      toolName: 'spawn_agents',
+      toolName: 'run_terminal_command',
       input: {
-        agents: [{
-          agent_type: 'basher',
-          params: {
-            command: [
+        command: [
               // Extract meaningful keywords: >3 chars, lowercase, minus stop words
               `KEYWORDS=$(echo '${safePromptForBash}' \\`,
               `  | tr '[:upper:]' '[:lower:]' \\`,
@@ -771,11 +757,6 @@ ${task}
               `echo "scope: ${safePromptForBash}" `,
               `echo "scope-result: matched=$MATCHED total=$TOTAL dirs=$DIRS reliable=$RELIABLE keys=$KEYWORDS"`,
             ].join('\n'),
-            what_to_summarize:
-              'File scope pre-flight: report how many files matched and whether reliable.',
-            timeout_seconds: 15,
-          },
-        }],
       },
     }
 
@@ -801,13 +782,9 @@ ${task}
     // Subsequent lookups are O(1) memory reads — no more fs.readdirSync/readFileSync per agent spawn.
     // Cache auto-rebuilds when missing or stale (>1 hour).
     yield {
-      toolName: 'spawn_agents',
+      toolName: 'run_terminal_command',
       input: {
-        agents: [{
-          agent_type: 'basher',
-          params: {
-            command:
-              'CACHE_FILE=.agents/.skill-cache.json; ' +
+        command: 'CACHE_FILE=.agents/.skill-cache.json; ' +
               'if [ ! -f "$CACHE_FILE" ] || [ $(find "$CACHE_FILE" -mmin +60 2>/dev/null | wc -l) -gt 0 ]; then ' +
               '  echo "=== BUILDING SKILL CACHE ===" && ' +
               '  (bun run scripts/ts/build-skill-cache.ts 2>/dev/null || npx tsx scripts/ts/build-skill-cache.ts 2>/dev/null || echo "Cache build skipped") && ' +
@@ -815,11 +792,6 @@ ${task}
               'else ' +
               '  echo "Skill cache is fresh ($(stat -c %y $CACHE_FILE 2>/dev/null || date -Iseconds))"; ' +
               'fi',
-            what_to_summarize:
-              'Report whether the skill cache was built or is fresh. Note the cache file path and skill count.',
-            timeout_seconds: 20,
-          },
-        }],
       },
     }
 
@@ -1670,13 +1642,9 @@ ${task}
 
       // Targeted typecheck — only changed + new files
       yield {
-        toolName: 'spawn_agents',
+        toolName: 'run_terminal_command',
         input: {
-          agents: [{
-            agent_type: 'basher',
-            params: {
-              command:
-                'TS_CHANGED=$(git diff HEAD --name-only 2>/dev/null | grep -E "\\.(ts|tsx)$") && ' +
+          command: 'TS_CHANGED=$(git diff HEAD --name-only 2>/dev/null | grep -E "\\.(ts|tsx)$") && ' +
                 'TS_NEW=$(git ls-files --others --exclude-standard 2>/dev/null | grep -E "\\.(ts|tsx)$") && ' +
                 'if [ -n "${TS_CHANGED}${TS_NEW}" ]; then ' +
                 '  echo "=== TYPECHECK (changed + new files) ===" && ' +
@@ -1684,12 +1652,6 @@ ${task}
                 'else ' +
                 '  echo "No .ts/.tsx files changed or created — skipping typecheck."; ' +
                 'fi',
-              what_to_summarize:
-                'Report any TypeScript errors in changed files. ' +
-                'If errors exist, fix them before end_turn.',
-              timeout_seconds: BASHER_TIMEOUT,
-            },
-          }],
         },
       }
 
@@ -1708,21 +1670,11 @@ ${task}
 
       if (isGenerationTask) {
         yield {
-          toolName: 'spawn_agents',
+          toolName: 'run_terminal_command',
           input: {
-            agents: [{
-              agent_type: 'basher',
-              params: {
-                command:
-                  'echo "=== NEW FILES ===" && ' +
+            command: 'echo "=== NEW FILES ===" && ' +
                   'git diff HEAD --name-only --diff-filter=A 2>/dev/null | head -10 || ' +
                   'echo "No new files detected"',
-                what_to_summarize:
-                  'List newly created files. ' +
-                  'Verify each new .ts/.tsx file has valid imports and no syntax errors.',
-                timeout_seconds: 15,
-              },
-            }],
           },
         }
       }
@@ -1816,23 +1768,12 @@ ${task}
       }
 
       yield {
-        toolName: 'spawn_agents',
+        toolName: 'run_terminal_command',
         input: {
-          agents: [{
-            agent_type: 'basher',
-            params: {
-              command:
-                'echo "=== TYPE CHECK ===" && ' +
+          command: 'echo "=== TYPE CHECK ===" && ' +
                 '(bun run typecheck 2>/dev/null || npx tsc --noEmit 2>&1) | head -40 && ' +
                 'echo "=== TESTS ===" && ' +
                 '(bun test 2>&1 || npx vitest run 2>&1 || npx jest 2>&1) | tail -30',
-              what_to_summarize:
-                'Type-check and test results. ' +
-                'Report any TypeScript errors or test failures. ' +
-                'If errors found, fix them now before calling end_turn.',
-              timeout_seconds: BASHER_TIMEOUT,
-            },
-          }],
         },
       }
 
@@ -1849,21 +1790,11 @@ ${task}
 
       if (isGenerationTask) {
         yield {
-          toolName: 'spawn_agents',
+          toolName: 'run_terminal_command',
           input: {
-            agents: [{
-              agent_type: 'basher',
-              params: {
-                command:
-                  'echo "=== SANDBOX ===" && ' +
+            command: 'echo "=== SANDBOX ===" && ' +
                   'git diff HEAD --name-only --diff-filter=A 2>/dev/null | head -20 || ' +
                   'echo "No new files detected"',
-                what_to_summarize:
-                  'List newly created files. ' +
-                  'Verify any new source files have proper imports and no syntax errors.',
-                timeout_seconds: 15,
-              },
-            }],
           },
         }
       }

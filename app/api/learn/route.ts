@@ -108,11 +108,12 @@ export async function GET(request: Request) {
         example_english: string | null;
       }[];
 
-      if (words.length < 5) {
+      const validWords = words.filter((w): w is typeof w & { english: string } => w.english !== null);
+      if (validWords.length < 5) {
         return NextResponse.json({ error: 'Not enough words to generate a quiz' }, { status: 400 });
       }
 
-      const questions = await generateQuizQuestions(words);
+      const questions = await generateQuizQuestions(validWords);
       setCached(cacheKey, { questions });
 
       return NextResponse.json(

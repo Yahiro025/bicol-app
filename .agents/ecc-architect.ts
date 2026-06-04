@@ -23,7 +23,7 @@ const definition: AgentDefinition = {
 
   reasoningOptions: { enabled: true, exclude: false, effort: 'high' },
 
-  toolNames: ['read_files', 'code_searcher', 'glob', 'spawn_agents'],
+  toolNames: ['read_files', 'code_search', 'find_files', 'spawn_agents', 'end_turn'],
 
   spawnableAgents: [],
 

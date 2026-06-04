@@ -29,10 +29,11 @@ const definition: AgentDefinition = {
 
   toolNames: [
     'read_files',
-    'code_searcher',
-    'glob',
-    'basher',
+    'code_search',
+    'find_files',
+    'run_terminal_command',
     'spawn_agents',
+    'end_turn',
   ],
 
   spawnableAgents: [],
