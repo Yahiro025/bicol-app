@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { NAV_LINKS, NAV_ICON_COLORS } from "@/lib/constants";
+import { NAV_LINKS } from "@/lib/constants";
 
 export default function DesktopNav() {
   const pathname = usePathname();
@@ -14,10 +14,6 @@ export default function DesktopNav() {
         const isActive =
           pathname === link.href ||
           (link.href !== "/" && pathname.startsWith(link.href));
-        const colors = NAV_ICON_COLORS[link.href] ?? {
-          base: "#a1a1aa",
-          active: "#3b82f6",
-        };
 
         return (
           <motion.span
@@ -27,34 +23,14 @@ export default function DesktopNav() {
           >
             <Link
               href={link.href}
-              onFocus={(e) => {
-                if (!isActive) {
-                  const icon = e.currentTarget.firstElementChild as HTMLElement | null;
-                  if (icon) icon.style.color = colors.active;
-                }
-              }}
-              onBlur={(e) => {
-                if (!isActive) {
-                  const icon = e.currentTarget.firstElementChild as HTMLElement | null;
-                  if (icon) icon.style.color = colors.base;
-                }
-              }}
-              className={`flex items-center gap-1.5 transition-colors rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--editorial-bg)] ${
-                isActive ? 'text-[var(--editorial-accent)]' : 'text-[var(--editorial-muted)] hover:text-[var(--editorial-accent)]'
+              className={`flex items-center gap-1.5 transition-colors duration-200 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--editorial-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--editorial-bg)] ${
+                isActive ? 'text-[var(--editorial-accent)]' : 'text-[var(--editorial-muted)] hover:text-[var(--editorial-text)]'
               }`}
             >
               <link.icon
-                className="w-3.5 h-3.5 shrink-0 transition-colors"
+                className="w-3.5 h-3.5 shrink-0 transition-colors duration-200"
                 style={{
                   color: isActive ? 'var(--editorial-accent)' : 'var(--editorial-muted)',
-                }}
-                onMouseEnter={(e) => {
-                  if (!isActive)
-                    (e.currentTarget as unknown as HTMLElement).style.color = 'var(--editorial-accent)';
-                }}
-                onMouseLeave={(e) => {
-                  if (!isActive)
-                    (e.currentTarget as unknown as HTMLElement).style.color = 'var(--editorial-muted)';
                 }}
               />
               {link.label}

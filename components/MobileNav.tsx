@@ -6,7 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
-import { NAV_LINKS, NAV_ICON_COLORS } from "@/lib/constants";
+import { NAV_LINKS } from "@/lib/constants";
 
 export default function MobileNav() {
   const [isOpen, setIsOpen] = useState(false);
@@ -132,7 +132,8 @@ export default function MobileNav() {
                 >
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid var(--editorial-border)' }}>
-                  <span className="text-lg font-display font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500">
+                  <span className="text-lg font-display font-black"
+                    style={{ color: 'var(--editorial-accent)' }}>
                     BIKOL
                   </span>
                   <button
@@ -152,39 +153,21 @@ export default function MobileNav() {
                     const isActive =
                       pathname === link.href ||
                       (link.href !== "/" && pathname.startsWith(link.href));
-                    const colors = NAV_ICON_COLORS[link.href] ?? {
-                      base: "#a1a1aa",
-                      active: "#3b82f6",
-                    };
                     return (
                       <Link
                         key={link.href}
                         href={link.href}
                         prefetch={false}
-                        onFocus={(e) => {
-                          if (!isActive) {
-                            const icon = e.currentTarget
-                              .firstElementChild as HTMLElement | null;
-                            if (icon) icon.style.color = colors.active;
-                          }
-                        }}
-                        onBlur={(e) => {
-                          if (!isActive) {
-                            const icon = e.currentTarget
-                              .firstElementChild as HTMLElement | null;
-                            if (icon) icon.style.color = colors.base;
-                          }
-                        }}
-                        className={`flex items-center gap-3 px-4 py-4 rounded-2xl text-lg font-bold transition-all mb-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--editorial-bg)] ${
+                        className={`flex items-center gap-3 px-4 py-4 rounded-2xl text-lg font-bold transition-all duration-200 mb-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--editorial-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--editorial-bg)] ${
                           isActive
                             ? "border"
                             : "hover:bg-[var(--editorial-surface-sunken)]"
                         }`}
                         style={isActive
                           ? {
-                              backgroundColor: 'rgba(196,155,76,0.08)',
+                              backgroundColor: 'rgba(124, 92, 146, 0.08)',
                               color: 'var(--editorial-accent)',
-                              borderColor: 'rgba(196,155,76,0.2)',
+                              borderColor: 'rgba(124, 92, 146, 0.2)',
                             }
                           : {
                               color: 'var(--editorial-text-secondary)',
@@ -192,21 +175,9 @@ export default function MobileNav() {
                         }
                       >
                         <link.icon
-                          className="w-5 h-5 shrink-0 transition-colors"
+                          className="w-5 h-5 shrink-0 transition-colors duration-200"
                           style={{
-                            color: isActive ? colors.active : colors.base,
-                          }}
-                          onMouseEnter={(e) => {
-                            if (!isActive)
-                              (
-                                e.currentTarget as unknown as HTMLElement
-                              ).style.color = colors.active;
-                          }}
-                          onMouseLeave={(e) => {
-                            if (!isActive)
-                              (
-                                e.currentTarget as unknown as HTMLElement
-                              ).style.color = colors.base;
+                            color: isActive ? 'var(--editorial-accent)' : 'var(--editorial-muted)',
                           }}
                         />
                         {link.label}
