@@ -77,8 +77,8 @@ export default async function BrowsePage({
         <div className="rule-divider mb-10" />
 
         {dbError && (
-          <div className="bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-200 border border-red-200 dark:border-red-900/50 p-4 rounded-xl text-sm mb-6"
-            style={{ fontFamily: 'var(--font-body)' }}>
+          <div className="p-4 rounded-xl text-sm mb-6"
+            style={{ fontFamily: 'var(--font-body)', backgroundColor: 'rgba(194,106,62,0.08)', color: 'var(--editorial-rust)', border: '1px solid rgba(194,106,62,0.2)' }}>
             Database Error: {dbError}
           </div>
         )}

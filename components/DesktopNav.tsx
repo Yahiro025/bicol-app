@@ -39,24 +39,22 @@ export default function DesktopNav() {
                   if (icon) icon.style.color = colors.base;
                 }
               }}
-              className={`flex items-center gap-1.5 transition-colors rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-zinc-950 ${
-                isActive
-                  ? "text-blue-600 dark:text-blue-400"
-                  : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
+              className={`flex items-center gap-1.5 transition-colors rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--editorial-bg)] ${
+                isActive ? 'text-[var(--editorial-accent)]' : 'text-[var(--editorial-muted)] hover:text-[var(--editorial-accent)]'
               }`}
             >
               <link.icon
                 className="w-3.5 h-3.5 shrink-0 transition-colors"
                 style={{
-                  color: isActive ? colors.active : colors.base,
+                  color: isActive ? 'var(--editorial-accent)' : 'var(--editorial-muted)',
                 }}
                 onMouseEnter={(e) => {
                   if (!isActive)
-                    (e.currentTarget as unknown as HTMLElement).style.color = colors.active;
+                    (e.currentTarget as unknown as HTMLElement).style.color = 'var(--editorial-accent)';
                 }}
                 onMouseLeave={(e) => {
                   if (!isActive)
-                    (e.currentTarget as unknown as HTMLElement).style.color = colors.base;
+                    (e.currentTarget as unknown as HTMLElement).style.color = 'var(--editorial-muted)';
                 }}
               />
               {link.label}

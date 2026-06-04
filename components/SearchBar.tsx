@@ -167,7 +167,7 @@ export default function SearchBar({ initialDictionary = [] }: SearchBarProps) {
       <>
         {parts.map((part, i) => 
           regex.test(part) ? (
-            <mark key={i} className="bg-blue-500/30 text-blue-300 rounded px-0.5">{part}</mark>
+            <mark key={i} className="rounded px-0.5" style={{ backgroundColor: 'rgba(212,168,69,0.22)', color: 'var(--editorial-accent)' }}>{part}</mark>
           ) : (
             <span key={i}>{part}</span>
           )
@@ -184,10 +184,11 @@ export default function SearchBar({ initialDictionary = [] }: SearchBarProps) {
             <motion.div 
               animate={{ opacity: [0.4, 1, 0.4] }}
               transition={{ repeat: Infinity, duration: 1.5 }}
-              className="w-2 h-2 bg-blue-500 rounded-full"
+              className="w-2 h-2 rounded-full"
+              style={{ backgroundColor: 'var(--editorial-accent)' }}
             />
           ) : (
-            <svg className="w-5 h-5 text-zinc-400 dark:text-zinc-500 group-focus-within:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 transition-colors" style={{ color: 'var(--editorial-muted)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           )}
@@ -201,10 +202,17 @@ export default function SearchBar({ initialDictionary = [] }: SearchBarProps) {
             (results.length > 0 || query.length > 0) && setIsOpen(true);
           }}
           onBlur={() => setIsFocused(false)}
-          placeholder="Search a Bikol or English word..."
-          className={`w-full pl-12 pr-28 sm:pr-32 py-4 bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-2xl text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 text-base sm:text-lg transition-all duration-300 ${
-            isFocused ? 'bg-white dark:bg-zinc-800/50 shadow-[0_0_30px_rgba(59,130,246,0.15)]' : ''
+          className={`w-full pl-12 pr-28 sm:pr-32 py-4 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 text-base sm:text-lg transition-all duration-300 ${
+            isFocused ? 'shadow-[0_0_30px_rgba(59,130,246,0.15)]' : ''
           }`}
+          style={{
+            backgroundColor: isFocused ? 'var(--editorial-surface-raised)' : 'var(--editorial-surface)',
+            borderColor: 'var(--editorial-border)',
+            borderWidth: '1px',
+            borderStyle: 'solid',
+            color: 'var(--editorial-text)',
+          }}
+          placeholder="Search a Bikol or English word..."
           autoComplete="off"
         />
         <Button 
@@ -224,7 +232,13 @@ export default function SearchBar({ initialDictionary = [] }: SearchBarProps) {
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="absolute mt-3 w-full bg-white dark:bg-zinc-900/95 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl z-50 overflow-hidden"
+            className="absolute mt-3 w-full backdrop-blur-xl rounded-2xl shadow-2xl z-50 overflow-hidden"
+            style={{
+              backgroundColor: 'var(--editorial-surface-raised)',
+              borderColor: 'var(--editorial-border)',
+              borderWidth: '1px',
+              borderStyle: 'solid',
+            }}
           >
             {results.length > 0 ? (
               <ul className="py-2">
@@ -233,38 +247,39 @@ export default function SearchBar({ initialDictionary = [] }: SearchBarProps) {
                     <Link 
                       href={`/word/${encodeURIComponent(item.bikol)}`}
                       onClick={handleResultClick}
-                      className="flex items-center justify-between px-6 py-3 hover:bg-zinc-50 dark:hover:bg-white/5 cursor-pointer transition group"
+                      className="flex items-center justify-between px-6 py-3 cursor-pointer transition group hover:brightness-95 dark:hover:brightness-110"
                     >
                       <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-blue-600 dark:text-blue-400 group-hover:text-blue-500 dark:group-hover:text-blue-300 truncate">
+                        <p className="font-semibold text-blue-600 truncate" style={{ color: 'var(--editorial-accent)' }}>
                           {highlightMatch(item.bikol)}
                         </p>
-                        <p className="text-sm text-zinc-500 dark:text-zinc-400 truncate">
+                        <p className="text-sm truncate" style={{ color: 'var(--editorial-muted)' }}>
                           {highlightMatch(displayTranslation(item))}
                         </p>
                         {langMode === 'all' && item.tagalog && (
-                          <p className="text-xs text-zinc-600 italic truncate mt-0.5">
+                          <p className="text-xs italic truncate mt-0.5" style={{ color: 'var(--editorial-muted)' }}>
                             Tagalog: {highlightMatch(item.tagalog)}
                           </p>
                         )}
                       </div>
-                      <svg className="w-4 h-4 text-zinc-400 dark:text-zinc-600 group-hover:text-zinc-600 dark:group-hover:text-zinc-400 ml-4 flex-shrink-0 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
+                      <svg className="w-4 h-4 ml-4 flex-shrink-0 transition-transform group-hover:translate-x-1" style={{ color: 'var(--editorial-muted)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
                     </Link>
                   </motion.li>
                 ))}
               </ul>
             ) : !isLoading && query.trim().length > 0 ? (
-              <div className="px-6 py-8 text-sm text-zinc-400 dark:text-zinc-500 text-center">
-                No words found for <span className="text-zinc-600 dark:text-zinc-300">"{query}"</span>
+              <div className="px-6 py-8 text-sm text-center" style={{ color: 'var(--editorial-muted)' }}>
+                No words found for <span style={{ color: 'var(--editorial-text)' }}>"{query}"</span>
               </div>
             ) : null}
 
             {/* Footer Link to Browse Page */}
             {results.length > 0 && (
-              <motion.div variants={itemVariants} className="border-t border-zinc-200 dark:border-white/5 bg-zinc-50 dark:bg-white/5">
+              <motion.div variants={itemVariants} style={{ borderTop: '1px solid var(--editorial-divider)', backgroundColor: 'var(--editorial-surface)' }}>
                 <button 
                   onClick={() => { setIsOpen(false); router.push(`/browse?q=${encodeURIComponent(query)}`); }} 
-                  className="w-full text-center py-4 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300 font-medium transition"
+                  className="w-full text-center py-4 text-sm font-medium transition"
+                  style={{ color: 'var(--editorial-accent)' }}
                 >
                   View all results for "{query}"
                 </button>

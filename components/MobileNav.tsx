@@ -85,7 +85,8 @@ export default function MobileNav() {
       <button
         ref={hamburgerRef}
         onClick={open}
-        className="p-2 -mr-2 text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#09090b]"
+        className="p-2 -mr-2 transition-colors rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--editorial-bg)]"
+        style={{ color: 'var(--editorial-muted)' }}
         aria-label="Open navigation menu"
         aria-expanded={isOpen}
         aria-haspopup="menu"
@@ -123,17 +124,22 @@ export default function MobileNav() {
                   role="dialog"
                   aria-modal="true"
                   aria-label="Navigation menu"
-                  className="fixed top-0 right-0 z-50 h-full w-[280px] bg-white dark:bg-zinc-900 border-l border-zinc-200 dark:border-zinc-800 shadow-2xl"
+                  className="fixed top-0 right-0 z-50 h-full w-[280px] shadow-2xl"
+                  style={{
+                    backgroundColor: 'var(--editorial-surface-raised)',
+                    borderLeft: '1px solid var(--editorial-border)',
+                  }}
                 >
                 {/* Header */}
-                <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-200 dark:border-zinc-800">
+                <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid var(--editorial-border)' }}>
                   <span className="text-lg font-display font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500">
                     BIKOL
                   </span>
                   <button
                     ref={closeButtonRef}
                     onClick={close}
-                    className="p-2 text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-zinc-900"
+                    className="p-2 transition-colors rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--editorial-bg)]"
+                    style={{ color: 'var(--editorial-muted)' }}
                     aria-label="Close navigation menu"
                   >
                     <X className="w-5 h-5" />
@@ -169,11 +175,21 @@ export default function MobileNav() {
                             if (icon) icon.style.color = colors.base;
                           }
                         }}
-                        className={`flex items-center gap-3 px-4 py-4 rounded-2xl text-lg font-bold transition-all mb-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-zinc-900 ${
+                        className={`flex items-center gap-3 px-4 py-4 rounded-2xl text-lg font-bold transition-all mb-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--editorial-bg)] ${
                           isActive
-                            ? "bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20"
-                            : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/50"
+                            ? "border"
+                            : "hover:bg-[var(--editorial-surface-sunken)]"
                         }`}
+                        style={isActive
+                          ? {
+                              backgroundColor: 'rgba(196,155,76,0.08)',
+                              color: 'var(--editorial-accent)',
+                              borderColor: 'rgba(196,155,76,0.2)',
+                            }
+                          : {
+                              color: 'var(--editorial-text-secondary)',
+                            }
+                        }
                       >
                         <link.icon
                           className="w-5 h-5 shrink-0 transition-colors"
@@ -201,7 +217,7 @@ export default function MobileNav() {
 
                 {/* Bottom hint */}
                 <div className="absolute bottom-0 left-0 right-0 text-center py-3">
-                  <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
+                  <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--editorial-muted)' }}>
                     Bikol Dictionary
                   </p>
                 </div>

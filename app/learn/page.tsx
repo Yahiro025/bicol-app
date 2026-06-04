@@ -227,7 +227,7 @@ export default function LearnPage() {
           {isLoadingDrills && activePhase === 1 ? (
             <div className="flex flex-col items-center gap-4 py-20">
               <Loader2 className="w-8 h-8 animate-spin" style={{ color: 'var(--editorial-accent)' }} />
-              <p className="text-zinc-500 text-sm">Loading drills from the dictionary...</p>
+              <p className="text-sm" style={{ color: 'var(--editorial-muted)' }}>Loading drills from the dictionary...</p>
             </div>
           ) : activePhase === 1 ? (
             <SubstitutionDrill drills={drills} onComplete={handlePhase1Complete} />
@@ -277,7 +277,7 @@ export default function LearnPage() {
               style={activePhase === 2 ? { backgroundColor: 'rgba(196,155,76,0.08)' } : { backgroundColor: 'var(--editorial-surface)' }}
             >
               <div className="flex items-center gap-2 mb-2">
-                <div className={`w-2 h-2 rounded-full ${activePhase === 2 ? 'bg-amber-500' : 'bg-zinc-700'}`} />
+                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: activePhase === 2 ? '#f59e0b' : 'var(--editorial-muted)' }} />
                 <span className="text-[10px] font-bold text-amber-500 uppercase tracking-widest">Build</span>
               </div>
               <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black ${
@@ -297,7 +297,7 @@ export default function LearnPage() {
               style={activePhase === 3 ? { backgroundColor: 'rgba(196,155,76,0.08)' } : { backgroundColor: 'var(--editorial-surface)' }}
             >
               <div className="flex items-center gap-2 mb-2">
-                <div className={`w-2 h-2 rounded-full ${activePhase === 3 ? 'bg-red-500' : 'bg-zinc-700'}`} />
+                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: activePhase === 3 ? '#ef4444' : 'var(--editorial-muted)' }} />
                 <span className="text-[10px] font-bold text-red-500 uppercase tracking-widest">Flow</span>
               </div>
               <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black ${
@@ -323,7 +323,7 @@ export default function LearnPage() {
            <div className="p-6 rounded-2xl space-y-2 transition-colors group sm:col-span-2 md:col-span-1" style={{ backgroundColor: 'var(--editorial-surface)', border: '1px solid var(--editorial-border)' }}>
               <h3 className="font-bold text-sm uppercase tracking-widest group-hover:text-[var(--editorial-text)] transition-colors" style={{ fontFamily: 'var(--font-body)', color: 'var(--editorial-muted)' }}>Accuracy</h3>
               <p className="text-2xl font-black" style={{ color: 'var(--editorial-text)', fontFamily: 'var(--font-display)' }}>88%</p>
-              <div className="w-full h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full mt-2 overflow-hidden">
+              <div className="w-full h-1.5 rounded-full mt-2 overflow-hidden" style={{ backgroundColor: 'var(--editorial-surface-sunken)' }}>
                 <motion.div 
                   initial={{ width: 0 }}
                   animate={{ width: "88%" }}

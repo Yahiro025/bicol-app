@@ -85,13 +85,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${playfair.variable} ${dmSans.variable} min-h-screen bg-white text-zinc-900 dark:bg-[#09090b] dark:text-[#fafafa] selection:bg-blue-500/30`}>
+      <body className={`${playfair.variable} ${dmSans.variable} min-h-screen selection:bg-[var(--editorial-accent)]/30 selection:text-[var(--editorial-text)]`} style={{ backgroundColor: 'var(--editorial-bg)', color: 'var(--editorial-text)' }}>
         <Providers>
           <div id="main-content">
           <Suspense fallback={null}>
             <NavigationLoadingBar />
           </Suspense>
-          <header className="border-b border-zinc-200 dark:border-zinc-800/50 px-6 py-4 sticky top-0 bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-xl z-50">
+          <header className="header-glass border-b px-6 py-4 sticky top-0 backdrop-blur-xl z-50">
             <div className="max-w-6xl mx-auto flex items-center justify-between">
               <h1 className="text-2xl font-display font-black tracking-tighter hover:scale-105 transition-transform active:scale-95">
                 <Link href="/" style={{ color: 'var(--editorial-accent)' }}>BIKOL</Link>

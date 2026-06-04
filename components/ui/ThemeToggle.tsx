@@ -18,9 +18,10 @@ export function ThemeToggle({ className }: { className?: string }) {
     return (
       <div
         className={cn(
-          "w-11 h-11 rounded-xl bg-zinc-100 dark:bg-zinc-800",
+          "w-11 h-11 rounded-xl",
           className
         )}
+        style={{ backgroundColor: 'var(--editorial-surface)' }}
         aria-hidden="true"
       />
     );
@@ -33,9 +34,9 @@ export function ThemeToggle({ className }: { className?: string }) {
       onClick={() => setTheme(isDark ? "light" : "dark")}
       className={cn(
         "p-2 rounded-xl transition-all duration-200",          "min-w-11 min-h-11",
-        "bg-zinc-100 dark:bg-zinc-800",
+        "hover:brightness-95 dark:hover:brightness-110",
         "hover:scale-105 active:scale-95",
-        "focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-zinc-950",
+        "focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--editorial-bg)]",
         "touch-manipulation [-webkit-tap-highlight-color:transparent]",
         className
       )}
@@ -44,7 +45,7 @@ export function ThemeToggle({ className }: { className?: string }) {
       {isDark ? (
         <Sun className="h-5 w-5 text-yellow-500" aria-hidden="true" />
       ) : (
-        <Moon className="h-5 w-5 text-zinc-600 dark:text-zinc-400" aria-hidden="true" />
+        <Moon className="h-5 w-5" style={{ color: 'var(--editorial-muted)' }} aria-hidden="true" />
       )}
     </button>
   );
