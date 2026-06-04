@@ -53,8 +53,6 @@ api_retry = retry(
 
 # Global model config
 GROQ_MODEL = "qwen/qwen3-32b"
-from aiocache import cached, Cache
-from aiocache.serializers import JsonSerializer, NullSerializer
 from aiocache.backends.memory import SimpleMemoryCache
 from diskcache import Cache as DiskCache
 

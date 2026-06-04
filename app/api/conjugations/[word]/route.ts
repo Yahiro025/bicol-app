@@ -71,7 +71,7 @@ export async function GET(
           definitionId: definition.id,
           createdAt: new Date(),
           updatedAt: new Date(),
-        })) as any;
+        })) as unknown as typeof definition.conjugations;
       }
 
       for (const conj of conjugations) {
