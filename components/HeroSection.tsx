@@ -94,8 +94,12 @@ export default function HeroSection({ children, wordCount }: HeroSectionProps) {
               className="hidden lg:flex flex-col items-end gap-2 self-end pb-4"
             >
               <span
-                className="text-8xl font-black italic leading-none text-[var(--editorial-accent)] opacity-50"
-                style={{ fontFamily: "var(--font-display)" }}
+                className="text-8xl font-black italic leading-none"
+                style={{ 
+                  fontFamily: "var(--font-display)",
+                  color: 'var(--editorial-accent-dim)',
+                  textShadow: '0 2px 12px var(--editorial-accent-glow)'
+                }}
               >
                 {wordCount.toLocaleString()}
               </span>

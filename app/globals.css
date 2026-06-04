@@ -41,23 +41,26 @@
 
 /* ── Editorial / Literary Archive palette (light mode) ────────────────────── */
 :root {
-  --editorial-bg: #faf8f5;
-  --editorial-surface: #f3efe8;
-  --editorial-surface-raised: #fffdf9;
-  --editorial-surface-sunken: #eae6dd;
-  --editorial-text: #1a1a18;
-  --editorial-text-secondary: #3d3d38;
-  --editorial-muted: #6b6860;
-  --editorial-accent: #c49b4c;
-  --editorial-accent-dim: #8b691a;
-  --editorial-rust: #a0522d;
-  --editorial-border: #e8e4db;
-  --editorial-divider: #d4cfc3;
-  --editorial-shadow: 0 4px 24px -4px rgba(26, 26, 24, 0.08);
+  --editorial-bg: #FAFAF8;
+  --editorial-surface: #F0EDE6;
+  --editorial-surface-raised: #FFFDF9;
+  --editorial-surface-sunken: #E5E1D8;
+  --editorial-text: #1C1B19;
+  --editorial-text-secondary: #3D3B36;
+  --editorial-muted: #6B6760;
+  --editorial-accent: #7C5C92;
+  --editorial-accent-dim: #5A4270;
+  --editorial-rust: #9B5C3A;
+  --editorial-border: #D8D4C8;
+  --editorial-divider: #C8C4B8;
+  --editorial-shadow: 0 4px 24px -4px rgba(28, 27, 25, 0.08);
 
   /* Display & body font stacks (loaded via next/font) */
   --font-display: var(--font-playfair), 'Cormorant Garamond', 'Georgia', serif;
   --font-body: var(--font-dm-sans), 'Inter', system-ui, sans-serif;
+
+  /* Accent glow for hero elements */
+  --editorial-accent-glow: rgba(124, 92, 146, 0.15);
 }
 
 /* ── Dark mode: Nocturne Archive palette ────────────────────────────────────
@@ -73,19 +76,20 @@
   --color-text-muted: #8a8780;
 
   /* Editorial dark palette */
-  --editorial-bg: #0c0c0a;
-  --editorial-surface: #161612;
-  --editorial-surface-raised: #1e1e1a;
-  --editorial-surface-sunken: #11110e;
-  --editorial-text: #f5f0e8;
-  --editorial-text-secondary: #d4cfc3;
-  --editorial-muted: #8a8780;
-  --editorial-accent: #d4a845;
-  --editorial-accent-dim: #a0782c;
-  --editorial-rust: #c26a3e;
-  --editorial-border: #2a2a25;
-  --editorial-divider: #35352e;
+  --editorial-bg: #0E0D0B;
+  --editorial-surface: #161513;
+  --editorial-surface-raised: #1E1C18;
+  --editorial-surface-sunken: #111009;
+  --editorial-text: #F5F2EC;
+  --editorial-text-secondary: #D4CFC3;
+  --editorial-muted: #8A8780;
+  --editorial-accent: #A580C0;
+  --editorial-accent-dim: #8A68A8;
+  --editorial-rust: #C07A50;
+  --editorial-border: #2A2820;
+  --editorial-divider: #353228;
   --editorial-shadow: 0 4px 32px -4px rgba(0, 0, 0, 0.5);
+  --editorial-accent-glow: rgba(165, 128, 192, 0.2);
 }
 
 /* Base styles */
@@ -208,8 +212,8 @@ html::-webkit-scrollbar {
 }
 
 .card-resting:hover {
-  border-color: rgba(196, 155, 76, 0.35);
-  box-shadow: 0 20px 25px -5px rgba(196, 155, 76, 0.08);
+  border-color: rgba(124, 92, 146, 0.35);
+  box-shadow: 0 20px 25px -5px rgba(124, 92, 146, 0.12);
   transform: translateY(-0.25rem);
 }
 

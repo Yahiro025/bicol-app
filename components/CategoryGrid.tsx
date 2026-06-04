@@ -61,19 +61,20 @@ export default function CategoryGrid({ categoryCounts, className }: CategoryGrid
               style={{ backgroundColor: 'var(--editorial-surface)', borderColor: 'var(--editorial-border)' }}
             >
               <div 
-                className="p-4 rounded-2xl text-blue-500 group-hover:scale-110 transition-all duration-300 shadow-inner border"
-                style={{ backgroundColor: 'var(--editorial-bg)', borderColor: 'var(--editorial-border)' }}
+                className="p-4 rounded-2xl group-hover:scale-110 transition-all duration-300 shadow-inner border"
+                style={{ backgroundColor: 'var(--editorial-bg)', borderColor: 'var(--editorial-border)', color: 'var(--editorial-accent)' }}
               >
                 <Icon size={32} />
               </div>
               <div>
-                <h3 className="font-display font-bold text-lg group-hover:text-blue-400 transition-colors tracking-tight" style={{ color: 'var(--editorial-text)' }}>{category}</h3>
+                <h3 className="font-display font-bold text-lg group-hover:opacity-80 transition-colors tracking-tight" style={{ color: 'var(--editorial-text)' }}>{category}</h3>
                 <p className="text-xs font-bold uppercase tracking-widest mt-1" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>{_count.bikol} words</p>
               </div>
               
               {/* Subtle background glow on hover */}
               <div 
-                className="absolute inset-0 opacity-0 group-hover:opacity-5 transition-opacity pointer-events-none bg-radial-gradient from-blue-500 to-transparent"
+                className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity pointer-events-none"
+                style={{ background: 'radial-gradient(circle at center, var(--editorial-accent) 0%, transparent 70%)' }}
               />
             </Link>
           </motion.div>
