@@ -18,7 +18,6 @@ const dmSans = DM_Sans({
 });
 import LanguageToggle from "@/components/LanguageToggle";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
-import { MotionToggle } from "@/components/ui/MotionToggle";
 import MobileNav from "@/components/MobileNav";
 import Footer from "@/components/Footer";
 import DesktopNav from "@/components/DesktopNav";
@@ -100,7 +99,6 @@ export default function RootLayout({
                 <DesktopNav />
                 <div className="flex items-center gap-3">
                   <ThemeToggle />
-                  <MotionToggle />
                   <LanguageToggle />
                   <MobileNav />
                 </div>
