@@ -3,11 +3,17 @@
 /* Use class-based dark mode (uses .dark class on <html> instead of prefers-color-scheme media query) */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Custom theme variables */
+/* ═══════════════════════════════════════════════════════════════════════════
+   THEME SYSTEM
+   Two palettes coexist: the legacy zinc/blue system and the editorial warm
+   archive system. New work should prefer the editorial variables.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Legacy color tokens (kept for existing component compatibility) ────────── */
 :root {
-  --color-primary: #3b82f6; /* Bicolano Sea Blue */
+  --color-primary: #3b82f6;
   --color-primary-hover: #2563eb;
-  --color-secondary: #a855f7; /* Community Purple */
+  --color-secondary: #a855f7;
   --color-secondary-hover: #9333ea;
   --color-accent: #0ea5e9;
   --color-accent-hover: #0284c7;
@@ -25,7 +31,7 @@
   --space-section-gap: 6rem;
   --space-content-max-width: 72rem;
 
-  /* Energy state colors (replacing "difficulty" language) */
+  /* Energy state colors */
   --energy-low: #10b981;
   --energy-moderate: #f59e0b;
   --energy-high: #ef4444;
@@ -36,41 +42,53 @@
   --feedback-highlight: #60a5fa;
 }
 
-.dark {
-  --color-background: #09090b;
-  --color-surface: #18181b;
-  --color-border: #27272a;
-  --color-text-main: #fafafa;
-  --color-text-muted: #a1a1aa;
-
-  /* Editorial / Literary Archive palette */
-  --editorial-bg: #121210;
-  --editorial-surface: #1c1c19;
-  --editorial-text: #f5f0e8;
-  --editorial-muted: #8a8780;
-  --editorial-accent: #c49b4c;
-  --editorial-accent-dim: #8b691a;
-  --editorial-rust: #a0522d;
-  --editorial-border: #2a2a25;
-  --editorial-divider: #33332e;
-}
-
+/* ── Editorial / Literary Archive palette (light mode) ────────────────────── */
 :root {
-  /* Editorial / Literary Archive palette (light) */
   --editorial-bg: #faf8f5;
   --editorial-surface: #f3efe8;
+  --editorial-surface-raised: #fffdf9;
+  --editorial-surface-sunken: #eae6dd;
   --editorial-text: #1a1a18;
+  --editorial-text-secondary: #3d3d38;
   --editorial-muted: #6b6860;
   --editorial-accent: #c49b4c;
   --editorial-accent-dim: #8b691a;
   --editorial-rust: #a0522d;
   --editorial-border: #e8e4db;
   --editorial-divider: #d4cfc3;
+  --editorial-shadow: 0 4px 24px -4px rgba(26, 26, 24, 0.08);
 
-  /* Display font stack (editorial serif — loaded via next/font) */
+  /* Display & body font stacks (loaded via next/font) */
   --font-display: var(--font-playfair), 'Cormorant Garamond', 'Georgia', serif;
-  /* Body font stack (clean sans — loaded via next/font) */
   --font-body: var(--font-dm-sans), 'Inter', system-ui, sans-serif;
+}
+
+/* ── Dark mode: Nocturne Archive palette ────────────────────────────────────
+   Deeper blacks with warm undertones, layered surfaces for depth,
+   and a refined gold accent system that feels like reading by lamplight.
+   ─────────────────────────────────────────────────────────────────────────── */
+.dark {
+  /* Legacy overrides */
+  --color-background: #0c0c0a;
+  --color-surface: #18181b;
+  --color-border: #2a2a25;
+  --color-text-main: #f5f0e8;
+  --color-text-muted: #8a8780;
+
+  /* Editorial dark palette */
+  --editorial-bg: #0c0c0a;
+  --editorial-surface: #161612;
+  --editorial-surface-raised: #1e1e1a;
+  --editorial-surface-sunken: #11110e;
+  --editorial-text: #f5f0e8;
+  --editorial-text-secondary: #d4cfc3;
+  --editorial-muted: #8a8780;
+  --editorial-accent: #d4a845;
+  --editorial-accent-dim: #a0782c;
+  --editorial-rust: #c26a3e;
+  --editorial-border: #2a2a25;
+  --editorial-divider: #35352e;
+  --editorial-shadow: 0 4px 32px -4px rgba(0, 0, 0, 0.5);
 }
 
 /* Base styles */
@@ -100,10 +118,6 @@ html.changing-theme *::after {
 }
 
 ::-webkit-scrollbar-track {
-  background-color: var(--color-background);
-}
-
-::-webkit-scrollbar-track {
   background-color: var(--editorial-bg);
 }
 
@@ -111,10 +125,11 @@ html.changing-theme *::after {
   background-color: var(--editorial-divider);
   border-radius: 9999px;
   border: 2px solid var(--editorial-bg);
+  transition: background-color 0.2s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: var(--editorial-muted);
+  background-color: var(--editorial-accent-dim);
 }
 
 /* Glass effect for cards and overlays */
@@ -142,22 +157,52 @@ html.changing-theme *::after {
   text-wrap: balance;
 }
 
-/* Card utilities - Resting Precision (respects motion multiplier) */
+/* ── Header glass effect (theme-aware) ──────────────────────────────────── */
+.header-glass {
+  background-color: rgba(250, 248, 245, 0.8);
+  border-color: var(--editorial-border);
+}
+
+.dark .header-glass {
+  background-color: rgba(12, 12, 10, 0.75);
+  border-color: var(--editorial-border);
+}
+
+/* ── Surface utilities (theme-aware) ───────────────────────────────────── */
+.surface {
+  background-color: var(--editorial-surface);
+  border: 1px solid var(--editorial-border);
+  border-radius: 1rem;
+}
+
+.surface-raised {
+  background-color: var(--editorial-surface-raised);
+  border: 1px solid var(--editorial-border);
+  border-radius: 1rem;
+  box-shadow: var(--editorial-shadow);
+}
+
+.surface-sunken {
+  background-color: var(--editorial-surface-sunken);
+  border: 1px solid var(--editorial-border);
+  border-radius: 1rem;
+}
+
+/* ── Card utilities - Resting Precision (respects motion multiplier) ─────── */
 .card-resting {
-  background-color: rgba(255, 255, 255, 0.8);
-  border: 1px solid var(--color-border);
+  background-color: var(--editorial-surface-raised);
+  border: 1px solid var(--editorial-border);
   border-radius: 1rem;
   transition: all calc(200ms * var(--motion-multiplier, 1)) ease-out;
 }
 
 .dark .card-resting {
-  background-color: rgba(24, 24, 27, 0.5);
+  background-color: var(--editorial-surface);
 }
 
 .card-resting:hover {
-  background-color: rgba(39, 39, 42, 0.5);
-  border-color: rgba(59, 130, 246, 0.3);
-  box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.1);
+  border-color: rgba(196, 155, 76, 0.35);
+  box-shadow: 0 20px 25px -5px rgba(196, 155, 76, 0.08);
   transform: translateY(-0.25rem);
 }
 

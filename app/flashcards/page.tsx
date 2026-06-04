@@ -60,7 +60,8 @@ export default function FlashcardsPage() {
         {/* Back link */}
         <Link
           href="/"
-          className="group flex items-center gap-2 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300 transition-colors w-fit"
+          className="group flex items-center gap-2 transition-colors w-fit"
+          style={{ color: 'var(--editorial-muted)' }}
         >
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
           <span className="text-xs font-bold uppercase tracking-widest">Back to Archive</span>
@@ -69,20 +70,20 @@ export default function FlashcardsPage() {
         {/* Header */}
         <div className="space-y-4">
           <div className="flex items-center gap-2">
-            <div className="h-px w-8 bg-blue-500/50" />
-            <span className="text-blue-500 text-xs font-bold uppercase tracking-[0.3em]">Study Mode</span>
+            <div className="h-px w-8" style={{ backgroundColor: 'var(--editorial-accent)' }} />
+            <span className="text-xs font-bold uppercase tracking-[0.3em]" style={{ color: 'var(--editorial-accent)' }}>Study Mode</span>
           </div>
           <h1 className="text-4xl sm:text-5xl md:text-7xl font-display font-black tracking-tight">
             Flashcards
           </h1>
-          <p className="text-zinc-500 dark:text-zinc-400 text-lg max-w-xl leading-relaxed">
+          <p className="text-lg max-w-xl leading-relaxed" style={{ color: 'var(--editorial-muted)' }}>
             Master Bikol vocabulary with interactive flip cards. Choose a deck size and test your recall.
           </p>
         </div>
 
         {/* Tier Selection */}
         <div className="space-y-4">
-          <h2 className="text-sm font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2">
+          <h2 className="text-sm font-bold uppercase tracking-widest flex items-center gap-2" style={{ color: 'var(--editorial-muted)' }}>
             <Layers className="w-4 h-4" /> Deck Size
           </h2>
           <div className="grid gap-3 sm:grid-cols-3">
@@ -91,14 +92,14 @@ export default function FlashcardsPage() {
                 key={tier.limit}
                 onClick={() => fetchWords(tier.limit)}
                 disabled={isLoading}
-                className={`p-6 rounded-2xl border text-left transition-all disabled:opacity-50 ${
-                  selectedTier === tier.limit && words.length > 0
-                    ? "border-blue-500/40 bg-blue-500/5 dark:bg-blue-500/10"
-                    : "border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 bg-white dark:bg-zinc-900/50"
-                }`}
+                className="p-6 rounded-2xl border text-left transition-all disabled:opacity-50"
+                style={{
+                  backgroundColor: selectedTier === tier.limit && words.length > 0 ? 'rgba(196,155,76,0.08)' : 'var(--editorial-surface-raised)',
+                  borderColor: selectedTier === tier.limit && words.length > 0 ? 'rgba(196,155,76,0.35)' : 'var(--editorial-border)',
+                }}
               >
-                <div className="text-2xl font-black text-blue-500">{tier.label}</div>
-                <div className="text-xs text-zinc-400 mt-1">{tier.desc}</div>
+                <div className="text-2xl font-black" style={{ color: 'var(--editorial-accent)' }}>{tier.label}</div>
+                <div className="text-xs mt-1" style={{ color: 'var(--editorial-muted)' }}>{tier.desc}</div>
               </button>
             ))}
           </div>
@@ -111,19 +112,20 @@ export default function FlashcardsPage() {
               animate={{ rotate: 360 }}
               transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
             >
-              <RefreshCw className="w-8 h-8 text-blue-500" />
+              <RefreshCw className="w-8 h-8" style={{ color: 'var(--editorial-accent)' }} />
             </motion.div>
-            <p className="text-zinc-500 text-sm font-medium">Loading words...</p>
+            <p className="text-sm font-medium" style={{ color: 'var(--editorial-muted)' }}>Loading words...</p>
           </div>
         )}
 
         {/* Error state */}
         {error && !isLoading && (
-          <div className="p-6 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-900/20 rounded-2xl text-center space-y-3">
-            <p className="text-red-600 dark:text-red-400 text-sm">{error}</p>
+          <div className="p-6 rounded-2xl text-center space-y-3" style={{ backgroundColor: 'rgba(194,106,62,0.08)', border: '1px solid rgba(194,106,62,0.2)' }}>
+            <p className="text-sm" style={{ color: 'var(--editorial-rust)' }}>{error}</p>
             <button
               onClick={() => fetchWords(25)}
-              className="px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-xl text-sm font-bold hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
+              className="px-4 py-2 rounded-xl text-sm font-bold transition-colors"
+              style={{ backgroundColor: 'rgba(194,106,62,0.12)', color: 'var(--editorial-rust)' }}
             >
               Retry
             </button>
@@ -133,19 +135,20 @@ export default function FlashcardsPage() {
         {/* Ready state */}
         {!isLoading && !error && words.length > 0 && (
           <div className="space-y-6">
-            <div className="flex items-center gap-4 p-4 bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl">
-              <div className="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center">
-                <Shuffle className="w-5 h-5 text-blue-500" />
+            <div className="flex items-center gap-4 p-4 rounded-2xl" style={{ backgroundColor: 'var(--editorial-surface)', border: '1px solid var(--editorial-border)' }}>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: 'rgba(196,155,76,0.1)' }}>
+                <Shuffle className="w-5 h-5" style={{ color: 'var(--editorial-accent)' }} />
               </div>
               <div>
-                <p className="font-bold text-zinc-900 dark:text-white">{words.length} words ready</p>
-                <p className="text-xs text-zinc-500">Randomly selected from the dictionary</p>
+                <p className="font-bold" style={{ color: 'var(--editorial-text)' }}>{words.length} words ready</p>
+                <p className="text-xs" style={{ color: 'var(--editorial-muted)' }}>Randomly selected from the dictionary</p>
               </div>
             </div>
 
             <button
               onClick={() => setIsActive(true)}
-              className="w-full py-5 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-blue-500/20 text-lg"
+              className="w-full py-5 font-bold rounded-2xl transition-all active:scale-[0.98] shadow-lg text-lg"
+              style={{ backgroundColor: 'var(--editorial-accent)', color: '#fff', boxShadow: '0 10px 30px -5px rgba(196,155,76,0.3)' }}
             >
               Start Studying
             </button>
@@ -154,7 +157,7 @@ export default function FlashcardsPage() {
 
         {/* Empty state */}
         {!isLoading && !error && words.length === 0 && (
-          <div className="text-center py-12 text-zinc-500">
+          <div className="text-center py-12" style={{ color: 'var(--editorial-muted)' }}>
             <p>No words available. Try again later.</p>
           </div>
         )}
