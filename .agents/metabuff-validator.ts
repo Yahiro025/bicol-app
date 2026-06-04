@@ -96,6 +96,8 @@ Audit all changes made in this session. Use these tools (all available in toolNa
   - str_replace     → edit files (prefer this)
   - write_file      → create new files
   - spawn_agents    → spawn ecc-code-architect for fix passes OR metabuff-regex-guard for regex
+                      When spawning thinker-with-files-gemini, ALWAYS include params: { filePaths: ['<files from git diff>'] }
+                      e.g. spawn_agents([{ agent_type: 'thinker-with-files-gemini', params: { filePaths: changedFiles }, prompt: '...' }])
 
 STEPS:
 
@@ -177,18 +179,19 @@ const definition: AgentDefinition = {
 
   toolNames: [
     'read_files',
-    'code_searcher',
+    'code_search',
     'str_replace',
     'write_file',
     'spawn_agents',
     'think_deeply',    // for deep failure analysis
-    'basher',
+    'run_terminal_command',
     'end_turn',        // [FIX v1.2.1] required for clean termination — was missing
     // 'suggest_followups' removed — not a valid Freebuff tool, caused agent-load validation error
   ],
 
   spawnableAgents: [
-    'metabuff',                     // targeted fix passes
+    'ecc-code-architect',           // [FIX BUG-10] was 'metabuff' — spawning the full orchestrator for fixes
+                                    // triggered the whole complexity pipeline, risking validator→mega→validator loops
     'thinker-with-files-gemini',    // deep analysis of tricky failures
     'metabuff-regex-guard',         // v1.1.0: regex safety scan
   ],

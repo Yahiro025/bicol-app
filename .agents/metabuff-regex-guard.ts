@@ -206,11 +206,11 @@ const definition: AgentDefinition = {
 
   toolNames: [
     'read_files',
-    'code_searcher',
+    'code_search',
     'str_replace',
     'write_file',
-    'basher',
-    'glob',
+    'run_terminal_command',
+    'find_files',
     'end_turn',
   ],
 

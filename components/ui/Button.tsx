@@ -8,7 +8,7 @@ export interface ButtonProps
   isLoading?: boolean;
 }
 
-export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
     { className, variant = "primary", size = "md", isLoading, children, disabled, ...props },
     ref

@@ -101,13 +101,12 @@ const definition: AgentDefinition = {
   toolNames: ['spawn_agents', 'think_deeply', 'end_turn'],
 
   spawnableAgents: [
-    'metabuff',              // general-purpose implementation
+    'ecc-code-architect',    // general-purpose implementation (replaces 'metabuff' — avoids re-entrancy loop)
     'thinker-with-files-gemini',  // task decomposition
     'code-reviewer-deepseek',    // review / synthesis
     'researcher-web',            // documentation research
     'researcher-docs',           // API docs research
     'file-picker',               // codebase mapping
-    'basher',
     'metabuff-arch',
     'metabuff-security',
     'metabuff-testgen',
@@ -183,9 +182,16 @@ const definition: AgentDefinition = {
       }]
 
       const jsonMatch = raw.match(/\[[\s\S]*?\]/s)
-      if (jsonMatch) {
+      // BUG-13 FIX: non-greedy regex above breaks on nested arrays (e.g. "files": ["a.ts"])
+      // by stopping at the first inner ']'. Use outermost-bracket approach instead.
+      const outerStart = raw.indexOf('[')
+      const outerEnd = raw.lastIndexOf(']')
+      const jsonStr = outerStart !== -1 && outerEnd > outerStart
+        ? raw.slice(outerStart, outerEnd + 1)
+        : jsonMatch?.[0]
+      if (jsonStr) {
         try {
-          const parsed = JSON.parse(jsonMatch[0]) as unknown[]
+          const parsed = JSON.parse(jsonStr) as unknown[]
           if (Array.isArray(parsed) && parsed.length > 0) {
             return (parsed as Array<{
               subtask: string
@@ -256,7 +262,9 @@ ANTI-HALLUCINATION (non-negotiable):
 `
 
     // ── Phase 0: Codebase mapping ──────────────────────────────────────────────
-    yield {
+    // [FIX BUG-07] Capture file-picker output so thinker receives actual file paths,
+    // not an empty array. Old code yielded and discarded the result entirely.
+    const { toolResult: fileMapRaw } = (yield {
       toolName: 'spawn_agents',
       input: {
         agents: [{
@@ -268,7 +276,16 @@ ANTI-HALLUCINATION (non-negotiable):
             `Task: ${prompt}`,
         }],
       },
-    }
+    }) as { toolResult: string; toolError?: string }
+
+    // Extract file paths from the file-picker response (lines that look like paths)
+    const discoveredPaths: string[] = typeof fileMapRaw === 'string'
+      ? fileMapRaw
+          .split('\n')
+          .map(l => l.trim())
+          .filter(l => /^[\w./\-].*\.(ts|tsx|js|jsx|py|go|rs|java|kt|swift|cs|cpp|dart|rb|php)$/.test(l))
+          .slice(0, 40)  // cap to avoid overloading thinker context
+      : []
 
     // ── Phase 1: Task decomposition ───────────────────────────────────────────
     yield {
@@ -276,7 +293,7 @@ ANTI-HALLUCINATION (non-negotiable):
       input: {
         agents: [{
           agent_type: 'thinker-with-files-gemini',
-          params: { filePaths: [] },
+          params: { filePaths: discoveredPaths },  // [FIX BUG-07] was always []
           prompt:
             `You are decomposing a large coding task for parallel cascade execution.\n\n` +
             `Task: ${prompt}\n\n` +
@@ -320,6 +337,10 @@ ANTI-HALLUCINATION (non-negotiable):
     // [FIX v1.3.1] Framework resumes generator with { toolResult, toolError } — must destructure.
     // Old: const decompositionRaw: unknown = yield {...} → captured the whole object, not the string.
     // parseDecomposition always saw a non-string truthy value → fell through to fallback single subtask.
+    // [BUG-20 NOTE] This extraction depends on message history recall. In long sessions where context
+    // is truncated, think_deeply may return "" and parseDecomposition falls back to a single subtask.
+    // The fallback is safe (task still executes, just undecomposed) but degrades mega's value.
+    // Future improvement: capture thinker output directly from spawn_agents toolResult instead.
     const { toolResult: decompositionRaw } = (yield {
       toolName: 'think_deeply',
       input: {
@@ -372,12 +393,15 @@ ANTI-HALLUCINATION (non-negotiable):
       }
 
       // SDD TWO-STAGE REVIEW (Superpowers integration v1.3.0)
+      // [FIX BUG-08] Stages are now SEQUENTIAL: Stage 1 completes before Stage 2 runs.
+      // Old code ran both in one spawn_agents call (parallel), which wasted tokens on
+      // Stage 2 when Stage 1 found [CRITICAL] violations in non-existent or wrong code.
       // Stage 1: Spec Compliance — does each subtask match its spec EXACTLY?
-      // Stage 2: Code Quality — imports, types, tests, conventions
-      // Both stages run in PARALLEL for efficiency (Stage 2 doesn't depend on Stage 1 output).
+      // Stage 2: Code Quality — imports, types, tests, conventions (runs after Stage 1)
 
       const isLastWave = waveIdx >= waves.length - 1
 
+      // Stage 1 — Spec Compliance (must complete first)
       yield {
         toolName: 'spawn_agents',
         input: {
@@ -396,13 +420,21 @@ ANTI-HALLUCINATION (non-negotiable):
               `  [CRITICAL] — spec violation that breaks dependent work → BLOCK\n` +
               `  [HIGH] — missing acceptance criterion → FIX\n` +
               `  [MEDIUM] — scope creep (extra changes) → NOTE\n\n` +
-              `Fix [CRITICAL] and [HIGH] issues. Do NOT refactor style. Do NOT use performative\n` +
-              `language ("Great point!" is banned — use "Verified:" or "Found:" instead).`,
-          }, {
+              `Fix [CRITICAL] and [HIGH] issues before Stage 2 runs. Do NOT refactor style.\n` +
+              `Do NOT use performative language ("Great point!" is banned — use "Verified:" or "Found:" instead).`,
+          }],
+        },
+      }
+
+      // Stage 2 — Code Quality (sequential: only after Stage 1 fixes are applied)
+      yield {
+        toolName: 'spawn_agents',
+        input: {
+          agents: [{
             agent_type: 'code-reviewer-deepseek',
             prompt:
               `SDD STAGE 2 — CODE QUALITY REVIEW (Wave ${waveIdx + 1} of ${waves.length})\n\n` +
-              `After spec compliance verified, check code quality:\n\n` +
+              `Stage 1 spec compliance has completed. Now check code quality:\n\n` +
               `CODE QUALITY CHECKLIST:\n` +
               `  □ All imports valid? (verify via code_searcher)\n` +
               `  □ No TODOs, FIXMEs, or placeholder comments?\n` +
@@ -460,23 +492,13 @@ ANTI-HALLUCINATION (non-negotiable):
 
     // ── Phase 5: Full typecheck + tests ────────────────────────────────────────
     yield {
-      toolName: 'spawn_agents',
+      toolName: 'run_terminal_command',
       input: {
-        agents: [{
-          agent_type: 'basher',
-          params: {
-            command:
-              'echo "=== TYPE CHECK ===" && ' +
-              '(bun run typecheck 2>/dev/null || npx tsc --noEmit 2>&1) | head -40 && ' +
-              'echo "=== TESTS ===" && ' +
-              '(bun test 2>&1 || npx vitest run 2>&1 || npx jest 2>&1) | tail -30',
-            what_to_summarize:
-              'Type-check and test results. ' +
-              'Report any TypeScript errors or test failures. ' +
-              'If errors found, describe them so the validator can fix them.',
-            timeout_seconds: BASHER_TIMEOUT,
-          },
-        }],
+        command:
+          'echo "=== TYPE CHECK ===" && ' +
+          '(bun run typecheck 2>/dev/null || npx tsc --noEmit 2>&1) | head -40 && ' +
+          'echo "=== TESTS ===" && ' +
+          '(bun test 2>&1 || npx vitest run 2>&1 || npx jest 2>&1) | tail -30',
       },
     }
 

@@ -142,11 +142,11 @@ const definition: AgentDefinition = {
 
   toolNames: [
     'read_files',
-    'code_searcher',
+    'code_search',
     'find_files',      // [FIX v1.0.1] was 'file_picker' — correct Freebuff tool name is 'find_files'
     'str_replace',
     'write_file',
-    'basher',
+    'run_terminal_command',
     // 'glob' removed — not a valid Freebuff tool, causes agent-load validation error
     'think_deeply',
     'spawn_agents',

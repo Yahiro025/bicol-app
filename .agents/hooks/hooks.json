@@ -34,7 +34,7 @@
     },
     "PreImplementation": {
       "description": "Runs before any implementation phase — enforces brainstorming gate for complex tasks",
-      "events": ["before_spawn:codebuff/base", "before_spawn:ecc-planner"],
+      "events": ["before_spawn:codebuff/base", "before_spawn:ecc-code-architect", "before_spawn:ecc-planner"],
       "commands": [
         {
           "name": "enforce-brainstorming-gate",

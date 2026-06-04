@@ -35,14 +35,14 @@ const definition: AgentDefinition = {
 
   toolNames: [
     'read_files',
-    'code_searcher',
-    'file_picker',
+    'code_search',
+    'find_files',
     'write_file',
     'str_replace',
-    'basher',
+    'run_terminal_command',
     'spawn_agents',
     'think_deeply',
-    'glob',
+    'find_files',
     'end_turn',
   ],
 
