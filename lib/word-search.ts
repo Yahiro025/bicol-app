@@ -243,7 +243,7 @@ export const getCategoryCounts = reactCache(async (limit = 12): Promise<Category
 
   // OPTIMIZED: Count each table separately, then combine in JS
   // This avoids the expensive UNION ALL + GROUP BY combo
-  const [rootCats, wordCats]: any[] = await Promise.all([
+  const [rootCats, wordCats] = await Promise.all([
     prisma.$queryRaw`
       SELECT category, COUNT(*) as count
       FROM roots

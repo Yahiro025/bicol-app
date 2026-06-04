@@ -236,7 +236,7 @@ const definition: AgentDefinition = {
 
   spawnableAgents: [
     'ecc-code-architect',        // general-purpose implementation (was codebuff/base)
-    'file-picker',               // codebase mapping
+    'codebuff/file-picker@0.0.1', // codebase mapping
     'thinker-with-files-gemini', // task decomposition / planning
     'code-reviewer-deepseek',    // review / synthesis
     'researcher-web',            // documentation research
@@ -1705,7 +1705,7 @@ ${task}
         toolName: 'spawn_agents',
         input: {
           agents: [{
-            agent_type: 'file-picker',
+            agent_type: 'codebuff/file-picker@0.0.1',
             prompt: `Find all files relevant to: ${prompt}`,
           }],
         },

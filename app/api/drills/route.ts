@@ -74,21 +74,23 @@ export async function GET(request: Request) {
       }
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[DRILLS_API_ERROR]:', error);
 
     // Differentiate between rate limits and generic errors
-    if (error?.status === 429) {
+    const status = (error as { status?: number })?.status;
+    if (status === 429) {
       return NextResponse.json(
         { error: 'Groq API rate limit exceeded. Please try again later.' },
         { status: 429 }
       );
     }
 
+    const message = error instanceof Error ? error.message : undefined;
     return NextResponse.json(
       { 
         error: 'Failed to generate drill data.', 
-        details: process.env.NODE_ENV === 'development' ? error.message : undefined 
+        details: process.env.NODE_ENV === 'development' ? message : undefined 
       },
       { status: 500 }
     );

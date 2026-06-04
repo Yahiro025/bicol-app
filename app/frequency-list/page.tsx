@@ -1,11 +1,11 @@
-import { browseWords } from '@/lib/word-search';
+import { browseWords, type WordSearchEntry } from '@/lib/word-search';
 
 // ISR: frequency data changes rarely, revalidate hourly
 export const revalidate = 3600;
 
 export default async function FrequencyListPage() {
-  let words: any[] = [];
-  let dbError = null;
+  let words: WordSearchEntry[] = [];
+  let dbError: string | null = null;
   try {
     words = await browseWords({
       filters: {},
@@ -13,9 +13,9 @@ export default async function FrequencyListPage() {
       limit: 100,
       offset: 0,
     });
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error(e);
-    dbError = e.message;
+    dbError = e instanceof Error ? e.message : 'Unknown error';
   }
 
   return (

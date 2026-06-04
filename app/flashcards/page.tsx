@@ -34,8 +34,8 @@ export default function FlashcardsPage() {
         setWords(data);
         setSelectedTier(limit);
       }
-    } catch (e: any) {
-      setError(e.message || "Failed to load words");
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Failed to load words");
       setWords([]);
     } finally {
       setIsLoading(false);

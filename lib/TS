@@ -1,3 +1,0 @@
-import { prisma } from '@/lib/prisma';
-
-const words = await prisma.word.findMany();

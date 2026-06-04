@@ -1,7 +1,7 @@
 import BrowseClient from '@/components/BrowseClient';
 import Link from 'next/link';
 import { BookOpen } from 'lucide-react';
-import { browseWords, getCategoryCounts, countDistinctWords } from '@/lib/word-search';
+import { browseWords, getCategoryCounts, countDistinctWords, type WordSearchEntry } from '@/lib/word-search';
 
 // ISR: dictionary content changes infrequently, revalidate every 5 minutes
 export const revalidate = 300;
@@ -13,7 +13,7 @@ export default async function BrowsePage({
 }) {
   const { letter, category, q, sort } = await searchParams;
 
-  let words: any[] = [];
+  let words: WordSearchEntry[] = [];
   let categories: string[] = [];
   let totalWords = 0;
   let dbError: string | null = null;

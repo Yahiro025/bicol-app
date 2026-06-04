@@ -12,9 +12,11 @@ const globalForPrisma = globalThis as unknown as {
 const getPool = () => {
   if (!globalForPrisma.pgPool) {
     if (!connectionString) {
-      console.error('DATABASE_URL is not defined');
+      throw new Error(
+        'DATABASE_URL is not defined. Set it in .env or your deployment environment.'
+      );
     }
-    const isSupabase = connectionString?.includes('supabase.co');
+    const isSupabase = connectionString.includes('supabase.co');
     globalForPrisma.pgPool = new pg.Pool({
       connectionString,
       max: 20,                         // Limit concurrent connections

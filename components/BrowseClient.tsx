@@ -11,7 +11,7 @@ import { escapeRegex } from '@/lib/fuzzy';
 
 type Word = {
   bikol: string;
-  english: string;
+  english: string | null;
   tagalog?: string | null;
   category?: string | null;
   pos?: string | null;
@@ -71,9 +71,9 @@ export default function BrowseClient({
   const [areFiltersVisible, setAreFiltersVisible] = useState(false);
   const langMode = useLanguageMode();
 
-  const displayTranslation = (word: Word) => {
+  const displayTranslation = (word: Word): string => {
     if (langMode === 'tl' && word.tagalog) return word.tagalog;
-    return word.english;
+    return word.english ?? '';
   };
 
   const fetchMoreWords = useCallback(async (isReset = false) => {

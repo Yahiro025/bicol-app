@@ -27,8 +27,9 @@ export async function GET(request: Request) {
         'Cache-Control': 'public, s-maxage=300, max-age=60, stale-while-revalidate=600',
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
     console.error('Browse API Error:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

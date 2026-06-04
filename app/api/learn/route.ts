@@ -9,7 +9,7 @@ interface CacheEntry<T> {
   expiresAt: number;
 }
 
-const learnCache = new Map<string, CacheEntry<any>>();
+const learnCache = new Map<string, CacheEntry<unknown>>();
 const LEARN_CACHE_TTL = 120; // 2 minutes — flashcards/quiz content can be slightly stale
 
 function getCached<T>(key: string): T | null {
@@ -86,7 +86,7 @@ export async function GET(request: Request) {
   const cacheKey = `learn:${mode}:${limit}`;
 
   // Serve from cache if available — avoids expensive ORDER BY RANDOM() on every request
-  const cached = getCached<any>(cacheKey);
+  const cached = getCached<unknown>(cacheKey);
   if (cached !== null) {
     return NextResponse.json(cached, {
       headers: {
@@ -146,8 +146,9 @@ export async function GET(request: Request) {
         },
       });
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
     console.error('Learn API error:', error);
-    return NextResponse.json({ error: 'Failed to fetch learning content', details: error.message }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to fetch learning content', details: message }, { status: 500 });
   }
 }

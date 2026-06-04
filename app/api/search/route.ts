@@ -93,10 +93,11 @@ export async function GET(request: Request) {
         'Cache-Control': 'public, s-maxage=120, max-age=30, stale-while-revalidate=300',
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : '';
     console.error('Postgres Search Error:', error);
     // If the extension isn't enabled, fallback to fuzzy JS-based search
-    if (error.message?.includes('similarity') || error.message?.includes('operator does not exist')) {
+    if (message.includes('similarity') || message.includes('operator does not exist')) {
        // Fetch candidate roots (broader prefix match to feed fuzzy scorer)
        const candidates = await prisma.root.findMany({
          where: { bikol: { startsWith: q.charAt(0), mode: 'insensitive' } },
@@ -141,6 +142,6 @@ export async function GET(request: Request) {
          },
        });
     }
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: message || 'Search failed' }, { status: 500 });
   }
 }
