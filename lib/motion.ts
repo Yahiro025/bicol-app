@@ -52,27 +52,3 @@ export const Springs = {
     mass: 0.5,
   },
 } as const
-
-/**
- * Hover scale presets — subtle and accessible.
- * Never scale below 1.0 (active) or above 1.05 (hover) to prevent
- * layout shift / sensory overload.
- */
-export const HoverScale = {
-  subtle: { scale: 1.01 },
-  default: { scale: 1.02 },
-  prominent: { scale: 1.03 },
-} as const
-
-/** Active/tap scale — consistent press-down feedback */
-export const ActiveScale = { scale: 0.97 } as const
-
-/**
- * Stagger delays for list animations.
- * Short delays prevent motion sickness in long lists.
- */
-export const Stagger = {
-  fast: 0.03, // dense grids
-  default: 0.05, // standard lists
-  slow: 0.08, // featured content
-} as const

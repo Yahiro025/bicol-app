@@ -11,7 +11,7 @@
 
 1. [Landasan Design Philosophy — Deep Analysis](#1-landasan-design-philosophy--deep-analysis)
 2. [Our Current Design — Gap Analysis](#2-our-current-design--gap-analysis)
-3. [Phase 1: Sensory Foundation — Motion Preferences & Spacing](#3-phase-1-sensory-foundation--motion-preferences--spacing)
+3. [Phase 1: Sensory Foundation — Spacing & Design Tokens](#3-phase-1-sensory-foundation--spacing--design-tokens)
 4. [Phase 2: Generous Micro-Interactions & Physics](#4-phase-2-generous-micro-interactions--physics)
 5. [Phase 3: Adaptive UX — Energy States & Zero-Penalty](#5-phase-3-adaptive-ux--energy-states--zero-penalty)
 6. [Phase 4: Gamified Navigation & Sanctuary](#6-phase-4-gamified-navigation--sanctuary)
@@ -49,11 +49,10 @@ For a **language dictionary** (not a full LMS), the most applicable Landasan pri
 1. **Neuro-inclusive whitespace & readability** — our dense text-heavy dictionary pages benefit from Landasan's generous spacing
 2. **Zero-penalty learning** — our quiz/drill "wrong answer" states (red borders, shake animations) are punitive
 3. **Energy-based states** — "Green/Yellow/Red" cognitive load framing instead of "Easy/Medium/Hard"
-4. **Adaptive motion** — user control over animation intensity (critical for neurodivergent learners)
-5. **Generous micro-interactions** — Landasan's every-element-responds philosophy vs our limited hover states
-6. **Physics-inspired springs** — Matter.js-inspired Framer Motion configs (mass, weight, damping)
-7. **Progressive disclosure** — Task Shredder for our 3-phase learning module
-8. **Gamified navigation** — Biome Map inspiration for our category browsing
+4. **Generous micro-interactions** — Landasan's every-element-responds philosophy vs our limited hover states
+5. **Physics-inspired springs** — Matter.js-inspired Framer Motion configs (mass, weight, damping)
+6. **Progressive disclosure** — Task Shredder for our 3-phase learning module
+7. **Gamified navigation** — Biome Map inspiration for our category browsing
 
 ---
 
@@ -76,7 +75,7 @@ For a **language dictionary** (not a full LMS), the most applicable Landasan pri
 
 | Landasan Feature | Our Status | Gap Severity |
 |-----------------|-----------|--------------|
-| Motion preferences (user-controlled) | ❌ None | 🔴 High |
+| ~~Motion preferences (user-controlled)~~ | ✅ Removed | — |
 | Sensory controls (contrast, font scale) | ❌ None | 🔴 High |
 | Energy-based categorization | ❌ Uses "Easy/Hard" implicitly | 🟡 Medium |
 | Zero-penalty feedback | ❌ Red borders, shake animations on error | 🟡 Medium |
@@ -104,135 +103,13 @@ For a **language dictionary** (not a full LMS), the most applicable Landasan pri
 
 ---
 
-## 3. Phase 1: Sensory Foundation — Motion Preferences & Spacing
+## 3. Phase 1: Sensory Foundation — Spacing & Design Tokens
 
-**Impact:** 🔴 High | **Effort:** 🟢 Low | **Files:** ~5 modified, 2 new
+**Impact:** 🟡 Medium | **Effort:** 🟢 Low | **Files:** ~4 modified
 
-### 3.1 Motion Preferences System
+> **Note**: The motion preferences system (useMotionPreferences, MotionToggle, AdaptiveMotion, --motion-multiplier CSS variable) was implemented as planned below but later removed — it had no visible effect since Framer Motion uses its own internal timing rather than CSS custom properties for animations. The CSS `--motion-multiplier` variable only affected a few generic `transition` declarations and wasn't connected to the Framer Motion infrastructure.
 
-Create a user-controlled animation intensity system using React Context + CSS custom properties.
-
-**New file: `hooks/useMotionPreferences.ts`**
-
-```typescript
-'use client'
-import { createContext, useContext, useEffect, useState, useCallback } from 'react'
-
-export type MotionLevel = 'none' | 'reduced' | 'default' | 'enhanced'
-
-interface MotionPreferences {
-  level: MotionLevel
-  multiplier: number        // 0, 0.5, 1.0, 1.5
-  setLevel: (level: MotionLevel) => void
-}
-
-const MotionContext = createContext<MotionPreferences>({
-  level: 'default',
-  multiplier: 1,
-  setLevel: () => {},
-})
-
-const STORAGE_KEY = 'bikol-motion-preference'
-
-export function MotionProvider({ children }: { children: React.ReactNode }) {
-  const [level, setLevelState] = useState<MotionLevel>('default')
-
-  useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY) as MotionLevel | null
-    if (stored) setLevelState(stored)
-  }, [])
-
-  const setLevel = useCallback((newLevel: MotionLevel) => {
-    setLevelState(newLevel)
-    localStorage.setItem(STORAGE_KEY, newLevel)
-  }, [])
-
-  const multiplier = level === 'none' ? 0 : level === 'reduced' ? 0.5 : level === 'enhanced' ? 1.5 : 1
-
-  // Apply CSS custom property to document
-  useEffect(() => {
-    document.documentElement.style.setProperty('--motion-multiplier', String(multiplier))
-  }, [multiplier])
-
-  return (
-    <MotionContext.Provider value={{ level, multiplier, setLevel }}>
-      {children}
-    </MotionContext.Provider>
-  )
-}
-
-export function useMotionPreferences() {
-  return useContext(MotionContext)
-}
-```
-
-**New component: `components/ui/MotionToggle.tsx`**
-
-A small toggle in the header (next to ThemeToggle + LanguageToggle) offering 4 motion levels with appropriate icons.
-
-### 3.2 Adaptive Animation Wrapper
-
-Create an `<AdaptiveMotion>` component that respects `--motion-multiplier`:
-
-**New file: `components/ui/AdaptiveMotion.tsx`**
-
-```typescript
-'use client'
-import { motion, type MotionProps } from 'framer-motion'
-import { useMotionPreferences } from '@/hooks/useMotionPreferences'
-
-interface AdaptiveMotionProps extends MotionProps {
-  children: React.ReactNode
-  // If no-motion, render a static div
-}
-
-// ⚠️ Never use `as any` casts — violates codebase rules.
-// When motion is disabled, render a plain div with only className + children.
-interface AdaptiveMotionProps extends MotionProps {
-  children: React.ReactNode
-  // className is extracted separately for the no-motion fallback
-}
-
-export function AdaptiveMotion({
-  children,
-  transition,
-  animate,
-  initial,
-  className,
-  ...motionProps
-}: AdaptiveMotionProps) {
-  const { multiplier } = useMotionPreferences()
-
-  if (multiplier === 0) {
-    // No animation — render static div (className only, no motion props)
-    return <div className={typeof className === 'string' ? className : undefined}>{children}</div>
-  }
-
-  // Scale transition durations by multiplier
-  const scaledTransition = transition
-    ? {
-        ...transition,
-        duration: typeof transition === 'object' && 'duration' in transition
-          ? (transition.duration as number) / multiplier
-          : transition,
-      }
-    : undefined
-
-  return (
-    <motion.div
-      className={className}
-      {...motionProps}
-      initial={initial}
-      animate={animate}
-      transition={scaledTransition}
-    >
-      {children}
-    </motion.div>
-  )
-}
-```
-
-### 3.3 Generous Whitespace Pass
+### 3.1 Generous Whitespace Pass
 
 Increase padding/margins across key pages:
 
@@ -255,9 +132,6 @@ Increase padding/margins across key pages:
 
 ```css
 :root {
-  /* Motion system */
-  --motion-multiplier: 1;
-  
   /* Spacing scale (neuro-inclusive generous defaults) */
   --space-card-padding: 1.75rem;    /* was implicit ~1.5rem */
   --space-section-gap: 6rem;        /* was implicit ~4rem */
@@ -673,37 +547,25 @@ Update legacy CSS classes to use the new design tokens:
   background-color: rgba(255, 255, 255, 0.8);
   border: 1px solid var(--color-border);
   border-radius: 1rem;
-  transition: all calc(200ms * var(--motion-multiplier, 1)) ease-out;
+  transition: all 200ms ease-out;
 }
-/* ... hover state respects motion multiplier via transition-duration */
+/* ... hover state with standard transition */
 ```
 
 **`app/globals.css` — update `responsive-bloom`:**
 ```css
 .responsive-bloom {
-  transition: all calc(300ms * var(--motion-multiplier, 1)) ease-out;
+  transition: all 300ms ease-out;
 }
 ```
 
-### 6.3 Migration Strategy — Existing `motion.div` → `AdaptiveMotion`
-
-To prevent the new `AdaptiveMotion` system from being dead code, update key components:
-
-| Component | Current | Change |
-|-----------|---------|--------|
-| `PageTransition.tsx` | `<motion.div>` with hardcoded `duration: 0.15` | `<AdaptiveMotion>` with `Springs.page` |
-| `WordOfTheDay.tsx` | `<motion.div>` with `type: 'spring', stiffness: 300` | `<AdaptiveMotion>` with `Springs.heavy` |
-| `CategoryGrid.tsx` | Container + item `motion.div` with hardcoded springs | `<AdaptiveMotion>` with `Springs.default` + `Stagger.slow` |
-
-This is a find-and-replace across ~6 files. The phased plan already lists these changes in §9.
-
-### 6.4 Accessibility Audit
+### 6.3 Accessibility Audit
 
 Run a WCAG 2.2 pass on all new components:
 
 - Ensure all interactive elements have `focus-visible` rings ✅ (existing pattern already good)
 - Verify color contrast ratios (4.5:1 minimum) — particularly the `text-zinc-500` on `bg-zinc-950` pattern
-- Add `aria-label` to all icon-only buttons (MotionToggle is new — needs this)
+- Add `aria-label` to all icon-only buttons
 - Ensure `prefers-reduced-motion: reduce` disables auto-playing animations
 - Test keyboard navigation for MicroStepCarousel
 - Verify EnergyBadge colors meet contrast requirements
@@ -741,9 +603,6 @@ Run a WCAG 2.2 pass on all new components:
   --text-primary: #fafafa;         /* Zinc-50 */
   --text-secondary: #a1a1aa;      /* Zinc-400 */
   --text-tertiary: #71717a;       /* Zinc-500 */
-  
-  /* Motion */
-  --motion-multiplier: 1;          /* 0=none, 0.5=reduced, 1=default, 1.5=enhanced */
   
   /* Spacing */
   --space-card-padding: 1.75rem;
@@ -783,17 +642,12 @@ Body → 16px base
 
 ### 8.2 Reduced Motion Strategy
 
-When `--motion-multiplier: 0`:
+When `prefers-reduced-motion: reduce` is active:
 - All `AnimatePresence` uses `mode="wait"` with instant transitions (`duration: 0`)
 - `whileHover` / `whileTap` disabled
 - Stagger delays set to 0
 - Auto-playing animations (loading spinners, breathing) paused
 - Carousels switch to simple fade
-
-When `--motion-multiplier: 0.5`:
-- All durations doubled (slower, calmer)
-- Springs use `damping: original * 1.5` (less bouncy)
-- Stagger delays doubled
 
 ---
 
@@ -801,14 +655,11 @@ When `--motion-multiplier: 0.5`:
 
 ### Phase 1 Files
 
+> **Note**: The motion preferences system (useMotionPreferences, MotionToggle, AdaptiveMotion, --motion-multiplier) was initially implemented but later removed as it provided no visible benefit (Framer Motion uses its own timing, not CSS variables). The remaining Phase 1 changes are:
+
 | File | Action | Changes |
 |------|--------|---------|
-| `hooks/useMotionPreferences.ts` | **CREATE** | Motion preference context + provider |
-| `components/ui/MotionToggle.tsx` | **CREATE** | 4-level motion toggle UI |
-| `components/ui/AdaptiveMotion.tsx` | **CREATE** | Motion-respecting wrapper |
-| `app/providers.tsx` | MODIFY | Wrap with `MotionProvider` |
-| `app/globals.css` | MODIFY | Add `--motion-multiplier`, energy colors, spacing tokens |
-| `app/layout.tsx` | MODIFY | Add `MotionToggle` to header |
+| `app/globals.css` | MODIFY | Add energy colors, spacing tokens |
 | `app/page.tsx` | MODIFY | Increase padding, spacing, max-width |
 | `components/CategoryGrid.tsx` | MODIFY | Increase gap, padding |
 | `components/WordCard.tsx` | MODIFY | Increase padding |
@@ -819,7 +670,7 @@ When `--motion-multiplier: 0.5`:
 |------|--------|---------|
 | `lib/motion.ts` | **CREATE** | Physics spring configs, hover/tap scales, stagger delays |
 | `components/ui/ProgressBar.tsx` | **CREATE** | Animated progress bar with variants |
-| `components/PageTransition.tsx` | MODIFY | Use `Springs.page`, respect motion multiplier |
+| `components/PageTransition.tsx` | MODIFY | Use `Springs.page` |
 | `components/DesktopNav.tsx` | MODIFY | Add scale/tap micro-interactions |
 | `components/SearchBar.tsx` | MODIFY | Enhanced focus glow, result hover, search icon animations |
 | `components/HomeVerbDemo.tsx` | MODIFY | Spring slide between verb tabs |
@@ -845,7 +696,7 @@ When `--motion-multiplier: 0.5`:
 |------|--------|---------|
 | `components/SanctuaryPrompt.tsx` | **CREATE** | Break/sanctuary prompt with breathing animation (see §6.1) |
 | `app/learn/page.tsx` | MODIFY | Session timer, sanctuary trigger between phases |
-| `app/globals.css` | MODIFY | Update `card-resting`, `responsive-bloom` to respect `--motion-multiplier`; breathing animation keyframes |
+| `app/globals.css` | MODIFY | Add breathing animation keyframes (`.sanctuary-breathe`, `.sanctuary-pulse`) |
 
 ---
 
@@ -882,11 +733,9 @@ When `--motion-multiplier: 0.5`:
 ## Appendix B: Implementation Order Recommendation
 
 ```
-Phase 1 (Week 1):
-  Day 1-2: Create motion preferences system + AdaptiveMotion
-  Day 3: Whitespace pass on homepage + cards
-  Day 4: Add MotionToggle to header
-  Day 5: Test with all motion levels, verify reduced motion
+Phase 1 (Complete):
+  The motion preferences system (MotionToggle, useMotionPreferences, AdaptiveMotion) was implemented and then removed — it had no visible effect since Framer Motion uses its own timing.
+  Remaining: energy colors, spacing tokens, whitespace pass.
 
 Phase 2 (Week 1-2):
   Day 1: Create lib/motion.ts + ProgressBar
@@ -905,8 +754,7 @@ Phase 3 (Week 2):
 Phase 4 (Week 3):
   Day 1-2: SanctuaryPrompt + session timer
   Day 3: Update legacy CSS utilities (card-resting, responsive-bloom)
-  Day 4: Migration: existing motion.div → AdaptiveMotion (6 files)
-  Day 5: Accessibility audit + polish
+  Day 4: Accessibility audit + polish
 
 Phase 5 — Future (post-GAMIFICATION_PLAN completion):
   • BiomeMap navigation (requires category data mapping)
@@ -916,10 +764,6 @@ Phase 5 — Future (post-GAMIFICATION_PLAN completion):
 
 ## Appendix C: Testing Checklist
 
-- [ ] Motion toggle cycles through all 4 levels
-- [ ] Reduced motion (level 0) disables all animations
-- [ ] Enhanced motion (level 1.5) speeds up animations
-- [ ] Preference persists across page refreshes (localStorage)
 - [ ] Zero-penalty feedback never shows red/rose colors
 - [ ] Energy badges render correctly for all 3 levels
 - [ ] MicroStepCarousel keyboard navigation works
