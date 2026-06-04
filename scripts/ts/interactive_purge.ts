@@ -161,9 +161,10 @@ Your response must be ONLY the valid JSON array, with no other text, markdown fo
             const jsonMatch = str.match(/try again in ([\d\.]+)s/i);
             if (jsonMatch && jsonMatch[1]) {
               delaySec = parseFloat(jsonMatch[1]);
+            }            } catch (_) {
+              console.warn('Single-word audit retry parsing skipped:', _);
             }
-          } catch (_) {}
-        }
+          }
         
         // Add a buffer of 2 seconds
         const sleepMs = Math.ceil(delaySec * 1000) + 2000;
@@ -231,7 +232,9 @@ Your response must be ONLY the valid JSON array, with no other text, markdown fo
               if (jsonMatch && jsonMatch[1]) {
                 delaySec = parseFloat(jsonMatch[1]);
               }
-            } catch (_) {}
+            } catch (_) {
+            console.warn('Rate limit response parsing skipped (non-critical):', _);
+          }
           }
           const sleepMs = Math.ceil(delaySec * 1000) + 2000;
           console.warn(`⚠️ Rate limit (429) hit during single-word retry. Attempt ${singleAttempt}/${maxRetries}. Sleeping for ${(sleepMs / 1000).toFixed(2)} seconds...`);

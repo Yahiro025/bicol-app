@@ -181,8 +181,10 @@ const definition: AgentDefinition = {
     'str_replace',
     'write_file',
     'spawn_agents',
-    'suggest_followups',
+    'think_deeply',    // for deep failure analysis
     'basher',
+    'end_turn',        // [FIX v1.2.1] required for clean termination — was missing
+    // 'suggest_followups' removed — not a valid Freebuff tool, caused agent-load validation error
   ],
 
   spawnableAgents: [

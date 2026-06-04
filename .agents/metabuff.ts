@@ -27,7 +27,16 @@
  *   • [SDD] Two-stage review (spec compliance → code quality) in mega pipeline.
  *   • [PLANS] Writing-plans methodology: no placeholders, checkbox format, executable steps.
  *
- * CHANGES FROM v3.0.0 → v3.1.0:
+ * CHANGES FROM v3.1.0 → v3.1.1 (BUG FIX):
+ *   • [FIX] Mega pipeline passed withECCContext(prompt, prompt) to metabuff-mega.
+ *     withECCContext() prepends 4–6 KB of XML comment blocks BEFORE the task text,
+ *     so metabuff-mega's thinker-with-files-gemini was receiving
+ *     "Task: <!-- ── ECC CONTEXT INJECTION ── --> ..." as its task description.
+ *     Freebuff's built-in vagueness heuristic flagged this as VAGUE_PROMPT.
+ *     Fixed to pass clean prompt directly. metabuff-mega manages ECC context
+ *     internally through SDD_SYSTEM_PREFIX and specialist agent system prompts.
+ *
+ * CHANGES FROM v3.1.0:
  *   • [ANTHROPIC SKILLS] Integrated anthropics/skills methodology into MetaBuff.
  *     Added 7 skill files (master doc, skill-creator, webapp-testing, mcp-builder,
  *     anti-pattern-prevention, verify-iterate, template).
@@ -206,7 +215,7 @@ import { AgentDefinition } from './types/agent-definition'
 
 const definition: AgentDefinition = {
   id: 'metabuff',
-  version: '3.1.0',
+  version: '3.1.1',
   displayName: 'MetaBuff Orchestrator',
 
   spawnerPrompt:
@@ -1881,13 +1890,20 @@ ${task}
     // ── MEGA ──────────────────────────────────────────────────────────────────
     } else {
 
-      // v2.0.1: Mega agent now gets skills + rules injected (was blind)
+      // [FIX v3.1.1] Pass clean prompt to metabuff-mega — do NOT wrap with withECCContext here.
+      // withECCContext prepends 4–6 KB of XML comment blocks BEFORE the task text.
+      // metabuff-mega passes `prompt` verbatim into the thinker-with-files-gemini prompt as
+      // `Task: ${prompt}`, so the thinker sees the XML dump as the task description
+      // instead of the actual user request → triggers VAGUE_PROMPT validation error.
+      // metabuff-mega injects ECC context into each subtask prompt internally via SDD_SYSTEM_PREFIX
+      // and the specialist agents (metabuff-arch, metabuff-security, ecc-code-architect) carry
+      // their own rich system prompts. No skill injection gap.
       yield {
         toolName: 'spawn_agents',
         input: {
           agents: [{
             agent_type: 'metabuff-mega',
-            prompt: withECCContext(prompt, prompt),
+            prompt: prompt,
           }],
         },
       }

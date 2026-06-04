@@ -119,7 +119,16 @@ export const browseWords = reactCache(async (params: {
       ? Prisma.sql`ORDER BY CASE WHEN LOWER(bikol) = LOWER(${filters.q}) THEN 0 WHEN LOWER(bikol) LIKE LOWER(${filters.q + '%'}) THEN 1 ELSE 2 END, LOWER(bikol) ASC`
       : Prisma.sql`ORDER BY LOWER(bikol) ASC`;
 
-  const rows: any[] = await prisma.$queryRaw`
+  const rows: Array<{
+    bikol: string;
+    pos: string | null;
+    category: string | null;
+    pronunciation: string | null;
+    frequency_rank: number | null;
+    english: string | null;
+    tagalog: string | null;
+    source: string;
+  }> = await prisma.$queryRaw`
     SELECT * FROM (
       -- Normalized roots (includes Mintz + Wiktionary data)
       SELECT
@@ -205,7 +214,7 @@ export const countDistinctWords = reactCache(async (): Promise<number> => {
   // Exact count via COUNT(DISTINCT ...) — cached for 10 min so cold start is
   // the only time this runs. The UNION ALL is needed for accuracy since
   // getWordOfTheDay() depends on the exact count for its offset calculation.
-  const result: any[] = await prisma.$queryRaw`
+  const result: Array<{ count: bigint }> = await prisma.$queryRaw`
     SELECT COUNT(DISTINCT LOWER(bikol)) as count FROM (
       SELECT bikol FROM roots WHERE bikol IS NOT NULL AND bikol != ''
       UNION ALL
@@ -251,10 +260,10 @@ export const getCategoryCounts = reactCache(async (limit = 12): Promise<Category
 
   // Merge counts in JS (faster than UNION ALL + re-GROUP BY)
   const categoryMap = new Map<string, number>();
-  for (const row of rootCats as any[]) {
+  for (const row of rootCats as unknown as { category: string; count: bigint }[]) {
     categoryMap.set(row.category, Number(row.count));
   }
-  for (const row of wordCats as any[]) {
+  for (const row of wordCats as unknown as { category: string; count: bigint }[]) {
     categoryMap.set(row.category, (categoryMap.get(row.category) || 0) + Number(row.count));
   }
 
@@ -372,7 +381,16 @@ export const getInitialDictionary = reactCache(async (
 ): Promise<DictionaryEntry[]> => {
   // OPTIMIZED: Query roots only (covers Mintz + Wiktionary), since legacy words' bikol
   // entries already overlap with roots. This avoids the expensive UNION ALL.
-  const rows: any[] = await prisma.$queryRaw`
+  const rows: Array<{
+    bikol: string;
+    pos: string | null;
+    category: string | null;
+    pronunciation: string | null;
+    frequency_rank: number | null;
+    english: string | null;
+    tagalog: string | null;
+    source: string;
+  }> = await prisma.$queryRaw`
     SELECT
       r.bikol,
       def.english,

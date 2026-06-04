@@ -98,7 +98,15 @@ export async function GET(request: Request) {
 
   try {
     if (mode === 'quiz') {
-      const words = await prisma.$queryRaw(buildRandomWordsQuery(Math.min(limit, 50))) as any[];
+      const words = await prisma.$queryRaw(buildRandomWordsQuery(Math.min(limit, 50))) as unknown as {
+        bikol: string;
+        english: string | null;
+        tagalog: string | null;
+        pos: string | null;
+        category: string | null;
+        example_bikol: string | null;
+        example_english: string | null;
+      }[];
 
       if (words.length < 5) {
         return NextResponse.json({ error: 'Not enough words to generate a quiz' }, { status: 400 });
@@ -118,7 +126,15 @@ export async function GET(request: Request) {
       );
     } else {
       // Default: Flashcards
-      const words = await prisma.$queryRaw(buildRandomWordsQuery(Math.min(limit, 100))) as any[];
+      const words = await prisma.$queryRaw(buildRandomWordsQuery(Math.min(limit, 100))) as unknown as {
+        bikol: string;
+        english: string | null;
+        tagalog: string | null;
+        pos: string | null;
+        category: string | null;
+        example_bikol: string | null;
+        example_english: string | null;
+      }[];
 
       setCached(cacheKey, words);
 

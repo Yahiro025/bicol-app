@@ -1,5 +1,5 @@
 /**
- * MetaBuff Mega — SDD-Enhanced Parallel Agent Spawner v1.3.0
+ * MetaBuff Mega — SDD-Enhanced Parallel Agent Spawner v1.3.1
  * ─────────────────────────────────────────────────────────────────────
  * For large-scale tasks (full-system refactors, new features spanning many
  * subsystems, or anything the complexity analyzer scored 6+).
@@ -13,6 +13,27 @@
  *     + spec + code context. No conversation history from other subagents.
  *   • [SDD] Disposable subagents: each subagent does ONE task, fresh context.
  *   • [TDD] Iron Law injection when testing subtask is present in decomposition.
+ *
+ * CHANGES FROM v1.3.0 → v1.3.1 (BUG FIXES):
+ *   • [FIX] Added 'end_turn' to toolNames — was missing entirely. Without it
+ *     Freebuff kept the pipeline alive indefinitely, eventually hitting concurrency
+ *     limits and downgrading spawned subagents to limited mode.
+ *   • [FIX] Added 'ecc-code-architect' to spawnableAgents. resolveAgent() maps
+ *     specialist 'base', 'custom', and the fallback path to 'ecc-code-architect',
+ *     but it was never declared spawnable. Freebuff downgrades unlisted agents to
+ *     limited mode — this was the root cause of all limited mode errors on
+ *     parallel subagents.
+ *   • [FIX] Wrong yield capture for think_deeply. Old code:
+ *       const decompositionRaw: unknown = yield { toolName: 'think_deeply', ... }
+ *     Freebuff resumes the generator with { toolResult, toolError }, so
+ *     decompositionRaw was always a truthy object — never a string. parseDecomposition()
+ *     always fell through to the single-base-subtask fallback. No multi-agent
+ *     decomposition ever occurred. Fixed to:
+ *       const { toolResult: decompositionRaw } = (yield {...}) as { toolResult: string }
+ *   • [FIX] Thinker prompt had no graceful vague-prompt fallback. When the user
+ *     invoked @metabuff-mega with a short/high-level prompt, thinker-with-files-gemini
+ *     returned "VAGUE_PROMPT: ..." instead of JSON. Added explicit instruction:
+ *     "NEVER return an error or 'VAGUE_PROMPT' — ALWAYS produce a valid JSON array."
  *
  * CHANGES FROM v1.2.0 → v1.3.0:
  *   • [QUAL] Cascade wave pattern: MAX_DECOMP_TASKS raised from 6 to 12.
@@ -60,7 +81,7 @@ import { AgentDefinition } from './types/agent-definition'
 
 const definition: AgentDefinition = {
   id: 'metabuff-mega',
-  version: '1.3.0',
+  version: '1.3.1',
   displayName: 'MetaBuff Mega (SDD-Enhanced Cascade Spawner)',
 
   spawnerPrompt:
@@ -77,7 +98,7 @@ const definition: AgentDefinition = {
     effort: 'high',
   },
 
-  toolNames: ['spawn_agents', 'think_deeply'],
+  toolNames: ['spawn_agents', 'think_deeply', 'end_turn'],
 
   spawnableAgents: [
     'metabuff',              // general-purpose implementation
@@ -93,6 +114,7 @@ const definition: AgentDefinition = {
     'metabuff-reasoner',     // v1.2.0: algorithm specialist
     'metabuff-regex-guard',  // v1.2.0: runtime regex safety
     'metabuff-validator',
+    'ecc-code-architect',    // [FIX v1.3.1] resolveAgent() maps base/custom/fallback here — MUST be declared spawnable
   ],
 
   systemPrompt:
@@ -286,13 +308,19 @@ ANTI-HALLUCINATION (non-negotiable):
             `  - Always include at least one testgen subtask\n` +
             `  - Always include arch if the task touches data models or APIs\n` +
             `  - Each file should appear in at most one subtask\n` +
-            `  - Respect the ${MAX_DECOMP_TASKS}-subtask maximum`,
+            `  - Respect the ${MAX_DECOMP_TASKS}-subtask maximum\n\n` +
+            `IMPORTANT: If the task description is short or high-level, use your best judgment\n` +
+            `to infer reasonable subtasks. NEVER return an error, refusal, or "VAGUE_PROMPT".\n` +
+            `ALWAYS produce a valid JSON array — even for a 1-word task, produce at least 3 subtasks.`,
         }],
       },
     }
 
     // Extract decomposition JSON from thinker's response
-    const decompositionRaw: unknown = yield {
+    // [FIX v1.3.1] Framework resumes generator with { toolResult, toolError } — must destructure.
+    // Old: const decompositionRaw: unknown = yield {...} → captured the whole object, not the string.
+    // parseDecomposition always saw a non-string truthy value → fell through to fallback single subtask.
+    const { toolResult: decompositionRaw } = (yield {
       toolName: 'think_deeply',
       input: {
         thought:
@@ -301,7 +329,7 @@ ANTI-HALLUCINATION (non-negotiable):
           'Return just the raw JSON array, nothing else. ' +
           'If no valid JSON array is found, return an empty string.',
       },
-    }
+    }) as { toolResult: string; toolError?: string }
 
     const subtasks = parseDecomposition(
       typeof decompositionRaw === 'string' ? decompositionRaw : undefined,
