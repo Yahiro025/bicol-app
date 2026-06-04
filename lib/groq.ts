@@ -13,10 +13,12 @@ function getGroq(): Groq {
 // GLOBAL MANDATE: Use qwen-3-32b and handle RateLimitError
 const MODEL = 'qwen-3-32b';
 
+type ChatMessage = { role: 'system' | 'user' | 'assistant'; content: string };
+
 /**
  * Executes a Groq completion with retry logic and rate limit respect.
  */
-async function getCompletion(messages: any[], jsonMode: boolean = true) {
+async function getCompletion(messages: ChatMessage[], jsonMode: boolean = true) {
   let attempts = 0;
   const maxAttempts = 3;
 
@@ -33,9 +35,11 @@ async function getCompletion(messages: any[], jsonMode: boolean = true) {
       });
 
       return completion.choices[0]?.message?.content;
-    } catch (error: any) {
+    } catch (error: unknown) {
       attempts++;
-      const isRateLimit = error?.status === 429 || error?.name === 'RateLimitError';
+      const status = (error as { status?: number })?.status;
+      const name = (error as { name?: string })?.name;
+      const isRateLimit = status === 429 || name === 'RateLimitError';
       
       if (isRateLimit && attempts < maxAttempts) {
         console.warn(`[Groq] Rate limit hit, retrying in 5s... (Attempt ${attempts}/${maxAttempts})`);

@@ -5,10 +5,8 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, User, LogIn } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { NAV_LINKS, NAV_ICON_COLORS } from "@/lib/constants";
-import { useAuth } from "@/hooks/useAuth";
-import { useAuthModal } from "@/components/AuthProvider";
 
 export default function MobileNav() {
   const [isOpen, setIsOpen] = useState(false);
@@ -16,8 +14,6 @@ export default function MobileNav() {
   const pathname = usePathname();
   const hamburgerRef = useRef<HTMLButtonElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
-  const { user, isLoading } = useAuth();
-  const { openSignIn } = useAuthModal();
 
   // Only render portal after client-side mount (SSR-safe)
   useEffect(() => {
@@ -202,32 +198,6 @@ export default function MobileNav() {
                     );
                   })}
                 </nav>
-
-                {/* Bottom auth */}
-                <div className="absolute bottom-10 left-0 right-0 px-4">
-                  {isLoading ? (
-                    <div className="w-full h-11 rounded-2xl bg-zinc-200 dark:bg-zinc-800 animate-pulse" />
-                  ) : user ? (
-                    <Link
-                      href="/profile"
-                      onClick={close}
-                      className="flex items-center gap-3 px-4 py-3 rounded-2xl text-base font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 transition-all"
-                    >
-                      <User className="w-5 h-5 shrink-0" />
-                      <span className="truncate">
-                        {user.user_metadata?.username ?? user.email?.split("@")[0]}
-                      </span>
-                    </Link>
-                  ) : (
-                    <button
-                      onClick={() => { openSignIn(); close(); }}
-                      className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-base font-bold bg-blue-500 text-white hover:bg-blue-600 transition-all"
-                    >
-                      <LogIn className="w-5 h-5 shrink-0" />
-                      Sign In
-                    </button>
-                  )}
-                </div>
 
                 {/* Bottom hint */}
                 <div className="absolute bottom-0 left-0 right-0 text-center py-3">

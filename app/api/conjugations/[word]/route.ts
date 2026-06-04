@@ -81,7 +81,7 @@ export async function GET(
         if (affixPairs[affixPairName] && affixPairs[affixPairName][tense]) {
           // Deduplicate if multiple definitions yield the same conjugation
           const alreadyExists = affixPairs[affixPairName][tense]?.some(
-            (c: any) => c.form === conj.form && c.focus === conj.focus
+            (c: { form: string; focus: string }) => c.form === conj.form && c.focus === conj.focus
           );
           
           if (!alreadyExists) {
@@ -98,10 +98,11 @@ export async function GET(
       root: root.bikol,
       affixPairs,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Internal Server Error';
     console.error('Error in conjugations API:', error);
     return NextResponse.json(
-      { error: error.message || 'Internal Server Error' }, 
+      { error: message }, 
       { status: 500 }
     );
   }

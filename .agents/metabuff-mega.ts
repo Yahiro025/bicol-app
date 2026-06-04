@@ -98,7 +98,7 @@ const definition: AgentDefinition = {
     effort: 'high',
   },
 
-  toolNames: ['spawn_agents', 'think_deeply', 'end_turn'],
+  toolNames: ['spawn_agents', 'think_deeply', 'run_terminal_command', 'end_turn'],
 
   spawnableAgents: [
     'ecc-code-architect',    // general-purpose implementation (replaces 'metabuff' — avoids re-entrancy loop)
@@ -106,7 +106,7 @@ const definition: AgentDefinition = {
     'code-reviewer-deepseek',    // review / synthesis
     'researcher-web',            // documentation research
     'researcher-docs',           // API docs research
-    'file-picker',               // codebase mapping
+    'codebuff/file-picker@0.0.1', // codebase mapping
     'metabuff-arch',
     'metabuff-security',
     'metabuff-testgen',
@@ -268,7 +268,7 @@ ANTI-HALLUCINATION (non-negotiable):
       toolName: 'spawn_agents',
       input: {
         agents: [{
-          agent_type: 'file-picker',
+          agent_type: 'codebuff/file-picker@0.0.1',
           params: {},
           prompt:
             `Map the entire codebase structure relevant to this task.\n` +
