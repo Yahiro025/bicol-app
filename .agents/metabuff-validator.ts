@@ -34,8 +34,7 @@
  */
 
 import { AgentDefinition } from './types/agent-definition'
-
-const FREE_MODEL = 'deepseek/deepseek-v4-pro'  // v4-pro confirmed available in free tier; v4-flash was 403 in sub-agent spawns
+import { resolveModel } from './model-config'
 
 const VALIDATOR_SYSTEM_PROMPT = `You are MetaBuff's Superpowers-enhanced anti-hallucination validator.
 Your ONLY job is to audit changes made by other agents and fix any problems.
@@ -169,7 +168,7 @@ const definition: AgentDefinition = {
     'Catches ghost imports, phantom edits, broken tests, incomplete TODOs, ' +
     'runtime-invalid regex patterns, and function signature mismatches.',
 
-  model: FREE_MODEL,
+  model: resolveModel(),
 
   reasoningOptions: {
     enabled: true,
@@ -188,6 +187,31 @@ const definition: AgentDefinition = {
     'end_turn',        // [FIX v1.2.1] required for clean termination — was missing
     // 'suggest_followups' removed — not a valid Freebuff tool, caused agent-load validation error
   ],
+
+  handleSteps: function* ({ prompt }) {
+    // [MetaBuff: Validator] Pattern B — Superpowers 10-step audit checklist generator
+
+    // Phase 1: Get the diff
+    const { toolResult: gitDiff } = (yield { toolName: 'run_terminal_command', input: { command: 'git diff HEAD' } }) as { toolResult: string }
+
+    // Phase 2: Read changed files and begin audits
+    yield { toolName: 'think_deeply', input: { thought: `Validate all changes for: ${prompt}. Git diff: ${(gitDiff ?? 'no diff').slice(0, 500)}. Read every changed file before conducting audits.` } }
+
+    // Audits 1-3: Ghost imports, phantom edits, TODOs
+    yield { toolName: 'think_deeply', input: { thought: `AUDIT 1/10: Check every import in changed files — verify each imported symbol exists via code_search. AUDIT 2/10: Re-read changed files to confirm all edits landed correctly. AUDIT 3/10: Scan for TODO/FIXME/HACK/placeholder in changed files.` } }
+    yield { toolName: 'code_search', input: { searchQueries: [{ pattern: 'TODO|FIXME|HACK|placeholder', flags: '-g *.ts -g *.tsx' }] } }
+
+    // Audits 4-6: Regex, consistency, TDD
+    yield { toolName: 'think_deeply', input: { thought: `AUDIT 4/10: Scan changed files for regex literals — if found, flag for regex-guard. AUDIT 5/10: Verify function signatures match callers — code_search for changed exports. AUDIT 6/10: Do new behaviors have tests? Would tests FAIL without the implementation?` } }
+
+    // Audit 7-8: Full test suite + typecheck
+    yield { toolName: 'run_terminal_command', input: { command: '(bun test 2>&1 || npx vitest run 2>&1 || npx jest 2>&1) | tail -30' } }
+    yield { toolName: 'run_terminal_command', input: { command: '(bun run typecheck 2>/dev/null || npx tsc --noEmit 2>&1) | tail -10' } }
+
+    // Audits 9-10: TODO count + finishing workflow
+    yield { toolName: 'run_terminal_command', input: { command: 'echo "Remaining TODOs:" && (git diff HEAD | grep -c "TODO\\|FIXME\\|HACK" 2>/dev/null || echo "0") && echo "Workspace:" && ([ -d .git ] && echo "GIT_REPO" || echo "NON_GIT")' } }
+    yield { toolName: 'think_deeply', input: { thought: `AUDIT 10/10: Finishing workflow. Count remaining TODOs. Detect workspace type. Choose completion: ✅ MERGE READY / ⚠ NEEDS REVIEW / ⏳ WIP / ❌ DISCARD. Fix all CRITICAL and HIGH issues found.` } }
+  },
 
   spawnableAgents: [
     'ecc-code-architect',           // [FIX BUG-10] was 'metabuff' — spawning the full orchestrator for fixes

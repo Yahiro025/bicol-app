@@ -17,6 +17,7 @@
  */
 
 import { AgentDefinition } from './types/agent-definition'
+import { resolveModel } from './model-config'
 
 const definition: AgentDefinition = {
   id: 'thinker-with-files-gemini',
@@ -27,7 +28,7 @@ const definition: AgentDefinition = {
     'Task decomposition specialist. Use to break a large coding task into parallel subtasks ' +
     'for cascade execution. Pass filePaths param with relevant file list. Always returns a JSON array.',
 
-  model: 'google/gemini-2.5-flash',
+  model: resolveModel(),
 
   reasoningOptions: {
     enabled: true,
@@ -44,6 +45,20 @@ const definition: AgentDefinition = {
   ],
 
   spawnableAgents: [],
+
+  handleSteps: function* ({ prompt }) {
+    yield {
+      toolName: 'think_deeply',
+      input: {
+        thought:
+          `You are a task decomposition specialist. Analyse this task and produce a JSON array of subtasks.\n\n` +
+          `Task: ${prompt}\n\n` +
+          `Output ONLY a valid JSON array of 3-12 subtask objects. Each must have: subtask, specialist, focus.\n` +
+          `Specialists: arch | security | testgen | base | reason | custom\n` +
+          `NEVER return an error, refusal, or "VAGUE_PROMPT". ALWAYS produce a valid JSON array.`,
+      },
+    }
+  },
 
   systemPrompt:
     'You are a task decomposition specialist. Your only job is to analyse a coding task and ' +

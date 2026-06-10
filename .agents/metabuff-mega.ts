@@ -78,6 +78,7 @@
  */
 
 import { AgentDefinition } from './types/agent-definition'
+import { resolveModel } from './model-config'
 
 const definition: AgentDefinition = {
   id: 'metabuff-mega',
@@ -90,7 +91,7 @@ const definition: AgentDefinition = {
     'MetaBuff Mega decomposes the task into up to 12 subtasks and runs them in ' +
     'cascade waves of ≤6 parallel agents (Antigravity 2.0 pattern, Freebuff-safe).',
 
-  model: 'deepseek/deepseek-v4-pro',  // v4-pro confirmed available in free tier; v4-flash was 403 in sub-agent spawns
+  model: resolveModel(),
 
   reasoningOptions: {
     enabled: true,
@@ -101,11 +102,9 @@ const definition: AgentDefinition = {
   toolNames: ['spawn_agents', 'think_deeply', 'run_terminal_command', 'end_turn'],
 
   spawnableAgents: [
-    'ecc-code-architect',    // general-purpose implementation (replaces 'metabuff' — avoids re-entrancy loop)
+    'ecc-code-architect',    // [FIX v1.3.1] resolveAgent() maps base/custom/fallback here — MUST be declared spawnable
     'thinker-with-files-gemini',  // task decomposition
     'code-reviewer-deepseek',    // review / synthesis
-    'researcher-web',            // documentation research
-    'researcher-docs',           // API docs research
     'codebuff/file-picker@0.0.1', // codebase mapping
     'metabuff-arch',
     'metabuff-security',
@@ -113,7 +112,6 @@ const definition: AgentDefinition = {
     'metabuff-reasoner',     // v1.2.0: algorithm specialist
     'metabuff-regex-guard',  // v1.2.0: runtime regex safety
     'metabuff-validator',
-    'ecc-code-architect',    // [FIX v1.3.1] resolveAgent() maps base/custom/fallback here — MUST be declared spawnable
   ],
 
   systemPrompt:
@@ -147,7 +145,6 @@ const definition: AgentDefinition = {
         security: 'metabuff-security',
         testgen:  'metabuff-testgen',
         base:     'ecc-code-architect',
-        research: 'researcher-web',
         review:   'code-reviewer-deepseek',
         reason:   'metabuff-reasoner',     // v1.2.0
         custom:   'ecc-code-architect',    // v1.2.0: dynamic via custom prompt

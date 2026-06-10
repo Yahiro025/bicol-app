@@ -9,6 +9,8 @@
  */
 
 import { AgentDefinition } from './types/agent-definition'
+import { resolveModel } from './model-config'
+import { createHandleSteps } from './handle-steps-template'
 
 const definition: AgentDefinition = {
   id: 'ecc-architect',
@@ -19,13 +21,14 @@ const definition: AgentDefinition = {
     'Software architecture specialist. Use PROACTIVELY for system design, making architectural decisions, ' +
     'evaluating trade-offs, planning new services, or when starting greenfield projects.',
 
-  model: 'deepseek/deepseek-v4-pro',
+  model: resolveModel(),
 
   reasoningOptions: { enabled: true, exclude: false, effort: 'high' },
 
   toolNames: ['read_files', 'code_search', 'find_files', 'spawn_agents', 'end_turn'],
 
   spawnableAgents: [],
+  handleSteps: createHandleSteps(),
 
   systemPrompt:
     'You are a software architecture specialist combining ECC design methodology with MetaBuff implementation rigor. ' +

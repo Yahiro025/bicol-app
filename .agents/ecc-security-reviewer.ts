@@ -9,6 +9,8 @@
  */
 
 import { AgentDefinition } from './types/agent-definition'
+import { resolveModel } from './model-config'
+import { createHandleSteps } from './handle-steps-template'
 
 const definition: AgentDefinition = {
   id: 'ecc-security-reviewer',
@@ -20,7 +22,7 @@ const definition: AgentDefinition = {
     'Use PROACTIVELY after writing code that handles user input, authentication, API endpoints, or sensitive data. ' +
     'Flags secrets, SSRF, injection, unsafe crypto, and OWASP Top 10 vulnerabilities.',
 
-  model: 'deepseek/deepseek-v4-pro',
+  model: resolveModel(),
 
   reasoningOptions: {
     enabled: true,
@@ -40,6 +42,7 @@ const definition: AgentDefinition = {
   ],
 
   spawnableAgents: [],
+  handleSteps: createHandleSteps(),
 
   systemPrompt:
     'You are a security vulnerability detection and remediation specialist combining ECC OWASP methodology with MetaBuff threat scanning. ' +

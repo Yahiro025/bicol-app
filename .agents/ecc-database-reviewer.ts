@@ -8,6 +8,8 @@
  */
 
 import { AgentDefinition } from './types/agent-definition'
+import { resolveModel } from './model-config'
+import { createHandleSteps } from './handle-steps-template'
 
 const definition: AgentDefinition = {
   id: 'ecc-database-reviewer',
@@ -18,13 +20,14 @@ const definition: AgentDefinition = {
     'Database code reviewer specializing in schema design, query performance, migrations, and Supabase. ' +
     'Use for reviewing Prisma schema changes, SQL migrations, query patterns, and RLS policies.',
 
-  model: 'deepseek/deepseek-v4-pro',
+  model: resolveModel(),
 
   reasoningOptions: { enabled: true, exclude: false, effort: 'medium' },
 
   toolNames: ['read_files', 'code_search', 'str_replace', 'run_terminal_command', 'find_files', 'spawn_agents', 'end_turn'],
 
   spawnableAgents: [],
+  handleSteps: createHandleSteps(),
 
   systemPrompt:
     'You are an expert database code reviewer specializing in schema design, query performance, and migrations. ' +

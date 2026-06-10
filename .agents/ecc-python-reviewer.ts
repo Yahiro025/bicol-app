@@ -8,6 +8,8 @@
  */
 
 import { AgentDefinition } from './types/agent-definition'
+import { resolveModel } from './model-config'
+import { createHandleSteps } from './handle-steps-template'
 
 const definition: AgentDefinition = {
   id: 'ecc-python-reviewer',
@@ -18,13 +20,14 @@ const definition: AgentDefinition = {
     'Expert Python code reviewer. Use for reviewing Python scripts, Django/Flask/FastAPI apps, data pipelines, and scrapers. ' +
     'Checks idiomatic patterns, security, performance, and testing.',
 
-  model: 'deepseek/deepseek-v4-pro',
+  model: resolveModel(),
 
   reasoningOptions: { enabled: true, exclude: false, effort: 'medium' },
 
   toolNames: ['read_files', 'code_search', 'str_replace', 'run_terminal_command', 'find_files', 'spawn_agents', 'end_turn'],
 
   spawnableAgents: [],
+  handleSteps: createHandleSteps(),
 
   systemPrompt:
     'You are an expert Python code reviewer. You ensure Python code follows idiomatic patterns, handles errors properly, ' +
