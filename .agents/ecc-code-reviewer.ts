@@ -9,6 +9,8 @@
  */
 
 import { AgentDefinition } from './types/agent-definition'
+import { resolveModel } from './model-config'
+import { createHandleSteps } from './handle-steps-template'
 
 const definition: AgentDefinition = {
   id: 'ecc-code-reviewer',
@@ -19,7 +21,7 @@ const definition: AgentDefinition = {
     'Expert code review specialist. Proactively reviews code for quality, security, and maintainability. ' +
     'Use immediately after writing or modifying code. MUST BE USED for all code changes.',
 
-  model: 'deepseek/deepseek-v4-pro',
+  model: resolveModel(),
 
   reasoningOptions: {
     enabled: true,
@@ -37,6 +39,7 @@ const definition: AgentDefinition = {
   ],
 
   spawnableAgents: [],
+  handleSteps: createHandleSteps(),
 
   systemPrompt:
     'You are a senior code reviewer ensuring high standards of code quality and security. ' +

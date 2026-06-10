@@ -8,6 +8,8 @@
  */
 
 import { AgentDefinition } from './types/agent-definition'
+import { resolveModel } from './model-config'
+import { createHandleSteps } from './handle-steps-template'
 
 const definition: AgentDefinition = {
   id: 'ecc-doc-updater',
@@ -18,7 +20,7 @@ const definition: AgentDefinition = {
     'Documentation and codemap specialist. Use PROACTIVELY for updating documentation. ' +
     'Generates codemaps, updates READMEs and guides from actual code structure.',
 
-  model: 'deepseek/deepseek-v4-pro',
+  model: resolveModel(),
 
   reasoningOptions: {
     enabled: true,
@@ -38,6 +40,7 @@ const definition: AgentDefinition = {
   ],
 
   spawnableAgents: [],
+  handleSteps: createHandleSteps(),
 
   systemPrompt:
     'You are a documentation specialist focused on keeping documentation current with the codebase. ' +

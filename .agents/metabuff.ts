@@ -212,6 +212,7 @@
  */
 
 import { AgentDefinition } from './types/agent-definition'
+import { resolveModel } from './model-config'
 
 const definition: AgentDefinition = {
   id: 'metabuff',
@@ -224,7 +225,7 @@ const definition: AgentDefinition = {
     'including CoT enforcement, inter-session memory, continuous validation, ' +
     'regex safety checks, and anti-hallucination protocols.',
 
-  model: 'deepseek/deepseek-v4-pro',  // v4-pro confirmed available in free tier; v4-flash was 403 in sub-agent spawns
+  model: resolveModel(),
 
   reasoningOptions: {
     enabled: true,
@@ -239,8 +240,6 @@ const definition: AgentDefinition = {
     'codebuff/file-picker@0.0.1', // codebase mapping
     'thinker-with-files-gemini', // task decomposition / planning
     'code-reviewer-deepseek',    // review / synthesis
-    'researcher-web',            // documentation research
-    'researcher-docs',           // API docs research
     'metabuff-validator',
     'metabuff-reasoner',     // v1.4.0: algorithm/logic specialist
     'metabuff-regex-guard',  // v1.4.0: runtime regex safety

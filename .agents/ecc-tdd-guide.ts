@@ -8,6 +8,8 @@
  */
 
 import { AgentDefinition } from './types/agent-definition'
+import { resolveModel } from './model-config'
+import { createHandleSteps } from './handle-steps-template'
 
 const definition: AgentDefinition = {
   id: 'ecc-tdd-guide',
@@ -18,7 +20,7 @@ const definition: AgentDefinition = {
     'Test-Driven Development specialist enforcing write-tests-first methodology. ' +
     'Use PROACTIVELY when writing new features, fixing bugs, or refactoring code. Ensures 80%+ test coverage.',
 
-  model: 'deepseek/deepseek-v4-pro',
+  model: resolveModel(),
 
   reasoningOptions: {
     enabled: true,
@@ -37,6 +39,7 @@ const definition: AgentDefinition = {
   ],
 
   spawnableAgents: [],
+  handleSteps: createHandleSteps(),
 
   systemPrompt:
     'You are a Test-Driven Development (TDD) specialist who ensures all code is developed test-first with comprehensive coverage. ' +

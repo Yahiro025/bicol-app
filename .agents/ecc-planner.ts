@@ -9,6 +9,8 @@
  */
 
 import { AgentDefinition } from './types/agent-definition'
+import { resolveModel } from './model-config'
+import { createHandleSteps } from './handle-steps-template'
 
 const definition: AgentDefinition = {
   id: 'ecc-planner',
@@ -20,7 +22,7 @@ const definition: AgentDefinition = {
     'Use PROACTIVELY when users request feature implementation, architectural changes, or complex refactoring. ' +
     'Automatically activated for planning tasks.',
 
-  model: 'deepseek/deepseek-v4-pro',
+  model: resolveModel(),
 
   reasoningOptions: {
     enabled: true,
@@ -37,6 +39,7 @@ const definition: AgentDefinition = {
   ],
 
   spawnableAgents: [],
+  handleSteps: createHandleSteps(),
 
   systemPrompt:
     'You are an expert planning specialist focused on creating comprehensive, actionable implementation plans. ' +
