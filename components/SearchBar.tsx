@@ -7,11 +7,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Button from './ui/Button';
 import { useLanguageMode } from '@/hooks/useLanguageMode';
 import { fuzzyMatch } from '@/lib/fuzzy';
+import { normalizePOS, displayTranslation } from '@/lib/lexicography';
 
 type SearchResult = {
   bikol: string;
   english: string;
   tagalog?: string | null;
+  pos?: string | null;
 };
 
 interface SearchBarProps {
@@ -50,9 +52,11 @@ export default function SearchBar({ initialDictionary = [] }: SearchBarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
   const langMode = useLanguageMode();
   const wrapperRef = useRef<HTMLDivElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
+  const listRef = useRef<HTMLUListElement>(null);
   const router = useRouter();
 
   // Close dropdown when clicking outside
@@ -60,16 +64,19 @@ export default function SearchBar({ initialDictionary = [] }: SearchBarProps) {
     function handleClickOutside(event: MouseEvent) {
       if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
         setIsOpen(false);
+        setSelectedIndex(-1);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const displayTranslation = (item: SearchResult) => {
-    if (langMode === 'tl' && item.tagalog) return item.tagalog;
-    return item.english;
-  };
+  // Reset selected index when results change
+  useEffect(() => {
+    setSelectedIndex(-1);
+  }, [results]);
+
+  const getTranslation = (item: SearchResult) => displayTranslation(item, langMode);
 
   // Optimistic & Debounced Search
   useEffect(() => {
@@ -136,18 +143,57 @@ export default function SearchBar({ initialDictionary = [] }: SearchBarProps) {
     };
   }, [query, initialDictionary]);
 
+  // Keyboard navigation
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (!isOpen || results.length === 0) return;
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setSelectedIndex(prev => (prev < results.length - 1 ? prev + 1 : 0));
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setSelectedIndex(prev => (prev > 0 ? prev - 1 : results.length - 1));
+        break;
+      case 'Enter':
+        if (selectedIndex >= 0 && selectedIndex < results.length) {
+          e.preventDefault();
+          const selected = results[selectedIndex]!;
+          router.push(`/word/${encodeURIComponent(selected.bikol)}`);
+          setIsOpen(false);
+          setQuery('');
+        }
+        break;
+      case 'Escape':
+        setIsOpen(false);
+        setSelectedIndex(-1);
+        break;
+    }
+  }, [isOpen, results, selectedIndex, router]);
+
+  // Scroll selected item into view
+  useEffect(() => {
+    if (selectedIndex >= 0 && listRef.current) {
+      const items = listRef.current.querySelectorAll('li');
+      items[selectedIndex]?.scrollIntoView({ block: 'nearest' });
+    }
+  }, [selectedIndex]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
       setIsLoading(true);
       setIsOpen(false);
+      setSelectedIndex(-1);
       router.push(`/browse?q=${encodeURIComponent(query)}`);
     }
   };
 
   const handleResultClick = () => {
     setIsOpen(false);
-    setQuery(''); // Optional: clear search after navigation
+    setSelectedIndex(-1);
+    setQuery('');
   };
 
   // Highlight matching text
@@ -197,11 +243,16 @@ export default function SearchBar({ initialDictionary = [] }: SearchBarProps) {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={handleKeyDown}
           onFocus={() => {
             setIsFocused(true);
             (results.length > 0 || query.length > 0) && setIsOpen(true);
           }}
           onBlur={() => setIsFocused(false)}
+          role="combobox"
+          aria-expanded={isOpen}
+          aria-controls="search-listbox"
+          aria-activedescendant={selectedIndex >= 0 ? `search-option-${selectedIndex}` : undefined}
           className={`w-full pl-12 pr-28 sm:pr-32 py-4 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 text-base sm:text-lg transition-all duration-300 ${
             isFocused ? 'shadow-[0_0_30px_rgba(59,130,246,0.15)]' : ''
           }`}
@@ -241,20 +292,42 @@ export default function SearchBar({ initialDictionary = [] }: SearchBarProps) {
             }}
           >
             {results.length > 0 ? (
-              <ul className="py-2">
-                {results.map((item) => (
-                  <motion.li key={item.bikol} variants={itemVariants} whileHover={{ scale: 1.01 }}>
+              <ul ref={listRef} id="search-listbox" role="listbox" className="py-2">
+                {results.map((item, index) => (
+                  <motion.li 
+                    key={item.bikol} 
+                    variants={itemVariants} 
+                    whileHover={{ scale: 1.01 }}
+                    id={`search-option-${index}`}
+                    role="option"
+                    aria-selected={index === selectedIndex}
+                  >
                     <Link 
                       href={`/word/${encodeURIComponent(item.bikol)}`}
                       onClick={handleResultClick}
-                      className="flex items-center justify-between px-6 py-3 cursor-pointer transition group hover:brightness-95 dark:hover:brightness-110"
+                      className={`flex items-center justify-between px-6 py-3 cursor-pointer transition group hover:brightness-95 dark:hover:brightness-110 ${
+                        index === selectedIndex ? 'brightness-95 dark:brightness-110' : ''
+                      }`}
+                      style={index === selectedIndex ? { backgroundColor: 'var(--editorial-surface)' } : undefined}
                     >
                       <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-blue-600 truncate" style={{ color: 'var(--editorial-accent)' }}>
-                          {highlightMatch(item.bikol)}
-                        </p>
+                        <div className="flex items-center gap-2">
+                          <p className="font-semibold truncate" style={{ color: 'var(--editorial-accent)' }}>
+                            {highlightMatch(item.bikol)}
+                          </p>
+                          {item.pos && (
+                            <span className="text-[10px] uppercase tracking-widest font-bold px-1.5 py-0.5 rounded flex-shrink-0"
+                              style={{
+                                backgroundColor: 'var(--editorial-bg)',
+                                color: 'var(--editorial-muted)',
+                                border: '1px solid var(--editorial-border)',
+                              }}>
+                              {normalizePOS(item.pos)}
+                            </span>
+                          )}
+                        </div>
                         <p className="text-sm truncate" style={{ color: 'var(--editorial-muted)' }}>
-                          {highlightMatch(displayTranslation(item))}
+                          {highlightMatch(getTranslation(item))}
                         </p>
                         {langMode === 'all' && item.tagalog && (
                           <p className="text-xs italic truncate mt-0.5" style={{ color: 'var(--editorial-muted)' }}>

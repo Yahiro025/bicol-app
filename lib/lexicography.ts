@@ -115,4 +115,19 @@ export function formatDialect(dialect: string | null | undefined): string {
   return trimmed;
 }
 
+// ─── Display Translation ────────────────────────────────────────────────────
+
+export type LanguageMode = 'en' | 'tl' | 'all';
+
+/**
+ * Returns the appropriate translation text based on the active language mode.
+ * Shared between SearchBar and BrowseClient to avoid duplication.
+ */
+export function displayTranslation(
+  item: { english: string | null; tagalog?: string | null },
+  langMode: LanguageMode
+): string {
+  if (langMode === 'tl' && item.tagalog) return item.tagalog;
+  return item.english ?? '';
+}
 

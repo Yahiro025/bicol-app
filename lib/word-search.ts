@@ -11,7 +11,8 @@ import { cache as reactCache } from 'react';
 import { prisma } from '@/lib/prisma';
 import { Prisma } from '@prisma/client';
 
-// ─── Simple in-memory cache with TTL (seconds) ───────────────────────────────
+// ─── Simple in-memory cache with TTL (seconds) and max size ─────────────────
+const MAX_CACHE_SIZE = 200;
 const cache = new Map<string, { data: unknown; expiresAt: number }>();
 
 function getCached<T>(key: string): T | null {
@@ -25,6 +26,11 @@ function getCached<T>(key: string): T | null {
 }
 
 function setCache(key: string, data: unknown, ttlSeconds: number): void {
+  // Evict oldest entries when cache is full
+  if (cache.size >= MAX_CACHE_SIZE) {
+    const oldestKey = cache.keys().next().value;
+    if (oldestKey !== undefined) cache.delete(oldestKey);
+  }
   cache.set(key, { data, expiresAt: Date.now() + ttlSeconds * 1000 });
 }
 
@@ -379,49 +385,61 @@ export interface DictionaryEntry {
 export const getInitialDictionary = reactCache(async (
   limit = 500
 ): Promise<DictionaryEntry[]> => {
-  // OPTIMIZED: Query roots only (covers Mintz + Wiktionary), since legacy words' bikol
-  // entries already overlap with roots. This avoids the expensive UNION ALL.
+  // UNION ALL both tables so autocomplete covers the full dictionary.
+  // Normalized roots take priority via dedup (same as browseWords).
   const rows: Array<{
     bikol: string;
-    pos: string | null;
-    category: string | null;
-    pronunciation: string | null;
-    frequency_rank: number | null;
     english: string | null;
     tagalog: string | null;
-    source: string;
+    priority: number;
   }> = await prisma.$queryRaw`
-    SELECT
-      r.bikol,
-      def.english,
-      def.tagalog
-    FROM roots r
-    LEFT JOIN LATERAL (
-      SELECT d.english, d.tagalog
-      FROM definitions d
-      WHERE d."rootId" = r.id
-      ORDER BY d."createdAt"
-      LIMIT 1
-    ) def ON true
-    WHERE r.bikol IS NOT NULL AND r.bikol != ''
-      AND def.english IS NOT NULL
-    ORDER BY LOWER(r.bikol) ASC
-    LIMIT ${limit}
+    SELECT bikol, english, tagalog, 0 as priority FROM (
+      SELECT
+        r.bikol,
+        def.english,
+        def.tagalog
+      FROM roots r
+      LEFT JOIN LATERAL (
+        SELECT d.english, d.tagalog
+        FROM definitions d
+        WHERE d."rootId" = r.id
+        ORDER BY d."createdAt"
+        LIMIT 1
+      ) def ON true
+      WHERE r.bikol IS NOT NULL AND r.bikol != ''
+        AND def.english IS NOT NULL
+    ) roots_data
+
+    UNION ALL
+
+    SELECT bikol, english, tagalog, 1 as priority FROM (
+      SELECT
+        w.bikol,
+        w.english,
+        w.tagalog
+      FROM words w
+      WHERE w.bikol IS NOT NULL AND w.bikol != ''
+        AND w.english IS NOT NULL
+    ) words_data
+
+    ORDER BY priority ASC, LOWER(bikol) ASC
+    LIMIT ${limit * 2}
   `;
 
-  // Deduplicate
+  // Deduplicate (roots priority = 0 wins)
   const seen = new Set<string>();
   const deduped: DictionaryEntry[] = [];
 
   for (const row of rows) {
     const key = (row.bikol || '').toLowerCase();
-    if (seen.has(key)) continue;
+    if (!key || seen.has(key)) continue;
     seen.add(key);
     deduped.push({
       bikol: row.bikol,
       english: row.english ?? '',
       tagalog: row.tagalog ?? null,
     });
+    if (deduped.length >= limit) break;
   }
 
   return deduped;
