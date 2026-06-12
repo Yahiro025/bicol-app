@@ -16,7 +16,8 @@
  */
 
 import { AgentDefinition } from './types/agent-definition'
-import { resolveModel } from './model-config'
+
+const FREE_MODEL = 'deepseek/deepseek-v4-pro'  // v4-pro confirmed available in free tier; v4-flash was 403 in sub-agent spawns
 
 const definition: AgentDefinition = {
   id: 'metabuff-testgen',
@@ -28,7 +29,7 @@ const definition: AgentDefinition = {
     'Writes unit tests, integration tests, and edge-case coverage ' +
     'matching the project\'s existing test style.',
 
-  model: resolveModel(),
+  model: FREE_MODEL,
 
   reasoningOptions: {
     enabled: true,
@@ -43,31 +44,9 @@ const definition: AgentDefinition = {
     'write_file',
     'str_replace',
     'run_terminal_command',
+    'find_files',
     'end_turn',
   ],
-
-  handleSteps: function* ({ prompt }) {
-    // [MetaBuff: TestGen] v1.1.0 — discover, search, read, write, run, fix
-
-    // Phase 0: DISCOVER test patterns
-    yield { toolName: 'find_files', input: { prompt: 'Find existing test files (*.test.ts, *.spec.ts, *.test.tsx) and test configuration in the project' } }
-    yield { toolName: 'code_search', input: { searchQueries: [{ pattern: 'describe|it\\(|test\\(|expect\\(|assert', flags: '-g *.test.ts -g *.spec.ts -g *.test.tsx', maxResults: 8 }] } }
-
-    // Phase 1: READ existing tests + source code
-    const testFiles = prompt.match(/[\w.\/-]+\.(ts|tsx|js|jsx)/g) ?? []
-    const testPaths = [...new Set([...testFiles, 'package.json'])].slice(0, 6)
-    yield { toolName: 'read_files', input: { paths: testPaths } }
-
-    // Phase 2: PLAN — discover code that needs tests
-    yield { toolName: 'think_deeply', input: { thought: `Test generation for: ${prompt}. You have seen existing test patterns and source code. Identify every public function, class, and API endpoint that needs tests. Match the existing test framework (Jest/Vitest) and naming conventions.` } }
-
-    // Phase 3: WRITE — create failing tests first
-    yield { toolName: 'think_deeply', input: { thought: `Write FAILING tests FIRST for: ${prompt}. Cover: happy path, error cases, edge cases (null, empty, boundaries). Follow existing naming (*.test.ts, *.spec.ts). Use write_file for new test files, str_replace for existing ones. Test behavior, not implementation.` } }
-
-    // Phase 4: RUN & FIX
-    yield { toolName: 'run_terminal_command', input: { command: '(npx vitest run 2>&1 || npx jest 2>&1) | tail -30' } }
-    yield { toolName: 'think_deeply', input: { thought: `Check test results. If tests fail because the test is wrong, fix the test. If the SOURCE CODE is wrong, fix the source code. All tests must pass before finishing.` } }
-  },
 
   spawnableAgents: [],
 
@@ -105,7 +84,7 @@ NEVER:
 For your test generation subtask:
 
 1. Discover the test setup:
-   - Use find_files to locate existing test files (e.g., find_files for TypeScript .test.ts/.spec.ts patterns, or test_*.py for Python)
+   - Use file_picker or glob to locate existing test files (e.g., glob("**/*.test.ts") for TypeScript, glob("**/test_*.py") for Python)
    - Read 2-3 representative test files to learn the testing style
    - Check package.json for the test runner and any test utilities
    - Look for test helpers, factories, or fixtures

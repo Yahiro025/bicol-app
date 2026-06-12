@@ -8,8 +8,6 @@
  */
 
 import { AgentDefinition } from './types/agent-definition'
-import { resolveModel } from './model-config'
-import { createHandleSteps } from './handle-steps-template'
 
 const definition: AgentDefinition = {
   id: 'ecc-refactor-cleaner',
@@ -21,7 +19,13 @@ const definition: AgentDefinition = {
     'Use PROACTIVELY for removing unused code, duplicates, and refactoring. ' +
     'Identifies dead code and safely removes it with verification at each step.',
 
-  model: resolveModel(),
+  model: (() => {
+    try {
+      return require('./model-config').resolveModel()
+    } catch {
+      return 'deepseek/deepseek-v4-pro'
+    }
+  })(),
 
   reasoningOptions: {
     enabled: true,
@@ -41,7 +45,6 @@ const definition: AgentDefinition = {
   ],
 
   spawnableAgents: [],
-  handleSteps: createHandleSteps(),
 
   systemPrompt:
     'You are an expert refactoring specialist focused on code cleanup and consolidation. ' +

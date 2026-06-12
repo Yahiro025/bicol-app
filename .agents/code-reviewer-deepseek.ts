@@ -48,35 +48,6 @@ const definition: AgentDefinition = {
 
   spawnableAgents: [],
 
-  handleSteps: function* ({ prompt }) {
-    // [Code Reviewer DeepSeek] — diff, read, audit, fix, verify
-
-    // Phase 0: Get the git diff to scope the review
-    yield { toolName: 'run_terminal_command', input: { command: 'echo "=== GIT DIFF ===" && git diff HEAD --stat 2>/dev/null && git diff HEAD 2>/dev/null | head -200' } }
-
-    // Phase 1: Read changed files
-    const reviewFiles = prompt.match(/[\w.\/-]+\.(ts|tsx|js|jsx)/g) ?? []
-    const reviewPaths = [...new Set(reviewFiles)].slice(0, 10)
-    if (reviewPaths.length > 0) {
-      yield { toolName: 'read_files', input: { paths: reviewPaths } }
-    }
-
-    // Phase 2: Audit — verify imports, types, and integration
-    yield { toolName: 'think_deeply', input: { thought: `Post-implementation review for: ${prompt}. Check: (1) conflicting changes between agents, (2) missing integration glue, (3) unresolved TODOs/FIXMEs, (4) ghost imports, (5) type errors. Read every changed file and verify every import via code_search.` } }
-
-    // Phase 3: Search for TODO/FIXME/placeholder
-    yield { toolName: 'code_search', input: { searchQueries: [{ pattern: 'TODO|FIXME|HACK|placeholder|TBD', flags: '-g *.ts -g *.tsx', maxResults: 10 }] } }
-
-    // Phase 4: Fix all issues found
-    yield { toolName: 'think_deeply', input: { thought: `Fix ALL issues found: conflicts, missing integration, TODOs, type errors. Use str_replace for surgical edits. Never leave issues unreported — always fix or flag as NEEDS HUMAN REVIEW.` } }
-
-    // Phase 5: Verify
-    yield { toolName: 'run_terminal_command', input: { command: '(npx tsc --noEmit 2>&1) | head -30' } }
-    yield { toolName: 'run_terminal_command', input: { command: '(npx vitest run 2>&1 || npx jest 2>&1) | tail -20' } }
-  },
-
-  includeMessageHistory: true,
-
   systemPrompt:
     'You are a senior code reviewer specialising in post-parallel-execution synthesis. ' +
     'When multiple agents have edited a codebase concurrently, you find and fix: ' +

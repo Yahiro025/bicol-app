@@ -8,8 +8,6 @@
  */
 
 import { AgentDefinition } from './types/agent-definition'
-import { resolveModel } from './model-config'
-import { createHandleSteps } from './handle-steps-template'
 
 const definition: AgentDefinition = {
   id: 'ecc-harness-optimizer',
@@ -20,14 +18,19 @@ const definition: AgentDefinition = {
     'Agent harness optimization specialist. Use for tuning agent configurations, model routing, ' +
     'context window optimization, hook performance, and token efficiency.',
 
-  model: resolveModel(),
+  model: (() => {
+    try {
+      return require('./model-config').resolveModel()
+    } catch {
+      return 'deepseek/deepseek-v4-pro'
+    }
+  })(),
 
   reasoningOptions: { enabled: true, exclude: false, effort: 'medium' },
 
   toolNames: ['read_files', 'code_search', 'str_replace', 'run_terminal_command', 'find_files', 'spawn_agents', 'end_turn'],
 
   spawnableAgents: [],
-  handleSteps: createHandleSteps(),
 
   systemPrompt:
     'You are an agent harness optimization specialist. You analyze and tune agent system performance — ' +

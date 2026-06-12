@@ -8,8 +8,6 @@
  */
 
 import { AgentDefinition } from './types/agent-definition'
-import { resolveModel } from './model-config'
-import { createHandleSteps } from './handle-steps-template'
 
 const definition: AgentDefinition = {
   id: 'ecc-build-error-resolver',
@@ -20,7 +18,13 @@ const definition: AgentDefinition = {
     'Build and TypeScript error resolution specialist. Use PROACTIVELY when build fails or type errors occur. ' +
     'Fixes build/type errors only with minimal diffs, no architectural edits. Focuses on getting the build green quickly.',
 
-  model: resolveModel(),
+  model: (() => {
+    try {
+      return require('./model-config').resolveModel()
+    } catch {
+      return 'deepseek/deepseek-v4-pro'
+    }
+  })(),
 
   reasoningOptions: {
     enabled: true,
@@ -40,7 +44,6 @@ const definition: AgentDefinition = {
   ],
 
   spawnableAgents: [],
-  handleSteps: createHandleSteps(),
 
   systemPrompt:
     'You are an expert build error resolution specialist. Your mission is to get builds passing with minimal changes — ' +

@@ -8,8 +8,6 @@
  */
 
 import { AgentDefinition } from './types/agent-definition'
-import { resolveModel } from './model-config'
-import { createHandleSteps } from './handle-steps-template'
 
 const definition: AgentDefinition = {
   id: 'ecc-loop-operator',
@@ -20,14 +18,19 @@ const definition: AgentDefinition = {
     'Autonomous loop execution specialist for continuous agent workflows. ' +
     'Use for managing long-running agent loops, monitoring progress, preventing runaway execution.',
 
-  model: resolveModel(),
+  model: (() => {
+    try {
+      return require('./model-config').resolveModel()
+    } catch {
+      return 'deepseek/deepseek-v4-pro'
+    }
+  })(),
 
   reasoningOptions: { enabled: true, exclude: false, effort: 'medium' },
 
   toolNames: ['read_files', 'code_search', 'str_replace', 'write_file', 'run_terminal_command', 'find_files', 'spawn_agents', 'end_turn'],
 
   spawnableAgents: [],
-  handleSteps: createHandleSteps(),
 
   systemPrompt:
     'You are an autonomous loop operator managing continuous agent execution cycles. ' +
