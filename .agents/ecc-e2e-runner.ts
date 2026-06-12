@@ -8,6 +8,7 @@
  */
 
 import { AgentDefinition } from './types/agent-definition'
+import { createHandleSteps } from './handle-steps-template'
 
 const definition: AgentDefinition = {
   id: 'ecc-e2e-runner',
@@ -22,7 +23,7 @@ const definition: AgentDefinition = {
     try {
       return require('./model-config').resolveModel()
     } catch {
-      return 'deepseek/deepseek-v4-pro'
+      return 'deepseek/deepseek-v4-flash'
     }
   })(),
 
@@ -40,8 +41,7 @@ const definition: AgentDefinition = {
     'run_terminal_command',
     'find_files',
     'spawn_agents',
-    'end_turn',
-  ],
+    'end_turn', 'think_deeply'],
 
   spawnableAgents: [],
 
@@ -116,6 +116,8 @@ Common causes: race conditions, network timing, animation timing.
 - Flaky rate < 5%
 - Test duration < 10 minutes
 - Artifacts uploaded and accessible`,
+
+  handleSteps: createHandleSteps(),
 }
 
 export default definition

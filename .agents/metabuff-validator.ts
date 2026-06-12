@@ -34,8 +34,9 @@
  */
 
 import { AgentDefinition } from './types/agent-definition'
+import { createHandleSteps } from './handle-steps-template'
 
-const FREE_MODEL = 'deepseek/deepseek-v4-pro'  // v4-pro confirmed available in free tier; v4-flash was 403 in sub-agent spawns
+const FREE_MODEL = require('./model-config').resolveModel()
 
 const VALIDATOR_SYSTEM_PROMPT = `You are MetaBuff's Superpowers-enhanced anti-hallucination validator.
 Your ONLY job is to audit changes made by other agents and fix any problems.
@@ -205,6 +206,8 @@ const definition: AgentDefinition = {
     'Continue auditing. ' +
     'If you have found and fixed all issues, output your final VALIDATION PASSED/FAILED summary and call end_turn. ' +
     'Do not call end_turn while there are unresolved issues or while a regex scan is pending.',
+
+  handleSteps: createHandleSteps(),
 }
 
 export default definition

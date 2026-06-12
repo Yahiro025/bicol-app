@@ -9,6 +9,7 @@
  */
 
 import { AgentDefinition } from './types/agent-definition'
+import { createHandleSteps } from './handle-steps-template'
 
 const definition: AgentDefinition = {
   id: 'ecc-planner',
@@ -24,7 +25,7 @@ const definition: AgentDefinition = {
     try {
       return require('./model-config').resolveModel()
     } catch {
-      return 'deepseek/deepseek-v4-pro'
+      return 'deepseek/deepseek-v4-flash'
     }
   })(),
 
@@ -39,8 +40,7 @@ const definition: AgentDefinition = {
     'code_search',
     'find_files',
     'spawn_agents',
-    'end_turn',
-  ],
+    'end_turn', 'think_deeply', 'run_terminal_command'],
 
   spawnableAgents: [],
 
@@ -142,6 +142,8 @@ Each phase should be mergeable independently. Avoid plans that require all phase
 - Phases that cannot be delivered independently
 
 **Remember**: A great plan is specific, actionable, and considers both the happy path and edge cases. The best plans enable confident, incremental implementation.`,
+
+  handleSteps: createHandleSteps(),
 }
 
 export default definition

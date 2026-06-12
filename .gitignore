@@ -10,3 +10,7 @@ data/
 config/.env.development
 __pycache__/
 *.pyc
+
+# MetaBuff runtime state
+.agents/.autonomous-session.json
+.agents/.recovery/

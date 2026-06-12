@@ -5,7 +5,9 @@ const definition: AgentDefinition = {
   id: 'ecc-vision-analyst',
   version: '1.0.0',
   displayName: 'ECC Vision Analyst',
+  spawnerPrompt: 'Visual analysis specialist for screenshots, diagrams, and images. Maps visual observations to precise code changes. Use when tasks involve image analysis or visual asset review.',
   model: resolveModel(),
+  spawnableAgents: [],
   toolNames: ['read_files', 'code_search', 'str_replace', 'write_file', 'run_terminal_command', 'think_deeply', 'end_turn'],
   
   systemPrompt: 'You are the ECC Vision Analyst. You focus on visual tasks. Always produce (1) structured description and (2) actionable code changes. Map your visual observations to precise file/line changes.',

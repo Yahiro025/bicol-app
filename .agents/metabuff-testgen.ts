@@ -16,8 +16,9 @@
  */
 
 import { AgentDefinition } from './types/agent-definition'
+import { createHandleSteps } from './handle-steps-template'
 
-const FREE_MODEL = 'deepseek/deepseek-v4-pro'  // v4-pro confirmed available in free tier; v4-flash was 403 in sub-agent spawns
+const FREE_MODEL = require('./model-config').resolveModel()
 
 const definition: AgentDefinition = {
   id: 'metabuff-testgen',
@@ -45,8 +46,7 @@ const definition: AgentDefinition = {
     'str_replace',
     'run_terminal_command',
     'find_files',
-    'end_turn',
-  ],
+    'end_turn', 'think_deeply'],
 
   spawnableAgents: [],
 
@@ -116,6 +116,8 @@ For your test generation subtask:
     'Continue generating tests. ' +
     'Run each test file as you write it. ' +
     'Call end_turn only when all tests are written and passing.',
+
+  handleSteps: createHandleSteps(),
 }
 
 export default definition

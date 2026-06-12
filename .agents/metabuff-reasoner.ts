@@ -28,13 +28,13 @@
  *   • metabuff-mega.ts — for subtasks tagged specialist: 'reason'
  *
  * INLINING NOTE:
- *   No handleSteps — reasoning behaviour is driven entirely by
- *   systemPrompt + instructionsPrompt, which the agent reads on every step.
+ *   Uses createHandleSteps() template for structured 6-phase workflow.
+ *   Reasoning behaviour is driven by systemPrompt + instructionsPrompt.
  */
 
 import { AgentDefinition } from './types/agent-definition'
 
-const FREE_MODEL = 'deepseek/deepseek-v4-pro'  // v4-pro confirmed available in free tier; v4-flash was 403 in sub-agent spawns
+const FREE_MODEL = require('./model-config').resolveModel()
 
 const REASONER_SYSTEM = `You are MetaBuff's deep reasoning specialist.
 You are invoked for tasks that require genuine algorithmic thinking — not code lookup or boilerplate.
@@ -143,7 +143,7 @@ const definition: AgentDefinition = {
   toolNames: [
     'read_files',
     'code_search',
-    'find_files',      // [FIX v1.0.1] was 'file_picker' — correct Freebuff tool name is 'find_files'
+    'find_files',      // [FIX v1.0.1, 'think_deeply', 'run_terminal_command'] was 'file_picker' — correct Freebuff tool name is 'find_files'
     'str_replace',
     'write_file',
     'run_terminal_command',

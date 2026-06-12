@@ -14,8 +14,9 @@
  */
 
 import { AgentDefinition } from './types/agent-definition'
+import { createHandleSteps } from './handle-steps-template'
 
-const FREE_MODEL = 'deepseek/deepseek-v4-pro'  // v4-pro confirmed available in free tier; v4-flash was 403 in sub-agent spawns
+const FREE_MODEL = require('./model-config').resolveModel()
 
 /** Common insecure patterns to search for and eliminate */
 const SECURITY_RED_FLAGS = [
@@ -132,6 +133,8 @@ ${SECURITY_RED_FLAGS.map((_, i) => `   code_searcher searchQueries: [{ pattern: 
     'Continue the security work. ' +
     'Fix all vulnerabilities you have identified. ' +
     'Call end_turn only when all red flags are resolved and tests pass.',
+
+  handleSteps: createHandleSteps(),
 }
 
 export default definition

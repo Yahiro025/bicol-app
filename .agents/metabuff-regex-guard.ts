@@ -29,12 +29,12 @@
  * INLINING NOTE:
  *   REGEX_SCAN_COMMAND and REDOS_CHECK_PATTERNS are module-level constants
  *   used in SYSTEM/INSTRUCTIONS props (evaluated at import time) — safe.
- *   No handleSteps — behaviour driven entirely by systemPrompt + instructionsPrompt.
+ *   Uses createHandleSteps() template for structured 6-phase workflow.
  */
 
 import { AgentDefinition } from './types/agent-definition'
 
-const FREE_MODEL = 'deepseek/deepseek-v4-pro'  // v4-pro confirmed available in free tier; v4-flash was 403 in sub-agent spawns
+const FREE_MODEL = require('./model-config').resolveModel()
 
 /**
  * Shell script that validates regex patterns in all changed .ts/.tsx/.js files.
@@ -211,8 +211,7 @@ const definition: AgentDefinition = {
     'write_file',
     'run_terminal_command',
     'find_files',
-    'end_turn',
-  ],
+    'end_turn', 'think_deeply'],
 
   spawnableAgents: [],  // Standalone — no sub-agents needed
 

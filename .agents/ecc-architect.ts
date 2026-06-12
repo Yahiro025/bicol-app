@@ -9,6 +9,7 @@
  */
 
 import { AgentDefinition } from './types/agent-definition'
+import { createHandleSteps } from './handle-steps-template'
 
 const definition: AgentDefinition = {
   id: 'ecc-architect',
@@ -23,13 +24,13 @@ const definition: AgentDefinition = {
     try {
       return require('./model-config').resolveModel()
     } catch {
-      return 'deepseek/deepseek-v4-pro'
+      return 'deepseek/deepseek-v4-flash'
     }
   })(),
 
   reasoningOptions: { enabled: true, exclude: false, effort: 'high' },
 
-  toolNames: ['read_files', 'code_search', 'find_files', 'spawn_agents', 'end_turn'],
+  toolNames: ['read_files', 'code_search', 'find_files', 'spawn_agents', 'end_turn', 'think_deeply', 'run_terminal_command'],
 
   spawnableAgents: [],
 
@@ -127,6 +128,8 @@ const definition: AgentDefinition = {
 - Premature Optimization — optimizing before measuring
 - Reinventing the Wheel — building instead of using proven solutions
 - Distributed Monolith — services that can't deploy independently`,
+
+  handleSteps: createHandleSteps(),
 }
 
 export default definition
