@@ -98,19 +98,42 @@ export async function GET(request: Request) {
     console.error('Postgres Search Error:', error);
     // If the extension isn't enabled, fallback to fuzzy JS-based search
     if (message.includes('similarity') || message.includes('operator does not exist')) {
-       // Fetch candidate roots (broader prefix match to feed fuzzy scorer)
-       const candidates = await prisma.root.findMany({
-         where: { bikol: { startsWith: q.charAt(0), mode: 'insensitive' } },
-         take: 200,
-         include: { definitions: { take: 1 } }
-       });
+       // Fetch candidates from BOTH tables (broader prefix match to feed fuzzy scorer)
+       const [rootCandidates, legacyCandidates] = await Promise.all([
+         prisma.root.findMany({
+           where: { bikol: { startsWith: q.charAt(0), mode: 'insensitive' } },
+           take: 200,
+           include: { definitions: { take: 1 } }
+         }),
+         prisma.word.findMany({
+           where: { bikol: { startsWith: q.charAt(0), mode: 'insensitive' } },
+           take: 200,
+         }),
+       ]);
 
-       const entries = candidates.map(c => ({
-         bikol: c.bikol,
-         pos: normalizePOS(c.pos),
-         english: c.definitions[0]?.english ?? null,
-         tagalog: c.definitions[0]?.tagalog ?? null,
-       }));
+       // Merge with roots taking priority (dedup by bikol)
+       const entryMap = new Map<string, { bikol: string; pos: string | null; english: string | null; tagalog: string | null }>();
+       for (const c of rootCandidates) {
+         entryMap.set(c.bikol.toLowerCase(), {
+           bikol: c.bikol,
+           pos: normalizePOS(c.pos),
+           english: c.definitions[0]?.english ?? null,
+           tagalog: c.definitions[0]?.tagalog ?? null,
+         });
+       }
+       for (const c of legacyCandidates) {
+         const key = (c.bikol || '').toLowerCase();
+         if (key && !entryMap.has(key)) {
+           entryMap.set(key, {
+             bikol: c.bikol!,
+             pos: normalizePOS(c.pos),
+             english: c.english ?? null,
+             tagalog: c.tagalog ?? null,
+           });
+         }
+       }
+
+       const entries = Array.from(entryMap.values());
 
        // Fuzzy match against bikol, english, and tagalog fields
        const matched = fuzzyMatch(q, entries, [

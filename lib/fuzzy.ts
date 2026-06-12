@@ -133,7 +133,8 @@ export function fuzzyMatch<T>(
     let bestField = '';
 
     // Fast pre-filter: skip items that can't possibly match.
-    // Allows: same first char, similar length, or the query as a substring.
+    // Checks across ALL extractors (bikol, english, tagalog) so a match on
+    // any field passes the item through.
     let canMatch = false;
     for (const extractor of extractors) {
       const text = extractor(item);
@@ -142,7 +143,8 @@ export function fuzzyMatch<T>(
       // Cheap pre-filter checks (ordered by cost)
       if (lower.charAt(0) === firstChar) { canMatch = true; break; }
       if (lower.includes(normalizedQuery)) { canMatch = true; break; }
-      if (Math.abs(lower.length - normalizedQuery.length) <= 3) { canMatch = true; break; }
+      if (normalizedQuery.includes(lower)) { canMatch = true; break; }
+      if (Math.abs(lower.length - normalizedQuery.length) <= 4) { canMatch = true; break; }
     }
     if (!canMatch) continue;
 
@@ -162,9 +164,10 @@ export function fuzzyMatch<T>(
         const wordBoundary = new RegExp(`\\b${escapeRegex(normalizedQuery)}`);
         score = wordBoundary.test(lower) ? 0.9 : 0.85;
       } else if (normalizedQuery.length >= 3) {
-        // Fuzzy match only for queries of 3+ chars (avoid noise on short queries)
+        // Fuzzy match (Damerau-Levenshtein) for queries of 3+ chars
+        // Lowered threshold from 0.55 to 0.45 to catch more typo variations
         const sim = stringSimilarity(lower, normalizedQuery);
-        if (sim > 0.55) {
+        if (sim > 0.45) {
           score = sim * 0.8;
         }
       }

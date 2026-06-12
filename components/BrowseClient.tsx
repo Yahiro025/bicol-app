@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import Button from './ui/Button';
 import { useLanguageMode } from '@/hooks/useLanguageMode';
-import { normalizePOS } from '@/lib/lexicography';
+import { normalizePOS, displayTranslation } from '@/lib/lexicography';
 import { escapeRegex } from '@/lib/fuzzy';
 
 type Word = {
@@ -71,10 +71,7 @@ export default function BrowseClient({
   const [areFiltersVisible, setAreFiltersVisible] = useState(false);
   const langMode = useLanguageMode();
 
-  const displayTranslation = (word: Word): string => {
-    if (langMode === 'tl' && word.tagalog) return word.tagalog;
-    return word.english ?? '';
-  };
+  const getTranslation = (word: Word): string => displayTranslation(word, langMode);
 
   const fetchMoreWords = useCallback(async (isReset = false) => {
     const limit = 50;
@@ -200,7 +197,7 @@ export default function BrowseClient({
       <>
         {parts.map((part, i) => 
           part.toLowerCase() === query.toLowerCase() 
-            ? <mark key={i} className="bg-yellow-500/30 text-yellow-200 rounded px-1">{part}</mark> 
+            ? <mark key={i} className="rounded px-0.5" style={{ backgroundColor: 'rgba(212,168,69,0.22)', color: 'var(--editorial-accent)' }}>{part}</mark>
             : part
         )}
       </>
@@ -458,7 +455,7 @@ export default function BrowseClient({
                   >
                     {highlightText(word.bikol)}
                   </h2>
-                  <p className="mt-1 font-medium" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>{highlightText(displayTranslation(word))}</p>
+                  <p className="mt-1 font-medium" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>{highlightText(getTranslation(word))}</p>
                   {langMode === 'all' && word.tagalog && (
                     <p className="text-xs mt-2 italic" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Tagalog: {highlightText(word.tagalog)}</p>
                   )}
