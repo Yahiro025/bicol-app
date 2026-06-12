@@ -9,8 +9,6 @@
  */
 
 import { AgentDefinition } from './types/agent-definition'
-import { resolveModel } from './model-config'
-import { createHandleSteps } from './handle-steps-template'
 
 const definition: AgentDefinition = {
   id: 'ecc-typescript-reviewer',
@@ -21,14 +19,19 @@ const definition: AgentDefinition = {
     'Expert TypeScript/JavaScript code reviewer. Use PROACTIVELY for reviewing TypeScript, React, Next.js, and Node.js code. ' +
     'Checks type safety, async patterns, error handling, and idiomatic patterns.',
 
-  model: resolveModel(),
+  model: (() => {
+    try {
+      return require('./model-config').resolveModel()
+    } catch {
+      return 'deepseek/deepseek-v4-pro'
+    }
+  })(),
 
   reasoningOptions: { enabled: true, exclude: false, effort: 'medium' },
 
   toolNames: ['read_files', 'code_search', 'str_replace', 'run_terminal_command', 'find_files', 'spawn_agents', 'end_turn'],
 
   spawnableAgents: [],
-  handleSteps: createHandleSteps(),
 
   systemPrompt:
     'You are an expert TypeScript/JavaScript code reviewer. ' +

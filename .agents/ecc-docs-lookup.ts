@@ -8,8 +8,6 @@
  */
 
 import { AgentDefinition } from './types/agent-definition'
-import { resolveModel } from './model-config'
-import { createHandleSteps } from './handle-steps-template'
 
 const definition: AgentDefinition = {
   id: 'ecc-docs-lookup',
@@ -20,14 +18,19 @@ const definition: AgentDefinition = {
     'Documentation lookup specialist. Use for searching API documentation, ' +
     'framework guides, and library references. Retrieves current, version-specific docs.',
 
-  model: resolveModel(),
+  model: (() => {
+    try {
+      return require('./model-config').resolveModel()
+    } catch {
+      return 'deepseek/deepseek-v4-pro'
+    }
+  })(),
 
   reasoningOptions: { enabled: true, exclude: false, effort: 'low' },
 
   toolNames: ['read_files', 'spawn_agents', 'end_turn'],
 
-  spawnableAgents: [],
-  handleSteps: createHandleSteps(),
+  spawnableAgents: ['researcher-web'],
 
   systemPrompt:
     'You are a documentation lookup specialist. Your mission is to find and retrieve accurate, ' +

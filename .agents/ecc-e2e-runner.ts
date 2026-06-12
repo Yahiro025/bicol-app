@@ -8,8 +8,6 @@
  */
 
 import { AgentDefinition } from './types/agent-definition'
-import { resolveModel } from './model-config'
-import { createHandleSteps } from './handle-steps-template'
 
 const definition: AgentDefinition = {
   id: 'ecc-e2e-runner',
@@ -20,7 +18,13 @@ const definition: AgentDefinition = {
     'End-to-end testing specialist. Use PROACTIVELY for generating, maintaining, and running E2E tests. ' +
     'Manages test journeys, quarantines flaky tests, and ensures critical user flows work.',
 
-  model: resolveModel(),
+  model: (() => {
+    try {
+      return require('./model-config').resolveModel()
+    } catch {
+      return 'deepseek/deepseek-v4-pro'
+    }
+  })(),
 
   reasoningOptions: {
     enabled: true,
@@ -40,7 +44,6 @@ const definition: AgentDefinition = {
   ],
 
   spawnableAgents: [],
-  handleSteps: createHandleSteps(),
 
   systemPrompt:
     'You are an expert end-to-end testing specialist. Your mission is to ensure critical user journeys work correctly ' +
