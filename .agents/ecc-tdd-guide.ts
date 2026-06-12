@@ -8,6 +8,7 @@
  */
 
 import { AgentDefinition } from './types/agent-definition'
+import { createHandleSteps } from './handle-steps-template'
 
 const definition: AgentDefinition = {
   id: 'ecc-tdd-guide',
@@ -22,7 +23,7 @@ const definition: AgentDefinition = {
     try {
       return require('./model-config').resolveModel()
     } catch {
-      return 'deepseek/deepseek-v4-pro'
+      return 'deepseek/deepseek-v4-flash'
     }
   })(),
 
@@ -39,8 +40,7 @@ const definition: AgentDefinition = {
     'write_file',
     'run_terminal_command',
     'spawn_agents',
-    'end_turn',
-  ],
+    'end_turn', 'think_deeply'],
 
   spawnableAgents: [],
 
@@ -110,6 +110,8 @@ Integrate eval-driven development into TDD flow:
 4. Re-run tests and evals; report pass@1 and pass@3
 
 Release-critical paths should target pass³ stability before merge.`,
+
+  handleSteps: createHandleSteps(),
 }
 
 export default definition

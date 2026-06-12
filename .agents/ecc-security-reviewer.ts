@@ -9,6 +9,7 @@
  */
 
 import { AgentDefinition } from './types/agent-definition'
+import { createHandleSteps } from './handle-steps-template'
 
 const definition: AgentDefinition = {
   id: 'ecc-security-reviewer',
@@ -24,7 +25,7 @@ const definition: AgentDefinition = {
     try {
       return require('./model-config').resolveModel()
     } catch {
-      return 'deepseek/deepseek-v4-pro'
+      return 'deepseek/deepseek-v4-flash'
     }
   })(),
 
@@ -42,8 +43,7 @@ const definition: AgentDefinition = {
     'run_terminal_command',
     'find_files',
     'spawn_agents',
-    'end_turn',
-  ],
+    'end_turn', 'think_deeply'],
 
   spawnableAgents: [],
 
@@ -146,6 +146,8 @@ npm audit --audit-level=high
 - **Always** after changes to: auth, input handling, DB queries, payments, file/external API integrations
 - **Immediately** during: incidents, CVE reports, before releases
 - **Success Metrics**: No critical/high issues, no secrets in code, current dependencies`,
+
+  handleSteps: createHandleSteps(),
 }
 
 export default definition

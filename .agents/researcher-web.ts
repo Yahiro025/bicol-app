@@ -12,6 +12,7 @@
  */
 
 import { AgentDefinition } from './types/agent-definition'
+import { createHandleSteps } from './handle-steps-template'
 
 const definition: AgentDefinition = {
   id: 'researcher-web',
@@ -27,7 +28,7 @@ const definition: AgentDefinition = {
     try {
       return require('./model-config').resolveModel()
     } catch {
-      return 'deepseek/deepseek-v4-pro'
+      return 'deepseek/deepseek-v4-flash'
     }
   })(),
 
@@ -37,8 +38,7 @@ const definition: AgentDefinition = {
     'read_files',
     'write_file',
     'think_deeply',
-    'end_turn',
-  ],
+    'end_turn', 'code_search', 'run_terminal_command'],
 
   spawnableAgents: [],
 
@@ -80,6 +80,8 @@ Produce a structured markdown summary:
 - Prefer official documentation over blog posts
 - Include the exact version of any library/framework referenced
 - If information is unclear or conflicting across sources, say so explicitly`,
+
+  handleSteps: createHandleSteps(),
 }
 
 export default definition

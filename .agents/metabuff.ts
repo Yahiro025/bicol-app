@@ -228,7 +228,7 @@ const definition: AgentDefinition = {
     try {
       return require('./model-config').resolveModel()
     } catch {
-      return 'deepseek/deepseek-v4-pro'
+      return 'deepseek/deepseek-v4-flash'
     }
   })(),  // v4-pro confirmed available in free tier; v4-flash was 403 in sub-agent spawns
 
@@ -244,7 +244,7 @@ const definition: AgentDefinition = {
     'ecc-code-architect',        // general-purpose implementation (was codebuff/base)
     'codebuff/file-picker@0.0.1', // codebase mapping
     'thinker-with-files-gemini', // task decomposition / planning
-    'code-reviewer-deepseek',    // review / synthesis
+    'ecc-code-reviewer',          // review / synthesis (model-agnostic, avoids free-mode restrictions)
     'researcher-web',            // documentation research
     'researcher-docs',           // API docs research
     'metabuff-validator',
@@ -1944,7 +1944,7 @@ ${task}
         toolName: 'spawn_agents',
         input: {
           agents: [{
-            agent_type: 'code-reviewer-deepseek',
+            agent_type: 'ecc-code-reviewer',
             prompt: withECCContext(withReview(
               `Post-mega conflict check for: ${prompt}\n\n` +
               `Multiple specialist agents ran in parallel. Check specifically for:\n` +

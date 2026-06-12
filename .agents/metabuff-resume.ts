@@ -6,9 +6,10 @@ const definition: AgentDefinition = {
   id: 'metabuff-resume',
   version: '1.0.0',
   displayName: 'MetaBuff Resume Specialist',
+  spawnerPrompt: 'Spawn to resume interrupted tasks from checkpoints. Detects incomplete sessions, reads recovery data, and resumes the correct pipeline without restarting completed work.',
   model: resolveModel(),
   toolNames: ['run_terminal_command', 'read_files', 'think_deeply', 'spawn_agents', 'find_files', 'end_turn'],
-  spawnableAgents: ['metabuff-mega', 'ecc-code-architect', 'metabuff-validator', 'code-reviewer-deepseek'],
+  spawnableAgents: ['metabuff-mega', 'ecc-code-architect', 'metabuff-validator', 'ecc-code-reviewer'],
   
   systemPrompt: 'You are the MetaBuff Recovery Specialist. Your job is to resume interrupted tasks. ' +
                 'Never restart completed work. Always pick up right where the task left off.',

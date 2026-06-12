@@ -5,6 +5,7 @@ const definition: AgentDefinition = {
   id: 'ecc-hypothesis-generator',
   version: '1.0.0',
   displayName: 'ECC Hypothesis Generator',
+  spawnerPrompt: 'Scientific hypothesis generation specialist. Use for research tasks involving mechanism analysis, gap identification, and falsifiable hypothesis formulation with validation plans.',
   model: resolveModel(),
   reasoningOptions: {
     enabled: true,
@@ -12,6 +13,7 @@ const definition: AgentDefinition = {
     effort: 'high'
   },
   toolNames: ['read_files', 'code_search', 'web_search', 'think_deeply', 'run_terminal_command', 'find_files', 'end_turn'],
+  spawnableAgents: [],
   
   systemPrompt: 'You are the ECC Hypothesis Generator. Follow this 6-step protocol for scientific reasoning: (1) CONTEXT, (2) SEARCH, (3) GAP, (4) HYPOTHESIZE, (5) MECHANISM, (6) VALIDATE.',
 

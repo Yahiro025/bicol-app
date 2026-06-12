@@ -1,6 +1,3 @@
-import * as fs from 'fs'
-import * as path from 'path'
-
 export const FREE_MODELS = {
   flash: 'deepseek/deepseek-v4-flash',
   deepseek: 'deepseek/deepseek-v4-pro',
@@ -49,6 +46,8 @@ export const MODEL_CAPS: Record<string, any> = {
 
 export function resolveModel(): string {
   try {
+    const fs = require('fs')
+    const path = require('path')
     const configPath = path.join(__dirname, 'model-config.json')
     if (fs.existsSync(configPath)) {
       const config = JSON.parse(fs.readFileSync(configPath, 'utf8'))

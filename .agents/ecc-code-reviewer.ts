@@ -9,6 +9,7 @@
  */
 
 import { AgentDefinition } from './types/agent-definition'
+import { createHandleSteps } from './handle-steps-template'
 
 const definition: AgentDefinition = {
   id: 'ecc-code-reviewer',
@@ -23,7 +24,7 @@ const definition: AgentDefinition = {
     try {
       return require('./model-config').resolveModel()
     } catch {
-      return 'deepseek/deepseek-v4-pro'
+      return 'deepseek/deepseek-v4-flash'
     }
   })(),
 
@@ -39,8 +40,7 @@ const definition: AgentDefinition = {
     'find_files',
     'run_terminal_command',
     'spawn_agents',
-    'end_turn',
-  ],
+    'end_turn', 'think_deeply'],
 
   spawnableAgents: [],
 
@@ -231,6 +231,8 @@ When reviewing AI-generated changes, prioritize:
 4. Unnecessary model-cost-inducing complexity
 
 Cost-awareness: Flag workflows that escalate to higher-cost models without clear reasoning need.`,
+
+  handleSteps: createHandleSteps(),
 }
 
 export default definition

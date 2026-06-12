@@ -94,7 +94,7 @@ const definition: AgentDefinition = {
     try {
       return require('./model-config').resolveModel()
     } catch {
-      return 'deepseek/deepseek-v4-pro'
+      return 'deepseek/deepseek-v4-flash'
     }
   })(),  // v4-pro confirmed available in free tier; v4-flash was 403 in sub-agent spawns
 
@@ -109,7 +109,7 @@ const definition: AgentDefinition = {
   spawnableAgents: [
     'ecc-code-architect',    // general-purpose implementation (replaces 'metabuff' — avoids re-entrancy loop)
     'thinker-with-files-gemini',  // task decomposition
-    'code-reviewer-deepseek',    // review / synthesis
+    'ecc-code-reviewer',          // review / synthesis (model-agnostic, avoids free-mode restrictions)
     'researcher-web',            // documentation research
     'researcher-docs',           // API docs research
     'codebuff/file-picker@0.0.1', // codebase mapping
@@ -198,7 +198,7 @@ const definition: AgentDefinition = {
         testgen:  'metabuff-testgen',
         base:     'ecc-code-architect',
         research: 'researcher-web',
-        review:   'code-reviewer-deepseek',
+        review:   'ecc-code-reviewer',
         reason:   'metabuff-reasoner',     // v1.2.0
         custom:   'ecc-code-architect',    // v1.2.0: dynamic via custom prompt
       }
@@ -499,7 +499,7 @@ ANTI-HALLUCINATION (non-negotiable):
         toolName: 'spawn_agents',
         input: {
           agents: [{
-            agent_type: 'code-reviewer-deepseek',
+            agent_type: 'ecc-code-reviewer',
             prompt:
               `SDD STAGE 1 — SPEC COMPLIANCE REVIEW (Wave ${waveIdx + 1} of ${waves.length})\n\n` +
               `${wave.length} subagents completed work on: ${prompt}\n\n` +
@@ -524,7 +524,7 @@ ANTI-HALLUCINATION (non-negotiable):
         toolName: 'spawn_agents',
         input: {
           agents: [{
-            agent_type: 'code-reviewer-deepseek',
+            agent_type: 'ecc-code-reviewer',
             prompt:
               `SDD STAGE 2 — CODE QUALITY REVIEW (Wave ${waveIdx + 1} of ${waves.length})\n\n` +
               `Stage 1 spec compliance has completed. Now check code quality:\n\n` +
@@ -587,7 +587,7 @@ ANTI-HALLUCINATION (non-negotiable):
       toolName: 'spawn_agents',
       input: {
         agents: [{
-          agent_type: 'code-reviewer-deepseek',
+          agent_type: 'ecc-code-reviewer',
           prompt:
             `Final synthesis review for a ${waves.length}-wave parallel cascade session.\n\n` +
             `${subtasks.length} specialist agents completed work on:\n${prompt}\n\n` +

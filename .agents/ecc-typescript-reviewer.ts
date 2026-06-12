@@ -9,6 +9,7 @@
  */
 
 import { AgentDefinition } from './types/agent-definition'
+import { createHandleSteps } from './handle-steps-template'
 
 const definition: AgentDefinition = {
   id: 'ecc-typescript-reviewer',
@@ -23,13 +24,13 @@ const definition: AgentDefinition = {
     try {
       return require('./model-config').resolveModel()
     } catch {
-      return 'deepseek/deepseek-v4-pro'
+      return 'deepseek/deepseek-v4-flash'
     }
   })(),
 
   reasoningOptions: { enabled: true, exclude: false, effort: 'medium' },
 
-  toolNames: ['read_files', 'code_search', 'str_replace', 'run_terminal_command', 'find_files', 'spawn_agents', 'end_turn'],
+  toolNames: ['read_files', 'code_search', 'str_replace', 'run_terminal_command', 'find_files', 'spawn_agents', 'end_turn', 'think_deeply'],
 
   spawnableAgents: [],
 
@@ -71,6 +72,8 @@ npx tsc --noEmit --pretty
 - **Approve**: No critical/high issues. Clean reviews are valid.
 - **Warning**: Medium issues only
 - **Block**: Critical/high issues found — must fix before merge`,
+
+  handleSteps: createHandleSteps(),
 }
 
 export default definition
