@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { useRouter } from 'next/navigation';
-import { useState, useEffect, useCallback, useRef, useTransition } from 'react';
-import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
-import Button from './ui/Button';
-import { useLanguageMode } from '@/hooks/useLanguageMode';
-import { normalizePOS, displayTranslation } from '@/lib/lexicography';
-import { escapeRegex } from '@/lib/fuzzy';
+import { useRouter } from "next/navigation";
+import { useState, useEffect, useCallback, useRef } from "react";
+import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
+import Button from "./ui/Button";
+import { useLanguageMode } from "@/hooks/useLanguageMode";
+import { normalizePOS, displayTranslation } from "@/lib/lexicography";
+import { escapeRegex } from "@/lib/fuzzy";
 
 type Word = {
   bikol: string;
@@ -17,19 +17,24 @@ type Word = {
   pos?: string | null;
 };
 
-const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+const PAGE_SIZE = 50;
 
 const listVariants = {
   visible: {
     transition: {
-      staggerChildren: 0.05
-    }
-  }
+      staggerChildren: 0.05,
+    },
+  },
 };
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 30 } }
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { type: "spring", stiffness: 300, damping: 30 },
+  },
 } as const;
 
 export default function BrowseClient({
@@ -40,6 +45,7 @@ export default function BrowseClient({
   initialCategory: defaultCategory,
   initialQuery: defaultQuery,
   initialSort: defaultSort,
+  initialPage = 1,
 }: {
   initialWords: Word[];
   initialCategories: string[];
@@ -48,163 +54,197 @@ export default function BrowseClient({
   initialCategory: string;
   initialQuery: string;
   initialSort?: string;
+  initialPage?: number;
 }) {
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
-  
+
   const [query, setQuery] = useState(defaultQuery);
   const [selectedLetter, setSelectedLetter] = useState(defaultLetter);
   const [selectedCategory, setSelectedCategory] = useState(defaultCategory);
-  const [sortMode, setSortMode] = useState<'alphabetical' | 'frequency' | 'relevance'>(defaultSort === 'frequency' ? 'frequency' : defaultSort === 'relevance' ? 'relevance' : query ? 'relevance' : 'alphabetical');
-
-  // Reset sort to alphabetical when search query is cleared (relevance mode needs a query)
-  useEffect(() => {
-    if (!query && sortMode === 'relevance') {
-      setSortMode('alphabetical');
-    }
-  }, [query, sortMode]);
+  const [sortMode, setSortMode] = useState<"alphabetical" | "frequency" | "relevance">(
+    defaultSort === "frequency"
+      ? "frequency"
+      : defaultSort === "relevance"
+        ? "relevance"
+        : query
+          ? "relevance"
+          : "alphabetical",
+  );
+  const [currentPage, setCurrentPage] = useState(initialPage);
   const [words, setWords] = useState<Word[]>(initialWords);
   const [totalWords, setTotalWords] = useState(initialTotalWords);
-  const pageRef = useRef(1);
-  const [hasMore, setHasMore] = useState(initialWords.length === 50);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [areFiltersVisible, setAreFiltersVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const langMode = useLanguageMode();
+
+  // Ref to track the latest fetch request for cancellation
+  const fetchCounterRef = useRef(0);
 
   const getTranslation = (word: Word): string => displayTranslation(word, langMode);
 
-  const fetchMoreWords = useCallback(async (isReset = false) => {
-    const limit = 50;
-    
-    if (!isReset && isLoadingMoreRef.current) return; // Prevent duplicate requests
-    
-    setIsLoadingMore(true);
-    try {
-      const params = new URLSearchParams({
-        page: (isReset ? 0 : pageRef.current).toString(),
-        limit: limit.toString(),
-      });
-      if (query) params.set('q', query);
-      if (selectedLetter) params.set('letter', selectedLetter);
-      if (selectedCategory) params.set('category', selectedCategory);
-      if (sortMode === 'frequency') params.set('sort', 'frequency');
-      if (sortMode === 'relevance') params.set('sort', 'relevance');
+  const totalPages = Math.ceil(totalWords / PAGE_SIZE) || 1;
 
-      const response = await fetch(`/api/browse?${params.toString()}`);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-      
-      const data = await response.json();
+  const fetchPage = useCallback(
+    async (targetPage: number) => {
+      const apiPage = targetPage - 1;
+      const fetchId = ++fetchCounterRef.current;
 
-      // Support both legacy array format and new { words, total } format
-      const newWords = Array.isArray(data) ? data : data.words;
-      if (data.total !== undefined) {
-        setTotalWords(data.total);
-      }
+      setIsLoading(true);
+      try {
+        const params = new URLSearchParams({
+          page: apiPage.toString(),
+          limit: PAGE_SIZE.toString(),
+        });
+        if (query) params.set("q", query);
+        if (selectedLetter) params.set("letter", selectedLetter);
+        if (selectedCategory) params.set("category", selectedCategory);
+        if (sortMode === "frequency") params.set("sort", "frequency");
+        if (sortMode === "relevance") params.set("sort", "relevance");
 
-      if (!Array.isArray(newWords)) {
-        throw new Error('Invalid response format');
-      }
+        const response = await fetch(`/api/browse?${params.toString()}`);
 
-      if (isReset) {
-        setWords(newWords);
-        pageRef.current = 1;
-      } else {
-        setWords(prev => [...prev, ...newWords]);
-        pageRef.current += 1;
-      }
-      
-      setHasMore(newWords.length === limit);
-    } catch (error) {
-      console.error('Error fetching more words:', error);
-    } finally {
-      setIsLoadingMore(false);
-    }
-  }, [query, selectedLetter, selectedCategory, sortMode]);
-
-  // Intersection Observer for infinite scroll
-  // Uses refs to avoid stale closure bugs — the observer callback always reads
-  // the latest values of isLoadingMore and hasMore without recreating the observer.
-  const isLoadingMoreRef = useRef(isLoadingMore);
-  const hasMoreRef = useRef(hasMore);
-  const fetchMoreWordsRef = useRef(fetchMoreWords);
-  
-  isLoadingMoreRef.current = isLoadingMore;
-  hasMoreRef.current = hasMore;
-  fetchMoreWordsRef.current = fetchMoreWords;
-
-  const observerTarget = useCallback((node: HTMLDivElement | null) => {
-    if (!node) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]?.isIntersecting && hasMoreRef.current && !isLoadingMoreRef.current) {
-          fetchMoreWordsRef.current();
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
-      },
-      { threshold: 0.1 }
-    );
 
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, []);
+        const data = await response.json();
 
-  // Reset and fetch when filters change
+        const newWords = Array.isArray(data) ? data : data.words;
+        const total = data.total ?? 0;
+
+        if (!Array.isArray(newWords)) {
+          throw new Error("Invalid response format");
+        }
+
+        const maxPage = Math.ceil(total / PAGE_SIZE) || 1;
+
+        // Ignore stale responses
+        if (fetchId !== fetchCounterRef.current) return;
+
+        if (targetPage > maxPage && total > 0) {
+          return fetchPage(maxPage);
+        }
+
+        setWords(newWords);
+        setTotalWords(total);
+        setCurrentPage(Math.min(targetPage, maxPage));
+      } catch (error) {
+        console.error("Error fetching page:", error);
+      } finally {
+        if (fetchId === fetchCounterRef.current) {
+          setIsLoading(false);
+        }
+      }
+    },
+    [query, selectedLetter, selectedCategory, sortMode],
+  );
+
+  const handlePrevPage = () => {
+    if (currentPage <= 1 || isLoading) return;
+    const prev = currentPage - 1;
+    fetchPage(prev);
+  };
+
+  const handleNextPage = () => {
+    if (currentPage >= totalPages || isLoading) return;
+    const next = currentPage + 1;
+    fetchPage(next);
+  };
+
+  // Reset sort to alphabetical when search query is cleared
+  useEffect(() => {
+    if (!query && sortMode === "relevance") {
+      setSortMode("alphabetical");
+    }
+  }, [query, sortMode]);
+
+  // Sync URL when filters, sort, or page change
   useEffect(() => {
     const timer = setTimeout(() => {
-      startTransition(() => {
-        fetchMoreWords(true);
-      });
-    }, 300); // Debounce search
+      const params = new URLSearchParams();
+      if (query) params.set("q", query);
+      if (selectedLetter) params.set("letter", selectedLetter);
+      if (selectedCategory) params.set("category", selectedCategory);
+      if (sortMode === "frequency") params.set("sort", "frequency");
+      if (sortMode === "relevance") params.set("sort", "relevance");
+      if (currentPage > 1) params.set("page", currentPage.toString());
 
-    const params = new URLSearchParams();
-    if (query) params.set('q', query);
-    if (selectedLetter) params.set('letter', selectedLetter);
-    if (selectedCategory) params.set('category', selectedCategory);
-    if (sortMode === 'frequency') params.set('sort', 'frequency');
-    if (sortMode === 'relevance') params.set('sort', 'relevance');
-    
-    const newUrl = `/browse${params.toString() ? `?${params.toString()}` : ''}`;
-    window.history.replaceState({ ...window.history.state, as: newUrl, url: newUrl }, '', newUrl);
+      const newUrl = `/browse${params.toString() ? `?${params.toString()}` : ""}`;
+      window.history.replaceState(
+        { ...window.history.state, as: newUrl, url: newUrl },
+        "",
+        newUrl,
+      );
+    }, 300);
 
     return () => clearTimeout(timer);
-  }, [query, selectedLetter, selectedCategory, sortMode, fetchMoreWords]);
+  }, [query, selectedLetter, selectedCategory, sortMode, currentPage]);
+
+  // Refetch when filters/sort change (preserve page, clamp if needed)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchPage(currentPage);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [query, selectedLetter, selectedCategory, sortMode]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
   };
 
-  const handleFilterClick = (type: 'letter' | 'category', value: string) => {
-    if (type === 'letter') {
-      setSelectedLetter(prev => prev === value ? '' : value);
+  const handleFilterClick = (type: "letter" | "category", value: string) => {
+    if (type === "letter") {
+      setSelectedLetter((prev) => (prev === value ? "" : value));
     } else {
-      setSelectedCategory(prev => prev === value ? '' : value);
+      setSelectedCategory((prev) => (prev === value ? "" : value));
     }
   };
 
   const clearFilters = () => {
-    setSelectedLetter('');
-    setSelectedCategory('');
-    setQuery('');
+    setSelectedLetter("");
+    setSelectedCategory("");
+    setQuery("");
   };
 
   const highlightText = (text: string) => {
     if (!query || !text.toLowerCase().includes(query.toLowerCase())) return text;
-    const parts = text.split(new RegExp(`(${escapeRegex(query)})`, 'gi'));
+    const parts = text.split(new RegExp(`(${escapeRegex(query)})`, "gi"));
     return (
       <>
-        {parts.map((part, i) => 
-          part.toLowerCase() === query.toLowerCase() 
-            ? <mark key={i} className="rounded px-0.5" style={{ backgroundColor: 'rgba(212,168,69,0.22)', color: 'var(--editorial-accent)' }}>{part}</mark>
-            : part
+        {parts.map((part, i) =>
+          part.toLowerCase() === query.toLowerCase() ? (
+            <mark
+              key={i}
+              className="rounded px-0.5"
+              style={{
+                backgroundColor: "rgba(212,168,69,0.22)",
+                color: "var(--editorial-accent)",
+              }}
+            >
+              {part}
+            </mark>
+          ) : (
+            part
+          ),
         )}
       </>
     );
   };
 
   const hasActiveFilters = !!(selectedLetter || selectedCategory);
+
+  // Result count range text
+  const startResult = (currentPage - 1) * PAGE_SIZE + 1;
+  const endResult = Math.min(currentPage * PAGE_SIZE, totalWords);
+  const resultCountText =
+    totalWords === 0
+      ? "No results"
+      : totalWords <= PAGE_SIZE
+        ? `Showing ${totalWords.toLocaleString()} result${totalWords !== 1 ? "s" : ""}`
+        : `Showing ${startResult.toLocaleString()}–${endResult.toLocaleString()} of ${totalWords.toLocaleString()} result${totalWords !== 1 ? "s" : ""}`;
+
+  const showPagination = totalWords > 0;
 
   return (
     <div>
@@ -216,21 +256,27 @@ export default function BrowseClient({
           placeholder={`Search dictionary...`}
           className="w-full px-8 py-4 rounded-xl text-lg transition-all duration-300 focus:outline-none placeholder:opacity-50"
           style={{
-            fontFamily: 'var(--font-body)',
-            backgroundColor: 'var(--editorial-surface)',
-            border: '1px solid var(--editorial-border)',
-            color: 'var(--editorial-text)',
+            fontFamily: "var(--font-body)",
+            backgroundColor: "var(--editorial-surface)",
+            border: "1px solid var(--editorial-border)",
+            color: "var(--editorial-text)",
           }}
         />
         <div className="absolute right-6 top-1/2 -translate-y-1/2 flex items-center gap-3">
-          {isPending && (
-            <div className="w-4 h-4 border-2 rounded-full animate-spin" style={{ borderColor: 'var(--editorial-border)', borderTopColor: 'var(--editorial-accent)' }} />
+          {isLoading && (
+            <div
+              className="w-4 h-4 border-2 rounded-full animate-spin"
+              style={{
+                borderColor: "var(--editorial-border)",
+                borderTopColor: "var(--editorial-accent)",
+              }}
+            />
           )}
           {query && (
-            <button 
-              onClick={() => setQuery('')}
+            <button
+              onClick={() => setQuery("")}
               className="transition-colors p-1"
-              style={{ color: 'var(--editorial-muted)' }}
+              style={{ color: "var(--editorial-muted)" }}
             >
               ✕
             </button>
@@ -241,54 +287,78 @@ export default function BrowseClient({
       {/* 2. TOGGLE FILTER BUTTON & ACTIVE FILTER PILLS */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-3">
         <div className="flex items-center gap-3 flex-wrap">
-          <Button 
+          <Button
             variant="secondary"
             onClick={() => setAreFiltersVisible(!areFiltersVisible)}
             className="flex items-center gap-2"
             style={{
-              fontFamily: 'var(--font-body)',
-              border: '1px solid var(--editorial-border)',
-              color: 'var(--editorial-text)',
-              backgroundColor: 'var(--editorial-surface)',
+              fontFamily: "var(--font-body)",
+              border: "1px solid var(--editorial-border)",
+              color: "var(--editorial-text)",
+              backgroundColor: "var(--editorial-surface)",
             }}
           >
-            <svg className={`w-4 h-4 transition-transform duration-300 ${areFiltersVisible ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
-            {areFiltersVisible ? 'Hide Filters' : 'Show Filters'}
+            <svg
+              className={`w-4 h-4 transition-transform duration-300 ${areFiltersVisible ? "rotate-180" : ""}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M19 9l-7 7-7-7"
+              ></path>
+            </svg>
+            {areFiltersVisible ? "Hide Filters" : "Show Filters"}
           </Button>
 
           {/* Sort Toggle */}
-          <div className="flex items-center rounded-xl overflow-hidden" style={{ border: '1px solid var(--editorial-border)' }}>
+          <div
+            className="flex items-center rounded-xl overflow-hidden"
+            style={{ border: "1px solid var(--editorial-border)" }}
+          >
             {query && (
               <button
-                onClick={() => setSortMode('relevance')}
+                onClick={() => setSortMode("relevance")}
                 className="px-4 py-2 text-xs font-semibold transition-all"
                 style={{
-                  fontFamily: 'var(--font-body)',
-                  backgroundColor: sortMode === 'relevance' ? 'var(--editorial-accent)' : 'var(--editorial-surface)',
-                  color: sortMode === 'relevance' ? '#fff' : 'var(--editorial-muted)',
+                  fontFamily: "var(--font-body)",
+                  backgroundColor:
+                    sortMode === "relevance"
+                      ? "var(--editorial-accent)"
+                      : "var(--editorial-surface)",
+                  color: sortMode === "relevance" ? "#fff" : "var(--editorial-muted)",
                 }}
               >
                 Relevance
               </button>
             )}
             <button
-              onClick={() => setSortMode('alphabetical')}
+              onClick={() => setSortMode("alphabetical")}
               className="px-4 py-2 text-xs font-semibold transition-all"
               style={{
-                fontFamily: 'var(--font-body)',
-                backgroundColor: sortMode === 'alphabetical' ? 'var(--editorial-accent)' : 'var(--editorial-surface)',
-                color: sortMode === 'alphabetical' ? '#fff' : 'var(--editorial-muted)',
+                fontFamily: "var(--font-body)",
+                backgroundColor:
+                  sortMode === "alphabetical"
+                    ? "var(--editorial-accent)"
+                    : "var(--editorial-surface)",
+                color: sortMode === "alphabetical" ? "#fff" : "var(--editorial-muted)",
               }}
             >
               A–Z
             </button>
             <button
-              onClick={() => setSortMode('frequency')}
+              onClick={() => setSortMode("frequency")}
               className="px-4 py-2 text-xs font-semibold transition-all"
               style={{
-                fontFamily: 'var(--font-body)',
-                backgroundColor: sortMode === 'frequency' ? 'var(--editorial-accent)' : 'var(--editorial-surface)',
-                color: sortMode === 'frequency' ? '#fff' : 'var(--editorial-muted)',
+                fontFamily: "var(--font-body)",
+                backgroundColor:
+                  sortMode === "frequency"
+                    ? "var(--editorial-accent)"
+                    : "var(--editorial-surface)",
+                color: sortMode === "frequency" ? "#fff" : "var(--editorial-muted)",
               }}
             >
               Common
@@ -298,33 +368,52 @@ export default function BrowseClient({
 
         <div className="flex items-center gap-2 flex-wrap">
           {selectedLetter && (
-            <span className="px-4 py-1.5 rounded-full text-xs font-semibold flex items-center gap-2"
+            <span
+              className="px-4 py-1.5 rounded-full text-xs font-semibold flex items-center gap-2"
               style={{
-                fontFamily: 'var(--font-body)',
-                backgroundColor: 'rgba(196, 155, 76, 0.12)',
-                color: 'var(--editorial-accent)',
-                border: '1px solid rgba(196, 155, 76, 0.25)',
+                fontFamily: "var(--font-body)",
+                backgroundColor: "rgba(196, 155, 76, 0.12)",
+                color: "var(--editorial-accent)",
+                border: "1px solid rgba(196, 155, 76, 0.25)",
               }}
             >
               Letter: {selectedLetter}
-              <button onClick={() => handleFilterClick('letter', selectedLetter)} style={{ color: 'var(--editorial-accent)' }}>✕</button>
+              <button
+                onClick={() => handleFilterClick("letter", selectedLetter)}
+                style={{ color: "var(--editorial-accent)" }}
+              >
+                ✕
+              </button>
             </span>
           )}
           {selectedCategory && (
-            <span className="px-4 py-1.5 rounded-full text-xs font-semibold flex items-center gap-2"
+            <span
+              className="px-4 py-1.5 rounded-full text-xs font-semibold flex items-center gap-2"
               style={{
-                fontFamily: 'var(--font-body)',
-                backgroundColor: 'rgba(196, 155, 76, 0.12)',
-                color: 'var(--editorial-accent)',
-                border: '1px solid rgba(196, 155, 76, 0.25)',
+                fontFamily: "var(--font-body)",
+                backgroundColor: "rgba(196, 155, 76, 0.12)",
+                color: "var(--editorial-accent)",
+                border: "1px solid rgba(196, 155, 76, 0.25)",
               }}
             >
               {selectedCategory}
-              <button onClick={() => handleFilterClick('category', selectedCategory)} style={{ color: 'var(--editorial-accent)' }}>✕</button>
+              <button
+                onClick={() => handleFilterClick("category", selectedCategory)}
+                style={{ color: "var(--editorial-accent)" }}
+              >
+                ✕
+              </button>
             </span>
           )}
           {hasActiveFilters && (
-            <button onClick={clearFilters} className="text-xs font-medium underline transition-colors ml-2" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>
+            <button
+              onClick={clearFilters}
+              className="text-xs font-medium underline transition-colors ml-2"
+              style={{
+                color: "var(--editorial-muted)",
+                fontFamily: "var(--font-body)",
+              }}
+            >
               Clear all
             </button>
           )}
@@ -334,29 +423,43 @@ export default function BrowseClient({
       {/* 3. COLLAPSIBLE FILTERS SECTION */}
       <AnimatePresence>
         {areFiltersVisible && (
-          <motion.div 
+          <motion.div
             initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
+            animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden"
           >
-            <div className="p-4 sm:p-8 rounded-2xl mb-10"
+            <div
+              className="p-4 sm:p-8 rounded-2xl mb-10"
               style={{
-                backgroundColor: 'var(--editorial-surface)',
-                border: '1px solid var(--editorial-border)',
-                boxShadow: '0 4px 24px rgba(0,0,0,0.06)',
-              }}>
+                backgroundColor: "var(--editorial-surface)",
+                border: "1px solid var(--editorial-border)",
+                boxShadow: "0 4px 24px rgba(0,0,0,0.06)",
+              }}
+            >
               {/* Letter Grid */}
-              <h3 className="text-xs font-bold mb-4 uppercase tracking-widest" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Starts with</h3>
+              <h3
+                className="text-xs font-bold mb-4 uppercase tracking-widest"
+                style={{
+                  color: "var(--editorial-muted)",
+                  fontFamily: "var(--font-body)",
+                }}
+              >
+                Starts with
+              </h3>
               <div className="flex flex-wrap gap-2 mb-8">
                 <button
-                  onClick={() => handleFilterClick('letter', '')}
+                  onClick={() => handleFilterClick("letter", "")}
                   className="px-5 h-10 rounded-xl flex items-center justify-center text-sm font-semibold transition-all duration-200 active:scale-95"
                   style={{
-                    fontFamily: 'var(--font-body)',
-                    backgroundColor: !selectedLetter ? 'var(--editorial-accent)' : 'var(--editorial-bg)',
-                    color: !selectedLetter ? '#fff' : 'var(--editorial-muted)',
-                    border: !selectedLetter ? 'none' : '1px solid var(--editorial-border)',
+                    fontFamily: "var(--font-body)",
+                    backgroundColor: !selectedLetter
+                      ? "var(--editorial-accent)"
+                      : "var(--editorial-bg)",
+                    color: !selectedLetter ? "#fff" : "var(--editorial-muted)",
+                    border: !selectedLetter
+                      ? "none"
+                      : "1px solid var(--editorial-border)",
                   }}
                 >
                   ALL
@@ -364,13 +467,19 @@ export default function BrowseClient({
                 {ALPHABET.map((l) => (
                   <button
                     key={l}
-                    onClick={() => handleFilterClick('letter', l)}
+                    onClick={() => handleFilterClick("letter", l)}
                     className="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-semibold transition-all duration-200 active:scale-95"
                     style={{
-                      fontFamily: 'var(--font-body)',
-                      backgroundColor: selectedLetter === l ? 'var(--editorial-accent)' : 'var(--editorial-bg)',
-                      color: selectedLetter === l ? '#fff' : 'var(--editorial-muted)',
-                      border: selectedLetter === l ? 'none' : '1px solid var(--editorial-border)',
+                      fontFamily: "var(--font-body)",
+                      backgroundColor:
+                        selectedLetter === l
+                          ? "var(--editorial-accent)"
+                          : "var(--editorial-bg)",
+                      color: selectedLetter === l ? "#fff" : "var(--editorial-muted)",
+                      border:
+                        selectedLetter === l
+                          ? "none"
+                          : "1px solid var(--editorial-border)",
                     }}
                   >
                     {l}
@@ -379,18 +488,32 @@ export default function BrowseClient({
               </div>
 
               {/* Category Grid */}
-              <h3 className="text-xs font-bold mb-4 uppercase tracking-widest" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Category</h3>
+              <h3
+                className="text-xs font-bold mb-4 uppercase tracking-widest"
+                style={{
+                  color: "var(--editorial-muted)",
+                  fontFamily: "var(--font-body)",
+                }}
+              >
+                Category
+              </h3>
               <div className="flex flex-wrap gap-2">
                 {initialCategories.map((cat) => (
                   <button
                     key={cat}
-                    onClick={() => handleFilterClick('category', cat)}
+                    onClick={() => handleFilterClick("category", cat)}
                     className="px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 active:scale-95"
                     style={{
-                      fontFamily: 'var(--font-body)',
-                      backgroundColor: selectedCategory === cat ? 'var(--editorial-rust)' : 'var(--editorial-bg)',
-                      color: selectedCategory === cat ? '#fff' : 'var(--editorial-muted)',
-                      border: selectedCategory === cat ? 'none' : '1px solid var(--editorial-border)',
+                      fontFamily: "var(--font-body)",
+                      backgroundColor:
+                        selectedCategory === cat
+                          ? "var(--editorial-rust)"
+                          : "var(--editorial-bg)",
+                      color: selectedCategory === cat ? "#fff" : "var(--editorial-muted)",
+                      border:
+                        selectedCategory === cat
+                          ? "none"
+                          : "1px solid var(--editorial-border)",
                     }}
                   >
                     {cat}
@@ -405,107 +528,227 @@ export default function BrowseClient({
       {/* 4. RESULTS COUNT & LIST */}
       <div className="relative min-h-[400px]">
         <AnimatePresence>
-          {isPending && (
-            <motion.div 
+          {isLoading && (
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="absolute inset-0 z-50 flex flex-col items-center pt-20"
-              style={{ backgroundColor: 'var(--editorial-bg)', opacity: 0.7 }}
+              style={{ backgroundColor: "var(--editorial-bg)", opacity: 0.7 }}
             >
               <div className="relative">
                 <div className="w-12 h-12 border-4 border-blue-500/20 rounded-full animate-pulse" />
                 <div className="absolute inset-0 w-12 h-12 border-t-4 border-blue-500 rounded-full animate-spin" />
               </div>
-              <p className="mt-4 text-[10px] font-bold uppercase tracking-[0.2em] animate-pulse" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>
+              <p
+                className="mt-4 text-[10px] font-bold uppercase tracking-[0.2em] animate-pulse"
+                style={{
+                  color: "var(--editorial-muted)",
+                  fontFamily: "var(--font-body)",
+                }}
+              >
                 Filtering Archive...
               </p>
             </motion.div>
           )}
         </AnimatePresence>
 
-        <div className="text-sm font-medium mb-6 flex items-center gap-2" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>
-          <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--editorial-accent)' }}></span>
-          Found {words.length} result{words.length !== 1 ? 's' : ''}{totalWords > 0 ? ` out of ${totalWords.toLocaleString()} total words` : ''}
+        <div
+          className="text-sm font-medium mb-6 flex items-center gap-2"
+          style={{
+            color: "var(--editorial-muted)",
+            fontFamily: "var(--font-body)",
+          }}
+        >
+          <span
+            className="w-1.5 h-1.5 rounded-full"
+            style={{ backgroundColor: "var(--editorial-accent)" }}
+          ></span>
+          {resultCountText}
         </div>
 
-        <motion.div 
+        <motion.div
           variants={listVariants}
           initial="hidden"
           animate="visible"
-          key={`${selectedLetter}-${selectedCategory}-${sortMode}`}
+          key={`${selectedLetter}-${selectedCategory}-${sortMode}-${currentPage}`}
           className="space-y-4"
         >
-        {words.map((word) => (
-          <motion.div key={word.bikol} variants={itemVariants}>
-            <Link
-              href={`/word/${encodeURIComponent(word.bikol)}`}
-              prefetch={false}
-              onMouseEnter={() => router.prefetch(`/word/${encodeURIComponent(word.bikol)}`)}
-              className="block p-6 rounded-2xl hover:-translate-y-1 transition-all duration-300 group"
+          {words.map((word) => (
+            <motion.div key={word.bikol} variants={itemVariants}>
+              <Link
+                href={`/word/${encodeURIComponent(word.bikol)}`}
+                prefetch={false}
+                onMouseEnter={() =>
+                  router.prefetch(`/word/${encodeURIComponent(word.bikol)}`)
+                }
+                className="block p-6 rounded-2xl hover:-translate-y-1 transition-all duration-300 group"
+                style={{
+                  backgroundColor: "var(--editorial-surface)",
+                  border: "1px solid var(--editorial-border)",
+                }}
+              >
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h2
+                      className="text-2xl font-bold transition-colors group-hover:text-[var(--editorial-accent)]"
+                      style={{
+                        fontFamily: "var(--font-display)",
+                        color: "var(--editorial-text)",
+                      }}
+                    >
+                      {highlightText(word.bikol)}
+                    </h2>
+                    <p
+                      className="mt-1 font-medium"
+                      style={{
+                        color: "var(--editorial-muted)",
+                        fontFamily: "var(--font-body)",
+                      }}
+                    >
+                      {highlightText(getTranslation(word))}
+                    </p>
+                    {langMode === "all" && word.tagalog && (
+                      <p
+                        className="text-xs mt-2 italic"
+                        style={{
+                          color: "var(--editorial-muted)",
+                          fontFamily: "var(--font-body)",
+                        }}
+                      >
+                        Tagalog: {highlightText(word.tagalog)}
+                      </p>
+                    )}
+                  </div>
+                  <div className="text-right flex flex-col items-end gap-2">
+                    {word.pos && (
+                      <span
+                        className="text-[10px] uppercase tracking-widest font-bold px-2 py-1 rounded"
+                        style={{
+                          fontFamily: "var(--font-body)",
+                          backgroundColor: "var(--editorial-bg)",
+                          color: "var(--editorial-muted)",
+                          border: "1px solid var(--editorial-border)",
+                        }}
+                      >
+                        {normalizePOS(word.pos)}
+                      </span>
+                    )}
+                    {word.category && (
+                      <span
+                        className="text-[10px] uppercase tracking-widest font-bold px-2 py-1 rounded"
+                        style={{
+                          fontFamily: "var(--font-body)",
+                          backgroundColor: "var(--editorial-bg)",
+                          color: "var(--editorial-accent)",
+                          border: "1px solid var(--editorial-border)",
+                        }}
+                      >
+                        {word.category}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </Link>
+            </motion.div>
+          ))}
+
+          {words.length === 0 && !isLoading && (
+            <motion.div
+              variants={itemVariants}
+              className="text-center py-12"
               style={{
-                backgroundColor: 'var(--editorial-surface)',
-                border: '1px solid var(--editorial-border)',
+                color: "var(--editorial-muted)",
+                fontFamily: "var(--font-body)",
               }}
             >
-              <div className="flex justify-between items-start">
-                <div>
-                  <h2 className="text-2xl font-bold transition-colors group-hover:text-[var(--editorial-accent)]"
-                    style={{ fontFamily: 'var(--font-display)', color: 'var(--editorial-text)' }}
-                  >
-                    {highlightText(word.bikol)}
-                  </h2>
-                  <p className="mt-1 font-medium" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>{highlightText(getTranslation(word))}</p>
-                  {langMode === 'all' && word.tagalog && (
-                    <p className="text-xs mt-2 italic" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Tagalog: {highlightText(word.tagalog)}</p>
-                  )}
-                </div>
-                <div className="text-right flex flex-col items-end gap-2">
-                  {word.pos && (
-                    <span className="text-[10px] uppercase tracking-widest font-bold px-2 py-1 rounded"
-                      style={{
-                        fontFamily: 'var(--font-body)',
-                        backgroundColor: 'var(--editorial-bg)',
-                        color: 'var(--editorial-muted)',
-                        border: '1px solid var(--editorial-border)',
-                      }}>{normalizePOS(word.pos)}</span>
-                  )}
-                  {word.category && (
-                    <span className="text-[10px] uppercase tracking-widest font-bold px-2 py-1 rounded"
-                      style={{
-                        fontFamily: 'var(--font-body)',
-                        backgroundColor: 'var(--editorial-bg)',
-                        color: 'var(--editorial-accent)',
-                        border: '1px solid var(--editorial-border)',
-                      }}>{word.category}</span>
-                  )}
-                </div>
-              </div>
-            </Link>
-          </motion.div>
-        ))}
-        
-        {/* Infinite Scroll Trigger */}
-        <div ref={observerTarget} className="h-20 flex items-center justify-center">
-          {isLoadingMore && (
-            <div className="flex flex-col items-center gap-2">
-              <div className="w-6 h-6 border-2 rounded-full animate-spin" style={{ borderColor: 'var(--editorial-border)', borderTopColor: 'var(--editorial-accent)' }} />
-              <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Loading more...</p>
-            </div>
+              {query || hasActiveFilters
+                ? `No matches found. Try adjusting your search or filters.`
+                : `No words found.`}
+            </motion.div>
           )}
-          {!hasMore && words.length > 0 && (
-            <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>End of Archive</p>
-          )}
-        </div>
-
-        {words.length === 0 && !isLoadingMore && (
-           <motion.div variants={itemVariants} className="text-center py-12" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>
-             {query || hasActiveFilters ? `No matches found. Try adjusting your search or filters.` : `No words found.`}
-           </motion.div>
-        )}
-      </motion.div>
+        </motion.div>
       </div>
+
+      {/* 5. PAGINATION BAR */}
+      {showPagination && (
+        <div className="flex items-center justify-center gap-4 py-8">
+          <button
+            onClick={handlePrevPage}
+            disabled={currentPage <= 1 || isLoading}
+            aria-label="Go to previous page"
+            className="px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--editorial-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--editorial-bg)]"
+            style={{
+              fontFamily: "var(--font-body)",
+              backgroundColor: "var(--editorial-surface)",
+              color: "var(--editorial-text)",
+              border: "1px solid var(--editorial-border)",
+            }}
+            onMouseEnter={(e) => {
+              if (currentPage > 1 && !isLoading) {
+                (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                  "var(--editorial-accent)";
+                (e.currentTarget as HTMLButtonElement).style.color = "#fff";
+                (e.currentTarget as HTMLButtonElement).style.borderColor =
+                  "var(--editorial-accent)";
+              }
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                "var(--editorial-surface)";
+              (e.currentTarget as HTMLButtonElement).style.color =
+                "var(--editorial-text)";
+              (e.currentTarget as HTMLButtonElement).style.borderColor =
+                "var(--editorial-border)";
+            }}
+          >
+            « Previous
+          </button>
+
+          <span
+            className="text-sm font-medium"
+            style={{
+              color: "var(--editorial-muted)",
+              fontFamily: "var(--font-body)",
+            }}
+            aria-live="polite"
+          >
+            Page {currentPage.toLocaleString()} of {totalPages.toLocaleString()}
+          </span>
+
+          <button
+            onClick={handleNextPage}
+            disabled={currentPage >= totalPages || isLoading}
+            aria-label="Go to next page"
+            className="px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--editorial-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--editorial-bg)]"
+            style={{
+              fontFamily: "var(--font-body)",
+              backgroundColor: "var(--editorial-surface)",
+              color: "var(--editorial-text)",
+              border: "1px solid var(--editorial-border)",
+            }}
+            onMouseEnter={(e) => {
+              if (currentPage < totalPages && !isLoading) {
+                (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                  "var(--editorial-accent)";
+                (e.currentTarget as HTMLButtonElement).style.color = "#fff";
+                (e.currentTarget as HTMLButtonElement).style.borderColor =
+                  "var(--editorial-accent)";
+              }
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                "var(--editorial-surface)";
+              (e.currentTarget as HTMLButtonElement).style.color =
+                "var(--editorial-text)";
+              (e.currentTarget as HTMLButtonElement).style.borderColor =
+                "var(--editorial-border)";
+            }}
+          >
+            Next »
+          </button>
+        </div>
+      )}
     </div>
   );
 }
-
