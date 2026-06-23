@@ -1,54 +1,15 @@
 /**
  * Physics-inspired spring configurations for different UI elements.
  * Mass increases for heavier elements (cards > buttons > text).
- * More mass = slower, more deliberate motion.
  */
+const spring = (stiffness: number, damping: number, mass: number) =>
+  ({ type: 'spring' as const, stiffness, damping, mass });
+
 export const Springs = {
-  /** Ultra-light: icons, badges, indicators */
-  micro: {
-    type: 'spring' as const,
-    stiffness: 500,
-    damping: 35,
-    mass: 0.3,
-  },
-
-  /** Light: buttons, toggles, small interactive elements */
-  light: {
-    type: 'spring' as const,
-    stiffness: 400,
-    damping: 25,
-    mass: 0.8,
-  },
-
-  /** Default: list items, nav links, medium cards */
-  default: {
-    type: 'spring' as const,
-    stiffness: 300,
-    damping: 30,
-    mass: 1.0,
-  },
-
-  /** Heavy: large cards, WOTD, hero sections */
-  heavy: {
-    type: 'spring' as const,
-    stiffness: 200,
-    damping: 40,
-    mass: 1.5,
-  },
-
-  /** Ultra-heavy: page transitions, full-screen modals */
-  page: {
-    type: 'spring' as const,
-    stiffness: 150,
-    damping: 35,
-    mass: 2.0,
-  },
-
-  /** Bouncy: celebratory elements, badges earned */
-  bouncy: {
-    type: 'spring' as const,
-    stiffness: 400,
-    damping: 10,
-    mass: 0.5,
-  },
-} as const
+  micro:   spring(500, 35, 0.3),  // icons, badges, indicators
+  light:   spring(400, 25, 0.8),  // buttons, toggles, small interactive elements
+  default: spring(300, 30, 1.0),  // list items, nav links, medium cards
+  heavy:   spring(200, 40, 1.5),  // large cards, WOTD, hero sections
+  page:    spring(150, 35, 2.0),  // page transitions, full-screen modals
+  bouncy:  spring(400, 10, 0.5),  // celebratory elements, badges earned
+} as const;

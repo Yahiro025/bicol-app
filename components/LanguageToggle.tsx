@@ -6,10 +6,11 @@ import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 
 export type LanguageMode = 'en' | 'tl' | 'all';
 
+const MODES: LanguageMode[] = ['en', 'tl', 'all'];
 const MODE_LABELS: Record<LanguageMode, string> = {
-  en: 'Definitions in English',
-  tl: 'Definitions in Tagalog',
-  all: 'All translations shown',
+  en: 'English definitions',
+  tl: 'Tagalog definitions',
+  all: 'All translations',
 };
 
 export default function LanguageToggle() {
@@ -61,7 +62,7 @@ export default function LanguageToggle() {
         <Languages size={14} />
       </div>
       <LayoutGroup>
-        {(['en', 'tl', 'all'] as LanguageMode[]).map((m) => (
+        {MODES.map((m) => (
           <motion.button
             key={m}
             whileTap={{ scale: 0.92 }}

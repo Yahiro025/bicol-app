@@ -16,7 +16,6 @@ import {
   GitCompareArrows,
   ChevronDown,
   ChevronUp,
-  ArrowRight,
 } from "lucide-react";
 
 type Submission = {
@@ -105,18 +104,45 @@ function DiffRow({ label, original, proposed }: { label: string; original: strin
   );
 }
 
+const STATUS_STYLES: Record<string, string> = {
+  approved: 'bg-emerald-500/10 text-emerald-500',
+  rejected: 'bg-red-500/10 text-red-500',
+  pending: 'bg-yellow-500/10 text-yellow-500',
+};
+
+const SPINNER = (
+  <motion.div
+    animate={{ rotate: 360 }}
+    transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
+    className="w-8 h-8 border-2 border-blue-500/20 border-t-blue-500 rounded-full"
+  />
+);
+
 const emptyEditForm = (sub: Submission): EditFormData => ({
   word: sub.word,
   definition: sub.definition,
-  tagalog: sub.tagalog || "",
-  pos: sub.pos || "",
-  dialect: sub.dialect || "",
-  pronunciation: sub.pronunciation || "",
-  example_bikol: sub.example_bikol || "",
-  example_english: sub.example_english || "",
-  source: sub.source || "",
-  admin_notes: sub.admin_notes || "",
+  tagalog: sub.tagalog || '',
+  pos: sub.pos || '',
+  dialect: sub.dialect || '',
+  pronunciation: sub.pronunciation || '',
+  example_bikol: sub.example_bikol || '',
+  example_english: sub.example_english || '',
+  source: sub.source || '',
+  admin_notes: sub.admin_notes || '',
 });
+
+const EDIT_FIELDS: { key: keyof EditFormData; label: string; type: 'input' | 'textarea'; placeholder?: string }[] = [
+  { key: 'word', label: 'Bikol Word', type: 'input' },
+  { key: 'definition', label: 'Definition', type: 'textarea' },
+  { key: 'tagalog', label: 'Tagalog Definition', type: 'textarea' },
+  { key: 'pos', label: 'Part of Speech', type: 'input', placeholder: 'e.g. Noun' },
+  { key: 'dialect', label: 'Dialect', type: 'input', placeholder: 'e.g. Central Bikol' },
+  { key: 'pronunciation', label: 'Pronunciation', type: 'input' },
+  { key: 'example_bikol', label: 'Example (Bikol)', type: 'input' },
+  { key: 'example_english', label: 'Example (English)', type: 'input' },
+  { key: 'source', label: 'Source', type: 'input' },
+  { key: 'admin_notes', label: 'Admin Notes', type: 'textarea', placeholder: 'Internal notes for other moderators...' },
+];
 
 export default function AdminSubmissionsPage() {
   // Auth state
@@ -413,41 +439,17 @@ export default function AdminSubmissionsPage() {
     rejected: submissions.filter((s) => s.status === "rejected").length,
   };
 
-  const FILTERS: {
-    key: typeof filter;
-    label: string;
-    icon: React.ReactNode;
-  }[] = [
-    {
-      key: "pending",
-      label: "Pending",
-      icon: <Clock className="w-3 h-3" />,
-    },
-    {
-      key: "approved",
-      label: "Approved",
-      icon: <CheckCircle2 className="w-3 h-3" />,
-    },
-    {
-      key: "rejected",
-      label: "Rejected",
-      icon: <XCircle className="w-3 h-3" />,
-    },
-    {
-      key: "all",
-      label: "All",
-      icon: <ShieldCheck className="w-3 h-3" />,
-    },
+  const FILTERS: { key: typeof filter; label: string; icon: React.ReactNode }[] = [
+    { key: 'pending', label: 'Pending', icon: <Clock className="w-3 h-3" /> },
+    { key: 'approved', label: 'Approved', icon: <CheckCircle2 className="w-3 h-3" /> },
+    { key: 'rejected', label: 'Rejected', icon: <XCircle className="w-3 h-3" /> },
+    { key: 'all', label: 'All', icon: <ShieldCheck className="w-3 h-3" /> },
   ];
 
   if (isCheckingAuth) {
     return (
       <main className="min-h-screen bg-white dark:bg-zinc-950 flex items-center justify-center p-6">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-          className="w-8 h-8 border-2 border-blue-500/20 border-t-blue-500 rounded-full"
-        />
+        {SPINNER}
       </main>
     );
   }
@@ -583,14 +585,9 @@ export default function AdminSubmissionsPage() {
           </div>
         )}
 
-        {/* Loading */}
         {isLoading && (
           <div className="flex flex-col items-center gap-4 py-20">
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-              className="w-8 h-8 border-2 border-blue-500/20 border-t-blue-500 rounded-full"
-            />
+            {SPINNER}
             <p className="text-zinc-500 text-sm">Loading submissions...</p>
           </div>
         )}
@@ -715,15 +712,7 @@ export default function AdminSubmissionsPage() {
                             Submitted:{" "}
                             {new Date(sub.created_at).toLocaleDateString()}
                           </span>
-                          <span
-                            className={`px-2 py-0.5 rounded-full font-bold ${
-                              sub.status === "approved"
-                                ? "bg-emerald-500/10 text-emerald-500"
-                                : sub.status === "rejected"
-                                  ? "bg-red-500/10 text-red-500"
-                                  : "bg-yellow-500/10 text-yellow-500"
-                            }`}
-                          >
+                          <span className={`px-2 py-0.5 rounded-full font-bold ${STATUS_STYLES[sub.status] ?? STATUS_STYLES.pending}`}>
                             {sub.status}
                           </span>
                           <span className="flex items-center gap-1">
@@ -754,11 +743,7 @@ export default function AdminSubmissionsPage() {
 
                               {originalsLoading.has(sub.id) ? (
                                 <div className="flex items-center gap-2 py-4 justify-center text-xs text-zinc-500">
-                                  <motion.div
-                                    animate={{ rotate: 360 }}
-                                    transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-                                    className="w-3.5 h-3.5 border border-blue-500/20 border-t-blue-500 rounded-full"
-                                  />
+                                  <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }} className="w-3.5 h-3.5 border border-blue-500/20 border-t-blue-500 rounded-full" />
                                   <span>Fetching current database values...</span>
                                 </div>
                               ) : originals[sub.id] === null ? (
@@ -859,149 +844,48 @@ export default function AdminSubmissionsPage() {
               <h2 className="text-xl font-black mb-6">Edit Submission</h2>
 
               <div className="space-y-4">
-                <div>
-                  <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">
-                    Bikol Word
-                  </label>
-                  <input
-                    value={editForm.word}
-                    onChange={(e) =>
-                      setEditForm({ ...editForm, word: e.target.value })
-                    }
-                    className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">
-                    Definition
-                  </label>
-                  <textarea
-                    value={editForm.definition}
-                    onChange={(e) =>
-                      setEditForm({
-                        ...editForm,
-                        definition: e.target.value,
-                      })
-                    }
-                    className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm min-h-[80px]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">
-                    Tagalog Definition
-                  </label>
-                  <textarea
-                    value={editForm.tagalog}
-                    onChange={(e) =>
-                      setEditForm({
-                        ...editForm,
-                        tagalog: e.target.value,
-                      })
-                    }
-                    className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm min-h-[60px]"
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">
-                      Part of Speech
-                    </label>
-                    <input
-                      value={editForm.pos}
-                      onChange={(e) =>
-                        setEditForm({ ...editForm, pos: e.target.value })
-                      }
-                      placeholder="e.g. Noun"
-                      className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">
-                      Dialect
-                    </label>
-                    <input
-                      value={editForm.dialect}
-                      onChange={(e) =>
-                        setEditForm({ ...editForm, dialect: e.target.value })
-                      }
-                      placeholder="e.g. Central Bikol"
-                      className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">
-                    Pronunciation
-                  </label>
-                  <input
-                    value={editForm.pronunciation}
-                    onChange={(e) =>
-                      setEditForm({
-                        ...editForm,
-                        pronunciation: e.target.value,
-                      })
-                    }
-                    className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">
-                    Example (Bikol)
-                  </label>
-                  <input
-                    value={editForm.example_bikol}
-                    onChange={(e) =>
-                      setEditForm({
-                        ...editForm,
-                        example_bikol: e.target.value,
-                      })
-                    }
-                    className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">
-                    Example (English)
-                  </label>
-                  <input
-                    value={editForm.example_english}
-                    onChange={(e) =>
-                      setEditForm({
-                        ...editForm,
-                        example_english: e.target.value,
-                      })
-                    }
-                    className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">
-                    Source
-                  </label>
-                  <input
-                    value={editForm.source}
-                    onChange={(e) =>
-                      setEditForm({ ...editForm, source: e.target.value })
-                    }
-                    className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">
-                    Admin Notes
-                  </label>
-                  <textarea
-                    value={editForm.admin_notes}
-                    onChange={(e) =>
-                      setEditForm({
-                        ...editForm,
-                        admin_notes: e.target.value,
-                      })
-                    }
-                    placeholder="Internal notes for other moderators..."
-                    className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm min-h-[60px]"
-                  />
-                </div>
+                {EDIT_FIELDS.map(({ key, label, type, placeholder }) => {
+                  const isGridPair = key === 'pos' || key === 'dialect';
+                  const field = (
+                    <div key={key}>
+                      <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">{label}</label>
+                      {type === 'textarea' ? (
+                        <textarea
+                          value={editForm[key]}
+                          onChange={(e) => setEditForm({ ...editForm, [key]: e.target.value })}
+                          placeholder={placeholder}
+                          className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm min-h-[60px]"
+                        />
+                      ) : (
+                        <input
+                          value={editForm[key]}
+                          onChange={(e) => setEditForm({ ...editForm, [key]: e.target.value })}
+                          placeholder={placeholder}
+                          className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                        />
+                      )}
+                    </div>
+                  );
+                  if (key === 'pos') {
+                    const dialectField = EDIT_FIELDS.find((f) => f.key === 'dialect');
+                    return (
+                      <div key="pos-dialect" className="grid grid-cols-2 gap-3">
+                        {field}
+                        <div>
+                          <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">{dialectField!.label}</label>
+                          <input
+                            value={editForm.dialect}
+                            onChange={(e) => setEditForm({ ...editForm, dialect: e.target.value })}
+                            placeholder={dialectField!.placeholder}
+                            className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                          />
+                        </div>
+                      </div>
+                    );
+                  }
+                  if (key === 'dialect') return null;
+                  return field;
+                })}
               </div>
 
               {editError && (

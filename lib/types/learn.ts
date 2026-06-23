@@ -14,7 +14,7 @@ export type QuizQuestion = {
   options: string[];
   correctAnswer: string;
   explanation?: string;
-  word: string; // The Bikol word being tested
+  word: string;
 };
 
 export type LearnMode = 'quiz' | 'flashcards' | 'drill';
@@ -39,8 +39,8 @@ export type DialogueScenario = {
   description: string;
   goal: string;
   difficulty: 'beginner' | 'intermediate' | 'advanced';
-  visualCue: string; // Icon name from lucide-react
-  vocabulary: string[]; // Specific words to encourage using
+  visualCue: string;
+  vocabulary: string[];
 };
 
 export type DialogueSession = {
@@ -55,13 +55,8 @@ export type LinguisticAudit = {
   comprehension: string;
   focus: string;
   particles: string;
-  score: number; // 1-100
+  score: number;
 };
 
-export type QuizSession = {
-  questions: QuizQuestion[];
-};
-
-export type FlashcardSession = {
-  words: Word[];
-};
+export type QuizSession = { questions: QuizQuestion[] };
+export type FlashcardSession = { words: Word[] };

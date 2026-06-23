@@ -90,55 +90,24 @@ export default function HomeVerbDemo() {
             </span>
           </div>
 
-          {/* Actor Focus Table */}
-          {Object.keys(conjugations.actorForms).length > 0 && (
-            <div className="mb-4">
-              <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: 'var(--editorial-accent)', fontFamily: 'var(--font-body)' }}>Actor Focus</span>
-              <div className="mt-2 grid grid-cols-4 gap-2">
-                {Object.entries(conjugations.actorForms).map(([tense, form]) => (
-                  <div key={tense} className="border rounded-xl p-3 text-center" style={{ backgroundColor: 'var(--editorial-bg)', borderColor: 'var(--editorial-border)' }}>
-                    <div className="text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>
-                      {tense}
+          {[
+            { label: 'Actor Focus', forms: conjugations.actorForms, color: 'var(--editorial-accent)' },
+            { label: 'Object Focus', forms: conjugations.objectForms, color: 'var(--editorial-accent-dim)' },
+            { label: 'Referential Focus', forms: conjugations.referentialForms, color: 'var(--editorial-rust)' },
+          ].map(({ label, forms, color }) =>
+            Object.keys(forms).length > 0 ? (
+              <div key={label} className="mb-4">
+                <span className="text-[10px] font-black uppercase tracking-widest" style={{ color, fontFamily: 'var(--font-body)' }}>{label}</span>
+                <div className="mt-2 grid grid-cols-4 gap-2">
+                  {Object.entries(forms).map(([tense, form]) => (
+                    <div key={tense} className="border rounded-xl p-3 text-center" style={{ backgroundColor: 'var(--editorial-bg)', borderColor: 'var(--editorial-border)' }}>
+                      <div className="text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>{tense}</div>
+                      <div className="text-sm font-bold font-mono italic" style={{ color: 'var(--editorial-text)' }}>{form}</div>
                     </div>
-                    <div className="text-sm font-bold font-mono italic" style={{ color: 'var(--editorial-text)' }}>{form}</div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
-
-          {/* Object Focus Table */}
-          {Object.keys(conjugations.objectForms).length > 0 && (
-            <div className="mb-4">
-              <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: 'var(--editorial-accent-dim)', fontFamily: 'var(--font-body)' }}>Object Focus</span>
-              <div className="mt-2 grid grid-cols-4 gap-2">
-                {Object.entries(conjugations.objectForms).map(([tense, form]) => (
-                  <div key={tense} className="border rounded-xl p-3 text-center" style={{ backgroundColor: 'var(--editorial-bg)', borderColor: 'var(--editorial-border)' }}>
-                    <div className="text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>
-                      {tense}
-                    </div>
-                    <div className="text-sm font-bold font-mono italic" style={{ color: 'var(--editorial-text)' }}>{form}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Referential Focus */}
-          {Object.keys(conjugations.referentialForms).length > 0 && (
-            <div className="mb-4">
-              <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: 'var(--editorial-rust)', fontFamily: 'var(--font-body)' }}>Referential Focus</span>
-              <div className="mt-2 grid grid-cols-4 gap-2">
-                {Object.entries(conjugations.referentialForms).map(([tense, form]) => (
-                  <div key={tense} className="border rounded-xl p-3 text-center" style={{ backgroundColor: 'var(--editorial-bg)', borderColor: 'var(--editorial-border)' }}>
-                    <div className="text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>
-                      {tense}
-                    </div>
-                    <div className="text-sm font-bold font-mono italic" style={{ color: 'var(--editorial-text)' }}>{form}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            ) : null
           )}
         </motion.div>
       </AnimatePresence>

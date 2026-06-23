@@ -9,6 +9,9 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>;
 }
 
+const DISMISS_KEY = "pwa-install-dismissed";
+const DISMISS_TTL = 7 * 24 * 60 * 60 * 1000;
+
 export default function PwaInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
@@ -17,15 +20,10 @@ export default function PwaInstallPrompt() {
   const deferredPromptRef = useRef<BeforeInstallPromptEvent | null>(null);
 
   useEffect(() => {
-    // Check if it's been dismissed before
-    const wasDismissed = localStorage.getItem("pwa-install-dismissed");
-    if (wasDismissed) {
-      const dismissedAt = parseInt(wasDismissed, 10);
-      // Show again after 7 days
-      if (Date.now() - dismissedAt < 7 * 24 * 60 * 60 * 1000) {
-        setDismissed(true);
-        return;
-      }
+    const wasDismissed = localStorage.getItem(DISMISS_KEY);
+    if (wasDismissed && Date.now() - parseInt(wasDismissed, 10) < DISMISS_TTL) {
+      setDismissed(true);
+      return;
     }
 
     // Detect Android
@@ -67,19 +65,14 @@ export default function PwaInstallPrompt() {
         setShowAndroidBanner(false);
       }
     }
-    handleDismiss();
+    dismiss();
   };
 
-  const handleDismiss = () => {
+  const dismiss = () => {
     setShowPrompt(false);
-    setDismissed(true);
-    localStorage.setItem("pwa-install-dismissed", Date.now().toString());
-  };
-
-  const handleAndroidDismiss = () => {
     setShowAndroidBanner(false);
     setDismissed(true);
-    localStorage.setItem("pwa-install-dismissed", Date.now().toString());
+    localStorage.setItem(DISMISS_KEY, Date.now().toString());
   };
 
   if (dismissed) return null;
@@ -116,7 +109,7 @@ export default function PwaInstallPrompt() {
                   Install
                 </button>
                 <button
-                  onClick={handleAndroidDismiss}
+                  onClick={dismiss}
                   className="p-2 text-white/60 hover:text-white transition-colors"
                   aria-label="Dismiss"
                 >
@@ -139,7 +132,7 @@ export default function PwaInstallPrompt() {
           >
             <div
               className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-              onClick={handleDismiss}
+              onClick={dismiss}
             />
             <motion.div
               initial={{ y: 100, opacity: 0 }}
@@ -149,7 +142,7 @@ export default function PwaInstallPrompt() {
               className="relative w-full max-w-sm bg-zinc-900 border border-zinc-800 rounded-[32px] p-8 shadow-2xl space-y-6"
             >
               <button
-                onClick={handleDismiss}
+                onClick={dismiss}
                 className="absolute top-4 right-4 p-2 text-zinc-500 hover:text-zinc-300 transition-colors rounded-xl hover:bg-zinc-800"
                 aria-label="Close"
               >
@@ -174,7 +167,7 @@ export default function PwaInstallPrompt() {
                   Install App
                 </button>
                 <button
-                  onClick={handleDismiss}
+                  onClick={dismiss}
                   className="w-full py-3 text-zinc-500 hover:text-zinc-300 text-sm font-medium transition-colors"
                 >
                   Maybe Later

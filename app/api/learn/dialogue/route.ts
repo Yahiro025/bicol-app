@@ -3,36 +3,33 @@ import { NextResponse } from 'next/server';
 import { processDialogue, evaluateDialogue } from '@/lib/groq';
 import type { DialogueMessage, DialogueScenario } from '@/lib/types/learn';
 
+function errorResponse(message: string, details?: string) {
+  return NextResponse.json({ error: message, ...(details && { details }) }, { status: 500 });
+}
+
 export async function GET() {
   try {
-    const scenarios = await prisma.dialogueScenario.findMany({
-      orderBy: { createdAt: 'desc' },
-    });
-    return NextResponse.json(scenarios);
+    return NextResponse.json(await prisma.dialogueScenario.findMany({ orderBy: { createdAt: 'desc' } }));
   } catch (error: unknown) {
     console.error('Failed to fetch dialogue scenarios:', error);
-    const message = error instanceof Error ? error.message : 'Unknown error';
-    return NextResponse.json({ error: 'Failed to fetch dialogue scenarios', details: message }, { status: 500 });
+    return errorResponse('Failed to fetch dialogue scenarios', error instanceof Error ? error.message : undefined);
   }
 }
 
 export async function POST(request: Request) {
   try {
-    const { scenario, messages, mode } = await request.json() as {
+    const { scenario, messages, mode } = (await request.json()) as {
       scenario: DialogueScenario;
       messages: DialogueMessage[];
       mode: 'chat' | 'evaluate';
     };
 
-    if (mode === 'evaluate') {
-      const audit = await evaluateDialogue(scenario, messages);
-      return NextResponse.json(audit);
-    }
-
-    const result = await processDialogue(scenario, messages);
+    const result = mode === 'evaluate'
+      ? await evaluateDialogue(scenario, messages)
+      : await processDialogue(scenario, messages);
     return NextResponse.json(result);
   } catch (error: unknown) {
     console.error('Dialogue API error:', error);
-    return NextResponse.json({ error: 'Failed to process dialogue interaction' }, { status: 500 });
+    return errorResponse('Failed to process dialogue interaction');
   }
 }

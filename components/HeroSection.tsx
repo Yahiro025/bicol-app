@@ -10,41 +10,27 @@ interface HeroSectionProps {
   wordCount: number;
 }
 
+const EASE_OUT = [0.25, 0.46, 0.45, 0.94] as const;
+const EASE_IN_OUT = [0.65, 0, 0.35, 1] as const;
+
 const staggerContainer = {
   hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.12,
-      delayChildren: 0.1,
-    },
-  },
+  visible: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } },
 };
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] as const },
-  },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE_OUT } },
 };
 
 const fadeUpSlow = {
   hidden: { opacity: 0, y: 32 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] as const },
-  },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: EASE_OUT } },
 };
 
 const ruleReveal = {
   hidden: { scaleX: 0, opacity: 0 },
-  visible: {
-    scaleX: 1,
-    opacity: 1,
-    transition: { duration: 0.7, ease: [0.65, 0, 0.35, 1] as const },
-  },
+  visible: { scaleX: 1, opacity: 1, transition: { duration: 0.7, ease: EASE_IN_OUT } },
 };
 
 export default function HeroSection({ children, wordCount }: HeroSectionProps) {

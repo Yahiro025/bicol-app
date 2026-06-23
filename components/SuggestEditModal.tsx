@@ -4,6 +4,7 @@ import React, { useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Send, AlertCircle, CheckCircle2 } from "lucide-react";
 import SpecialCharToolbar from "./SpecialCharToolbar";
+import { POS_OPTIONS, DIALECT_OPTIONS } from "@/lib/form-options";
 
 type SuggestEditModalProps = {
   isOpen: boolean;
@@ -30,35 +31,6 @@ type SuggestEditModalProps = {
     }>;
   };
 };
-
-const POS_OPTIONS = [
-  { value: "", label: "Select part of speech" },
-  { value: "Noun", label: "Noun" },
-  { value: "Verb", label: "Verb" },
-  { value: "Adjective", label: "Adjective" },
-  { value: "Adverb", label: "Adverb" },
-  { value: "Pronoun", label: "Pronoun" },
-  { value: "Preposition", label: "Preposition" },
-  { value: "Conjunction", label: "Conjunction" },
-  { value: "Interjection", label: "Interjection" },
-  { value: "Numeral", label: "Numeral" },
-  { value: "Particle", label: "Particle" },
-  { value: "Affix", label: "Affix" },
-  { value: "Phrase", label: "Phrase" },
-  { value: "Expression", label: "Expression" },
-];
-
-const DIALECT_OPTIONS = [
-  "General Bikol",
-  "Central Bikol (Naga)",
-  "Central Bikol (Albay)",
-  "Rinconada Bikol",
-  "Masbateño",
-  "Buhi-non",
-  "Northern Catanduanes",
-  "Southern Catanduanes",
-  "Virac",
-];
 
 export default function SuggestEditModal({ isOpen, onClose, isNormalized, wordData }: SuggestEditModalProps) {
   // Pre-fill initial form fields based on type
@@ -114,18 +86,16 @@ export default function SuggestEditModal({ isOpen, onClose, isNormalized, wordDa
       const start = el.selectionStart ?? el.value.length;
       const end = el.selectionEnd ?? el.value.length;
 
-      let current = "";
-      let setVal: (v: string) => void = () => {};
-
-      if (activeField === "word") { current = word; setVal = setWord; }
-      else if (activeField === "definition") { current = definition; setVal = setDefinition; }
-      else if (activeField === "tagalog") { current = tagalog; setVal = setTagalog; }
-      else if (activeField === "pronunciation") { current = pronunciation; setVal = setPronunciation; }
-      else if (activeField === "exampleBikol") { current = exampleBikol; setVal = setExampleBikol; }
-      else if (activeField === "exampleEnglish") { current = exampleEnglish; setVal = setExampleEnglish; }
-
-      const newValue = current.slice(0, start) + char + current.slice(end);
-      setVal(newValue);
+      const fieldValues: Record<typeof activeField, { current: string; set: (v: string) => void }> = {
+        word: { current: word, set: setWord },
+        definition: { current: definition, set: setDefinition },
+        tagalog: { current: tagalog, set: setTagalog },
+        pronunciation: { current: pronunciation, set: setPronunciation },
+        exampleBikol: { current: exampleBikol, set: setExampleBikol },
+        exampleEnglish: { current: exampleEnglish, set: setExampleEnglish },
+      };
+      const { current: val, set: setVal } = fieldValues[activeField];
+      setVal(val.slice(0, start) + char + val.slice(end));
 
       requestAnimationFrame(() => {
         const refreshedEl = fieldRefs[activeField].current;
@@ -135,7 +105,7 @@ export default function SuggestEditModal({ isOpen, onClose, isNormalized, wordDa
         }
       });
     },
-    [activeField, word, definition, pronunciation, exampleBikol, exampleEnglish],
+    [activeField, word, definition, tagalog, pronunciation, exampleBikol, exampleEnglish],
   );
 
   const handleSubmit = async (e: React.FormEvent) => {

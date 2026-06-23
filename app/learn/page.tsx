@@ -50,23 +50,15 @@ const FALLBACK_DRILLS: DrillType[] = [
   }
 ];
 
-/**
- * Generate substitution drills from real dictionary words.
- * Creates drills by using example sentences and substituting key words.
- */
 function generateDrillsFromWords(words: { bikol: string; english: string; example_bikol?: string | null; example_english?: string | null }[]): DrillType[] {
   const drills: DrillType[] = [];
-  
-  // Words with examples make the best drill sources
   const withExamples = words.filter(w => w.example_bikol);
   const withoutExamples = words.filter(w => !w.example_bikol);
-  
-  // Generate drills from example sentences
+
   for (let i = 0; i < Math.min(withExamples.length, 3); i++) {
     const word = withExamples[i];
     const otherWord = withExamples[(i + 1) % withExamples.length];
     if (!word || !otherWord || !word.example_bikol || !otherWord.bikol) continue;
-    // Use word boundary to avoid partial matches (e.g., "si" matching inside "sira")
     const wordRegex = new RegExp('\\b' + escapeRegex(word.bikol) + '\\b', 'gi');
     drills.push({
       id: `db-ex-${i}`,
@@ -76,8 +68,7 @@ function generateDrillsFromWords(words: { bikol: string; english: string; exampl
       explanation: `Practice substituting "${word.bikol}" with "${otherWord.bikol}" (${otherWord.english}).`,
     });
   }
-  
-  // Generate simple vocabulary swap drills
+
   for (let i = 0; i < Math.min(withoutExamples.length - 1, 2); i++) {
     const a = withoutExamples[i];
     const b = withoutExamples[i + 1];
@@ -90,7 +81,7 @@ function generateDrillsFromWords(words: { bikol: string; english: string; exampl
       explanation: `Swap the subject "${a.bikol}" (${a.english}) with "${b.bikol}" (${b.english}).`,
     });
   }
-  
+
   return drills;
 }
 
@@ -101,7 +92,6 @@ export default function LearnPage() {
   const [isLoadingDrills, setIsLoadingDrills] = useState(true);
   const router = useRouter();
 
-  // Fetch real words from the database to generate drills
   useEffect(() => {
     async function fetchDrills() {
       try {
@@ -110,9 +100,7 @@ export default function LearnPage() {
         const words = await res.json();
         if (Array.isArray(words) && words.length >= 3) {
           const generated = generateDrillsFromWords(words);
-          if (generated.length >= 3) {
-            setDrills(generated);
-          }
+          if (generated.length >= 3) setDrills(generated);
         }
       } catch (err) {
         console.error("Using fallback drills:", err);

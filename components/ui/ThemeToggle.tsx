@@ -9,18 +9,12 @@ export function ThemeToggle({ className }: { className?: string }) {
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  useEffect(() => setMounted(true), []);
 
-  // Prevent hydration mismatch: render a stable placeholder until mounted
   if (!mounted) {
     return (
       <div
-        className={cn(
-          "w-11 h-11 rounded-xl",
-          className
-        )}
+        className={cn("w-11 h-11 rounded-xl", className)}
         style={{ backgroundColor: 'var(--editorial-surface)' }}
         aria-hidden="true"
       />
@@ -29,13 +23,13 @@ export function ThemeToggle({ className }: { className?: string }) {
 
   const isDark = resolvedTheme === "dark";
 
-  return (      <button
+  return (
+    <button
       type="button"
       onClick={() => setTheme(isDark ? "light" : "dark")}
       className={cn(
-        "p-2 rounded-xl transition-all duration-200",          "min-w-11 min-h-11",
-        "hover:brightness-95 dark:hover:brightness-110",
-        "hover:scale-105 active:scale-95",
+        "p-2 rounded-xl transition-all duration-200 min-w-11 min-h-11",
+        "hover:brightness-95 dark:hover:brightness-110 hover:scale-105 active:scale-95",
         "focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--editorial-bg)]",
         "touch-manipulation [-webkit-tap-highlight-color:transparent]",
         className

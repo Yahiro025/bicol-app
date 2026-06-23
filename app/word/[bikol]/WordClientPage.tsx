@@ -93,100 +93,50 @@ export default function WordClientPage({ word, isNormalized }: { word: WordDispl
   const langMode = useLanguageMode();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
-  // Normalize the data for internal use
-  const bikol = word.bikol;
-  const pos = word.pos;
-  const pronunciation = word.pronunciation;
-  const audio_url = word.audio_url;
-  const etymology = word.etymology;
+  const { bikol, pos, pronunciation, audio_url, etymology } = word;
 
-  // Definitions normalized to an array
-  const definitions: WordDisplayData['definitions'] = isNormalized 
-    ? (word.definitions ?? []) 
+  const definitions: WordDisplayData['definitions'] = isNormalized
+    ? (word.definitions ?? [])
     : [{
         english: word.english ?? null,
         tagalog: word.tagalog ?? null,
         dialect: word.dialect ?? null,
         synonyms: word.synonyms ?? null,
-        source: (word.source_url?.includes('wiktionary') ? 'wiktionary' 
-               : word.source_url?.includes('learnbikol') ? 'learnbikol' 
-               : 'unknown'),
+        source: word.source_url?.includes('wiktionary') ? 'wiktionary' : word.source_url?.includes('learnbikol') ? 'learnbikol' : 'unknown',
         source_url: word.source_url ?? null,
         exampleSentences: word.example_bikol ? [{ bikol: word.example_bikol, english: word.example_english ?? null }] : []
       }];
 
-  // Check if we should show VerbConjugator
   const isVerb = pos?.trim().toUpperCase() === 'VERB';
   const hasAffixPair = isNormalized && (word.definitions ?? []).some((d) => d.affixPair && d.affixPair !== 'UNKNOWN');
-  
-  // Defensive check for legacy words: if it ends in -on, -an, or starts with mag- and has no POS, treat as potential verb
-  const looksLikeVerb = (
-    bikol.toLowerCase().endsWith('on') || 
-    bikol.toLowerCase().endsWith('an') || 
-    bikol.toLowerCase().startsWith('mag') ||
-    isVerb
-  );
-
+  const lowerBikol = bikol.toLowerCase();
+  const looksLikeVerb = lowerBikol.endsWith('on') || lowerBikol.endsWith('an') || lowerBikol.startsWith('mag') || isVerb;
   const showConjugator = isVerb || hasAffixPair || looksLikeVerb;
 
-  // Prepare affix groups for VerbConjugator
-  let affixGroups: AffixGroup[] = isNormalized 
+  let affixGroups: AffixGroup[] = isNormalized
     ? (word.definitions ?? [])
         .filter((d) => d.affixPair && d.affixPair !== 'UNKNOWN')
         .map((d) => ({
           affixPair: d.affixPair!,
           focusType: d.focusType || 'UNKNOWN',
-          conjugations: (d.conjugations ?? [])
-            .filter((c) => {
-              if (d.focusType && d.focusType !== 'UNKNOWN') {
-                return c.focus === d.focusType;
-              }
-              return true;
-            })
-            .map((c) => ({
-              tense: c.tense,
-              form: c.form
-            }))
+          conjugations: (d.conjugations ?? []).filter((c) => !d.focusType || d.focusType === 'UNKNOWN' || c.focus === d.focusType).map((c) => ({ tense: c.tense, form: c.form }))
         }))
     : [];
 
-  // Unified fallback for any verb (normalized or legacy) that lacks affix metadata
   if (affixGroups.length === 0 && (looksLikeVerb || isVerb)) {
-    let inferredAffix = "UNKNOWN";
-    let inferredFocus = "UNKNOWN";
-
-    if (bikol.toLowerCase().endsWith('on')) {
-      inferredAffix = "-ON / MAG-";
-      inferredFocus = "OBJECT";
-    } else if (bikol.toLowerCase().endsWith('an')) {
-      inferredAffix = "-AN / MAG-";
-      inferredFocus = "REFERENTIAL";
-    } else if (bikol.toLowerCase().startsWith('mag')) {
-      inferredAffix = "MAG- / -ON";
-      inferredFocus = "ACTOR";
-    }
+    let inferredAffix = "UNKNOWN", inferredFocus = "UNKNOWN";
+    if (lowerBikol.endsWith('on')) { inferredAffix = "-ON / MAG-"; inferredFocus = "OBJECT"; }
+    else if (lowerBikol.endsWith('an')) { inferredAffix = "-AN / MAG-"; inferredFocus = "REFERENTIAL"; }
+    else if (lowerBikol.startsWith('mag')) { inferredAffix = "MAG- / -ON"; inferredFocus = "ACTOR"; }
 
     if (inferredAffix !== "UNKNOWN") {
-      affixGroups = [{
-        affixPair: inferredAffix,
-        focusType: inferredFocus,
-        conjugations: [] // VerbConjugator will handle generation if empty
-      }];
+      affixGroups = [{ affixPair: inferredAffix, focusType: inferredFocus, conjugations: [] }];
     } else if (isVerb) {
-      // Default to MAG- if it's explicitly tagged but the form is ambiguous (e.g. root)
-      affixGroups = [{
-        affixPair: "MAG- / -ON",
-        focusType: "ACTOR",
-        conjugations: []
-      }];
+      affixGroups = [{ affixPair: "MAG- / -ON", focusType: "ACTOR", conjugations: [] }];
     }
   }
 
-  useEffect(() => {
-    if (word && word.bikol) {
-      saveToHistory(word);
-    }
-  }, [word]);
+  useEffect(() => { if (word?.bikol) saveToHistory(word); }, [word]);
 
   return (
     <div className="min-h-screen p-3 sm:p-4 md:p-8" style={{ backgroundColor: 'var(--editorial-bg)' }}>
@@ -364,14 +314,10 @@ export default function WordClientPage({ word, isNormalized }: { word: WordDispl
               if (typeof syns === 'string') return syns.split(',').map((s) => s.trim()).filter(Boolean);
               return [];
             };
-
-            const allSynonyms = definitions.reduce((acc: string[], def) => {
-              const syns = getSynonyms(def.synonyms);
-              return [...acc, ...syns];
-            }, []);
+            const allSynonyms = definitions.flatMap((def) => getSynonyms(def.synonyms));
             const uniqueSynonyms = Array.from(new Set(allSynonyms));
-            
-            return (etymology || uniqueSynonyms.length > 0) && (
+            if (!etymology && uniqueSynonyms.length === 0) return null;
+            return (
               <div className="pt-8 grid grid-cols-1 md:grid-cols-2 gap-12 relative z-10" style={{ borderTop: '1px solid var(--editorial-divider)' }}>
                 {etymology && (
                   <div className="space-y-4">
@@ -383,18 +329,8 @@ export default function WordClientPage({ word, isNormalized }: { word: WordDispl
                   <div className="space-y-4">
                     <h3 className="text-sm font-bold uppercase tracking-widest flex items-center gap-2" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Synonyms</h3>
                     <div className="flex flex-wrap gap-2">
-                      {uniqueSynonyms.map((s: string, i: number) => (
-                        <Link 
-                          key={i} 
-                          href={`/word/${encodeURIComponent(s)}`}
-                          className="px-4 py-2 rounded-xl text-sm font-semibold transition-all hover:scale-105 active:scale-95"
-                          style={{
-                            fontFamily: 'var(--font-body)',
-                            backgroundColor: 'var(--editorial-bg)',
-                            color: 'var(--editorial-accent)',
-                            border: '1px solid var(--editorial-border)',
-                          }}
-                        >
+                      {uniqueSynonyms.map((s, i) => (
+                        <Link key={i} href={`/word/${encodeURIComponent(s)}`} className="px-4 py-2 rounded-xl text-sm font-semibold transition-all hover:scale-105 active:scale-95" style={{ fontFamily: 'var(--font-body)', backgroundColor: 'var(--editorial-bg)', color: 'var(--editorial-accent)', border: '1px solid var(--editorial-border)' }}>
                           {s}
                         </Link>
                       ))}

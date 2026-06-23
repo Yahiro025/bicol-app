@@ -33,12 +33,7 @@ const itemVariants = {
 export default function WordCard({ word, className }: WordCardProps) {
   const router = useRouter();
   const langMode = useLanguageMode();
-
-  const displayTranslation = () => {
-    if (langMode === 'tl' && word.tagalog) return word.tagalog;
-    return word.english;
-  };
-
+  const displayText = langMode === 'tl' && word.tagalog ? word.tagalog : word.english;
   const wordUrl = `/word/${encodeURIComponent(word.bikol)}`;
 
   return (
@@ -70,7 +65,7 @@ export default function WordCard({ word, className }: WordCardProps) {
                 </span>
               )}
             </div>
-            <p className="font-medium line-clamp-1" style={{ color: 'var(--editorial-text-secondary)' }}>{displayTranslation()}</p>
+            <p className="font-medium line-clamp-1" style={{ color: 'var(--editorial-text-secondary)' }}>{displayText}</p>
             {langMode === 'all' && word.tagalog && (
               <p className="text-xs italic opacity-60 mt-1" style={{ color: 'var(--editorial-muted)' }}>Tagalog: {word.tagalog}</p>
             )}

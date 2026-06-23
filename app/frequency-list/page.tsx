@@ -1,22 +1,14 @@
-import { browseWords, type WordSearchEntry } from '@/lib/word-search';
+import { browseWords } from '@/lib/word-search';
 
-// ISR: frequency data changes rarely, revalidate hourly
 export const revalidate = 3600;
 
 export default async function FrequencyListPage() {
-  let words: WordSearchEntry[] = [];
   let dbError: string | null = null;
-  try {
-    words = await browseWords({
-      filters: {},
-      sort: 'frequency',
-      limit: 100,
-      offset: 0,
-    });
-  } catch (e: unknown) {
+  const words = await browseWords({ filters: {}, sort: 'frequency', limit: 100, offset: 0 }).catch((e: unknown) => {
     console.error(e);
-    dbError = e instanceof Error ? e.message : 'Unknown error';
-  }
+    dbError = e instanceof Error ? e.message : 'Failed to load word frequency data';
+    return [] as Awaited<ReturnType<typeof browseWords>>;
+  });
 
   return (
     <main className="min-h-screen p-8" style={{ backgroundColor: 'var(--editorial-bg)', color: 'var(--editorial-text)' }}>

@@ -77,67 +77,43 @@ export default function BrowseClient({
   const [isLoading, setIsLoading] = useState(false);
   const langMode = useLanguageMode();
 
-  // Ref to track the latest fetch request for cancellation
   const fetchCounterRef = useRef(0);
-
   const getTranslation = (word: Word): string => displayTranslation(word, langMode);
-
   const totalPages = Math.ceil(totalWords / PAGE_SIZE) || 1;
 
-  const fetchPage = useCallback(
-    async (targetPage: number) => {
-      const apiPage = targetPage - 1;
-      const fetchId = ++fetchCounterRef.current;
+  const fetchPage = useCallback(async (targetPage: number) => {
+    const apiPage = targetPage - 1;
+    const fetchId = ++fetchCounterRef.current;
+    setIsLoading(true);
+    try {
+      const params = new URLSearchParams({ page: apiPage.toString(), limit: PAGE_SIZE.toString() });
+      if (query) params.set("q", query);
+      if (selectedLetter) params.set("letter", selectedLetter);
+      if (selectedCategory) params.set("category", selectedCategory);
+      if (sortMode === "frequency") params.set("sort", "frequency");
+      if (sortMode === "relevance") params.set("sort", "relevance");
 
-      setIsLoading(true);
-      try {
-        const params = new URLSearchParams({
-          page: apiPage.toString(),
-          limit: PAGE_SIZE.toString(),
-        });
-        if (query) params.set("q", query);
-        if (selectedLetter) params.set("letter", selectedLetter);
-        if (selectedCategory) params.set("category", selectedCategory);
-        if (sortMode === "frequency") params.set("sort", "frequency");
-        if (sortMode === "relevance") params.set("sort", "relevance");
+      const response = await fetch(`/api/browse?${params.toString()}`);
+      if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
 
-        const response = await fetch(`/api/browse?${params.toString()}`);
+      const data = await response.json();
+      const newWords = Array.isArray(data) ? data : data.words;
+      const total = data.total ?? 0;
+      if (!Array.isArray(newWords)) throw new Error("Invalid response format");
 
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
+      const maxPage = Math.ceil(total / PAGE_SIZE) || 1;
+      if (fetchId !== fetchCounterRef.current) return;
+      if (targetPage > maxPage && total > 0) return fetchPage(maxPage);
 
-        const data = await response.json();
-
-        const newWords = Array.isArray(data) ? data : data.words;
-        const total = data.total ?? 0;
-
-        if (!Array.isArray(newWords)) {
-          throw new Error("Invalid response format");
-        }
-
-        const maxPage = Math.ceil(total / PAGE_SIZE) || 1;
-
-        // Ignore stale responses
-        if (fetchId !== fetchCounterRef.current) return;
-
-        if (targetPage > maxPage && total > 0) {
-          return fetchPage(maxPage);
-        }
-
-        setWords(newWords);
-        setTotalWords(total);
-        setCurrentPage(Math.min(targetPage, maxPage));
-      } catch (error) {
-        console.error("Error fetching page:", error);
-      } finally {
-        if (fetchId === fetchCounterRef.current) {
-          setIsLoading(false);
-        }
-      }
-    },
-    [query, selectedLetter, selectedCategory, sortMode],
-  );
+      setWords(newWords);
+      setTotalWords(total);
+      setCurrentPage(Math.min(targetPage, maxPage));
+    } catch (error) {
+      console.error("Error fetching page:", error);
+    } finally {
+      if (fetchId === fetchCounterRef.current) setIsLoading(false);
+    }
+  }, [query, selectedLetter, selectedCategory, sortMode]);
 
   const handlePrevPage = () => {
     if (currentPage <= 1 || isLoading) return;
@@ -151,14 +127,10 @@ export default function BrowseClient({
     fetchPage(next);
   };
 
-  // Reset sort to alphabetical when search query is cleared
   useEffect(() => {
-    if (!query && sortMode === "relevance") {
-      setSortMode("alphabetical");
-    }
+    if (!query && sortMode === "relevance") setSortMode("alphabetical");
   }, [query, sortMode]);
 
-  // Sync URL when filters, sort, or page change
   useEffect(() => {
     const timer = setTimeout(() => {
       const params = new URLSearchParams();
@@ -168,82 +140,36 @@ export default function BrowseClient({
       if (sortMode === "frequency") params.set("sort", "frequency");
       if (sortMode === "relevance") params.set("sort", "relevance");
       if (currentPage > 1) params.set("page", currentPage.toString());
-
       const newUrl = `/browse${params.toString() ? `?${params.toString()}` : ""}`;
-      window.history.replaceState(
-        { ...window.history.state, as: newUrl, url: newUrl },
-        "",
-        newUrl,
-      );
+      window.history.replaceState({ ...window.history.state, as: newUrl, url: newUrl }, "", newUrl);
     }, 300);
-
     return () => clearTimeout(timer);
   }, [query, selectedLetter, selectedCategory, sortMode, currentPage]);
 
-  // Refetch when filters/sort change (preserve page, clamp if needed)
   useEffect(() => {
-    const timer = setTimeout(() => {
-      fetchPage(currentPage);
-    }, 300);
-
+    const timer = setTimeout(() => fetchPage(currentPage), 300);
     return () => clearTimeout(timer);
   }, [query, selectedLetter, selectedCategory, sortMode]);
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(e.target.value);
-  };
-
   const handleFilterClick = (type: "letter" | "category", value: string) => {
-    if (type === "letter") {
-      setSelectedLetter((prev) => (prev === value ? "" : value));
-    } else {
-      setSelectedCategory((prev) => (prev === value ? "" : value));
-    }
+    if (type === "letter") setSelectedLetter((prev) => (prev === value ? "" : value));
+    else setSelectedCategory((prev) => (prev === value ? "" : value));
   };
 
-  const clearFilters = () => {
-    setSelectedLetter("");
-    setSelectedCategory("");
-    setQuery("");
-  };
+  const clearFilters = () => { setSelectedLetter(""); setSelectedCategory(""); setQuery(""); };
 
   const highlightText = (text: string) => {
     if (!query || !text.toLowerCase().includes(query.toLowerCase())) return text;
     const parts = text.split(new RegExp(`(${escapeRegex(query)})`, "gi"));
-    return (
-      <>
-        {parts.map((part, i) =>
-          part.toLowerCase() === query.toLowerCase() ? (
-            <mark
-              key={i}
-              className="rounded px-0.5"
-              style={{
-                backgroundColor: "rgba(212,168,69,0.22)",
-                color: "var(--editorial-accent)",
-              }}
-            >
-              {part}
-            </mark>
-          ) : (
-            part
-          ),
-        )}
-      </>
-    );
+    return <>{parts.map((part, i) => part.toLowerCase() === query.toLowerCase() ? <mark key={i} className="rounded px-0.5" style={{ backgroundColor: "rgba(212,168,69,0.22)", color: "var(--editorial-accent)" }}>{part}</mark> : part)}</>;
   };
 
   const hasActiveFilters = !!(selectedLetter || selectedCategory);
-
-  // Result count range text
   const startResult = (currentPage - 1) * PAGE_SIZE + 1;
   const endResult = Math.min(currentPage * PAGE_SIZE, totalWords);
-  const resultCountText =
-    totalWords === 0
-      ? "No results"
-      : totalWords <= PAGE_SIZE
-        ? `Showing ${totalWords.toLocaleString()} result${totalWords !== 1 ? "s" : ""}`
-        : `Showing ${startResult.toLocaleString()}–${endResult.toLocaleString()} of ${totalWords.toLocaleString()} result${totalWords !== 1 ? "s" : ""}`;
-
+  const resultCountText = totalWords === 0 ? "No results" : totalWords <= PAGE_SIZE
+    ? `Showing ${totalWords.toLocaleString()} result${totalWords !== 1 ? "s" : ""}`
+    : `Showing ${startResult.toLocaleString()}–${endResult.toLocaleString()} of ${totalWords.toLocaleString()} result${totalWords !== 1 ? "s" : ""}`;
   const showPagination = totalWords > 0;
 
   return (
@@ -252,7 +178,7 @@ export default function BrowseClient({
         <input
           type="text"
           value={query}
-          onChange={handleSearchChange}
+          onChange={(e) => setQuery(e.target.value)}
           placeholder={`Search dictionary...`}
           className="w-full px-8 py-4 rounded-xl text-lg transition-all duration-300 focus:outline-none placeholder:opacity-50"
           style={{
