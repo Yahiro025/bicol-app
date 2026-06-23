@@ -12,81 +12,51 @@ export interface ConjugationSet {
   objectFocus: ConjugationForms;
 }
 
-/**
- * Extracts the first syllable (CV) for reduplication (R-).
- * Rule: Reduplicate first vowel if root starts with vowel, 
- * or first consonant + vowel if it starts with consonant.
- */
+const VOWELS = new Set(['a', 'e', 'i', 'o', 'u', 'á', 'é', 'í', 'ó', 'ú']);
+
+/** Extracts the first syllable (CV) for reduplication (R-). */
 function getReduplication(root: string): string {
-  const vowels = ['a', 'e', 'i', 'o', 'u', 'á', 'é', 'í', 'ó', 'ú'];
   const normalized = root.toLowerCase();
-  
   if (!normalized) return '';
 
-  const firstChar = normalized[0] || '';
-  if (vowels.includes(firstChar)) {
-    return firstChar;
-  }
+  const firstChar = normalized[0]!;
+  if (VOWELS.has(firstChar)) return firstChar;
 
-  // Find first vowel for CV pattern
-  let firstVowelIndex = -1;
-  for (let i = 0; i < normalized.length; i++) {
-    const char = normalized[i] || '';
-    if (vowels.includes(char)) {
-      firstVowelIndex = i;
-      break;
-    }
-  }
-
-  if (firstVowelIndex !== -1) {
-    return normalized.substring(0, firstVowelIndex + 1);
-  }
-
-  return firstChar;
+  const firstVowelIndex = [...normalized].findIndex(ch => VOWELS.has(ch));
+  return firstVowelIndex !== -1
+    ? normalized.substring(0, firstVowelIndex + 1)
+    : firstChar;
 }
 
-/**
- * Applies Mintz's "Vowel Ending Rule": if a base ends in a vowel, 
- * insert 'h' before adding suffixes like -on or -an.
- */
+/** Applies Mintz's "Vowel Ending Rule": inserts 'h' before suffixes if base ends in a vowel. */
 function applyVowelRule(base: string): string {
   if (!base) return '';
-  const vowels = ['a', 'e', 'i', 'o', 'u', 'á', 'é', 'í', 'ó', 'ú'];
-  const lastChar = base[base.length - 1] || '';
-  return vowels.includes(lastChar) ? base + 'h' : base;
+  return VOWELS.has(base[base.length - 1]!) ? base + 'h' : base;
 }
 
-/**
- * Extracts the first vowel for object-focus reduplication.
- * In object focus progressive, only the vowel is reduplicated after the infix.
- */
+/** Extracts the first vowel for object-focus reduplication. */
 function getFirstVowel(root: string): string {
-  const vowels = ['a', 'e', 'i', 'o', 'u', 'á', 'é', 'í', 'ó', 'ú'];
   const normalized = root.toLowerCase();
   for (const char of normalized) {
-    if (vowels.includes(char)) return char;
+    if (VOWELS.has(char)) return char;
   }
-  return normalized[0] || '';
+  return normalized[0] ?? '';
 }
 
-/**
- * Generates the full conjugation set for a root and its Mintz FocusClass.
- * Handles Actor Focus (MAG-) and Object Focus (-on, i-, -an).
- */
+/** Generates the full conjugation set for a root and its Mintz FocusClass. */
 export function conjugateVerbMintz(root: string, focusClass: FocusClass): ConjugationSet {
   const normalized = root.toLowerCase();
   const r = getReduplication(normalized);
   const baseWithH = applyVowelRule(normalized);
+  const first = normalized[0]!;
 
-  // 1. Actor Focus (MAG-)
   const actor: ConjugationForms = {
     infinitive: `mag${normalized}`,
     future: `ma${r}${normalized}`,
     past: `nag${normalized}`,
-    progressive: `nag${r}${normalized}`
+    progressive: `nag${r}${normalized}`,
   };
 
-  // 2. Object Focus
   let object: ConjugationForms;
 
   switch (focusClass) {
@@ -95,8 +65,8 @@ export function conjugateVerbMintz(root: string, focusClass: FocusClass): Conjug
       object = {
         infinitive: `${baseWithH}on`,
         future: `${r}${baseWithH}on`,
-        past: `${normalized[0]}in${normalized.substring(1)}`,
-        progressive: `${normalized[0]}in${v}${normalized}`
+        past: `${first}in${normalized.slice(1)}`,
+        progressive: `${first}in${v}${normalized}`,
       };
       break;
     }
@@ -105,7 +75,7 @@ export function conjugateVerbMintz(root: string, focusClass: FocusClass): Conjug
         infinitive: `i${normalized}`,
         future: `i${r}${normalized}`,
         past: `ini${normalized}`,
-        progressive: `ini${r}${normalized}`
+        progressive: `ini${r}${normalized}`,
       };
       break;
     case 'AN': {
@@ -113,21 +83,17 @@ export function conjugateVerbMintz(root: string, focusClass: FocusClass): Conjug
       object = {
         infinitive: `${baseWithH}an`,
         future: `${r}${baseWithH}an`,
-        past: `${normalized[0]}in${normalized.substring(1)}an`,
-        progressive: `${normalized[0]}in${v}${normalized}an`
+        past: `${first}in${normalized.slice(1)}an`,
+        progressive: `${first}in${v}${normalized}an`,
       };
       break;
     }
     case 'MAG':
     default:
-      // For purely intransitive, object focus is identical to actor or empty
       object = { ...actor };
   }
 
-  // Special case for vowel-starting roots in past/progressive infixation
-  const vowels = ['a', 'e', 'i', 'o', 'u', 'á', 'é', 'í', 'ó', 'ú'];
-  const firstChar = normalized[0] || '';
-  if (vowels.includes(firstChar) && (focusClass === 'ON' || focusClass === 'AN')) {
+  if (VOWELS.has(first) && (focusClass === 'ON' || focusClass === 'AN')) {
     object.past = `in${normalized}`;
     object.progressive = `in${r}${normalized}`;
   }
@@ -135,121 +101,89 @@ export function conjugateVerbMintz(root: string, focusClass: FocusClass): Conjug
   return { actorFocus: actor, objectFocus: object };
 }
 
-/**
- * Legacy wrapper for conjugateVerbMintz to maintain compatibility with 
- * existing call sites while leveraging the new Mintz-based logic.
- */
+/** Legacy wrapper for conjugateVerbMintz. */
 export function conjugateBikolVerb(root: string, affixPair: string, preferredFocus?: string) {
   const focusClass = mapAffixToFocusClass(affixPair);
   const set = conjugateVerbMintz(root, focusClass);
 
-  const results: { tense: string; focus: string; form: string }[] = [];
+  const pref = preferredFocus?.toUpperCase();
+  const includeActor = !pref || pref === 'ACTOR';
+  const includeObject = (!pref || pref === 'OBJECT') && focusClass !== 'MAG';
 
-  // Determine which focus to include. 
-  // If no preference is given, we include both to allow the UI to decide.
-  const isActorPref = preferredFocus?.toUpperCase() === 'ACTOR';
-  const isObjectPref = preferredFocus?.toUpperCase() === 'OBJECT';
-  
-  const includeActor = !preferredFocus || isActorPref;
-  const includeObject = (!preferredFocus || isObjectPref) && focusClass !== 'MAG';
+  const results: { tense: string; focus: string; form: string }[] = [];
+  const TENSES: (keyof ConjugationForms)[] = ['infinitive', 'past', 'progressive', 'future'];
 
   if (includeActor) {
-    results.push({ tense: 'Infinitive', focus: 'Actor', form: set.actorFocus.infinitive });
-    results.push({ tense: 'Past', focus: 'Actor', form: set.actorFocus.past });
-    results.push({ tense: 'Progressive', focus: 'Actor', form: set.actorFocus.progressive });
-    results.push({ tense: 'Future', focus: 'Actor', form: set.actorFocus.future });
+    for (const tense of TENSES) {
+      results.push({ tense: tense.charAt(0).toUpperCase() + tense.slice(1), focus: 'Actor', form: set.actorFocus[tense] });
+    }
   }
-
   if (includeObject) {
-    results.push({ tense: 'Infinitive', focus: 'Object', form: set.objectFocus.infinitive });
-    results.push({ tense: 'Past', focus: 'Object', form: set.objectFocus.past });
-    results.push({ tense: 'Progressive', focus: 'Object', form: set.objectFocus.progressive });
-    results.push({ tense: 'Future', focus: 'Object', form: set.objectFocus.future });
+    for (const tense of TENSES) {
+      results.push({ tense: tense.charAt(0).toUpperCase() + tense.slice(1), focus: 'Object', form: set.objectFocus[tense] });
+    }
   }
 
   return results;
 }
 
-/**
- * Heuristic to extract the root from a potentially conjugated Bikol verb.
- * This is the inverse of the conjugation rules.
- */
+/** Heuristic to extract the root from a potentially conjugated Bikol verb. */
 export function extractRoot(verb: string): string {
   let root = verb.toLowerCase().trim();
-  const vowels = ['a', 'e', 'i', 'o', 'u', 'á', 'é', 'í', 'ó', 'ú'];
 
-  // 1. Remove common prefixes (mag-, nag-, ma-, na-, mang-, nang-, i-)
-  if (root.startsWith('mag')) root = root.substring(3);
-  else if (root.startsWith('nag')) root = root.substring(3);
-  else if (root.startsWith('mang')) root = root.substring(4);
-  else if (root.startsWith('nang')) root = root.substring(4);
-  else if (root.startsWith('ma')) root = root.substring(2);
-  else if (root.startsWith('na')) root = root.substring(2);
-  else if (root.startsWith('i') && !root.startsWith('in') && root.length > 3) root = root.substring(1);
+  // Remove prefixes
+  const prefixes = [
+    { p: 'mag', len: 3 }, { p: 'nag', len: 3 },
+    { p: 'mang', len: 4 }, { p: 'nang', len: 4 },
+    { p: 'ma', len: 2 }, { p: 'na', len: 2 },
+  ];
+  for (const { p, len } of prefixes) {
+    if (root.startsWith(p)) { root = root.slice(len); break; }
+  }
+  if (root.startsWith('i') && !root.startsWith('in') && root.length > 3) {
+    root = root.slice(1);
+  }
 
-  // 2. Remove suffixes (-on, -an)
-  // Note: if word ends in vowel, 'h' might have been inserted.
-  if (root.endsWith('on')) {
-    root = root.substring(0, root.length - 2);
-    const penult = root[root.length - 2];
-    if (root.endsWith('h') && penult && vowels.includes(penult)) {
-      root = root.substring(0, root.length - 1);
-    }
-  } else if (root.endsWith('an')) {
-    root = root.substring(0, root.length - 2);
-    const penult = root[root.length - 2];
-    if (root.endsWith('h') && penult && vowels.includes(penult)) {
-      root = root.substring(0, root.length - 1);
+  // Remove suffixes (-on, -an), accounting for vowel-rule 'h' insertion
+  for (const suffix of ['on', 'an']) {
+    if (root.endsWith(suffix)) {
+      root = root.slice(0, -2);
+      const penult = root[root.length - 2]!;
+      if (root.endsWith('h') && VOWELS.has(penult)) root = root.slice(0, -1);
+      break;
     }
   }
 
-  // 3. Remove infixes (-in-)
-  // Infixes occur after the first consonant — only apply if root is long enough
-  // to avoid false positives on short words (e.g., "nin" would incorrectly strip to "n")
-  const firstChar = root[0];
-  if (root.length > 3 && firstChar && !vowels.includes(firstChar)) {
-    if (root.substring(1, 3) === 'in') {
-      root = firstChar + root.substring(3);
-    }
+  // Remove infixes (-in-)
+  const firstChar = root[0]!;
+  if (root.length > 3 && !VOWELS.has(firstChar)) {
+    if (root.slice(1, 3) === 'in') root = firstChar + root.slice(3);
   } else if (root.startsWith('in') && root.length > 3) {
-    // I-class past: "ini-" prefix (e.g., initao → tao, iniabot → abot)
     if (root.startsWith('ini') && root.length > 4) {
-      root = root.substring(3);
-    } else {
-      const thirdChar = root[2];
-      if (thirdChar && vowels.includes(thirdChar)) {
-        // Vowel-initial root in ON/AN class: "in-" prefix (e.g., inapod → apod)
-        root = root.substring(2);
-      }
+      root = root.slice(3);
+    } else if (VOWELS.has(root[2]!)) {
+      root = root.slice(2);
     }
   }
 
-  // 4. Remove reduplication (CV-)
-  // If first 2 chars match next 2 chars, it might be reduplication (e.g., babakal -> bakal)
-  if (root.length >= 4) {
-    const cv = root.substring(0, 2);
-    if (root.substring(2, 4) === cv) {
-      root = root.substring(2);
-    }
+  // Remove reduplication (CV-)
+  if (root.length >= 4 && root.slice(2, 4) === root.slice(0, 2)) {
+    root = root.slice(2);
   }
-  // Vowel reduplication (e.g., aalis -> alis)
-  const char0 = root[0];
-  if (root.length >= 2 && char0 && vowels.includes(char0) && root[1] === char0) {
-    root = root.substring(1);
+  if (root.length >= 2 && VOWELS.has(root[0]!) && root[1] === root[0]) {
+    root = root.slice(1);
   }
 
   return root;
 }
 
-/**
- * Maps legacy affix pair strings (e.g., "MAG-, -ON") to Mintz FocusClasses.
- */
+/** Maps legacy affix pair strings (e.g., "MAG-, -ON") to Mintz FocusClasses. */
 function mapAffixToFocusClass(affixPair: string): FocusClass {
   const upper = affixPair.toUpperCase();
   if (upper.includes('-ON')) return 'ON';
   if (upper.includes('I-') || upper.includes('I+')) return 'I';
   if (upper.includes('-AN')) return 'AN';
   if (upper.includes('MAG-') || upper.includes('MANG-') || upper.includes('MA-')) return 'MAG';
-  return 'MAG'; // Fallback
+  return 'MAG';
 }
 

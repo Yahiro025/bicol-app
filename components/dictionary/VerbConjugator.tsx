@@ -29,14 +29,6 @@ const springTransition = {
   mass: 1
 } as const;
 
-/**
- * VerbConjugator Component
- * 
- * Displays verb conjugations for Bikol roots based on affix pairs and focus types.
- * Follows "The Living Archive" design system:
- * - Resting Rigor: Flat UI with 1px zinc borders.
- * - Responsive Bloom: Interactive lift and blue-tinted shadows on hover.
- */
 export function VerbConjugator({ rootWord, affixGroups }: VerbConjugatorProps) {
   const [activeTab, setActiveTab] = useState(0);
 

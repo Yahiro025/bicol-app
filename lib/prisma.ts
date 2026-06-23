@@ -10,30 +10,23 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 const getPool = () => {
-  if (!globalForPrisma.pgPool) {
-    if (!connectionString) {
-      throw new Error(
-        'DATABASE_URL is not defined. Set it in .env or your deployment environment.'
-      );
-    }
-    const isSupabase = connectionString.includes('supabase.co');
-    globalForPrisma.pgPool = new pg.Pool({
-      connectionString,
-      max: 20,                         // Limit concurrent connections
-      idleTimeoutMillis: 30000,        // Close idle connections after 30s
-      connectionTimeoutMillis: 5000,   // Fail fast if DB unreachable
-      ...(isSupabase ? { ssl: { rejectUnauthorized: false } } : {}),
-    });
-  }
+  if (globalForPrisma.pgPool) return globalForPrisma.pgPool;
+  if (!connectionString) throw new Error('DATABASE_URL is not defined');
+  const isSupabase = connectionString.includes('supabase.co');
+  globalForPrisma.pgPool = new pg.Pool({
+    connectionString,
+    max: 20,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 5000,
+    ...(isSupabase ? { ssl: { rejectUnauthorized: false } } : {}),
+  });
   return globalForPrisma.pgPool;
 };
 
 const getPrisma = () => {
-  if (!globalForPrisma.prisma) {
-    const pool = getPool();
-    const adapter = new PrismaPg(pool);
-    globalForPrisma.prisma = new PrismaClient({ adapter });
-  }
+  if (globalForPrisma.prisma) return globalForPrisma.prisma;
+  const adapter = new PrismaPg(getPool());
+  globalForPrisma.prisma = new PrismaClient({ adapter });
   return globalForPrisma.prisma;
 };
 

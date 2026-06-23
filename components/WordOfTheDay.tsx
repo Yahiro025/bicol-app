@@ -21,11 +21,7 @@ interface WordOfTheDayProps {
 
 export default function WordOfTheDay({ word, className }: WordOfTheDayProps) {
   const langMode = useLanguageMode();
-
-  const displayTranslation = () => {
-    if (langMode === 'tl' && word.tagalog) return word.tagalog;
-    return word.english;
-  };
+  const displayText = langMode === 'tl' && word.tagalog ? word.tagalog : word.english;
 
    return (
      <motion.div
@@ -61,7 +57,7 @@ export default function WordOfTheDay({ word, className }: WordOfTheDayProps) {
                   </span>
                 )}
                 <p className="text-xl sm:text-2xl md:text-3xl text-white font-bold leading-tight">
-                  {displayTranslation()}
+                  {displayText}
                 </p>
               </div>
               {langMode === 'all' && word.tagalog && (

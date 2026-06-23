@@ -19,63 +19,26 @@ import { POPULAR_WORDS } from "@/lib/constants";
 export const revalidate = 300;
 
 export default async function HomePage() {
-  let wordCount = 0;
-  let categoryCounts: {
-    category: string;
-    _count: { bikol: number };
-  }[] = [];
-  let popularWords: {
-    bikol: string;
-    english: string;
-    tagalog: string | null;
-    pos: string | null;
-    dialect: string | null;
-    pronunciation: string | null;
-  }[] = [];
-  let wotd: (typeof popularWords)[number] | null = null;
+  const [wordCountResult, wotdResult, dictionaryResult, categoriesResult, popularResult] =
+    await Promise.allSettled([
+      countDistinctWords(),
+      getWordOfTheDay(),
+      getInitialDictionary(50),
+      getCategoryCounts(12),
+      findWordsByBikol(POPULAR_WORDS),
+    ]);
 
-  const [
-    wordCountResult,
-    wotdResult,
-    dictionaryResult,
-    categoriesResult,
-    popularResult,
-  ] = await Promise.allSettled([
-    countDistinctWords(),
-    getWordOfTheDay(),
-    getInitialDictionary(50),
-    getCategoryCounts(12),
-    findWordsByBikol(POPULAR_WORDS),
-  ]);
-
-  if (wordCountResult.status === "fulfilled") wordCount = wordCountResult.value;
-  if (wotdResult.status === "fulfilled" && wotdResult.value) {
-    const w = wotdResult.value;
-    wotd = {
-      bikol: w.bikol,
-      english: w.english || "",
-      tagalog: w.tagalog,
-      pos: w.pos,
-      dialect: w.dialect,
-      pronunciation: w.pronunciation,
-    };
-  }
-  if (categoriesResult.status === "fulfilled")
-    categoryCounts = categoriesResult.value.map((c) => ({
-      category: c.category,
-      _count: { bikol: c.count },
-    }));
-  if (popularResult.status === "fulfilled")
-    popularWords = popularResult.value.map((w) => ({
-      bikol: w.bikol,
-      english: w.english || "",
-      tagalog: w.tagalog,
-      pos: w.pos,
-      dialect: w.dialect,
-      pronunciation: w.pronunciation,
-    }));
-  const initialDictionary =
-    dictionaryResult.status === "fulfilled" ? dictionaryResult.value : [];
+  const wordCount = wordCountResult.status === "fulfilled" ? wordCountResult.value : 0;
+  const wotd = wotdResult.status === "fulfilled" && wotdResult.value
+    ? { bikol: wotdResult.value.bikol, english: wotdResult.value.english || "", tagalog: wotdResult.value.tagalog, pos: wotdResult.value.pos, dialect: wotdResult.value.dialect, pronunciation: wotdResult.value.pronunciation }
+    : null;
+  const categoryCounts = categoriesResult.status === "fulfilled"
+    ? categoriesResult.value.map((c) => ({ category: c.category, _count: { bikol: c.count } }))
+    : [];
+  const popularWords = popularResult.status === "fulfilled"
+    ? popularResult.value.map((w) => ({ bikol: w.bikol, english: w.english || "", tagalog: w.tagalog, pos: w.pos, dialect: w.dialect, pronunciation: w.pronunciation }))
+    : [];
+  const initialDictionary = dictionaryResult.status === "fulfilled" ? dictionaryResult.value : [];
 
   return (
     <main

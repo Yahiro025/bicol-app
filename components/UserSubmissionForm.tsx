@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useRef, useCallback } from "react";
-import { Send, CheckCircle2, AlertCircle, X } from "lucide-react";
+import { Send, CheckCircle2, AlertCircle } from "lucide-react";
 import SpecialCharToolbar from "./SpecialCharToolbar";
+import { POS_OPTIONS, DIALECT_OPTIONS } from "@/lib/form-options";
 
 type FormField = "word" | "definition" | "tagalog" | "pronunciation" | "example_bikol" | "example_english";
 
@@ -29,34 +30,7 @@ const INITIAL_FORM: FormData = {
   source: "",
 };
 
-const POS_OPTIONS = [
-  { value: "", label: "Select part of speech" },
-  { value: "Noun", label: "Noun" },
-  { value: "Verb", label: "Verb" },
-  { value: "Adjective", label: "Adjective" },
-  { value: "Adverb", label: "Adverb" },
-  { value: "Pronoun", label: "Pronoun" },
-  { value: "Preposition", label: "Preposition" },
-  { value: "Conjunction", label: "Conjunction" },
-  { value: "Interjection", label: "Interjection" },
-  { value: "Numeral", label: "Numeral" },
-  { value: "Particle", label: "Particle" },
-  { value: "Affix", label: "Affix" },
-  { value: "Phrase", label: "Phrase" },
-  { value: "Expression", label: "Expression" },
-];
 
-const DIALECT_OPTIONS = [
-  "General Bikol",
-  "Central Bikol (Naga)",
-  "Central Bikol (Albay)",
-  "Rinconada Bikol",
-  "Masbateño",
-  "Buhi-non",
-  "Northern Catanduanes",
-  "Southern Catanduanes",
-  "Virac",
-];
 
 type Status = "idle" | "loading" | "success" | "error";
 

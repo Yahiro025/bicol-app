@@ -4,68 +4,50 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { SubstitutionDrill } from "@/lib/types/learn";
 
+function normalize(str: string) {
+  return str.trim().toLowerCase().replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, "").replace(/\s+/g, " ");
+}
+
 interface SubstitutionDrillProps {
   drills: SubstitutionDrill[];
   onComplete?: () => void;
 }
 
-export default function SubstitutionDrillComponent({
-  drills,
-  onComplete,
-}: SubstitutionDrillProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
+export default function SubstitutionDrillComponent({ drills, onComplete }: SubstitutionDrillProps) {
+  const [idx, setIdx] = useState(0);
   const [userInput, setUserInput] = useState("");
   const [isAnswered, setIsAnswered] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
 
-  const currentDrill = drills[currentIndex];
-
-  const normalize = (str: string) => {
-    return str
-      .trim()
-      .toLowerCase()
-      .replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, "")
-      .replace(/\s+/g, " ");
-  };
+  const drill = drills[idx];
+  const isLast = idx + 1 >= drills.length;
 
   const handleCheck = () => {
-    if (!currentDrill) return;
-    const normalizedInput = normalize(userInput);
-    const normalizedExpected = normalize(currentDrill.expectedAnswer);
-
-    const correct = normalizedInput === normalizedExpected;
+    if (!drill) return;
+    const correct = normalize(userInput) === normalize(drill.expectedAnswer);
     setIsCorrect(correct);
     setIsAnswered(true);
-
-    if (!correct) {
-      setRetryCount((c) => c + 1);
-    }
+    if (!correct) setRetryCount((c) => c + 1);
   };
 
   const handleNext = () => {
-    if (currentIndex + 1 < drills.length) {
-      setCurrentIndex(currentIndex + 1);
+    if (!isLast) {
+      setIdx((i) => i + 1);
       setUserInput("");
       setIsAnswered(false);
       setIsCorrect(false);
       setRetryCount(0);
-    } else if (onComplete) {
-      onComplete();
+    } else {
+      onComplete?.();
     }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && userInput.trim() !== "") {
-      if (!isAnswered) {
-        handleCheck();
-      } else {
-        handleNext();
-      }
-    }
+    if (e.key === "Enter" && userInput.trim()) isAnswered ? handleNext() : handleCheck();
   };
 
-  if (!currentDrill) return null;
+  if (!drill) return null;
 
   return (
     <div className="w-full max-w-2xl mx-auto space-y-8 py-8 px-4">
@@ -90,7 +72,7 @@ export default function SubstitutionDrillComponent({
 
       {/* Drill Card */}
       <motion.div
-        key={currentIndex}
+        key={idx}
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{
           opacity: 1,
@@ -104,28 +86,21 @@ export default function SubstitutionDrillComponent({
           isAnswered && isCorrect ? "ring-2 ring-emerald-500/20 bg-emerald-500/5 glow-emerald-small" : 
           isAnswered && !isCorrect ? "ring-1 ring-amber-400/10 bg-amber-400/5" : ""
         }`}
-      >
-        {/* Base Sentence */}
-        <div className="space-y-4 text-center">
-          <p className="text-sm font-medium uppercase tracking-widest" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Base Sentence</p>
-          <div className="p-6 rounded-2xl" style={{ backgroundColor: 'var(--editorial-bg)', border: '1px solid var(--editorial-border)' }}>
-            <p className="text-2xl md:text-3xl font-mono leading-relaxed italic" style={{ color: 'var(--editorial-text)' }}>
-              "{currentDrill.baseSentence}"
-            </p>
+      >          <div className="space-y-4 text-center">
+            <p className="text-sm font-medium uppercase tracking-widest" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Base Sentence</p>
+            <div className="p-6 rounded-2xl" style={{ backgroundColor: 'var(--editorial-bg)', border: '1px solid var(--editorial-border)' }}>
+              <p className="text-2xl md:text-3xl font-mono leading-relaxed italic" style={{ color: 'var(--editorial-text)' }}>
+                "{drill.baseSentence}"
+              </p>
+            </div>
           </div>
-        </div>
 
-        {/* Cue Pill */}
-        <div className="flex flex-col items-center gap-3">
-          <p className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Cue Word</p>
-          <motion.div 
-            whileHover={{ scale: 1.05 }}
-            className="px-8 py-4 rounded-full font-bold text-xl shadow-sm"
-            style={{ backgroundColor: 'var(--editorial-surface)', border: '1px solid var(--editorial-border)', color: 'var(--editorial-accent)' }}
-          >
-            {currentDrill.cue}
-          </motion.div>
-        </div>
+          <div className="flex flex-col items-center gap-3">
+            <p className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Cue Word</p>
+            <motion.div whileHover={{ scale: 1.05 }} className="px-8 py-4 rounded-full font-bold text-xl shadow-sm" style={{ backgroundColor: 'var(--editorial-surface)', border: '1px solid var(--editorial-border)', color: 'var(--editorial-accent)' }}>
+              {drill.cue}
+            </motion.div>
+          </div>
 
         {/* Input Area */}
         <div className="space-y-4">
@@ -137,46 +112,31 @@ export default function SubstitutionDrillComponent({
             disabled={isAnswered && isCorrect}
             placeholder="Type the new sentence..."
             className={`w-full border-2 p-6 rounded-2xl text-xl text-center focus:outline-none transition-all duration-300 placeholder:text-zinc-700 ${
-              isAnswered && isCorrect ? "border-emerald-500/50 text-[var(--editorial-text)]" :
-              isAnswered && !isCorrect ? "border-amber-400/30 text-[var(--editorial-text)]" :
-              "border-[var(--editorial-border)] focus:border-[var(--editorial-accent)] text-[var(--editorial-text)]"
-            }`}
+              isAnswered && isCorrect ? "border-emerald-500/50" :
+              isAnswered && !isCorrect ? "border-amber-400/30" :
+              "border-[var(--editorial-border)] focus:border-[var(--editorial-accent)]"
+            } text-[var(--editorial-text)]`}
             style={{ backgroundColor: 'var(--editorial-bg)' }}
             autoFocus
           />
           
           <AnimatePresence>
             {isAnswered && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                className="space-y-4 text-center"
-              >
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="space-y-4 text-center">
                 {!isCorrect && (
                   <div className="p-4 bg-amber-400/5 rounded-xl border border-amber-400/10 space-y-2">
                     <p className="text-amber-400 text-xs font-bold uppercase tracking-widest">
                       {retryCount === 1 ? "Let's try that again" : "Here's the answer"}
                     </p>
-                    {retryCount > 1 && (
-                      <p className="text-zinc-100 text-lg font-mono">{currentDrill.expectedAnswer}</p>
-                    )}
+                    {retryCount > 1 && <p className="text-zinc-100 text-lg font-mono">{drill.expectedAnswer}</p>}
                   </div>
                 )}
                 {isCorrect && (
-                   <motion.p 
-                    initial={{ scale: 0.9 }}
-                    animate={{ scale: 1 }}
-                    className="text-emerald-500 font-bold uppercase tracking-[0.2em] text-sm"
-                   >
-                     Perfectly Accurate
-                   </motion.p>
+                  <motion.p initial={{ scale: 0.9 }} animate={{ scale: 1 }} className="text-emerald-500 font-bold uppercase tracking-[0.2em] text-sm">
+                    Perfectly Accurate
+                  </motion.p>
                 )}
-                {currentDrill.explanation && (
-                  <p className="text-zinc-500 text-sm italic max-w-md mx-auto leading-relaxed">
-                    {currentDrill.explanation}
-                  </p>
-                )}
+                {drill.explanation && <p className="text-zinc-500 text-sm italic max-w-md mx-auto leading-relaxed">{drill.explanation}</p>}
               </motion.div>
             )}
           </AnimatePresence>
@@ -207,34 +167,23 @@ export default function SubstitutionDrillComponent({
               onClick={handleNext}
               className="w-full py-5 font-bold rounded-2xl transition-all active:scale-[0.98]" style={{ backgroundColor: 'var(--editorial-surface)', color: 'var(--editorial-text)', fontFamily: 'var(--font-body)' }}
             >
-              {currentIndex + 1 < drills.length ? "Next Drill" : "Finish Lesson"}
+              {isLast ? "Finish Lesson" : "Next Drill"}
             </button>
           )}
         </div>
-      </motion.div>
-
-      {/* Progress Footer */}
-      <div className="flex justify-between items-center px-4">
-        <div className="flex items-center gap-4">
-           <div className="h-1.5 w-32 bg-zinc-900 rounded-full overflow-hidden">
-             <motion.div 
-               className="h-full" style={{ backgroundColor: 'var(--editorial-accent)' }}
-               initial={{ width: 0 }}
-               animate={{ width: `${((currentIndex + 1) / drills.length) * 100}%` }}
-               transition={{ type: "spring", stiffness: 100, damping: 20 }}
-             />
-           </div>
-           <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>
-             {currentIndex + 1} of {drills.length}
-           </span>
+      </motion.div>        <div className="flex justify-between items-center px-4">
+          <div className="flex items-center gap-4">
+             <div className="h-1.5 w-32 bg-zinc-900 rounded-full overflow-hidden">
+               <motion.div className="h-full" style={{ backgroundColor: 'var(--editorial-accent)' }} initial={{ width: 0 }} animate={{ width: `${((idx + 1) / drills.length) * 100}%` }} transition={{ type: "spring", stiffness: 100, damping: 20 }} />
+             </div>
+             <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>
+               {idx + 1} of {drills.length}
+             </span>
+          </div>
+          <button onClick={onComplete} className="text-[10px] font-bold uppercase tracking-widest transition-colors" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>
+            Skip Session
+          </button>
         </div>
-        <button 
-          onClick={onComplete}
-          className="text-[10px] font-bold uppercase tracking-widest transition-colors" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}
-        >
-          Skip Session
-        </button>
-      </div>
     </div>
   );
 }

@@ -2,11 +2,6 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { generateSubstitutionDrill } from '@/lib/groq';
 
-/**
- * Substitution Drill API Route
- * Generates drills based on random or specific example sentences from the dictionary.
- * Mandate: Uses qwen-3-32b, follows strict Bikol, and handles rate limits via lib/groq.ts.
- */
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);

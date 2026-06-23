@@ -59,26 +59,21 @@ export default function SearchBar({ initialDictionary = [] }: SearchBarProps) {
   const listRef = useRef<HTMLUListElement>(null);
   const router = useRouter();
 
-  // Close dropdown when clicking outside
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
         setIsOpen(false);
         setSelectedIndex(-1);
       }
-    }
+    };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Reset selected index when results change
-  useEffect(() => {
-    setSelectedIndex(-1);
-  }, [results]);
+  useEffect(() => setSelectedIndex(-1), [results]);
 
   const getTranslation = (item: SearchResult) => displayTranslation(item, langMode);
 
-  // Optimistic & Debounced Search
   useEffect(() => {
     if (!query.trim()) {
       setResults([]);
@@ -86,7 +81,6 @@ export default function SearchBar({ initialDictionary = [] }: SearchBarProps) {
       return;
     }
 
-    // 1. Fuzzy Local Filtering & Sorting (typo-tolerant)
     const normalizedQuery = query.toLowerCase().trim();
     const localMatches = fuzzyMatch(normalizedQuery, initialDictionary, [
       (item) => item.bikol,
@@ -97,18 +91,13 @@ export default function SearchBar({ initialDictionary = [] }: SearchBarProps) {
     setResults(localMatches);
     setIsOpen(true);
 
-    // 2. Background exhaustive fetch if local results are insufficient
     if (localMatches.length >= 4) {
       setIsLoading(false);
       return;
     }
 
     setIsLoading(true);
-    
-    // Cancel previous request
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
+    abortControllerRef.current?.abort();
     abortControllerRef.current = new AbortController();
 
     const timeoutId = setTimeout(async () => {
@@ -117,13 +106,10 @@ export default function SearchBar({ initialDictionary = [] }: SearchBarProps) {
           signal: abortControllerRef.current?.signal
         });
         const data = await res.json();
-        
         if (Array.isArray(data)) {
-          // Merge local results with remote results, avoiding duplicates
           setResults(prev => {
-            const existingBikol = new Set(prev.map(r => r.bikol.toLowerCase()));
-            const newResults = data.filter(r => !existingBikol.has(r.bikol.toLowerCase()));
-            return [...prev, ...newResults].slice(0, 10);
+            const existing = new Set(prev.map(r => r.bikol.toLowerCase()));
+            return [...prev, ...data.filter((r: SearchResult) => !existing.has(r.bikol.toLowerCase()))].slice(0, 10);
           });
         }
       } catch (error: unknown) {
@@ -133,20 +119,16 @@ export default function SearchBar({ initialDictionary = [] }: SearchBarProps) {
       } finally {
         setIsLoading(false);
       }
-    }, 400); // Wait a bit longer to see if user keeps typing
+    }, 400);
 
     return () => {
       clearTimeout(timeoutId);
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
+      abortControllerRef.current?.abort();
     };
   }, [query, initialDictionary]);
 
-  // Keyboard navigation
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (!isOpen || results.length === 0) return;
-
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault();
@@ -157,10 +139,9 @@ export default function SearchBar({ initialDictionary = [] }: SearchBarProps) {
         setSelectedIndex(prev => (prev > 0 ? prev - 1 : results.length - 1));
         break;
       case 'Enter':
-        if (selectedIndex >= 0 && selectedIndex < results.length) {
+        if (selectedIndex >= 0 && results[selectedIndex]) {
           e.preventDefault();
-          const selected = results[selectedIndex]!;
-          router.push(`/word/${encodeURIComponent(selected.bikol)}`);
+          router.push(`/word/${encodeURIComponent(results[selectedIndex].bikol)}`);
           setIsOpen(false);
           setQuery('');
         }
@@ -172,11 +153,9 @@ export default function SearchBar({ initialDictionary = [] }: SearchBarProps) {
     }
   }, [isOpen, results, selectedIndex, router]);
 
-  // Scroll selected item into view
   useEffect(() => {
     if (selectedIndex >= 0 && listRef.current) {
-      const items = listRef.current.querySelectorAll('li');
-      items[selectedIndex]?.scrollIntoView({ block: 'nearest' });
+      listRef.current.querySelectorAll('li')[selectedIndex]?.scrollIntoView({ block: 'nearest' });
     }
   }, [selectedIndex]);
 
@@ -196,22 +175,15 @@ export default function SearchBar({ initialDictionary = [] }: SearchBarProps) {
     setQuery('');
   };
 
-  // Highlight matching text
-  // Highlight matching text — highlights exact substring matches, but for
-  // fuzzy-only matches renders the text normally (no highlight).
   const highlightMatch = useCallback((text: string) => {
     if (!query.trim()) return text;
-    const lower = text.toLowerCase();
     const lowerQuery = query.toLowerCase();
-    if (!lower.includes(lowerQuery)) {
-      // Fuzzy match only — show text normally
-      return <span>{text}</span>;
-    }
+    if (!text.toLowerCase().includes(lowerQuery)) return <span>{text}</span>;
     const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
     const parts = text.split(regex);
     return (
       <>
-        {parts.map((part, i) => 
+        {parts.map((part, i) =>
           regex.test(part) ? (
             <mark key={i} className="rounded px-0.5" style={{ backgroundColor: 'rgba(212,168,69,0.22)', color: 'var(--editorial-accent)' }}>{part}</mark>
           ) : (

@@ -79,7 +79,7 @@ export default function TransformationChallenge({ onComplete, challenges: extern
   };
 
   const nextChallenge = () => {
-    if (currentIdx + 1 < SAMPLE_CHALLENGES.length) {
+    if (currentIdx + 1 < challenges.length) {
       setIsCorrect(null);
       setShowAnswer(false);
       setUserInput('');
@@ -94,7 +94,7 @@ export default function TransformationChallenge({ onComplete, challenges: extern
       <div className="mb-8">
         <div className="flex justify-between items-start mb-2">
           <h3 className="font-bold uppercase tracking-widest text-xs" style={{ color: 'var(--editorial-accent)', fontFamily: 'var(--font-body)' }}>Phase 2: Transformation</h3>
-          <span className="text-xs font-mono" style={{ color: 'var(--editorial-muted)' }}>{currentIdx + 1} / {SAMPLE_CHALLENGES.length}</span>
+          <span className="text-xs font-mono" style={{ color: 'var(--editorial-muted)' }}>{currentIdx + 1} / {challenges.length}</span>
         </div>
         <h2 className="text-2xl font-bold mb-4" style={{ color: 'var(--editorial-text)', fontFamily: 'var(--font-display)' }}>{challenge.prompt}</h2>
         <div className="p-4 rounded-xl border" style={{ backgroundColor: 'var(--editorial-bg)', borderColor: 'var(--editorial-border)' }}>

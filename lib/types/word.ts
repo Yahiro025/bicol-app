@@ -9,14 +9,12 @@ export type EnrichedRoot = Root & {
   definitions: EnrichedDefinition[];
 };
 
-/** VerbConjugator-compatible affix group */
 export type AffixGroup = {
   affixPair: string;
   focusType: string;
   conjugations: { tense: string | null; form: string | null }[];
 };
 
-/** Definition shape used for display (from either Root or legacy Word) */
 export type DisplayDefinition = {
   english: string | null;
   tagalog: string | null;
@@ -30,11 +28,6 @@ export type DisplayDefinition = {
   exampleSentences?: { bikol: string | null; english: string | null }[];
 };
 
-/**
- * Unified display data for WordClientPage.
- * Normalized path passes an EnrichedRoot; legacy path passes a Prisma Word.
- * This type captures all fields accessed in both code paths.
- */
 export type WordDisplayData = {
   id: string | number | bigint;
   bikol: string;
@@ -43,7 +36,7 @@ export type WordDisplayData = {
   audio_url: string | null;
   etymology: string | null;
   definitions?: DisplayDefinition[];
-  // Legacy word fields (only present when isNormalized=false)
+  // Legacy fields (only present when isNormalized=false)
   english?: string | null;
   tagalog?: string | null;
   dialect?: string | null;

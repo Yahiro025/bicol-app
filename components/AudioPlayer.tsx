@@ -11,14 +11,10 @@ export default function AudioPlayer({ url }: AudioPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
 
   const togglePlay = () => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause();
-      } else {
-        audioRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
-    }
+    if (!audioRef.current) return;
+    if (isPlaying) audioRef.current.pause();
+    else audioRef.current.play();
+    setIsPlaying(!isPlaying);
   };
 
   if (!url) return null;

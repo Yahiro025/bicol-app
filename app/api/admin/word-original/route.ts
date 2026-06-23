@@ -31,58 +31,31 @@ export async function GET(request: Request) {
       const root = await prisma.root.findUnique({
         where: { id: originalId },
         include: {
-          definitions: {
-            orderBy: { createdAt: "asc" },
-            take: 1,
-            include: {
-              exampleSentences: { orderBy: { createdAt: "asc" }, take: 1 },
-            },
-          },
+          definitions: { orderBy: { createdAt: "asc" }, take: 1, include: { exampleSentences: { orderBy: { createdAt: "asc" }, take: 1 } } },
         },
       });
 
-      if (!root) {
-        return NextResponse.json({ error: "Original word not found" }, { status: 404 });
-      }
+      if (!root) return NextResponse.json({ error: "Original word not found" }, { status: 404 });
 
-      const firstDef = root.definitions[0] ?? null;
-      const firstEx = firstDef?.exampleSentences?.[0] ?? null;
+      const def = root.definitions[0];
+      const ex = def?.exampleSentences?.[0];
 
       return NextResponse.json({
-        word: root.bikol,
-        pos: root.pos,
-        pronunciation: root.pronunciation,
-        definition: firstDef?.english ?? null,
-        tagalog: firstDef?.tagalog ?? null,
-        dialect: firstDef?.dialect ?? null,
-        example_bikol: firstEx?.bikol ?? null,
-        example_english: firstEx?.english ?? null,
-        source: firstDef?.source_url ?? null,
-      });
-    } else {
-      // Legacy table
-      const word = await prisma.word.findUnique({
-        where: { id: BigInt(originalId) },
-      });
-
-      if (!word) {
-        return NextResponse.json({ error: "Original word not found" }, { status: 404 });
-      }
-
-      return NextResponse.json({
-        word: word.bikol,
-        pos: word.pos,
-        pronunciation: word.pronunciation,
-        definition: word.english,
-        tagalog: word.tagalog ?? null,
-        dialect: word.dialect,
-        example_bikol: word.example_bikol,
-        example_english: word.example_english,
-        source: word.source_url,
+        word: root.bikol, pos: root.pos, pronunciation: root.pronunciation,
+        definition: def?.english ?? null, tagalog: def?.tagalog ?? null, dialect: def?.dialect ?? null,
+        example_bikol: ex?.bikol ?? null, example_english: ex?.english ?? null, source: def?.source_url ?? null,
       });
     }
+
+    const word = await prisma.word.findUnique({ where: { id: BigInt(originalId) } });
+    if (!word) return NextResponse.json({ error: "Original word not found" }, { status: 404 });
+
+    return NextResponse.json({
+      word: word.bikol, pos: word.pos, pronunciation: word.pronunciation,
+      definition: word.english, tagalog: word.tagalog ?? null, dialect: word.dialect,
+      example_bikol: word.example_bikol, example_english: word.example_english, source: word.source_url,
+    });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: error instanceof Error ? error.message : "Unknown error" }, { status: 500 });
   }
 }

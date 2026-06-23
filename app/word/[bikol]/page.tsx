@@ -83,66 +83,45 @@ const getWordData = reactCache(async (bikolWord: string) => {
   return null;
 });
 
+function buildWordMeta(bikolWord: string, english?: string | null, tagalog?: string | null, pos?: string | null): Metadata {
+  const baseDesc = english
+    ? `Learn the Bikol word "${bikolWord}": ${english}.${tagalog ? ` Tagalog: ${tagalog}.` : ''} ${pos ? `Part of speech: ${pos}.` : ''}`
+    : `Look up the Bikol word "${bikolWord}" in our comprehensive Bikol language dictionary with translations, conjugations, and examples.`;
+  const desc = baseDesc.substring(0, 160);
+  return {
+    title: `${bikolWord} — ${english || 'BIKOL Dictionary'}`,
+    description: desc,
+    openGraph: { title: `${bikolWord} — ${english || 'BIKOL Dictionary'}`, description: desc, type: 'article' },
+    twitter: { title: `${bikolWord} — ${english || 'BIKOL Dictionary'}`, description: desc },
+  };
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ bikol: string }> }): Promise<Metadata> {
   const { bikol } = await params;
   const bikolWord = decodeURIComponent(bikol);
 
   try {
     const result = await getWordData(bikolWord);
-
     if (result?.type === 'root' && result.data.definitions?.[0]) {
       const def = result.data.definitions[0];
-      const english = def.english || '';
-      const desc = `Learn the Bikol word "${bikolWord}": ${english}.${def.tagalog ? ` Tagalog: ${def.tagalog}.` : ''} Includes verb conjugations, example sentences, and pronunciation.`;
-      return {
-        title: `${bikolWord} — ${english}`,
-        description: desc.substring(0, 160),
-        openGraph: {
-          title: `${bikolWord} — ${english} | BIKOL Dictionary`,
-          description: desc.substring(0, 160),
-          type: 'article',
-        },
-        twitter: {
-          title: `${bikolWord} — ${english}`,
-          description: desc.substring(0, 160),
-        }
-      };
+      return buildWordMeta(bikolWord, def.english, def.tagalog, result.data.pos);
     }
-
     if (result?.type === 'word') {
-      const word = result.data;
-      const desc = `Learn the Bikol word "${bikolWord}": ${word.english}.${word.tagalog ? ` Tagalog: ${word.tagalog}.` : ''} Part of speech: ${word.pos || 'word'}.`;
-      return {
-        title: `${bikolWord} — ${word.english}`,
-        description: desc.substring(0, 160),
-        openGraph: {
-          title: `${bikolWord} — ${word.english} | BIKOL Dictionary`,
-          description: desc.substring(0, 160),
-          type: 'article',
-        },
-        twitter: {
-          title: `${bikolWord} — ${word.english}`,
-          description: desc.substring(0, 160),
-        }
-      };
+      return buildWordMeta(bikolWord, result.data.english, result.data.tagalog, result.data.pos);
     }
   } catch {
     // Fall through to default
   }
 
-  return {
-    title: `${bikolWord} — BIKOL Dictionary`,
-    description: `Look up the Bikol word "${bikolWord}" in our comprehensive Bikol language dictionary with translations, conjugations, and examples.`,
-  };
+  return buildWordMeta(bikolWord);
 }
 
 export default async function WordDetail({ params }: { params: Promise<{ bikol: string }> }) {
   const { bikol } = await params;
   const bikolWord = decodeURIComponent(bikol);
-  let result: Awaited<ReturnType<typeof getWordData>> = null;
 
+  let result: Awaited<ReturnType<typeof getWordData>>;
   try {
-    // Uses the same cached getWordData() as generateMetadata — no duplicate DB query.
     result = await getWordData(bikolWord);
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : 'An unexpected error occurred';
@@ -158,35 +137,32 @@ export default async function WordDetail({ params }: { params: Promise<{ bikol: 
   }
 
   if (result?.type === 'root') {
-      const root = result.data;
-      // 1b. Fallback: If verb has affixPair but no conjugations, generate them on-the-fly
-      const enrichedDefinitions = root.definitions.map(def => {
-        if (def.affixPair && def.affixPair !== 'UNKNOWN' && (!def.conjugations || def.conjugations.length === 0)) {
-          const generated = conjugateBikolVerb(root.bikol, def.affixPair, def.focusType || undefined);
-          return {
-            ...def,
-            conjugations: generated.map(c => ({
-              id: `temp-${c.tense}-${c.focus}`,
-              tense: c.tense,
-              focus: c.focus,
-              form: c.form,
-              definitionId: def.id,
-              createdAt: new Date(),
-              updatedAt: new Date()
-            }))
-          };
-        }
-        return def;
-      });
-
-      return <WordClientPage word={{ ...root, definitions: enrichedDefinitions }} isNormalized={true} />;
-    }
+    const root = result.data;
+    const enrichedDefinitions = root.definitions.map(def => {
+      if (def.affixPair && def.affixPair !== 'UNKNOWN' && (!def.conjugations || def.conjugations.length === 0)) {
+        const generated = conjugateBikolVerb(root.bikol, def.affixPair, def.focusType || undefined);
+        return {
+          ...def,
+          conjugations: generated.map(c => ({
+            id: `temp-${c.tense}-${c.focus}`,
+            tense: c.tense,
+            focus: c.focus,
+            form: c.form,
+            definitionId: def.id,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          })),
+        };
+      }
+      return def;
+    });
+    return <WordClientPage word={{ ...root, definitions: enrichedDefinitions }} isNormalized={true} />;
+  }
 
   if (result?.type === 'word') {
-      const word = result.data;
-      const displayWord: WordDisplayData = { ...word, bikol: word.bikol!, definitions: [] };
-      return <WordClientPage word={displayWord} isNormalized={false} />;
-    }
+    const displayWord: WordDisplayData = { ...result.data, bikol: result.data.bikol!, definitions: [] };
+    return <WordClientPage word={displayWord} isNormalized={false} />;
+  }
 
   return notFound();
 }

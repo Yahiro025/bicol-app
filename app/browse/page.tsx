@@ -24,43 +24,33 @@ export default async function BrowsePage({
 }) {
   const { letter, category, q, sort, page } = await searchParams;
 
-  let words: WordSearchEntry[] = [];
-  let categories: string[] = [];
-  let totalWords = 0;
   let dbError: string | null = null;
 
-  // Get total count first so we can clamp the page server-side
-  const totalResult = await countDistinctWords().catch((err) => {
+  const totalWords = await countDistinctWords().catch((err) => {
     console.error("Count failed:", err);
     dbError = err?.message || "Failed to load word count";
     return 0;
   });
-  totalWords = totalResult;
 
   const maxPage = Math.ceil(totalWords / 50) || 1;
   const initialPage = Math.min(Math.max(1, parseInt(page || "1", 10) || 1), maxPage);
   const offset = (initialPage - 1) * 50;
 
   const [wordsResult, categoriesResult] = await Promise.allSettled([
-    browseWords({
-      filters: { letter, category, q },
-      sort,
-      limit: 50,
-      offset,
-    }),
+    browseWords({ filters: { letter, category, q }, sort, limit: 50, offset }),
     getCategoryCounts(50),
   ]);
 
-  if (wordsResult.status === "fulfilled") {
-    words = wordsResult.value;
-  } else {
+  const words = wordsResult.status === "fulfilled" ? wordsResult.value : [];
+  if (wordsResult.status === "rejected") {
     console.error(wordsResult.reason);
     dbError = wordsResult.reason?.message || "Failed to load words";
   }
 
-  if (categoriesResult.status === "fulfilled") {
-    categories = categoriesResult.value.map((c) => c.category).sort();
-  } else {
+  const categories = categoriesResult.status === "fulfilled"
+    ? categoriesResult.value.map((c) => c.category).sort()
+    : [];
+  if (categoriesResult.status === "rejected") {
     console.error("Categories failed:", categoriesResult.reason);
   }
 

@@ -2,52 +2,47 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 
 export const ADMIN_SESSION_COOKIE = "bikoldict_admin_session";
 
-function getAdminPassword(): string | null {
-  const password = process.env.ADMIN_PASSWORD;
-  return password && password.length >= 12 ? password : null;
-}
+const getAdminPassword = (): string | null => {
+  const p = process.env.ADMIN_PASSWORD;
+  return p && p.length >= 12 ? p : null;
+};
 
-function getSessionSecret(): string | null {
-  const secret = process.env.ADMIN_SESSION_SECRET;
-  return secret && secret.length >= 32 ? secret : null;
-}
+const getSessionSecret = (): string | null => {
+  const s = process.env.ADMIN_SESSION_SECRET;
+  return s && s.length >= 32 ? s : null;
+};
 
-export function isAdminAuthConfigured(): boolean {
-  return Boolean(getAdminPassword() && getSessionSecret());
-}
+export const isAdminAuthConfigured = (): boolean =>
+  Boolean(getAdminPassword() && getSessionSecret());
 
-function constantTimeEqual(a: string, b: string): boolean {
-  const aBuffer = Buffer.from(a);
-  const bBuffer = Buffer.from(b);
-  return aBuffer.length === bBuffer.length && timingSafeEqual(aBuffer, bBuffer);
-}
+const constantTimeEqual = (a: string, b: string): boolean => {
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+  return bufA.length === bufB.length && timingSafeEqual(bufA, bufB);
+};
 
-export function isValidAdminPassword(password: string): boolean {
-  const configuredPassword = getAdminPassword();
-  if (!configuredPassword) return false;
-  return constantTimeEqual(password, configuredPassword);
-}
+export const isValidAdminPassword = (password: string): boolean => {
+  const configured = getAdminPassword();
+  return configured ? constantTimeEqual(password, configured) : false;
+};
 
-export function createAdminSessionToken(): string | null {
+export const createAdminSessionToken = (): string | null => {
   const password = getAdminPassword();
   const secret = getSessionSecret();
   if (!password || !secret) return null;
-
   return createHmac("sha256", secret)
     .update(`admin-session:${password}`)
     .digest("hex");
-}
+};
 
-export function isAdminRequest(request: Request): boolean {
-  const expectedToken = createAdminSessionToken();
-  if (!expectedToken) return false;
-
-  const cookieHeader = request.headers.get("cookie") ?? "";
-  const cookies = cookieHeader.split(";").map((cookie) => cookie.trim());
-  const sessionCookie = cookies.find((cookie) =>
-    cookie.startsWith(`${ADMIN_SESSION_COOKIE}=`)
-  );
-  const token = sessionCookie?.slice(ADMIN_SESSION_COOKIE.length + 1);
-
-  return Boolean(token && constantTimeEqual(token, expectedToken));
-}
+export const isAdminRequest = (request: Request): boolean => {
+  const expected = createAdminSessionToken();
+  if (!expected) return false;
+  const cookie = request.headers.get("cookie") ?? "";
+  const match = cookie
+    .split(";")
+    .map((c) => c.trim())
+    .find((c) => c.startsWith(`${ADMIN_SESSION_COOKIE}=`));
+  const token = match?.slice(ADMIN_SESSION_COOKIE.length + 1);
+  return Boolean(token && constantTimeEqual(token, expected));
+};

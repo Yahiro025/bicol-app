@@ -53,6 +53,11 @@ export default function Flashcards({ words, onExit }: FlashcardsProps) {
     </svg>
   );
 
+  const cardBaseStyle = { backgroundColor: 'var(--editorial-surface)', borderColor: 'var(--editorial-border)' };
+  const mutedStyle = { color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' };
+  const textStyle = { color: 'var(--editorial-text)', fontFamily: 'var(--font-display)' };
+  const accentStyle = { color: 'var(--editorial-accent)', fontFamily: 'var(--font-body)' };
+
   if (!words || words.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center p-12 text-center">
@@ -97,13 +102,13 @@ export default function Flashcards({ words, onExit }: FlashcardsProps) {
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <div className="p-6 border rounded-3xl" style={{ backgroundColor: 'var(--editorial-surface)', borderColor: 'var(--editorial-border)' }}>
-            <div className="text-3xl font-black" style={{ color: 'var(--editorial-accent)', fontFamily: 'var(--font-display)' }}>{knownWords.size}</div>
-            <div className="text-xs font-bold uppercase tracking-widest mt-1" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Mastered</div>
+          <div className="p-6 border rounded-3xl" style={cardBaseStyle}>
+            <div className="text-3xl font-black" style={accentStyle}>{knownWords.size}</div>
+            <div className="text-xs font-bold uppercase tracking-widest mt-1" style={mutedStyle}>Mastered</div>
           </div>
-          <div className="p-6 border rounded-3xl" style={{ backgroundColor: 'var(--editorial-surface)', borderColor: 'var(--editorial-border)' }}>
+          <div className="p-6 border rounded-3xl" style={cardBaseStyle}>
             <div className="text-3xl font-black" style={{ color: 'var(--editorial-accent-dim)', fontFamily: 'var(--font-display)' }}>{words.length - knownWords.size}</div>
-            <div className="text-xs font-bold uppercase tracking-widest mt-1" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Reviewing</div>
+            <div className="text-xs font-bold uppercase tracking-widest mt-1" style={mutedStyle}>Reviewing</div>
           </div>
         </div>
 
@@ -123,11 +128,11 @@ export default function Flashcards({ words, onExit }: FlashcardsProps) {
       <div className="w-full space-y-4">
         <div className="flex justify-between items-end">
           <div className="space-y-1">
-            <span className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--editorial-accent)', fontFamily: 'var(--font-body)' }}>Flashcards</span>
+            <span className="text-xs font-bold uppercase tracking-widest" style={accentStyle}>Flashcards</span>
             <h3 className="text-lg font-bold" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-display)' }}>Card {currentIndex + 1} of {words.length}</h3>
           </div>
           <div className="text-right">
-            <span className="text-sm font-bold" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>{Math.round((page / words.length) * 100)}% Complete</span>
+            <span className="text-sm font-bold" style={mutedStyle}>{Math.round((page / words.length) * 100)}% Complete</span>
           </div>
         </div>
         <div className="h-1 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--editorial-border)' }}>
@@ -159,11 +164,11 @@ export default function Flashcards({ words, onExit }: FlashcardsProps) {
               transition={{ type: "spring", stiffness: 260, damping: 20 }}
             >
               {/* Front */}
-              <div className="absolute inset-0 backface-hidden border rounded-[2.5rem] p-10 flex flex-col items-center justify-center text-center transition-shadow duration-500" style={{ backgroundColor: 'var(--editorial-surface)', borderColor: 'var(--editorial-border)' }}>
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] mb-6" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Bicolano</span>
-                <h2 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter leading-none mb-4" style={{ color: 'var(--editorial-text)', fontFamily: 'var(--font-display)' }}>{word.bikol}</h2>
-                <div className="h-1 w-8 rounded-full mb-6" style={{ backgroundColor: 'rgba(196,155,76,0.2)' }}></div>
-                <p className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Tap to reveal meaning</p>
+              <div className="absolute inset-0 backface-hidden border rounded-[2.5rem] p-10 flex flex-col items-center justify-center text-center transition-shadow duration-500" style={cardBaseStyle}>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] mb-6" style={mutedStyle}>Bicolano</span>
+                <h2 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter leading-none mb-4" style={textStyle}>{word.bikol}</h2>
+                <div className="h-1 w-8 rounded-full mb-6" style={{ backgroundColor: 'rgba(196,155,76,0.2)' }} />
+                <p className="text-xs font-bold uppercase tracking-widest" style={mutedStyle}>Tap to reveal meaning</p>
               </div>
 
               {/* Back */}

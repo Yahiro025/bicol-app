@@ -21,12 +21,16 @@ export async function GET(request: Request) {
   });
 }
 
+const COOKIE_BASE = {
+  httpOnly: true as const,
+  sameSite: "strict" as const,
+  secure: process.env.NODE_ENV === "production",
+  path: "/",
+};
+
 export async function POST(request: Request) {
   if (!isAdminAuthConfigured()) {
-    return NextResponse.json(
-      { error: "Admin authentication is not configured" },
-      { status: 503 },
-    );
+    return NextResponse.json({ error: "Admin authentication is not configured" }, { status: 503 });
   }
 
   const parsed = loginSchema.safeParse(await request.json().catch(() => null));
@@ -36,36 +40,16 @@ export async function POST(request: Request) {
 
   const token = createAdminSessionToken();
   if (!token) {
-    return NextResponse.json(
-      { error: "Admin authentication is not configured" },
-      { status: 503 },
-    );
+    return NextResponse.json({ error: "Admin authentication is not configured" }, { status: 503 });
   }
 
   const response = NextResponse.json({ authenticated: true });
-  response.cookies.set({
-    name: ADMIN_SESSION_COOKIE,
-    value: token,
-    httpOnly: true,
-    sameSite: "strict",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge: 60 * 60 * 8,
-  });
-
+  response.cookies.set({ name: ADMIN_SESSION_COOKIE, value: token, ...COOKIE_BASE, maxAge: 60 * 60 * 8 });
   return response;
 }
 
 export async function DELETE() {
   const response = NextResponse.json({ authenticated: false });
-  response.cookies.set({
-    name: ADMIN_SESSION_COOKIE,
-    value: "",
-    httpOnly: true,
-    sameSite: "strict",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge: 0,
-  });
+  response.cookies.set({ name: ADMIN_SESSION_COOKIE, value: "", ...COOKIE_BASE, maxAge: 0 });
   return response;
 }

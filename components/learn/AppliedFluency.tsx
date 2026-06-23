@@ -15,6 +15,33 @@ import {
 import type { DialogueScenario, DialogueMessage, LinguisticAudit } from "@/lib/types/learn";
 import Button from "@/components/ui/Button";
 
+const FALLBACK_SCENARIOS: DialogueScenario[] = [
+  {
+    id: "mock-1",
+    title: "Sa Saod (At the Market)",
+    description: "You are at the local market in Naga. Your goal is to buy fresh fish (sira) and vegetables (gulay).",
+    goal: "Successfully purchase fish and vegetables after asking for the price.",
+    difficulty: "beginner",
+    visualCue: "ShoppingBag",
+    vocabulary: ["pira", "bakal", "sira", "gulay", "mahal", "barato"],
+  },
+  {
+    id: "mock-2",
+    title: "Pagbisita sa Amigo (Visiting a Friend)",
+    description: "You are visiting a friend's house. Practice formal greetings and polite inquiries.",
+    goal: "Exchange greetings and ask how the family is doing.",
+    difficulty: "beginner",
+    visualCue: "Home",
+    vocabulary: ["marhay", "aga", "kumusta", "pamilya", "salamat", "duman"],
+  },
+];
+
+const DIFFICULTY_MAP: Record<string, { color: string; label: string }> = {
+  beginner: { color: 'bg-emerald-500', label: 'Low Energy' },
+  intermediate: { color: 'bg-amber-500', label: 'Moderate Energy' },
+  advanced: { color: 'bg-red-500', label: 'High Energy' },
+};
+
 export default function AppliedFluency({ onComplete }: { onComplete: () => void }) {
   const [scenarios, setScenarios] = useState<DialogueScenario[]>([]);
   const [selectedScenario, setSelectedScenario] = useState<DialogueScenario | null>(null);
@@ -24,12 +51,9 @@ export default function AppliedFluency({ onComplete }: { onComplete: () => void 
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [audit, setAudit] = useState<LinguisticAudit | null>(null);
   const [isFinished, setIsFinished] = useState(false);
-  
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    fetchScenarios();
-  }, []);
+  useEffect(() => { fetchScenarios(); }, []);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -45,45 +69,10 @@ export default function AppliedFluency({ onComplete }: { onComplete: () => void 
       }
       const data = await res.json();
       
-      // If no scenarios in DB, provide mocks
-      if (!data || data.length === 0) {
-        setScenarios([
-          {
-            id: "mock-1",
-            title: "Sa Saod (At the Market)",
-            description: "You are at the local market in Naga. Your goal is to buy fresh fish (sira) and vegetables (gulay).",
-            goal: "Successfully purchase fish and vegetables after asking for the price.",
-            difficulty: "beginner",
-            visualCue: "ShoppingBag",
-            vocabulary: ["pira", "bakal", "sira", "gulay", "mahal", "barato"]
-          },
-          {
-            id: "mock-2",
-            title: "Pagbisita sa Amigo (Visiting a Friend)",
-            description: "You are visiting a friend's house. Practice formal greetings and polite inquiries.",
-            goal: "Exchange greetings and ask how the family is doing.",
-            difficulty: "beginner",
-            visualCue: "Home",
-            vocabulary: ["marhay", "aga", "kumusta", "pamilya", "salamat", "duman"]
-          }
-        ]);
-      } else {
-        setScenarios(data);
-      }
+      setScenarios(data?.length ? data : FALLBACK_SCENARIOS);
     } catch (error) {
       console.error("Failed to fetch scenarios, using defaults:", error);
-      // Fallback to mocks on error to prevent total page failure
-      setScenarios([
-        {
-          id: "mock-1",
-          title: "Sa Saod (At the Market)",
-          description: "You are at the local market in Naga. Your goal is to buy fresh fish (sira) and vegetables (gulay).",
-          goal: "Successfully purchase fish and vegetables after asking for the price.",
-          difficulty: "beginner",
-          visualCue: "ShoppingBag",
-          vocabulary: ["pira", "bakal", "sira", "gulay", "mahal", "barato"]
-        }
-      ]);
+      setScenarios(FALLBACK_SCENARIOS);
     }
   };
 
@@ -353,17 +342,9 @@ export default function AppliedFluency({ onComplete }: { onComplete: () => void 
             </div>
             <div className="flex items-center gap-4 pt-2">
               <div className="flex items-center gap-1.5">
-                {scenario.difficulty === 'beginner' ? (
-                  <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
-                ) : scenario.difficulty === 'intermediate' ? (
-                  <div className="w-1.5 h-1.5 bg-amber-500 rounded-full" />
-                ) : (
-                  <div className="w-1.5 h-1.5 bg-red-500 rounded-full" />
-                )}
+                <div className={`w-1.5 h-1.5 rounded-full ${DIFFICULTY_MAP[scenario.difficulty]?.color ?? 'bg-zinc-500'}`} />
                 <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>
-                  {scenario.difficulty === 'beginner' ? 'Low Energy' :
-                   scenario.difficulty === 'intermediate' ? 'Moderate Energy' :
-                   'High Energy'}
+                  {DIFFICULTY_MAP[scenario.difficulty]?.label ?? scenario.difficulty}
                 </span>
               </div>
               <div className="flex items-center gap-2 text-xs font-bold" style={{ color: 'var(--editorial-accent)', fontFamily: 'var(--font-body)' }}>
