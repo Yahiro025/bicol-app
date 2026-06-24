@@ -8,11 +8,11 @@ type ExampleWithRoot = Prisma.ExampleSentenceGetPayload<{
     definition: {
       include: {
         root: {
-          select: { id: true; bikol: true; pos: true };
-        };
-      };
-    };
-  };
+          select: { id: true, bikol: true, pos: true }
+        }
+      }
+    }
+  }
 }>;
 
 export async function GET() {
@@ -36,7 +36,7 @@ export async function GET() {
         include: {
           definition: {
             include: {
-              root: { select: { id: true; bikol: true; pos: true } },
+              root: { select: { id: true, bikol: true, pos: true } },
             },
           },
         },
@@ -79,7 +79,7 @@ export async function GET() {
     const skipRoots = Math.floor(Math.random() * (maxSkip + 1));
     const substitutes = await prisma.root.findMany({
       where: { pos: baseRoot.pos, id: { not: baseRoot.id } },
-      select: { id: true; bikol: true; pos: true },
+      select: { id: true, bikol: true, pos: true },
       skip: skipRoots,
       take: 3,
     });
