@@ -3,6 +3,19 @@ export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { generateSubstitutionDrill } from '@/lib/gemini';
+import { escapeRegex } from '@/lib/fuzzy';
+
+type ExampleWithRoot = Prisma.ExampleSentenceGetPayload<{
+  include: {
+    definition: {
+      include: {
+        root: {
+          select: { id: true, bikol: true, pos: true }
+        }
+      }
+    }
+  }
+}>;
 
 export async function GET() {
   try {
@@ -20,6 +33,33 @@ export async function GET() {
       skip,
       take: 1,
     });
+    // Fetch a random example sentence whose Bikol text verbatim contains
+    // its definition's root. Retry up to 5 times before giving up.
+    let base: ExampleWithRoot | null = null;
+    for (let attempt = 0; attempt < 5; attempt++) {
+      const skip = Math.floor(Math.random() * count);
+      const candidate = await prisma.exampleSentence.findFirst({
+        skip,
+        take: 1,
+        include: {
+          definition: {
+            include: {
+              root: { select: { id: true, bikol: true, pos: true } },
+            },
+          },
+        },
+      });
+
+      if (
+        candidate &&
+        candidate.bikol &&
+        candidate.definition.root.bikol &&
+        candidate.bikol.includes(candidate.definition.root.bikol)
+      ) {
+        base = candidate;
+        break;
+      }
+    }
 
     if (!base || !base.bikol) {
       return NextResponse.json(
@@ -36,6 +76,20 @@ export async function GET() {
     return NextResponse.json({ 
       baseSentence, 
       cues: drillData.cues 
+    if (rootCount === 0) {
+      return NextResponse.json(
+        { error: 'No substitute roots found for this part of speech.' },
+        { status: 404 }
+      );
+    }
+
+    const maxSkip = Math.max(0, rootCount - 3);
+    const skipRoots = Math.floor(Math.random() * (maxSkip + 1));
+    const substitutes = await prisma.root.findMany({
+      where: { pos: baseRoot.pos, id: { not: baseRoot.id } },
+      select: { id: true, bikol: true, pos: true },
+      skip: skipRoots,
+      take: 3,
     });
   } catch (error: unknown) {
     console.error('[DRILLS_API_ERROR]:', error);
