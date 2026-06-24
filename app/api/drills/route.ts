@@ -1,6 +1,8 @@
+export const dynamic = 'force-dynamic';
+
 import { NextResponse } from 'next/server';
-import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
+import { generateSubstitutionDrill } from '@/lib/gemini';
 import { escapeRegex } from '@/lib/fuzzy';
 
 type ExampleWithRoot = Prisma.ExampleSentenceGetPayload<{
@@ -25,6 +27,12 @@ export async function GET() {
       );
     }
 
+    // Fetch a random example sentence from the database
+    const skip = Math.floor(Math.random() * count);
+    const base = await prisma.exampleSentence.findFirst({
+      skip,
+      take: 1,
+    });
     // Fetch a random example sentence whose Bikol text verbatim contains
     // its definition's root. Retry up to 5 times before giving up.
     let base: ExampleWithRoot | null = null;
@@ -60,14 +68,14 @@ export async function GET() {
       );
     }
 
-    const baseRoot = base.definition.root;
     const baseSentence = base.bikol;
 
-    // Find up to 3 random roots sharing the same part of speech as the base root.
-    const rootCount = await prisma.root.count({
-      where: { pos: baseRoot.pos, id: { not: baseRoot.id } },
-    });
+    // Use Gemini to intelligently generate substitution cues and grammatically correct expected sentences
+    const drillData = await generateSubstitutionDrill(baseSentence);
 
+    return NextResponse.json({ 
+      baseSentence, 
+      cues: drillData.cues 
     if (rootCount === 0) {
       return NextResponse.json(
         { error: 'No substitute roots found for this part of speech.' },
@@ -83,16 +91,6 @@ export async function GET() {
       skip: skipRoots,
       take: 3,
     });
-
-    // Build cues by replacing the base root in the base sentence with each
-    // substitute root, using a case-insensitive regular expression.
-    const replaceRegex = new RegExp(escapeRegex(baseRoot.bikol), 'gi');
-    const cues = substitutes.map((sub) => ({
-      cue: sub.bikol,
-      expected: baseSentence.replace(replaceRegex, sub.bikol),
-    }));
-
-    return NextResponse.json({ baseSentence, cues });
   } catch (error: unknown) {
     console.error('[DRILLS_API_ERROR]:', error);
     const message = error instanceof Error ? error.message : undefined;
