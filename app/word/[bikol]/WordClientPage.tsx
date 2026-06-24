@@ -55,7 +55,6 @@ function SourceBadge({ source, sourceUrl }: { source: string; sourceUrl?: string
 /** Breadcrumb trail showing Home > Browse > [word] */
 function Breadcrumbs({ bikol, pos }: { bikol: string; pos: string | null }) {
   const normalizedPos = normalizePOS(pos);
-  const browseHref = `/browse?q=${encodeURIComponent(bikol.charAt(0).toLowerCase())}`;
 
   return (
     <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest flex-wrap mb-2" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>

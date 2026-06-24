@@ -218,7 +218,7 @@ export default function SearchBar({ initialDictionary = [] }: SearchBarProps) {
           onKeyDown={handleKeyDown}
           onFocus={() => {
             setIsFocused(true);
-            (results.length > 0 || query.length > 0) && setIsOpen(true);
+            if (results.length > 0 || query.length > 0) setIsOpen(true);
           }}
           onBlur={() => setIsFocused(false)}
           role="combobox"

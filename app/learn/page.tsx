@@ -8,10 +8,9 @@ import { CheckCircle2, Home, RefreshCw, ArrowLeft, Loader2 } from "lucide-react"
 import SubstitutionDrill from "@/components/learn/SubstitutionDrill";
 import TransformationChallenge from "@/components/learn/TransformationChallenge";
 import AppliedFluency from "@/components/learn/AppliedFluency";
-import { escapeRegex } from "@/lib/fuzzy";
 import type { SubstitutionDrill as DrillType } from "@/lib/types/learn";
 
-// Fallback drills when the API is unavailable
+// Fallback drills (verified Bikol examples from Mintz Lesson 1) used when the API is unavailable
 const FALLBACK_DRILLS: DrillType[] = [
   {
     id: "1",
@@ -27,63 +26,7 @@ const FALLBACK_DRILLS: DrillType[] = [
     expectedAnswer: "Nagduduman si Maria sa saod.",
     explanation: "Proper names are preceded by the personal marker 'si'.",
   },
-  {
-    id: "3",
-    baseSentence: "Magayon an saiyang harong.",
-    cue: "dakula",
-    expectedAnswer: "Dakula an saiyang harong.",
-    explanation: "Sentences often start with the adjective (Predicate-Initial order).",
-  },
-  {
-    id: "4",
-    baseSentence: "Nagbakal ako nin kakanon.",
-    cue: "tinapay",
-    expectedAnswer: "Nagbakal ako nin tinapay.",
-    explanation: "Objects of actor-focus verbs are marked with 'nin'.",
-  },
-  {
-    id: "5",
-    baseSentence: "Nagbakal ako nin tinapay.",
-    cue: "sira",
-    expectedAnswer: "Nagbakal ako nin sira.",
-    explanation: "'Sira' (fish) is a common object in Bikol cuisine.",
-  }
 ];
-
-function generateDrillsFromWords(words: { bikol: string; english: string; example_bikol?: string | null; example_english?: string | null }[]): DrillType[] {
-  const drills: DrillType[] = [];
-  const withExamples = words.filter(w => w.example_bikol);
-  const withoutExamples = words.filter(w => !w.example_bikol);
-
-  for (let i = 0; i < Math.min(withExamples.length, 3); i++) {
-    const word = withExamples[i];
-    const otherWord = withExamples[(i + 1) % withExamples.length];
-    if (!word || !otherWord || !word.example_bikol || !otherWord.bikol) continue;
-    const wordRegex = new RegExp('\\b' + escapeRegex(word.bikol) + '\\b', 'gi');
-    drills.push({
-      id: `db-ex-${i}`,
-      baseSentence: word.example_bikol,
-      cue: otherWord.bikol,
-      expectedAnswer: word.example_bikol.replace(wordRegex, otherWord.bikol),
-      explanation: `Practice substituting "${word.bikol}" with "${otherWord.bikol}" (${otherWord.english}).`,
-    });
-  }
-
-  for (let i = 0; i < Math.min(withoutExamples.length - 1, 2); i++) {
-    const a = withoutExamples[i];
-    const b = withoutExamples[i + 1];
-    if (!a || !b) continue;
-    drills.push({
-      id: `db-swap-${i}`,
-      baseSentence: `An ${a.bikol} magayon.`,
-      cue: b.bikol,
-      expectedAnswer: `An ${b.bikol} magayon.`,
-      explanation: `Swap the subject "${a.bikol}" (${a.english}) with "${b.bikol}" (${b.english}).`,
-    });
-  }
-
-  return drills;
-}
 
 export default function LearnPage() {
   const [isFinished, setIsFinished] = useState(false);
@@ -95,12 +38,19 @@ export default function LearnPage() {
   useEffect(() => {
     async function fetchDrills() {
       try {
-        const res = await fetch("/api/learn?mode=flashcards&limit=20");
+        const res = await fetch("/api/drills");
         if (!res.ok) throw new Error(`API error: ${res.status}`);
-        const words = await res.json();
-        if (Array.isArray(words) && words.length >= 3) {
-          const generated = generateDrillsFromWords(words);
-          if (generated.length >= 3) setDrills(generated);
+        const data = await res.json();
+        if (data && Array.isArray(data.cues) && data.baseSentence) {
+          const generated: DrillType[] = data.cues.map(
+            (item: { cue: string; expected: string }, index: number) => ({
+              id: `drill-${index}`,
+              baseSentence: data.baseSentence as string,
+              cue: item.cue,
+              expectedAnswer: item.expected,
+            })
+          );
+          if (generated.length > 0) setDrills(generated);
         }
       } catch (err) {
         console.error("Using fallback drills:", err);
