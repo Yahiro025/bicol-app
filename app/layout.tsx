@@ -34,6 +34,7 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://bikoldictionary.ap
 
 export const metadata: Metadata = {
   icons: [
+    { rel: 'icon', url: '/favicon.ico' },
     {
       rel: 'icon',
       url: '/favicon-dark.png',
