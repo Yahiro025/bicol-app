@@ -41,17 +41,17 @@ const cardVariants = {
   })
 } as const;
 
+const CheckIcon = () => (
+  <svg className="w-8 h-8" style={{ color: 'var(--editorial-accent)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+  </svg>
+);
+
 export default function Flashcards({ words, onExit }: FlashcardsProps) {
   const [[page, direction], setPage] = useState([0, 0]);
   const [isFlipped, setIsFlipped] = useState(false);
   const [knownWords, setKnownWords] = useState<Set<string>>(new Set());
   const [isFinished, setIsFinished] = useState(false);
-
-  const CheckIcon = () => (
-    <svg className="w-8 h-8" style={{ color: 'var(--editorial-accent)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-    </svg>
-  );
 
   const cardBaseStyle = { backgroundColor: 'var(--editorial-surface)', borderColor: 'var(--editorial-border)' };
   const mutedStyle = { color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' };

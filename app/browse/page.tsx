@@ -5,7 +5,6 @@ import {
   browseWords,
   getCategoryCounts,
   countDistinctWords,
-  type WordSearchEntry,
 } from "@/lib/word-search";
 
 // ISR: dictionary content changes infrequently, revalidate every 5 minutes

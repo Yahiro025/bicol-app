@@ -1,4 +1,4 @@
-import type { Root, Definition, Conjugation, ExampleSentence, Word } from '@prisma/client';
+import type { Root, Definition, Conjugation, ExampleSentence } from '@prisma/client';
 
 export type EnrichedDefinition = Definition & {
   conjugations: Conjugation[];
