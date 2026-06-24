@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { generateSubstitutionDrill } from '@/lib/gemini';
-import { escapeRegex } from '@/lib/fuzzy';
+import { Prisma } from '@prisma/client';
 
 type ExampleWithRoot = Prisma.ExampleSentenceGetPayload<{
   include: {
@@ -27,12 +27,6 @@ export async function GET() {
       );
     }
 
-    // Fetch a random example sentence from the database
-    const skip = Math.floor(Math.random() * count);
-    const base = await prisma.exampleSentence.findFirst({
-      skip,
-      take: 1,
-    });
     // Fetch a random example sentence whose Bikol text verbatim contains
     // its definition's root. Retry up to 5 times before giving up.
     let base: ExampleWithRoot | null = null;
@@ -73,23 +67,9 @@ export async function GET() {
     // Use Gemini to intelligently generate substitution cues and grammatically correct expected sentences
     const drillData = await generateSubstitutionDrill(baseSentence);
 
-    return NextResponse.json({ 
-      baseSentence, 
-      cues: drillData.cues 
-    if (rootCount === 0) {
-      return NextResponse.json(
-        { error: 'No substitute roots found for this part of speech.' },
-        { status: 404 }
-      );
-    }
-
-    const maxSkip = Math.max(0, rootCount - 3);
-    const skipRoots = Math.floor(Math.random() * (maxSkip + 1));
-    const substitutes = await prisma.root.findMany({
-      where: { pos: baseRoot.pos, id: { not: baseRoot.id } },
-      select: { id: true, bikol: true, pos: true },
-      skip: skipRoots,
-      take: 3,
+    return NextResponse.json({
+      baseSentence,
+      cues: drillData.cues
     });
   } catch (error: unknown) {
     console.error('[DRILLS_API_ERROR]:', error);
