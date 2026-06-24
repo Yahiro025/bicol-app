@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useMemo } from "react";
 import { Send, CheckCircle2, AlertCircle } from "lucide-react";
 import SpecialCharToolbar from "./SpecialCharToolbar";
 import { POS_OPTIONS, DIALECT_OPTIONS } from "@/lib/form-options";
@@ -48,22 +48,22 @@ export default function UserSubmissionForm() {
 
   const tagalogRef = useRef<HTMLTextAreaElement>(null);
 
-  const fieldRefs: Record<FormField, React.RefObject<HTMLInputElement | HTMLTextAreaElement | null>> = {
+  const fieldRefs: Record<FormField, React.RefObject<HTMLInputElement | HTMLTextAreaElement | null>> = useMemo(() => ({
     word: wordRef,
     definition: definitionRef,
     tagalog: tagalogRef,
     pronunciation: pronunciationRef,
     example_bikol: exampleBikolRef,
     example_english: exampleEnglishRef,
-  };
+  }), []);
 
-  const updateField = (field: keyof FormData, value: string) => {
+  const updateField = useCallback((field: keyof FormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (status === "error") {
       setStatus("idle");
       setErrorMessage("");
     }
-  };
+  }, [status]);
 
   const handleInsertChar = useCallback(
     (char: string) => {
@@ -95,7 +95,7 @@ export default function UserSubmissionForm() {
         }
       });
     },
-    [activeField, formData],
+    [activeField, formData, updateField, fieldRefs],
   );
 
   const validateForm = (): string | null => {
