@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Send, AlertCircle, CheckCircle2 } from "lucide-react";
 import SpecialCharToolbar from "./SpecialCharToolbar";
@@ -68,14 +68,14 @@ export default function SuggestEditModal({ isOpen, onClose, isNormalized, wordDa
   const exampleBikolRef = useRef<HTMLInputElement>(null);
   const exampleEnglishRef = useRef<HTMLInputElement>(null);
 
-  const fieldRefs = {
+  const fieldRefs = useMemo(() => ({
     word: wordRef,
     definition: definitionRef,
     tagalog: tagalogRef,
     pronunciation: pronunciationRef,
     exampleBikol: exampleBikolRef,
     exampleEnglish: exampleEnglishRef,
-  };
+  }), []);
 
   const handleInsertChar = useCallback(
     (char: string) => {
@@ -105,7 +105,7 @@ export default function SuggestEditModal({ isOpen, onClose, isNormalized, wordDa
         }
       });
     },
-    [activeField, word, definition, tagalog, pronunciation, exampleBikol, exampleEnglish],
+    [activeField, word, definition, tagalog, pronunciation, exampleBikol, exampleEnglish, fieldRefs],
   );
 
   const handleSubmit = async (e: React.FormEvent) => {

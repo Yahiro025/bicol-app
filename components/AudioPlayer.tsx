@@ -1,6 +1,6 @@
 "use client";
 import { useRef, useState } from 'react';
-import { Volume2, Play, Pause } from 'lucide-react';
+import { Volume2, Pause } from 'lucide-react';
 
 interface AudioPlayerProps {
   url: string;
