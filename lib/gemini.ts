@@ -1,4 +1,5 @@
-import { GoogleGenerativeAI, Schema, Type } from '@google/generative-ai';
+import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
+import type { Schema } from '@google/generative-ai';
 import type { Word, QuizQuestion, DialogueMessage, DialogueScenario, LinguisticAudit } from './types/learn';
 
 function getGemini(): GoogleGenerativeAI {
@@ -65,23 +66,23 @@ REQUIREMENTS:
 6. Output STRICTLY in Bikol. Do NOT mix Tagalog/English.`;
 
   const schema: Schema = {
-    type: Type.OBJECT,
+    type: SchemaType.OBJECT,
     properties: {
       questions: {
-        type: Type.ARRAY,
+        type: SchemaType.ARRAY,
         items: {
-          type: Type.OBJECT,
+          type: SchemaType.OBJECT,
           properties: {
-            id: { type: Type.STRING },
-            question: { type: Type.STRING },
+            id: { type: SchemaType.STRING },
+            question: { type: SchemaType.STRING },
             options: {
-              type: Type.ARRAY,
-              items: { type: Type.STRING },
+              type: SchemaType.ARRAY,
+              items: { type: SchemaType.STRING },
               description: "Must contain exactly 4 options"
             },
-            correctAnswer: { type: Type.STRING },
-            explanation: { type: Type.STRING },
-            word: { type: Type.STRING },
+            correctAnswer: { type: SchemaType.STRING },
+            explanation: { type: SchemaType.STRING },
+            word: { type: SchemaType.STRING },
           },
           required: ["id", "question", "options", "correctAnswer", "explanation", "word"]
         }
@@ -103,15 +104,15 @@ export async function generateSubstitutionDrill(sentence: string): Promise<any> 
   const prompt = `Given this base Bikol sentence: '${sentence}', generate 3 substitution cues (single Bikol nouns). For each cue, provide the full Bikol sentence where a grammatically appropriate word from the base sentence is replaced by the cue, ensuring the rest of the sentence remains natural. Return as JSON with keys 'cues' (array of objects with 'cue' and 'expected' properties). Output STRICTLY in Bikol. Do NOT mix Tagalog/English.`;
 
   const schema: Schema = {
-    type: Type.OBJECT,
+    type: SchemaType.OBJECT,
     properties: {
       cues: {
-        type: Type.ARRAY,
+        type: SchemaType.ARRAY,
         items: {
-          type: Type.OBJECT,
+          type: SchemaType.OBJECT,
           properties: {
-            cue: { type: Type.STRING, description: "A single Bikol noun to substitute into the sentence" },
-            expected: { type: Type.STRING, description: "The full grammatically correct Bikol sentence after substitution" }
+            cue: { type: SchemaType.STRING, description: "A single Bikol noun to substitute into the sentence" },
+            expected: { type: SchemaType.STRING, description: "The full grammatically correct Bikol sentence after substitution" }
           },
           required: ["cue", "expected"]
         }
@@ -144,10 +145,10 @@ ${transcript}
 Based on the transcript, respond as the ASSISTANT. Assess if the user has achieved the GOAL.`;
 
   const schema: Schema = {
-    type: Type.OBJECT,
+    type: SchemaType.OBJECT,
     properties: {
-      message: { type: Type.STRING, description: "Your response in Bikol" },
-      goalAchieved: { type: Type.BOOLEAN, description: "True if the user has achieved the scenario's goal" }
+      message: { type: SchemaType.STRING, description: "Your response in Bikol" },
+      goalAchieved: { type: SchemaType.BOOLEAN, description: "True if the user has achieved the scenario's goal" }
     },
     required: ["message", "goalAchieved"]
   };
@@ -183,12 +184,12 @@ CRITERIA:
 3. PARTICLES: Were the case markers and particles (e.g., si, ni, ki, nin) used appropriately?`;
 
   const schema: Schema = {
-    type: Type.OBJECT,
+    type: SchemaType.OBJECT,
     properties: {
-      comprehension: { type: Type.STRING },
-      focus: { type: Type.STRING },
-      particles: { type: Type.STRING },
-      score: { type: Type.NUMBER, description: "A score from 1-100" }
+      comprehension: { type: SchemaType.STRING },
+      focus: { type: SchemaType.STRING },
+      particles: { type: SchemaType.STRING },
+      score: { type: SchemaType.NUMBER, description: "A score from 1-100" }
     },
     required: ["comprehension", "focus", "particles", "score"]
   };
