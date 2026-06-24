@@ -32,7 +32,7 @@ const dmSans = DM_Sans({
 const SITE_NAME = "BIKOL Dictionary";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://bikoldictionary.app";
 
-export const metadata = {
+export const metadata: Metadata = {
   icons: [
     {
       rel: 'icon',
@@ -45,9 +45,6 @@ export const metadata = {
       media: '(prefers-color-scheme: light)',
     },
   ],
-}
-
-export const metadata: Metadata = {
   title: { default: `${SITE_NAME} — Bikol Language Dictionary & Learning App`, template: "%s — BIKOL Dictionary" },
   description: "Search thousands of Bikol words across 5+ dialects with AI-enhanced translations, verb conjugations, interactive drills, and flashcards.",
   keywords: ["Bikol dictionary", "Bikol language", "Bikolano", "Bicol dictionary", "learn Bikol", "Bikol verbs", "Bikol grammar"],
