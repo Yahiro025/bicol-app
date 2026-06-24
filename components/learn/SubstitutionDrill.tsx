@@ -44,7 +44,10 @@ export default function SubstitutionDrillComponent({ drills, onComplete }: Subst
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && userInput.trim()) isAnswered ? handleNext() : handleCheck();
+    if (e.key === "Enter" && userInput.trim()) {
+      if (isAnswered) handleNext();
+      else handleCheck();
+    }
   };
 
   if (!drill) return null;

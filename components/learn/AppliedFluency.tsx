@@ -2,18 +2,17 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  MessageSquare, 
-  Send, 
-  CheckCircle2, 
-  ArrowRight, 
-  RefreshCw, 
+import {
+  MessageSquare,
+  Send,
+  CheckCircle2,
+  ArrowRight,
+  RefreshCw,
   ShieldCheck,
   BookOpen,
   ArrowLeft
 } from "lucide-react";
 import type { DialogueScenario, DialogueMessage, LinguisticAudit } from "@/lib/types/learn";
-import Button from "@/components/ui/Button";
 
 const FALLBACK_SCENARIOS: DialogueScenario[] = [
   {
