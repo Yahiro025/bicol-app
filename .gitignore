@@ -14,3 +14,13 @@ __pycache__/
 # MetaBuff runtime state
 .agents/.autonomous-session.json
 .agents/.recovery/
+
+#only when Pull requesting to main repo
+.antigravitycli/
+.gemini/
+.impeccable/
+scripts/
+tests/
+.devin/
+.codebuffignore
+graphify-out

@@ -149,7 +149,7 @@ export default function BrowseClient({
   useEffect(() => {
     const timer = setTimeout(() => fetchPage(currentPage), 300);
     return () => clearTimeout(timer);
-  }, [query, selectedLetter, selectedCategory, sortMode]);
+  }, [query, selectedLetter, selectedCategory, sortMode, currentPage, fetchPage]);
 
   const handleFilterClick = (type: "letter" | "category", value: string) => {
     if (type === "letter") setSelectedLetter((prev) => (prev === value ? "" : value));

@@ -845,7 +845,6 @@ export default function AdminSubmissionsPage() {
 
               <div className="space-y-4">
                 {EDIT_FIELDS.map(({ key, label, type, placeholder }) => {
-                  const isGridPair = key === 'pos' || key === 'dialect';
                   const field = (
                     <div key={key}>
                       <label className="block text-xs font-bold text-zinc-500 uppercase mb-1">{label}</label>

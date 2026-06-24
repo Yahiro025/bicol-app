@@ -4,7 +4,7 @@ import { loadEnvFile } from 'node:process';
 if (!process.env.DATABASE_URL) {
   try {
     loadEnvFile();
-  } catch (e) {
+  } catch {
     // .env might not exist, which is fine
   }
 }
