@@ -68,17 +68,31 @@ Each API route's dependencies were traced through actual import chains (not gues
 
 ### Hardcoded Credential in `.env.migration`
 
-The file `.env.migration` contains a hardcoded real database credential:
+The file `.env.migration` contained a hardcoded real database credential:
 
 ```
 DATABASE_URL=postgresql://postgres.ayvxqbxnrbcgbffrzbia:R7DTSp9tTBzoOYuF@aws-1-ap-northeast-1.pooler.supabase.com:5432/postgres
 ```
 
-**Recommended actions:**
+**Remediation performed:**
+- `.env.migration` has been removed from git tracking (`git rm --cached`)
+- `.env.migration` has been added to `.gitignore` to prevent re-addition
+
+**Additional actions required (human review):**
 1. Rotate this credential immediately in the Supabase dashboard
-2. Remove `.env.migration` from version control (`git rm .env.migration`)
-3. Add `.env.migration` to `.gitignore`
-4. If this password was used elsewhere, rotate those credentials as well
+2. The credential still exists in git history -- consider using `git filter-repo` or BFG to purge it if this is a public repository
+3. If this password was used elsewhere, rotate those credentials as well
+
+---
+
+## Known Drift: `config/` Templates
+
+The files `config/.env.production` and `config/.env.test` are out of date relative to this audit:
+
+- They still list `SUPABASE_URL` and `SUPABASE_SERVICE_KEY`, which are dead variables (no code references them).
+- They are missing `ADMIN_PASSWORD`, `ADMIN_SESSION_SECRET`, `NEXT_PUBLIC_SITE_URL`, and `NEXT_PUBLIC_PLATFORM`.
+
+These config templates were not modified as part of this audit (they are deployment config files, not documentation). If they are used as deployment checklists, they should be updated separately to match `.env.example`.
 
 ---
 
