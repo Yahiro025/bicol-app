@@ -71,7 +71,7 @@ Each API route's dependencies were traced through actual import chains (not gues
 The file `.env.migration` contained a hardcoded real database credential:
 
 ```
-DATABASE_URL=postgresql://postgres.ayvxqbxnrbcgbffrzbia:R7DTSp9tTBzoOYuF@aws-1-ap-northeast-1.pooler.supabase.com:5432/postgres
+DATABASE_URL=postgresql://postgres.[REDACTED]:[REDACTED]@aws-1-ap-northeast-1.pooler.supabase.com:5432/postgres
 ```
 
 **Remediation performed:**
