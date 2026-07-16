@@ -10,6 +10,7 @@ import { VerbConjugator } from '@/components/dictionary/VerbConjugator';
 import { GrammarHighlight } from '@/components/GrammarHighlight';
 import WordJsonLd from '@/components/WordJsonLd';
 import { normalizePOS, normalizeDefinitionText, formatDialect } from '@/lib/lexicography';
+import { groupDefinitions } from '@/lib/definitions';
 import type { WordDisplayData, AffixGroup } from '@/lib/types/word';
 import SuggestEditModal from '@/components/SuggestEditModal';
 
@@ -95,7 +96,7 @@ export default function WordClientPage({ word, isNormalized }: { word: WordDispl
   const { bikol, pos, pronunciation, audio_url, etymology } = word;
 
   const definitions: WordDisplayData['definitions'] = isNormalized
-    ? (word.definitions ?? [])
+    ? groupDefinitions(word.definitions ?? [])
     : [{
         english: word.english ?? null,
         tagalog: word.tagalog ?? null,
