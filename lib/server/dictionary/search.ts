@@ -1,5 +1,7 @@
+import 'server-only';
+
 import { cache as reactCache } from 'react';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/lib/server/prisma';
 import { Prisma } from '@prisma/client';
 
 const MAX_CACHE_SIZE = 200;

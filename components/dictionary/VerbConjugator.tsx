@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { conjugateBikolVerb } from '@/lib/conjugator';
+import { conjugateBikolVerb } from '@/lib/dictionary/conjugation';
 import { cn } from '@/lib/utils';
 import { TENSE_LABELS, TENSE_ORDER } from '@/lib/constants';
 

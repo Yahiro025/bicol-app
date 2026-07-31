@@ -1,11 +1,11 @@
-import BrowseClient from "@/components/BrowseClient";
+import BrowseClient from "@/components/dictionary/BrowseClient";
 import Link from "next/link";
 import { BookOpen } from "lucide-react";
 import {
   browseWords,
   getCategoryCounts,
   countDistinctWords,
-} from "@/lib/word-search";
+} from "@/lib/server/dictionary/search";
 
 // ISR: dictionary content changes infrequently, revalidate every 5 minutes
 export const revalidate = 300;

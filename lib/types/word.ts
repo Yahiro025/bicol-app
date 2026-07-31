@@ -1,14 +1,3 @@
-import type { Root, Definition, Conjugation, ExampleSentence } from '@prisma/client';
-
-export type EnrichedDefinition = Definition & {
-  conjugations: Conjugation[];
-  exampleSentences: ExampleSentence[];
-};
-
-export type EnrichedRoot = Root & {
-  definitions: EnrichedDefinition[];
-};
-
 export type AffixGroup = {
   affixPair: string;
   focusType: string;

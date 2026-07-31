@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { conjugateBikolVerb } from "@/lib/conjugator";
+import { conjugateBikolVerb } from "@/lib/dictionary/conjugation";
 import { TENSE_LABELS } from "@/lib/constants";
 import { Springs } from "@/lib/motion";
 

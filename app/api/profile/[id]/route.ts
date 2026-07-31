@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/server/prisma";
 import { computeRank } from "@/lib/gamification";
 
 const PROFILE_SELECT = {

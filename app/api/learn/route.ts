@@ -1,7 +1,7 @@
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/lib/server/prisma';
 import { Prisma } from '@prisma/client';
 import { NextResponse } from 'next/server';
-import { generateQuizQuestions } from '@/lib/groq';
+import { generateQuizQuestions } from '@/lib/server/ai/groq';
 
 const learnCache = new Map<string, { data: unknown; expiresAt: number }>();
 const LEARN_CACHE_TTL = 120_000; // 2 minutes

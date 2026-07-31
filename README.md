@@ -1,129 +1,139 @@
-# 🌋 Bikol Dictionary: The Living Archive
+# Bikol Dictionary
 
-A professional, full-stack dictionary and learning platform for the Bikol language, bridging academic precision with modern accessibility. This project serves as a "Living Archive," preserving cultural heritage through high-fidelity data extraction, AI-enriched linguistics, multi-dialect support, and cross-platform utility.
+Bikol Dictionary is an early-stage dictionary and learning project for the Bikol language of the Bicol Region in the Philippines. It combines a searchable word database with tools for browsing entries, studying vocabulary, practicing grammar, and submitting corrections or new words.
 
----
+The project is still evolving. Coverage is incomplete, and some translations, dialect labels, examples, and generated learning content need review from fluent speakers and language researchers.
 
-## ✨ Core Pillars & Features
+## What you can do
 
-### 🏛️ Academic Authority & The Mintz Architecture
-Data is treated with the reverence of an archive. The core database schema implements a normalized architecture based on the authoritative works of Malcolm W. Mintz. 
-- **Normalized Linguistic Models:** Roots, Definitions, Conjugations, and Example Sentences are strictly modeled.
-- **Automated PDF Extraction:** Sophisticated Python pipelines (`scripts/extract_mintz_pdfs.py`) parse complex focus types (Actor/Object) and series (Ability/Causative) directly from linguistic texts.
-- **Wiktionary Integration:** Automated fetching and parsing of Central Bikol lemmas, etymologies, and IPA pronunciations.
+- Search and browse Bikol words by spelling, category, letter, or frequency.
+- View available definitions, English and Tagalog translations, dialect information, pronunciation, etymology, examples, and source references.
+- Explore conjugations for supported verbs.
+- Practice sentence substitution, verb transformations, and short dialogue scenarios.
+- Study randomly selected vocabulary with Top 25, Top 50, or Top 100 flashcard decks.
+- Suggest a new word, definition, correction, or source through the contribution form.
 
-### 🤖 AI-Powered Data Enrichment
-Leveraging the Groq API (specifically `qwen/qwen3-32b`), the platform automatically enriches scraped data.
-- Generates natural example sentences in Bikol and English.
-- Identifies missing Tagalog translations and regional dialects.
-- Assigns AI confidence scores to ensure data integrity before surfacing to users.
+The information shown for an entry depends on the available source data. Not every entry has every field.
 
-### 🎯 Interactive Learning & Practice
-Beyond a static database, the app features dynamic tools for functional fluency:
-- **Substitution Drills:** Interactive modules (`/learn`) based on Mintz's sentence patterns to build instinctual grammar recall.
-- **Verb Conjugator:** Real-time morphological breakdowns showing how roots like *bakal* transform across tenses and focus types.
-- **Spaced Repetition Flashcards:** User-specific mastery tracking for long-term vocabulary retention.
+## Data and content
 
-### 📱 Modern Accessibility & Cross-Platform
-Built for the diaspora and local learners alike.
-- **Web:** Optimized for speed and SEO on Vercel with Next.js App Router.
-- **PWA:** Installable on any device with offline-first capabilities.
-- **Native Mobile:** Compiled to Android and iOS via Capacitor (`NEXT_PUBLIC_PLATFORM=mobile`).
+The dictionary currently brings together entries associated with:
 
----
+- Malcolm Mintz's Bikol Dictionary
+- Wiktionary
+- LearnBikol.com
+- Community submissions and references supplied through the contribution form
 
-## 🛠 Tech Stack
+Source labels and references are stored with entries where they are available. The project does not treat all entries as equally complete or equally reviewed. Coverage varies by dialect and by source.
 
-### Frontend & Mobile
-- **Framework:** Next.js 16 (App Router)
-- **Library:** React 19
-- **Styling:** Tailwind CSS v4 (Vanilla CSS philosophy)
-- **Motion:** Framer Motion (Responsive Bloom effects)
-- **Bridge:** Capacitor (Native Mobile)
+AI is used for parts of the learning experience, not as a replacement for source material or human review. Groq is used for quiz and dialogue-related learning features. Gemini is used to generate substitution-drill cues and expected replacement sentences from existing examples. Generated content can be wrong, so it should be checked before being treated as a reliable language reference.
 
-### Backend & Data
-- **Database:** Supabase (PostgreSQL)
-- **ORM:** Prisma 7
-- **AI Integration:** Groq SDK (`qwen3-32b` for enrichment)
-- **Data Pipeline:** Python 3.10+ (BeautifulSoup4, aiohttp, pdfplumber)
-- **Runtime:** Bun (Primary package manager and test runner)
+## Project status and limitations
 
----
+This is an early-stage prototype. The main web application is the primary development target.
 
-## 🤖 Agentic Architecture
+Known limitations include:
 
-This repository is maintained and governed by specialized AI subagents (located in `.gemini/agents/`):
-- **Archive Designer:** Enforces the "Living Archive" design system, Tailwind v4, and WCAG AA compliance.
-- **Data Specialist:** Manages Python scrapers, async rate-limiting (Tenacity/aiolimiter), and Qwen enrichment prompts.
-- **Bikol Expert:** Ensures linguistic integrity, semantic contrast, and a dignified tone.
-- **DB Architect:** Manages Prisma schema evolution and Supabase migrations.
-- **Mobile Expert:** Handles Capacitor Web-to-Native bridging and touch-target accessibility.
-- **Learn Engine:** A self-improvement agent activated via `\learn` to diagnose bugs and audit rulesets.
+- The dictionary does not yet provide complete coverage of Bikol vocabulary or dialects.
+- Translation, pronunciation, etymology, and dialect fields may be missing or need review.
+- AI-backed quizzes, drills, and dialogue require the relevant API key and may be affected by provider availability or rate limits.
+- Drill prompts and dialogue scenarios may fall back to built-in examples when the API is unavailable. Live dialogue responses still require the API, and all built-in examples should be reviewed by fluent speakers.
+- The installable web experience supports local history and installation prompts, but the full dictionary is not guaranteed to be available offline.
+- Android packaging is present through Capacitor, but web development is the supported path documented here. The static bundle does not by itself provide the server, API, or database required by the full web application.
 
----
-
-## 🚀 Getting Started
+## Local development
 
 ### Prerequisites
-- [Bun](https://bun.sh/) (Primary package manager/runtime)
-- [Python 3.10+](https://www.python.org/)
-- [Supabase](https://supabase.com/) account and project
-- [Groq AI](https://groq.com/) API Key
 
-### 1. Web Development
+- [Bun](https://bun.sh/)
+- PostgreSQL database, either local or hosted
+- API keys for the learning features you want to run
+
+The repository's deployment configuration uses Bun, so the commands below use Bun as well.
+
+### Setup
+
 ```bash
 # Install dependencies
 bun install
 
-# Configure environment
+# Create a local environment file
 cp .env.example .env
 
-# Initialize database
+# Generate the Prisma client
 bunx prisma generate
-bunx prisma db push
 
-# Run development server
+# Apply the checked-in database migrations
+bunx prisma migrate deploy
+
+# Start the development server
 bun dev
 ```
 
-### 2. Data Pipeline
-The scrapers and audit tools are located in the root and `/scripts`.
+You need a working `DATABASE_URL` before running the application. The migrations create the database schema, but they do not populate dictionary entries; you will need a database that already contains the project's data or a separate import process. The complete list of environment variables and their purposes is in [`.env.example`](.env.example).
+
+At minimum, configure:
+
+- `DATABASE_URL` for the PostgreSQL database.
+- `NEXT_PUBLIC_SITE_URL` for canonical URLs and SEO metadata. `http://localhost:3000` is suitable for local development.
+
+Optional variables enable specific parts of the application:
+
+- `GROQ_API_KEY` for quizzes and dialogue practice.
+- `GEMINI_API_KEY` for substitution-drill generation.
+- `ADMIN_PASSWORD` and `ADMIN_SESSION_SECRET` for protected admin and submission workflows.
+- `NEXT_PUBLIC_PLATFORM=mobile` when producing the static web bundle used by Capacitor.
+
+API keys and session secrets are server-side credentials. Do not commit `.env` or share these values.
+
+## Useful commands
+
 ```bash
-# Setup Python environment
-python -m venv venv
-source venv/bin/activate # or venv\Scripts\activate on Windows
-pip install -r requirements.txt
-
-# Run the AI-enriched Wiktionary scraper
-python ai_wiktionary_scraper.py
-
-# Run the Mintz PDF extractor
-python scripts/py/extract_mintz_pdfs.py
-
-# Migrate flat data to Mintz Normalized Schema
-bun run scripts/ts/migrate-to-mintz.ts
+bun dev                # Start the development server
+bun run build          # Create a production build
+bun start              # Serve a production build
+bun run lint           # Run ESLint
+bun run typecheck      # Run TypeScript without emitting files
+bun test               # Run the test suite
 ```
 
-### 3. Mobile Deployment
-```bash
-# Export static bundle
-NEXT_PUBLIC_PLATFORM=mobile bun run build
+The repository also contains a Capacitor Android project. Mobile work is optional and is not required for normal web development:
 
-# Sync with Capacitor
+```bash
+NEXT_PUBLIC_PLATFORM=mobile bun run build
 bunx cap sync android
 bunx cap open android
 ```
 
----
+## Project structure
 
-## 🎨 Design Philosophy: The Living Archive
+This is a single Next.js application with a modular internal structure rather than separate `frontend/` and `backend/` folders:
 
-This system balances **Resting Rigor** with **Responsive Bloom**.
-- **Resting Rigor:** Surfaces at rest use clean 1px borders and zinc-based neutrals. Shadows are prohibited to maintain a structured, authoritative feel.
-- **Responsive Bloom:** Interactive elements come alive on hover with blue-tinted shadows ("Bicolano Sea Blue") and subtle lifts, inviting community interaction.
-- **Semantic Contrast:** Bikol words are given visual prominence (Blue-500, bold), while bridge languages (English/Tagalog) are secondary (Zinc-400).
+- `app/` contains pages, layouts, loading/error boundaries, and the HTTP route handlers under `app/api/`.
+- `components/` contains shared UI and feature UI. Dictionary UI lives under `components/dictionary/`; learning UI lives under `components/learn/`.
+- `lib/server/` contains server-only infrastructure, including Prisma, AI clients, admin authentication, and database-backed dictionary search.
+- `lib/dictionary/` contains client-safe dictionary logic such as conjugation and lexicography.
+- `lib/types/` contains display and transport types that can safely cross into client components.
+- `prisma/` contains the database schema and migrations.
+- `android/` contains the Capacitor Android project.
 
----
+Client components must not import `lib/server/` or Prisma-generated runtime types. The static Capacitor build is not a standalone database/API server; live mobile functionality requires a separately reachable API.
 
-## 📄 License
-This project is licensed under the MIT License.
+## Contributing
+
+There are several useful ways to help:
+
+- Report incorrect definitions, translations, examples, or source references.
+- Submit missing words or corrections through the contribution form.
+- Improve search, dictionary display, conjugation, learning flows, or accessibility.
+- Add tests and improve the documentation.
+
+Before opening a pull request, run the checks relevant to your change. If you are changing dictionary content, include the source or reference and identify the dialect when possible.
+
+## Acknowledgements
+
+The project uses material associated with Malcolm Mintz's Bikol Dictionary, [Wiktionary's Bikol language resources](https://en.wiktionary.org/wiki/Category:Bikol_language), and [LearnBikol.com](https://learnbikol.com/). Please preserve the source information attached to entries when adding or editing data. The repository does not currently maintain a dedicated URL for the Mintz source.
+
+## License
+
+The package metadata currently declares the project under ISC. No separate `LICENSE` file is included, so the project's distributable license should be confirmed and formalized before distribution.

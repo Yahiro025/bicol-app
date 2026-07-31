@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { type FocusClass, type ConjugationForms } from '@/lib/conjugator';
+import { type FocusClass, type ConjugationForms } from '@/lib/dictionary/conjugation';
 
 interface Challenge {
   root: string;

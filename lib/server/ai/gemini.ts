@@ -1,6 +1,8 @@
+import 'server-only';
+
 import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
 import type { Schema } from '@google/generative-ai';
-import type { Word, QuizQuestion, DialogueMessage, DialogueScenario, LinguisticAudit } from './types/learn';
+import type { Word, QuizQuestion, DialogueMessage, DialogueScenario, LinguisticAudit } from '../../types/learn';
 
 function getGemini(): GoogleGenerativeAI {
   const key = process.env.GEMINI_API_KEY;
