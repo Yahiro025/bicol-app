@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { browseWords, countDistinctWords } from '@/lib/word-search';
+import { browseWords, countDistinctWords } from '@/lib/server/dictionary/search';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);

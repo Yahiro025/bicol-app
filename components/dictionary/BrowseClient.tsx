@@ -4,9 +4,9 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import Button from "./ui/Button";
+import Button from "../ui/Button";
 import { useLanguageMode } from "@/hooks/useLanguageMode";
-import { normalizePOS, displayTranslation } from "@/lib/lexicography";
+import { normalizePOS, displayTranslation } from "@/lib/dictionary/lexicography";
 import { escapeRegex } from "@/lib/fuzzy";
 
 type Word = {

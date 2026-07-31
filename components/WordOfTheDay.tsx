@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Star, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useLanguageMode } from '@/hooks/useLanguageMode';
-import { normalizePOS } from '@/lib/lexicography';
+import { normalizePOS } from '@/lib/dictionary/lexicography';
 import { Springs } from '@/lib/motion';
 
 interface WordOfTheDayProps {

@@ -1,8 +1,8 @@
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/lib/server/prisma';
 import { cache as reactCache } from 'react';
 import WordClientPage from './WordClientPage';
 import { notFound } from 'next/navigation';
-import { conjugateBikolVerb } from '@/lib/conjugator';
+import { conjugateBikolVerb } from '@/lib/dictionary/conjugation';
 import { POPULAR_WORDS } from '@/lib/constants';
 import type { WordDisplayData } from '@/lib/types/word';
 import type { Metadata } from 'next';

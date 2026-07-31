@@ -1,4 +1,4 @@
-import { browseWords } from '@/lib/word-search';
+import { browseWords } from '@/lib/server/dictionary/search';
 
 export const revalidate = 3600;
 

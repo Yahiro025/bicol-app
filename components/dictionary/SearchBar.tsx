@@ -4,10 +4,10 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import Button from './ui/Button';
+import Button from '../ui/Button';
 import { useLanguageMode } from '@/hooks/useLanguageMode';
 import { fuzzyMatch } from '@/lib/fuzzy';
-import { normalizePOS, displayTranslation } from '@/lib/lexicography';
+import { normalizePOS, displayTranslation } from '@/lib/dictionary/lexicography';
 
 type SearchResult = {
   bikol: string;

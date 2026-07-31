@@ -6,7 +6,7 @@ import {
   isAdminAuthConfigured,
   isAdminRequest,
   isValidAdminPassword,
-} from "@/lib/admin-auth";
+} from "@/lib/server/admin/auth";
 
 export const dynamic = "force-dynamic";
 

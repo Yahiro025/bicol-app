@@ -1,5 +1,7 @@
+import 'server-only';
+
 import Groq from 'groq-sdk';
-import type { Word, QuizQuestion, DialogueMessage, DialogueScenario, LinguisticAudit } from './types/learn';
+import type { Word, QuizQuestion, DialogueMessage, DialogueScenario, LinguisticAudit } from '../../types/learn';
 
 function getGroq(): Groq {
   const key = process.env.GROQ_API_KEY;

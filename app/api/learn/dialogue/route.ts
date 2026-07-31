@@ -1,6 +1,6 @@
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/lib/server/prisma';
 import { NextResponse } from 'next/server';
-import { processDialogue, evaluateDialogue } from '@/lib/groq';
+import { processDialogue, evaluateDialogue } from '@/lib/server/ai/groq';
 import type { DialogueMessage, DialogueScenario } from '@/lib/types/learn';
 
 function errorResponse(message: string, details?: string) {

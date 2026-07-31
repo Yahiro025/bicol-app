@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { conjugateBikolVerb } from '@/lib/conjugator';
+import { prisma } from '@/lib/server/prisma';
+import { conjugateBikolVerb } from '@/lib/dictionary/conjugation';
 
 export async function GET(
   request: NextRequest,

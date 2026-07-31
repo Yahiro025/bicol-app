@@ -1,3 +1,5 @@
+import 'server-only';
+
 import { createHmac, timingSafeEqual } from "node:crypto";
 
 export const ADMIN_SESSION_COOKIE = "bikoldict_admin_session";

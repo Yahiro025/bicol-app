@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { isAdminRequest } from "@/lib/admin-auth";
+import { prisma } from "@/lib/server/prisma";
+import { isAdminRequest } from "@/lib/server/admin/auth";
 
 export const dynamic = "force-dynamic";
 

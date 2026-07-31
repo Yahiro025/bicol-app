@@ -1,8 +1,8 @@
 import Link from "next/link";
-import SearchBar from "@/components/SearchBar";
+import SearchBar from "@/components/dictionary/SearchBar";
 import WordOfTheDay from "@/components/WordOfTheDay";
 import CategoryGrid from "@/components/CategoryGrid";
-import WordCard from "@/components/WordCard";
+import WordCard from "@/components/dictionary/WordCard";
 import HomeVerbDemo from "@/components/HomeVerbDemo";
 import HeroSection from "@/components/HeroSection";
 import { ArrowRight } from "lucide-react";
@@ -12,7 +12,7 @@ import {
   findWordsByBikol,
   getWordOfTheDay,
   getInitialDictionary,
-} from "@/lib/word-search";
+} from "@/lib/server/dictionary/search";
 import { POPULAR_WORDS } from "@/lib/constants";
 
 // ISR: revalidate every 5 minutes.

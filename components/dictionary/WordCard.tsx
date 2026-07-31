@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useLanguageMode } from '@/hooks/useLanguageMode';
-import { normalizePOS } from '@/lib/lexicography';
+import { normalizePOS } from '@/lib/dictionary/lexicography';
 
 interface WordCardProps {
   word: {

@@ -1,8 +1,8 @@
 export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { generateSubstitutionDrill } from '@/lib/gemini';
+import { prisma } from '@/lib/server/prisma';
+import { generateSubstitutionDrill } from '@/lib/server/ai/gemini';
 import { Prisma } from '@prisma/client';
 
 type ExampleWithRoot = Prisma.ExampleSentenceGetPayload<{

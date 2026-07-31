@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 import { z } from "zod";
-import { prisma } from "@/lib/prisma";
-import { isAdminRequest } from "@/lib/admin-auth";
+import { prisma } from "@/lib/server/prisma";
+import { isAdminRequest } from "@/lib/server/admin/auth";
 
 const optionalText = z
   .string()

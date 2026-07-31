@@ -9,8 +9,8 @@ import { useLanguageMode } from '@/hooks/useLanguageMode';
 import { VerbConjugator } from '@/components/dictionary/VerbConjugator';
 import { GrammarHighlight } from '@/components/GrammarHighlight';
 import WordJsonLd from '@/components/WordJsonLd';
-import { normalizePOS, normalizeDefinitionText, formatDialect } from '@/lib/lexicography';
-import { groupDefinitions } from '@/lib/definitions';
+import { normalizePOS, normalizeDefinitionText, formatDialect } from '@/lib/dictionary/lexicography';
+import { groupDefinitions } from '@/lib/dictionary/definitions';
 import type { WordDisplayData, AffixGroup } from '@/lib/types/word';
 import SuggestEditModal from '@/components/SuggestEditModal';
 
