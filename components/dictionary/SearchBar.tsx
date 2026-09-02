@@ -18,6 +18,7 @@ type SearchResult = {
 
 interface SearchBarProps {
   initialDictionary?: SearchResult[];
+  className?: string;
 }
 
 const containerVariants = {
@@ -46,7 +47,7 @@ const itemVariants = {
   visible: { opacity: 1, x: 0 }
 } as const;
 
-export default function SearchBar({ initialDictionary = [] }: SearchBarProps) {
+export default function SearchBar({ initialDictionary = [], className = '' }: SearchBarProps) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -195,7 +196,7 @@ export default function SearchBar({ initialDictionary = [] }: SearchBarProps) {
   }, [query]);
 
   return (
-    <div ref={wrapperRef} className="relative w-full max-w-lg mx-auto">
+    <div ref={wrapperRef} className={`relative w-full ${className ? className : 'max-w-lg mx-auto'}`}>
       <form onSubmit={handleSubmit} className="relative flex items-center w-full group">
         <div className="absolute left-4 z-10 flex items-center justify-center w-5 h-5 pointer-events-none">
           {isLoading ? (
