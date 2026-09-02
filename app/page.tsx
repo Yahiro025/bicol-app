@@ -47,7 +47,7 @@ export default async function HomePage() {
     >
       {/* ── Hero ── */}
       <HeroSection wordCount={wordCount}>
-        <SearchBar initialDictionary={initialDictionary} />
+        <SearchBar initialDictionary={initialDictionary} className="w-full" />
       </HeroSection>
 
       {/* ── Content Sections ── */}
@@ -59,14 +59,18 @@ export default async function HomePage() {
           {/* ── Word of the Day ── */}
           {wotd && (
             <section className="py-20">
-              <span className="section-number">Featured Entry</span>
-              <h2
-                className="text-3xl sm:text-4xl font-black tracking-tight mt-3 mb-10 text-[var(--editorial-text)]"
-                style={{ fontFamily: "var(--font-display)" }}
-              >
-                Word of the Day
-              </h2>
-              <WordOfTheDay word={wotd} className="max-w-2xl" />
+              <div className="w-full max-w-4xl lg:max-w-5xl mx-auto">
+                <div className="flex flex-col items-center text-center mb-10">
+                  <span className="section-number">Featured Entry</span>
+                  <h2
+                    className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight mt-3 text-[var(--editorial-text)]"
+                    style={{ fontFamily: "var(--font-display)" }}
+                  >
+                    Word of the Day
+                  </h2>
+                </div>
+                <WordOfTheDay word={wotd} />
+              </div>
               <div className="rule-divider mt-20" />
             </section>
           )}
