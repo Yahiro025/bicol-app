@@ -7,7 +7,7 @@
     "gen:audio": "node scripts/generate-audio-v2.mjs",
     "dev": "npm run studio",
     "studio": "npm run gen:audio && remotion studio src/index.ts --no-open",
-    "render": "npm run gen:audio && remotion render src/index.ts BikolArchive30Continuous out/bikol-archive-30s-video.mp4 --codec=h264 --crf=18 && ffmpeg -y -i out/bikol-archive-30s-video.mp4 -i public/audio/bikol-motion.wav -c:v copy -c:a aac -b:a 192k -shortest out/bikol-archive-30s.mp4",
+    "render": "npm run gen:audio && remotion render src/index.ts BikolArchive30Continuous out/bikol-archive-30s.mp4 --codec=h264 --crf=18",
     "still": "npm run gen:audio && remotion still src/index.ts BikolArchive30Continuous out/cover.png --frame=846"
   },
   "dependencies": {
