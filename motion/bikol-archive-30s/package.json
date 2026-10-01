@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "gen:audio": "node scripts/generate-audio.mjs",
+    "gen:audio": "node scripts/generate-audio-v2.mjs",
     "dev": "npm run studio",
     "studio": "npm run gen:audio && remotion studio src/index.ts --no-open",
     "render": "npm run gen:audio && remotion render src/index.ts BikolArchive30 out/bikol-archive-30s-video.mp4 --codec=h264 --crf=18 && ffmpeg -y -i out/bikol-archive-30s-video.mp4 -i public/audio/bikol-motion.wav -c:v copy -c:a aac -b:a 192k -shortest out/bikol-archive-30s.mp4",
