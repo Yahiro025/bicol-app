@@ -7,8 +7,8 @@
     "gen:audio": "node scripts/generate-audio-v2.mjs",
     "dev": "npm run studio",
     "studio": "npm run gen:audio && remotion studio src/index.ts --no-open",
-    "render": "npm run gen:audio && remotion render src/index.ts BikolArchive30Continuous out/bikol-archive-30s.mp4 --codec=h264 --crf=18",
-    "still": "npm run gen:audio && remotion still src/index.ts BikolArchive30Continuous out/cover.png --frame=846"
+    "render": "npm run gen:audio && remotion render src/index.ts BikolArchive30 out/bikol-archive-30s.mp4 --codec=h264 --crf=18",
+    "still": "npm run gen:audio && remotion still src/index.ts BikolArchive30 out/cover.png --frame=846"
   },
   "dependencies": {
     "@remotion/cli": "4.0.530",
