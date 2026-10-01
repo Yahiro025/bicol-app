@@ -1,0 +1,40 @@
+name: Render Bikol Motion Preview
+
+on:
+  push:
+    branches:
+      - motion/bikol-archive-30s
+    paths:
+      - 'motion/bikol-archive-30s/**'
+      - '.github/workflows/render-bikol-motion.yml'
+  workflow_dispatch:
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: motion/bikol-archive-30s/package.json
+
+      - name: Install dependencies
+        working-directory: motion/bikol-archive-30s
+        run: npm install
+
+      - name: Render MP4
+        working-directory: motion/bikol-archive-30s
+        run: npm run render
+
+      - name: Upload preview
+        uses: actions/upload-artifact@v4
+        with:
+          name: bikol-archive-30s-preview
+          path: motion/bikol-archive-30s/out/bikol-archive-30s.mp4
+          if-no-files-found: error
