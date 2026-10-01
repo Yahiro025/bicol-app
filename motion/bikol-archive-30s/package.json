@@ -4,14 +4,16 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "remotion studio src/index.ts --no-open",
-    "studio": "remotion studio src/index.ts --no-open",
-    "render": "remotion render src/index.ts BikolArchive30 out/bikol-archive-30s.mp4",
-    "still": "remotion still src/index.ts BikolArchive30 out/cover.png --frame=850"
+    "gen:audio": "node scripts/generate-audio.mjs",
+    "dev": "npm run studio",
+    "studio": "npm run gen:audio && remotion studio src/index.ts --no-open",
+    "render": "npm run gen:audio && remotion render src/index.ts BikolArchive30 out/bikol-archive-30s.mp4 --codec=h264 --crf=18",
+    "still": "npm run gen:audio && remotion still src/index.ts BikolArchive30 out/cover.png --frame=846"
   },
   "dependencies": {
     "@remotion/cli": "4.0.530",
     "@remotion/google-fonts": "4.0.530",
+    "@remotion/media": "4.0.530",
     "react": "19.2.6",
     "react-dom": "19.2.6",
     "remotion": "4.0.530"
