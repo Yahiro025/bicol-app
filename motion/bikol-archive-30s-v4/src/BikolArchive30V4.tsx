@@ -1,5 +1,6 @@
 import React from 'react';
-import {AbsoluteFill,Sequence} from 'remotion';
+import {Audio} from '@remotion/media';
+import {AbsoluteFill,Sequence,staticFile} from 'remotion';
 import {C} from './shared';
 import {Hook} from './Hook';
 import {Entry} from './Entry';
@@ -8,4 +9,4 @@ import {Verbs} from './Verbs';
 import {Practice} from './Practice';
 import {Contribution} from './Contribution';
 import {Finale} from './Finale';
-export const BikolArchive30V4:React.FC=()=> <AbsoluteFill style={{background:C.night}}><Sequence from={0} durationInFrames={118}><Hook/></Sequence><Sequence from={95} durationInFrames={158}><Entry/></Sequence><Sequence from={225} durationInFrames={155}><Dialects/></Sequence><Sequence from={355} durationInFrames={170}><Verbs/></Sequence><Sequence from={500} durationInFrames={155}><Practice/></Sequence><Sequence from={630} durationInFrames={170}><Contribution/></Sequence><Sequence from={760} durationInFrames={140}><Finale/></Sequence></AbsoluteFill>;
+export const BikolArchive30V4:React.FC=()=> <AbsoluteFill style={{background:C.night}}><Audio src={staticFile('soundtrack.wav')} volume={0.8}/><Sequence from={0} durationInFrames={118}><Hook/></Sequence><Sequence from={95} durationInFrames={158}><Entry/></Sequence><Sequence from={225} durationInFrames={155}><Dialects/></Sequence><Sequence from={355} durationInFrames={170}><Verbs/></Sequence><Sequence from={500} durationInFrames={155}><Practice/></Sequence><Sequence from={630} durationInFrames={170}><Contribution/></Sequence><Sequence from={760} durationInFrames={140}><Finale/></Sequence></AbsoluteFill>;
