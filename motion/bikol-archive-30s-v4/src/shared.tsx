@@ -1,0 +1,16 @@
+import React from 'react';
+import {AbsoluteFill,Easing,interpolate} from 'remotion';
+import {loadFont as loadDMSans} from '@remotion/google-fonts/DMSans';
+import {loadFont as loadPlayfair} from '@remotion/google-fonts/PlayfairDisplay';
+export const {fontFamily:sans}=loadDMSans('normal',{weights:['400','500','600','700'],subsets:['latin']});
+export const {fontFamily:serif}=loadPlayfair('normal',{weights:['400','600','700','900'],subsets:['latin']});
+loadPlayfair('italic',{weights:['400','600'],subsets:['latin']});
+export const C={night:'#080806',raised:'#1A1815',cream:'#F7F2E9',cream2:'#E6DED1',muted:'#948D82',paper:'#F5F0E7',ink:'#1C1916',purple:'#A580C0',purpleDeep:'#75528D',rust:'#C07A50',gold:'#E9C988',line:'#39342A'};
+export const mayon='https://raw.githubusercontent.com/Yahiro025/bicol-app/main/public/images/mayon-hero.png';
+export const clamp={extrapolateLeft:'clamp' as const,extrapolateRight:'clamp' as const};
+const ease=Easing.bezier(.16,1,.3,1); const easeIO=Easing.bezier(.76,0,.24,1);
+export const p=(f:number,a:number,b:number)=>interpolate(f,[a,b],[0,1],{...clamp,easing:ease});
+export const out=(f:number,a:number,b:number)=>interpolate(f,[a,b],[1,0],{...clamp,easing:easeIO});
+export const Noise:React.FC<{light?:boolean;opacity?:number}>=({light=false,opacity=.042})=><AbsoluteFill style={{opacity,mixBlendMode:light?'multiply':'screen',pointerEvents:'none',backgroundImage:"url(\"data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E\")"}}/>;
+export const Edge:React.FC<{children:React.ReactNode;light?:boolean}>=({children,light=false})=><div style={{position:'absolute',top:44,left:58,fontFamily:sans,fontSize:15,fontWeight:700,letterSpacing:'.22em',textTransform:'uppercase',color:light?'#746B60':C.gold}}>{children}</div>;
+export const Chip:React.FC<{children:React.ReactNode;accent?:boolean;light?:boolean}>=({children,accent,light})=><div style={{display:'inline-flex',alignItems:'center',height:40,padding:'0 15px',borderRadius:999,border:`1px solid ${accent?C.purple:light?'#CFC5B5':C.line}`,background:accent?(light?'rgba(117,82,141,.08)':'rgba(165,128,192,.12)'):(light?'#FAF6EF':C.raised),color:accent?(light?C.purpleDeep:'#D6B9EA'):(light?'#61594E':C.cream2),fontFamily:sans,fontSize:13,fontWeight:700,letterSpacing:'.1em',textTransform:'uppercase',whiteSpace:'nowrap'}}>{children}</div>;
