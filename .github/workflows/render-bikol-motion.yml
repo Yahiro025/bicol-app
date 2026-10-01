@@ -35,9 +35,20 @@ jobs:
         working-directory: motion/bikol-archive-30s
         run: npm run render
 
+      - name: Render research V3
+        working-directory: motion/bikol-archive-30s
+        run: npx remotion render src/index.ts BikolArchive30ResearchV3 out/bikol-archive-30s-v3.mp4
+
       - name: Upload preview
         uses: actions/upload-artifact@v4
         with:
           name: bikol-archive-30s-preview
           path: motion/bikol-archive-30s/out/bikol-archive-30s.mp4
+          if-no-files-found: error
+
+      - name: Upload research V3 preview
+        uses: actions/upload-artifact@v4
+        with:
+          name: bikol-archive-30s-v3-preview
+          path: motion/bikol-archive-30s/out/bikol-archive-30s-v3.mp4
           if-no-files-found: error
