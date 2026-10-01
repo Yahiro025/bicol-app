@@ -22,6 +22,9 @@ jobs:
       - name: Install dependencies
         working-directory: motion/bikol-archive-30s-v4
         run: npm install --no-audit --no-fund
+      - name: Generate original sound design
+        working-directory: motion/bikol-archive-30s-v4
+        run: npm run sound
       - name: Render V4
         working-directory: motion/bikol-archive-30s-v4
         run: npm run render
