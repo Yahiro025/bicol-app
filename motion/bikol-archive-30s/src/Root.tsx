@@ -1,17 +1,13 @@
 import React from 'react';
 import {Audio} from '@remotion/media';
-import {Composition, Sequence, staticFile} from 'remotion';
+import {Composition, staticFile} from 'remotion';
 import {BikolArchive30Final as BikolArchive30Continuous} from './BikolArchive30Final';
 import {BikolArchive30V3} from './BikolArchive30V3';
-import {PracticeOverlay} from './PracticeOverlay';
 
 const BikolArchive30Master: React.FC = () => {
   return (
     <>
       <BikolArchive30V3 />
-      <Sequence from={510} durationInFrames={172}>
-        <PracticeOverlay />
-      </Sequence>
       <Audio src={staticFile('audio/bikol-motion.wav')} volume={0.9} />
     </>
   );
