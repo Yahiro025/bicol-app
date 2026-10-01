@@ -11,31 +11,30 @@ import {
 } from 'remotion';
 
 const C = {
-  bg: '#0B0A09',
-  surface: '#171512',
-  raised: '#211E19',
-  ink: '#F5F1E8',
-  inkDim: '#CDC6B8',
-  muted: '#8C8579',
-  purple: '#A986C6',
-  purpleDark: '#5D4473',
-  rust: '#B76F47',
-  gold: '#E8C47A',
-  paper: '#F5F0E7',
-  paperInk: '#171512',
-  paperMuted: '#6C655B',
-  line: '#34302A',
+  night: '#08090D',
+  black: '#0E0D0B',
+  raised: '#191714',
+  ink: '#F7F3EA',
+  ink2: '#D9D2C6',
+  muted: '#8D877E',
+  line: '#37332D',
+  purple: '#A580C0',
+  purpleDark: '#6F4D87',
+  rust: '#C8794E',
+  gold: '#EBCB86',
+  paper: '#F7F4ED',
+  paper2: '#EEE9DE',
+  paperInk: '#181715',
 };
 
 const serif = "Georgia, 'Times New Roman', serif";
-const sans = "Inter, Arial, Helvetica, sans-serif";
+const sans = "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
 const mayon = 'https://raw.githubusercontent.com/Yahiro025/bicol-app/main/public/images/mayon-hero.png';
 const clamp = {extrapolateLeft: 'clamp' as const, extrapolateRight: 'clamp' as const};
 const ease = Easing.bezier(0.16, 1, 0.3, 1);
-const easeInOut = Easing.bezier(0.76, 0, 0.24, 1);
 
-const fade = (frame: number, a: number, b: number, c: number, d: number) =>
-  interpolate(frame, [a, b, c, d], [0, 1, 1, 0], {...clamp, easing: [ease, Easing.linear, ease]});
+const fade = (f: number, a: number, b: number) =>
+  interpolate(f, [a, b], [0, 1], {...clamp, easing: ease});
 
 const Noise: React.FC<{opacity?: number}> = ({opacity = 0.035}) => (
   <AbsoluteFill
@@ -44,42 +43,20 @@ const Noise: React.FC<{opacity?: number}> = ({opacity = 0.035}) => (
       pointerEvents: 'none',
       mixBlendMode: 'soft-light',
       backgroundImage:
-        'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 220 220\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'.8\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\' opacity=\'.55\'/%3E%3C/svg%3E")',
+        'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 180 180\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'.82\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\' opacity=\'.78\'/%3E%3C/svg%3E")',
     }}
   />
 );
 
-const Eyebrow: React.FC<{children: React.ReactNode; dark?: boolean}> = ({children, dark}) => (
+const Eyebrow: React.FC<{children: React.ReactNode; dark?: boolean}> = ({children, dark = true}) => (
   <div
     style={{
       fontFamily: sans,
       fontSize: 18,
       fontWeight: 800,
-      letterSpacing: '0.24em',
+      letterSpacing: '0.28em',
       textTransform: 'uppercase',
-      color: dark ? C.paperMuted : C.gold,
-    }}
-  >
-    {children}
-  </div>
-);
-
-const BigWord: React.FC<{
-  children: React.ReactNode;
-  color?: string;
-  size?: number;
-  italic?: boolean;
-  style?: React.CSSProperties;
-}> = ({children, color = C.ink, size = 220, italic, style}) => (
-  <div
-    style={{
-      fontFamily: serif,
-      fontSize: size,
-      lineHeight: 0.82,
-      letterSpacing: '-0.065em',
-      color,
-      fontStyle: italic ? 'italic' : 'normal',
-      ...style,
+      color: dark ? C.gold : C.purpleDark,
     }}
   >
     {children}
@@ -87,380 +64,104 @@ const BigWord: React.FC<{
 );
 
 const Scene01Hook: React.FC = () => {
-  const frame = useCurrentFrame();
+  const f = useCurrentFrame();
   const {fps} = useVideoConfig();
-  const pop = spring({frame, fps, config: {damping: 120, stiffness: 105, mass: 0.9}});
-  const q = interpolate(frame, [34, 58], [0, 1], {...clamp, easing: ease});
-  const rebuttal = interpolate(frame, [66, 88], [0, 1], {...clamp, easing: ease});
-  const exit = interpolate(frame, [88, 110], [1, 0], {...clamp, easing: easeInOut});
-  const zoom = interpolate(frame, [80, 110], [1, 6.2], {...clamp, easing: easeInOut});
+  const collapse = interpolate(f, [92, 126], [0, 1], {...clamp, easing: ease});
+  const letters = 'MAGAYON'.split('');
 
   return (
-    <AbsoluteFill style={{background: C.bg, overflow: 'hidden', opacity: exit}}>
-      <div
+    <AbsoluteFill style={{backgroundColor: C.night, overflow: 'hidden'}}>
+      <Img
+        src={mayon}
         style={{
-          position: 'absolute',
-          width: 960,
-          height: 960,
-          borderRadius: '50%',
-          right: -140,
-          top: -290,
-          background: 'radial-gradient(circle, rgba(169,134,198,.24), rgba(169,134,198,0) 68%)',
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          objectPosition: '50% 34%',
+          scale: interpolate(f, [0, 126], [1.02, 1.13], clamp),
+          opacity: interpolate(f, [0, 22, 92, 126], [0.5, 0.92, 0.92, 0.22], clamp),
+        }}
+      />
+      <AbsoluteFill
+        style={{
+          background:
+            'radial-gradient(circle at 50% 58%, rgba(200,121,78,.13), transparent 28%), radial-gradient(ellipse at 50% 40%, rgba(8,9,13,.05), rgba(8,9,13,.88) 74%)',
         }}
       />
 
-      <div style={{position: 'absolute', left: 78, top: 66}}>
-        <Eyebrow>An Diksiyonaryo kan Bikol</Eyebrow>
-      </div>
-
       <div
         style={{
           position: 'absolute',
-          left: 70,
-          top: 160,
-          transformOrigin: '49% 52%',
-          scale: zoom,
-        }}
-      >
-        <BigWord
-          size={305}
-          color={C.ink}
-          style={{
-            opacity: pop,
-            translate: `${interpolate(pop, [0, 1], [-130, 0])}px 0`,
-          }}
-        >
-          magayon
-        </BigWord>
-      </div>
-
-      <div
-        style={{
-          position: 'absolute',
-          left: 88,
-          top: 530,
-          display: 'flex',
-          alignItems: 'baseline',
-          gap: 30,
-          opacity: q,
-          translate: `0 ${interpolate(q, [0, 1], [35, 0])}px`,
-        }}
-      >
-        <div style={{fontFamily: serif, fontSize: 92, color: C.purple, letterSpacing: '-0.04em'}}>beautiful</div>
-        <div style={{fontFamily: serif, fontSize: 92, color: C.muted}}>?</div>
-      </div>
-
-      <div
-        style={{
-          position: 'absolute',
-          left: 90,
-          bottom: 76,
-          width: 1480,
-          opacity: rebuttal,
-          translate: `0 ${interpolate(rebuttal, [0, 1], [30, 0])}px`,
-        }}
-      >
-        <div style={{fontFamily: serif, fontSize: 66, lineHeight: 1, color: C.inkDim, letterSpacing: '-0.03em'}}>
-          A translation gives you a word.
-          <span style={{color: C.gold}}> A language gives you context.</span>
-        </div>
-      </div>
-
-      <div
-        style={{
-          position: 'absolute',
-          right: 72,
-          bottom: 78,
-          fontFamily: sans,
-          fontSize: 18,
-          color: C.muted,
-          letterSpacing: '.14em',
-          textTransform: 'uppercase',
-        }}
-      >
-        Search → context → fluency
-      </div>
-      <Noise opacity={0.05} />
-    </AbsoluteFill>
-  );
-};
-
-const ContextChip: React.FC<{label: string; value: string; delay: number; x: number; y: number; rotate?: number}> = ({
-  label,
-  value,
-  delay,
-  x,
-  y,
-  rotate = 0,
-}) => {
-  const frame = useCurrentFrame();
-  const {fps} = useVideoConfig();
-  const p = spring({frame: frame - delay, fps, config: {damping: 120, stiffness: 135}});
-  return (
-    <div
-      style={{
-        position: 'absolute',
-        left: x,
-        top: y,
-        width: 330,
-        padding: '24px 26px 26px',
-        borderRadius: 24,
-        background: 'rgba(33,30,25,.95)',
-        border: `1px solid ${C.line}`,
-        boxShadow: '0 28px 70px rgba(0,0,0,.28)',
-        opacity: p,
-        scale: interpolate(p, [0, 1], [0.72, 1]),
-        rotate: `${rotate + interpolate(p, [0, 1], [-8, 0])}deg`,
-      }}
-    >
-      <div style={{fontFamily: sans, fontSize: 15, color: C.gold, letterSpacing: '.18em', textTransform: 'uppercase', fontWeight: 800}}>{label}</div>
-      <div style={{fontFamily: serif, fontSize: 42, lineHeight: 1, color: C.ink, marginTop: 13}}>{value}</div>
-    </div>
-  );
-};
-
-const Scene02Search: React.FC = () => {
-  const frame = useCurrentFrame();
-  const {fps} = useVideoConfig();
-  const inP = spring({frame, fps, config: {damping: 110, stiffness: 120}});
-  const chars = Math.floor(interpolate(frame, [10, 40], [0, 7], clamp));
-  const query = 'magayon'.slice(0, chars);
-  const result = spring({frame: frame - 38, fps, config: {damping: 110, stiffness: 115}});
-  const out = interpolate(frame, [118, 140], [1, 0], {...clamp, easing: easeInOut});
-  const cardZoom = interpolate(frame, [116, 140], [1, 3.4], {...clamp, easing: easeInOut});
-
-  return (
-    <AbsoluteFill style={{background: C.bg, overflow: 'hidden', opacity: out}}>
-      <div
-        style={{
-          position: 'absolute',
-          left: 80,
-          top: 56,
-          right: 80,
+          left: 92,
+          right: 92,
+          top: 74,
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
+          opacity: fade(f, 0, 18) * (1 - collapse),
         }}
       >
-        <Eyebrow>01 · Search the archive</Eyebrow>
-        <div style={{fontFamily: sans, fontSize: 18, color: C.muted}}>Meaning is only the beginning.</div>
-      </div>
-
-      <div
-        style={{
-          position: 'absolute',
-          left: 70,
-          top: 145,
-          width: 1780,
-          height: 150,
-          borderRadius: 34,
-          background: C.raised,
-          border: `1px solid ${C.line}`,
-          boxShadow: '0 30px 100px rgba(0,0,0,.34)',
-          display: 'flex',
-          alignItems: 'center',
-          padding: '0 48px',
-          opacity: inP,
-          translate: `0 ${interpolate(inP, [0, 1], [70, 0])}px`,
-        }}
-      >
-        <div style={{fontFamily: sans, fontSize: 46, color: C.muted, marginRight: 26}}>⌕</div>
-        <div style={{fontFamily: sans, fontSize: 52, fontWeight: 650, color: C.ink}}>{query}</div>
-        <div style={{width: 3, height: 56, background: C.purple, marginLeft: 8, opacity: frame < 50 ? 1 : 0.15}} />
-        <div style={{marginLeft: 'auto', fontFamily: sans, fontSize: 18, color: C.muted, letterSpacing: '.12em', textTransform: 'uppercase'}}>Bikol → English / Tagalog</div>
-      </div>
-
-      <div
-        style={{
-          position: 'absolute',
-          left: 72,
-          top: 350,
-          width: 920,
-          transformOrigin: '50% 50%',
-          scale: cardZoom,
-          opacity: result,
-        }}
-      >
-        <BigWord size={196} color={C.purple}>magayon</BigWord>
-        <div style={{display: 'flex', gap: 22, alignItems: 'baseline', marginTop: 28}}>
-          <div style={{fontFamily: serif, fontSize: 72, color: C.ink}}>beautiful</div>
-          <div style={{fontFamily: sans, fontSize: 19, color: C.muted, letterSpacing: '.18em', textTransform: 'uppercase'}}>adjective</div>
+        <Eyebrow>BIKOL · WORD 0001</Eyebrow>
+        <div style={{fontFamily: sans, fontSize: 17, letterSpacing: '.16em', color: C.ink2}}>
+          language archive
         </div>
-        <div style={{height: 1, background: C.line, width: 770, marginTop: 30}} />
-      </div>
-
-      <ContextChip label="Dialect" value="Central Bikol" delay={52} x={1120} y={370} rotate={-2} />
-      <ContextChip label="Pronunciation" value="ma·ga·yon" delay={60} x={1450} y={485} rotate={3} />
-      <ContextChip label="Example" value="Magayon an aga." delay={68} x={1090} y={665} rotate={2} />
-      <ContextChip label="Source" value="Mintz / community" delay={76} x={1450} y={770} rotate={-3} />
-
-      <div
-        style={{
-          position: 'absolute',
-          left: 78,
-          bottom: 66,
-          fontFamily: serif,
-          fontSize: 52,
-          color: C.inkDim,
-          opacity: interpolate(frame, [72, 92], [0, 1], {...clamp, easing: ease}),
-        }}
-      >
-        Keep the word. Keep what surrounds it.
-      </div>
-      <Noise />
-    </AbsoluteFill>
-  );
-};
-
-const Scene03Dialect: React.FC = () => {
-  const frame = useCurrentFrame();
-  const {fps} = useVideoConfig();
-  const intro = spring({frame, fps, config: {damping: 110, stiffness: 120}});
-  const out = interpolate(frame, [118, 140], [1, 0], {...clamp, easing: easeInOut});
-  const names = [
-    ['CENTRAL', 140, 300, -7],
-    ['RINCONADA', 930, 210, 5],
-    ['ALBAY', 1220, 565, -4],
-    ['CATANDUANES', 560, 740, 4],
-    ['SORSOGON', 115, 650, 6],
-  ] as const;
-
-  return (
-    <AbsoluteFill style={{background: C.paper, overflow: 'hidden', color: C.paperInk, opacity: out}}>
-      <div style={{position: 'absolute', left: 70, top: 52}}>
-        <Eyebrow dark>02 · One language, many voices</Eyebrow>
       </div>
 
       <div
         style={{
           position: 'absolute',
-          left: -70,
-          top: 110,
-          width: 2060,
-          textAlign: 'center',
-          opacity: 0.07,
-          scale: interpolate(frame, [0, 140], [0.93, 1.08], clamp),
-        }}
-      >
-        <BigWord size={390} color={C.paperInk}>MAGAYON</BigWord>
-      </div>
-
-      <div
-        style={{
-          position: 'absolute',
-          left: 690,
-          top: 315,
-          width: 550,
-          height: 550,
-          borderRadius: '50%',
-          background: C.paperInk,
+          left: 56,
+          right: 56,
+          top: interpolate(collapse, [0, 1], [278, 96]),
           display: 'flex',
-          alignItems: 'center',
           justifyContent: 'center',
-          textAlign: 'center',
-          boxShadow: '0 40px 110px rgba(23,21,18,.2)',
-          opacity: intro,
-          scale: interpolate(intro, [0, 1], [0.72, 1]),
+          alignItems: 'baseline',
+          gap: interpolate(collapse, [0, 1], [10, 2]),
+          scale: interpolate(collapse, [0, 1], [1, 0.22]),
+          transformOrigin: '50% 50%',
         }}
       >
-        <div>
-          <div style={{fontFamily: serif, fontSize: 84, letterSpacing: '-0.05em', color: C.paper}}>Bikol</div>
-          <div style={{fontFamily: sans, fontSize: 17, letterSpacing: '.18em', textTransform: 'uppercase', color: C.gold, marginTop: 14}}>not one flattened voice</div>
-        </div>
+        {letters.map((letter, i) => {
+          const li = spring({
+            frame: f - 10 - i * 2.8,
+            fps,
+            config: {damping: 105, stiffness: 110},
+          });
+          return (
+            <span
+              key={`${letter}-${i}`}
+              style={{
+                display: 'inline-block',
+                fontFamily: serif,
+                fontSize: 244,
+                fontWeight: 700,
+                letterSpacing: '-0.055em',
+                lineHeight: 0.84,
+                color: C.ink,
+                opacity: li,
+                translate: `0 ${interpolate(li, [0, 1], [70, 0])}px`,
+                rotate: `${interpolate(li, [0, 1], [i % 2 ? 3 : -3, 0])}deg`,
+                textShadow: '0 24px 80px rgba(0,0,0,.38)',
+              }}
+            >
+              {letter}
+            </span>
+          );
+        })}
       </div>
-
-      {names.map(([name, x, y, rot], i) => {
-        const p = spring({frame: frame - 20 - i * 7, fps, config: {damping: 100, stiffness: 120}});
-        return (
-          <div
-            key={name}
-            style={{
-              position: 'absolute',
-              left: x,
-              top: y,
-              padding: '24px 34px',
-              borderRadius: 999,
-              background: i % 2 === 0 ? C.purple : C.rust,
-              color: 'white',
-              fontFamily: sans,
-              fontSize: 27,
-              fontWeight: 850,
-              letterSpacing: '.12em',
-              opacity: p,
-              scale: interpolate(p, [0, 1], [0.4, 1]),
-              rotate: `${rot}deg`,
-              boxShadow: '0 16px 40px rgba(23,21,18,.16)',
-            }}
-          >
-            {name}
-          </div>
-        );
-      })}
 
       <div
         style={{
           position: 'absolute',
-          right: 85,
-          bottom: 60,
-          width: 660,
-          fontFamily: serif,
-          fontSize: 54,
-          lineHeight: 0.98,
-          letterSpacing: '-0.04em',
-          textAlign: 'right',
-          opacity: interpolate(frame, [70, 92], [0, 1], {...clamp, easing: ease}),
+          left: 0,
+          right: 0,
+          top: 562,
+          textAlign: 'center',
+          opacity: fade(f, 46, 68) * (1 - collapse),
         }}
       >
-        Preserve differences.
-        <br />
-        <span style={{color: C.purpleDark}}>Don’t erase them.</span>
-      </div>
-      <Noise opacity={0.025} />
-    </AbsoluteFill>
-  );
-};
-
-const WordStage: React.FC<{word: string; label: string; frame: number; start: number; x: number; accent?: boolean}> = ({
-  word,
-  label,
-  frame,
-  start,
-  x,
-  accent,
-}) => {
-  const {fps} = useVideoConfig();
-  const p = spring({frame: frame - start, fps, config: {damping: 100, stiffness: 120}});
-  return (
-    <div
-      style={{
-        position: 'absolute',
-        left: x,
-        top: 360,
-        opacity: p,
-        translate: `${interpolate(p, [0, 1], [110, 0])}px 0`,
-      }}
-    >
-      <div style={{fontFamily: serif, fontSize: 96, color: accent ? C.gold : C.ink, letterSpacing: '-0.05em'}}>{word}</div>
-      <div style={{fontFamily: sans, fontSize: 16, color: C.muted, letterSpacing: '.2em', textTransform: 'uppercase', marginTop: 10}}>{label}</div>
-    </div>
-  );
-};
-
-const Scene04Transform: React.FC = () => {
-  const frame = useCurrentFrame();
-  const out = interpolate(frame, [136, 158], [1, 0], {...clamp, easing: easeInOut});
-  const stemGrow = interpolate(frame, [12, 100], [0, 1], {...clamp, easing: ease});
-
-  return (
-    <AbsoluteFill style={{background: C.bg, overflow: 'hidden', opacity: out}}>
-      <div style={{position: 'absolute', left: 72, top: 58}}>
-        <Eyebrow>03 · Watch words move</Eyebrow>
-      </div>
-
-      <div style={{position: 'absolute', left: 70, top: 135}}>
-        <div style={{fontFamily: serif, fontSize: 82, color: C.inkDim, letterSpacing: '-0.04em'}}>Lookup is static.</div>
-        <div style={{fontFamily: serif, fontSize: 112, color: C.ink, letterSpacing: '-0.05em', marginTop: -10}}>
-          Language <span style={{color: C.purple}}>moves.</span>
+        <div style={{fontFamily: serif, fontSize: 52, fontStyle: 'italic', color: C.gold}}>
+          beautiful · maganda
         </div>
       </div>
 
@@ -469,365 +170,670 @@ const Scene04Transform: React.FC = () => {
           position: 'absolute',
           left: 100,
           right: 100,
-          top: 535,
-          height: 2,
-          background: C.line,
+          bottom: 82,
+          borderTop: '1px solid rgba(235,203,134,.36)',
+          paddingTop: 26,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-end',
+          opacity: fade(f, 58, 80) * (1 - collapse),
         }}
       >
-        <div style={{height: 2, width: `${stemGrow * 100}%`, background: `linear-gradient(90deg, ${C.rust}, ${C.purple}, ${C.gold})`}} />
+        <div style={{fontFamily: serif, fontSize: 62, color: C.ink, letterSpacing: '-.03em'}}>
+          One word can carry a place.
+        </div>
+        <div style={{fontFamily: sans, fontSize: 18, color: C.ink2, textTransform: 'uppercase', letterSpacing: '.18em'}}>
+          meaning · sound · memory
+        </div>
       </div>
+      <Noise opacity={0.055} />
+    </AbsoluteFill>
+  );
+};
 
-      <WordStage word="bakal" label="root" frame={frame} start={8} x={90} accent />
-      <WordStage word="magbakal" label="infinitive" frame={frame} start={30} x={475} />
-      <WordStage word="nagbakal" label="completed" frame={frame} start={52} x={930} />
-      <WordStage word="mabakal" label="contemplative" frame={frame} start={74} x={1390} />
+const Scene02Search: React.FC = () => {
+  const f = useCurrentFrame();
+  const {fps} = useVideoConfig();
+  const bgIn = fade(f, 0, 20);
+  const queryIn = spring({frame: f - 10, fps, config: {damping: 105, stiffness: 110}});
+  const infoIn = spring({frame: f - 34, fps, config: {damping: 115, stiffness: 95}});
+  const toCenter = interpolate(f, [132, 170], [0, 1], {...clamp, easing: ease});
+
+  return (
+    <AbsoluteFill style={{overflow: 'hidden', pointerEvents: 'none'}}>
+      <AbsoluteFill style={{backgroundColor: C.black, opacity: bgIn}} />
+      <div
+        style={{
+          position: 'absolute',
+          left: 80,
+          right: 80,
+          top: 58,
+          height: 124,
+          borderRadius: 28,
+          border: `1px solid ${C.line}`,
+          background: 'rgba(25,23,20,.96)',
+          display: 'flex',
+          alignItems: 'center',
+          padding: '0 34px',
+          boxShadow: '0 28px 80px rgba(0,0,0,.32)',
+          opacity: queryIn,
+          translate: `0 ${interpolate(queryIn, [0, 1], [-34, 0])}px`,
+        }}
+      >
+        <div style={{fontFamily: sans, fontSize: 34, color: C.muted, marginRight: 22}}>⌕</div>
+        <div style={{fontFamily: sans, fontSize: 48, fontWeight: 650, color: C.ink}}>magayon</div>
+        <div style={{width: 2, height: 54, background: C.purple, marginLeft: 8, opacity: f % 20 < 10 ? 1 : 0.25}} />
+        <div style={{marginLeft: 'auto', fontFamily: sans, fontSize: 17, letterSpacing: '.18em', textTransform: 'uppercase', color: C.muted}}>
+          search the archive
+        </div>
+      </div>
 
       <div
         style={{
           position: 'absolute',
-          left: 70,
-          bottom: 72,
-          right: 70,
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'end',
+          left: interpolate(toCenter, [0, 1], [104, 630]),
+          top: interpolate(toCenter, [0, 1], [242, 382]),
+          scale: interpolate(toCenter, [0, 1], [1, 0.64]),
+          zIndex: 4,
+          opacity: infoIn,
         }}
       >
-        <div style={{fontFamily: serif, fontSize: 52, color: C.inkDim, maxWidth: 730, lineHeight: 1}}>
-          See how a verb changes,
-          <br />
-          not just what it translates to.
+        <div style={{fontFamily: serif, fontSize: 202, lineHeight: .9, fontWeight: 700, letterSpacing: '-.055em', color: C.purple}}>
+          magayon
         </div>
-        <div style={{fontFamily: sans, fontSize: 18, color: C.muted, letterSpacing: '.14em', textTransform: 'uppercase'}}>conjugation · focus · tense</div>
+        <div style={{width: interpolate(infoIn, [0, 1], [0, 870]), height: 2, background: C.line, marginTop: 28}} />
+      </div>
+
+      <div
+        style={{
+          position: 'absolute',
+          right: 112,
+          top: 282,
+          width: 670,
+          opacity: infoIn * (1 - toCenter),
+          translate: `${interpolate(infoIn, [0, 1], [70, 0])}px 0`,
+        }}
+      >
+        <Eyebrow>ADJECTIVE</Eyebrow>
+        <div style={{fontFamily: serif, fontSize: 150, lineHeight: .9, letterSpacing: '-.05em', color: C.ink, marginTop: 28}}>
+          beautiful
+        </div>
+        <div style={{fontFamily: serif, fontSize: 52, fontStyle: 'italic', color: C.gold, marginTop: 28}}>
+          maganda
+        </div>
+      </div>
+
+      <div
+        style={{
+          position: 'absolute',
+          left: 108,
+          right: 108,
+          bottom: 74,
+          display: 'grid',
+          gridTemplateColumns: '1.15fr .85fr 1fr 1fr',
+          borderTop: `1px solid ${C.line}`,
+          borderBottom: `1px solid ${C.line}`,
+          opacity: fade(f, 62, 82) * (1 - toCenter),
+        }}
+      >
+        {[
+          ['PRONUNCIATION', 'ma·ga·yon'],
+          ['DIALECT', 'Central Bikol'],
+          ['CONTEXT', 'examples'],
+          ['REFERENCE', 'source attached'],
+        ].map(([k, v], i) => (
+          <div key={k} style={{padding: '26px 30px', borderLeft: i === 0 ? 'none' : `1px solid ${C.line}`}}>
+            <div style={{fontFamily: sans, fontSize: 14, letterSpacing: '.2em', fontWeight: 800, color: C.muted}}>{k}</div>
+            <div style={{fontFamily: serif, fontSize: 34, color: C.ink, marginTop: 10}}>{v}</div>
+          </div>
+        ))}
       </div>
       <Noise />
     </AbsoluteFill>
   );
 };
 
-const LearningPanel: React.FC<{
-  label: string;
-  title: string;
-  copy: string;
-  x: number;
-  w: number;
-  delay: number;
-  rotate: number;
-  accent: string;
-}> = ({label, title, copy, x, w, delay, rotate, accent}) => {
-  const frame = useCurrentFrame();
+const dialects = [
+  {name: 'CENTRAL', x: 960, y: 130},
+  {name: 'RINCONADA', x: 1510, y: 360},
+  {name: 'ALBAY', x: 1450, y: 820},
+  {name: 'SORSOGON', x: 470, y: 820},
+  {name: 'CATANDUANES', x: 350, y: 350},
+];
+
+const Scene03Dialect: React.FC = () => {
+  const f = useCurrentFrame();
   const {fps} = useVideoConfig();
-  const p = spring({frame: frame - delay, fps, config: {damping: 105, stiffness: 125}});
-  return (
-    <div
-      style={{
-        position: 'absolute',
-        left: x,
-        top: 250,
-        width: w,
-        height: 600,
-        borderRadius: 36,
-        background: C.paper,
-        color: C.paperInk,
-        padding: 44,
-        boxShadow: '0 36px 90px rgba(0,0,0,.34)',
-        opacity: p,
-        scale: interpolate(p, [0, 1], [0.84, 1]),
-        rotate: `${rotate + interpolate(p, [0, 1], [6, 0])}deg`,
-      }}
-    >
-      <div style={{height: 10, width: 120, borderRadius: 999, background: accent}} />
-      <div style={{fontFamily: sans, fontSize: 15, color: C.paperMuted, letterSpacing: '.18em', textTransform: 'uppercase', fontWeight: 800, marginTop: 30}}>{label}</div>
-      <div style={{fontFamily: serif, fontSize: 76, lineHeight: 0.95, letterSpacing: '-0.05em', marginTop: 42}}>{title}</div>
-      <div style={{fontFamily: sans, fontSize: 23, lineHeight: 1.45, color: C.paperMuted, marginTop: 32}}>{copy}</div>
-      <div style={{position: 'absolute', left: 44, bottom: 42, fontFamily: serif, fontSize: 42, color: accent}}>magayon</div>
-    </div>
-  );
-};
-
-const Scene05Practice: React.FC = () => {
-  const frame = useCurrentFrame();
-  const out = interpolate(frame, [145, 167], [1, 0], {...clamp, easing: easeInOut});
-  const headline = interpolate(frame, [0, 24], [0, 1], {...clamp, easing: ease});
+  const paper = interpolate(f, [0, 34], [3, 126], {...clamp, easing: ease});
+  const title = fade(f, 28, 52);
+  const core = spring({frame: f - 18, fps, config: {damping: 100, stiffness: 100}});
+  const exitCircle = interpolate(f, [112, 150], [1, 11], {...clamp, easing: ease});
 
   return (
-    <AbsoluteFill style={{background: C.bg, overflow: 'hidden', opacity: out}}>
+    <AbsoluteFill style={{overflow: 'hidden'}}>
+      <AbsoluteFill style={{background: C.paper, clipPath: `circle(${paper}% at 50% 50%)`}} />
       <div
         style={{
           position: 'absolute',
-          left: 72,
-          top: 54,
-          right: 72,
+          left: 84,
+          right: 84,
+          top: 64,
           display: 'flex',
           justifyContent: 'space-between',
-          alignItems: 'end',
+          opacity: title,
         }}
       >
-        <Eyebrow>04 · From recognition to recall</Eyebrow>
-        <div style={{fontFamily: serif, fontSize: 66, color: C.ink, letterSpacing: '-0.04em', opacity: headline}}>
-          Look it up → say it → use it.
-        </div>
+        <Eyebrow dark={false}>02 · LANGUAGE IN CONTEXT</Eyebrow>
+        <div style={{fontFamily: sans, fontSize: 18, color: '#6B6760', letterSpacing: '.15em'}}>one archive · distinct dialects</div>
       </div>
 
-      <LearningPanel
-        label="Flashcards"
-        title="Remember it."
-        copy="High-frequency vocabulary becomes something you can retrieve, not merely recognize."
-        x={45}
-        w={600}
-        delay={10}
-        rotate={-3}
-        accent={C.purpleDark}
+      {[420, 620, 830].map((size, i) => (
+        <div
+          key={size}
+          style={{
+            position: 'absolute',
+            width: size,
+            height: size,
+            left: 960 - size / 2,
+            top: 540 - size / 2,
+            borderRadius: '50%',
+            border: '1px solid rgba(28,27,25,.18)',
+            opacity: fade(f, 20 + i * 7, 46 + i * 7),
+            scale: interpolate(f, [0, 150], [0.86, 1.08 + i * 0.02], clamp),
+          }}
+        />
+      ))}
+
+      {dialects.map((d, i) => {
+        const p = spring({frame: f - 30 - i * 5, fps, config: {damping: 105, stiffness: 115}});
+        return (
+          <div
+            key={d.name}
+            style={{
+              position: 'absolute',
+              left: d.x,
+              top: d.y,
+              translate: '-50% -50%',
+              padding: '15px 24px',
+              borderRadius: 999,
+              background: C.paper,
+              border: '1px solid rgba(28,27,25,.26)',
+              boxShadow: '0 16px 36px rgba(28,27,25,.08)',
+              color: C.paperInk,
+              fontFamily: sans,
+              fontSize: 19,
+              fontWeight: 800,
+              letterSpacing: '.12em',
+              opacity: p,
+              scale: interpolate(p, [0, 1], [.6, 1]),
+            }}
+          >
+            {d.name}
+          </div>
+        );
+      })}
+
+      <div
+        style={{
+          position: 'absolute',
+          left: '50%',
+          top: '50%',
+          translate: '-50% -50%',
+          width: 310,
+          height: 310,
+          borderRadius: '50%',
+          background: C.paperInk,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center',
+          color: C.paper,
+          opacity: core,
+          scale: interpolate(core, [0, 1], [.72, 1]) * exitCircle,
+          zIndex: 5,
+          boxShadow: '0 30px 80px rgba(28,27,25,.18)',
+        }}
+      >
+        <div style={{fontFamily: serif, fontSize: 70, lineHeight: .9, letterSpacing: '-.04em'}}>magayon</div>
+        <div style={{fontFamily: sans, fontSize: 14, letterSpacing: '.2em', marginTop: 18, color: '#D8D1C5'}}>ONE WORD</div>
+      </div>
+
+      <div
+        style={{
+          position: 'absolute',
+          left: 82,
+          bottom: 62,
+          fontFamily: serif,
+          fontSize: 72,
+          lineHeight: .95,
+          letterSpacing: '-.04em',
+          color: C.paperInk,
+          opacity: title * (1 - interpolate(f, [112, 144], [0, 1], clamp)),
+        }}
+      >
+        One language.
+        <br />
+        <span style={{color: C.purpleDark, fontStyle: 'italic'}}>Five dialects.</span>
+      </div>
+      <Noise opacity={0.025} />
+    </AbsoluteFill>
+  );
+};
+
+const forms = [
+  {word: 'bakal', label: 'root'},
+  {word: 'magbakal', label: 'infinitive'},
+  {word: 'nagbakal', label: 'completed'},
+  {word: 'mabakal', label: 'contemplated'},
+];
+
+const Scene04Conjugation: React.FC = () => {
+  const f = useCurrentFrame();
+  const {fps} = useVideoConfig();
+  const darkReveal = interpolate(f, [0, 32], [2, 126], {...clamp, easing: ease});
+  const step = Math.min(forms.length - 1, Math.floor(interpolate(f, [34, 124], [0, forms.length], clamp)));
+  const active = forms[step];
+  const wordIn = spring({frame: f - 22, fps, config: {damping: 105, stiffness: 105}});
+  const cardGrow = interpolate(f, [132, 168], [0, 1], {...clamp, easing: ease});
+
+  return (
+    <AbsoluteFill style={{overflow: 'hidden'}}>
+      <AbsoluteFill style={{background: C.black, clipPath: `circle(${darkReveal}% at 50% 50%)`}} />
+      <div style={{position: 'absolute', left: 86, top: 68, opacity: fade(f, 24, 44)}}>
+        <Eyebrow>03 · WORDS MOVE</Eyebrow>
+      </div>
+      <div
+        style={{
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          top: 210,
+          textAlign: 'center',
+          opacity: wordIn * (1 - cardGrow),
+        }}
+      >
+        <div style={{fontFamily: sans, fontSize: 22, color: C.muted, textTransform: 'uppercase', letterSpacing: '.24em'}}>
+          ROOT → ASPECT → MEANING
+        </div>
+        <div
+          style={{
+            fontFamily: serif,
+            fontSize: 250,
+            lineHeight: .9,
+            letterSpacing: '-.065em',
+            color: C.ink,
+            marginTop: 52,
+            scale: interpolate(wordIn, [0, 1], [.84, 1]),
+          }}
+        >
+          {active.word}
+        </div>
+        <div style={{fontFamily: serif, fontSize: 48, fontStyle: 'italic', color: C.purple, marginTop: 18}}>{active.label}</div>
+      </div>
+
+      <div
+        style={{
+          position: 'absolute',
+          left: 110,
+          right: 110,
+          bottom: 106,
+          display: 'grid',
+          gridTemplateColumns: 'repeat(4, 1fr)',
+          opacity: fade(f, 48, 68) * (1 - cardGrow),
+        }}
+      >
+        {forms.map((form, i) => {
+          const on = i <= step;
+          return (
+            <div
+              key={form.word}
+              style={{
+                borderTop: `2px solid ${on ? C.gold : C.line}`,
+                paddingTop: 18,
+                paddingRight: 26,
+                opacity: on ? 1 : .32,
+              }}
+            >
+              <div style={{fontFamily: serif, fontSize: 42, color: on ? C.ink : C.muted}}>{form.word}</div>
+              <div style={{fontFamily: sans, fontSize: 13, letterSpacing: '.18em', textTransform: 'uppercase', color: on ? C.gold : C.muted, marginTop: 9}}>{form.label}</div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div
+        style={{
+          position: 'absolute',
+          left: 960,
+          top: 540,
+          width: interpolate(cardGrow, [0, 1], [420, 2140]),
+          height: interpolate(cardGrow, [0, 1], [270, 1240]),
+          translate: '-50% -50%',
+          borderRadius: interpolate(cardGrow, [0, 1], [30, 0]),
+          background: C.paper,
+          zIndex: 8,
+          opacity: cardGrow,
+        }}
       />
-      <LearningPanel
-        label="Grammar drills"
-        title="Transform it."
-        copy="Substitute words and change verbs so grammar becomes a motion you can perform."
-        x={660}
-        w={600}
-        delay={25}
-        rotate={2}
-        accent={C.rust}
-      />
-      <LearningPanel
-        label="Dialogue"
-        title="Use it."
-        copy="Short scenarios turn isolated vocabulary into an actual exchange with context."
-        x={1275}
-        w={600}
-        delay={40}
-        rotate={-2}
-        accent={C.gold}
-      />
+      <Noise />
+    </AbsoluteFill>
+  );
+};
+
+const PracticeCard: React.FC<{
+  label: string;
+  title: string;
+  accent: string;
+  children: React.ReactNode;
+}> = ({label, title, accent, children}) => (
+  <div
+    style={{
+      width: 1380,
+      height: 610,
+      flex: '0 0 auto',
+      borderRadius: 42,
+      border: '1px solid rgba(28,27,25,.16)',
+      background: '#FFFDF8',
+      boxShadow: '0 34px 80px rgba(28,27,25,.12)',
+      padding: '56px 62px',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'space-between',
+      overflow: 'hidden',
+    }}
+  >
+    <div>
+      <div style={{fontFamily: sans, fontSize: 15, letterSpacing: '.22em', fontWeight: 850, textTransform: 'uppercase', color: accent}}>{label}</div>
+      <div style={{fontFamily: serif, fontSize: 108, lineHeight: .94, letterSpacing: '-.055em', color: C.paperInk, marginTop: 25}}>{title}</div>
+    </div>
+    {children}
+  </div>
+);
+
+const Scene05Practice: React.FC = () => {
+  const f = useCurrentFrame();
+  const reveal = interpolate(f, [0, 26], [100, 0], {...clamp, easing: ease});
+  const track = interpolate(f, [30, 152], [0, -3000], {...clamp, easing: Easing.bezier(.2, .8, .2, 1)});
+  const exit = interpolate(f, [146, 172], [0, 1], {...clamp, easing: ease});
+
+  return (
+    <AbsoluteFill style={{overflow: 'hidden'}}>
+      <AbsoluteFill style={{background: C.paper, clipPath: `inset(0 0 0 ${reveal}%)`}} />
+      <div
+        style={{
+          position: 'absolute',
+          left: 76,
+          right: 76,
+          top: 52,
+          display: 'flex',
+          alignItems: 'baseline',
+          justifyContent: 'space-between',
+          opacity: fade(f, 18, 38) * (1 - exit),
+        }}
+      >
+        <div style={{fontFamily: serif, fontSize: 86, color: C.paperInk, letterSpacing: '-.045em'}}>
+          Don’t just remember it. <span style={{color: C.purpleDark, fontStyle: 'italic'}}>Use it.</span>
+        </div>
+        <Eyebrow dark={false}>04 · PRACTICE</Eyebrow>
+      </div>
+
+      <div
+        style={{
+          position: 'absolute',
+          left: 270 + track,
+          top: 282,
+          display: 'flex',
+          gap: 120,
+          rotate: '-1.2deg',
+          opacity: 1 - exit,
+        }}
+      >
+        <PracticeCard label="FLASHCARD" title="magayon → beautiful" accent={C.purpleDark}>
+          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'end'}}>
+            <div style={{fontFamily: serif, fontSize: 42, color: '#6B6760'}}>Recall before reveal.</div>
+            <div style={{fontFamily: sans, fontSize: 15, letterSpacing: '.18em', textTransform: 'uppercase', color: '#6B6760'}}>top 25 · 50 · 100</div>
+          </div>
+        </PracticeCard>
+
+        <PracticeCard label="GRAMMAR DRILL" title="Transform the sentence." accent={C.rust}>
+          <div>
+            <div style={{fontFamily: serif, fontSize: 48, color: C.paperInk}}>An aki <span style={{borderBottom: `4px solid ${C.rust}`}}>___</span> sa harong.</div>
+            <div style={{fontFamily: sans, fontSize: 15, letterSpacing: '.18em', textTransform: 'uppercase', color: '#6B6760', marginTop: 22}}>substitution · verb transformation</div>
+          </div>
+        </PracticeCard>
+
+        <PracticeCard label="DIALOGUE" title="Practice a real exchange." accent={C.purpleDark}>
+          <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 26}}>
+            <div style={{background: C.paper2, borderRadius: 24, padding: '24px 28px', fontFamily: serif, fontSize: 34, color: C.paperInk}}>Kumusta ka?</div>
+            <div style={{background: '#E7DDF0', borderRadius: 24, padding: '24px 28px', fontFamily: serif, fontSize: 34, color: C.paperInk}}>Marhay man.</div>
+          </div>
+        </PracticeCard>
+      </div>
 
       <div
         style={{
           position: 'absolute',
           left: 0,
           right: 0,
-          bottom: -16,
-          textAlign: 'center',
-          fontFamily: serif,
-          fontSize: 150,
-          color: 'rgba(245,241,232,.055)',
-          letterSpacing: '-0.06em',
+          bottom: 44,
+          display: 'flex',
+          justifyContent: 'center',
+          gap: 10,
+          opacity: fade(f, 28, 46) * (1 - exit),
         }}
       >
-        SEARCH · STUDY · SPEAK · REPEAT
-      </div>
-      <Noise />
-    </AbsoluteFill>
-  );
-};
-
-const Scene06Community: React.FC = () => {
-  const frame = useCurrentFrame();
-  const {fps} = useVideoConfig();
-  const form = spring({frame: frame - 18, fps, config: {damping: 105, stiffness: 115}});
-  const stamp = spring({frame: frame - 70, fps, config: {damping: 70, stiffness: 160, mass: 0.8}});
-  const out = interpolate(frame, [108, 130], [1, 0], {...clamp, easing: easeInOut});
-
-  return (
-    <AbsoluteFill style={{background: C.paper, color: C.paperInk, overflow: 'hidden', opacity: out}}>
-      <div style={{position: 'absolute', left: 70, top: 54}}>
-        <Eyebrow dark>05 · Keep it alive together</Eyebrow>
-      </div>
-
-      <div style={{position: 'absolute', left: 70, top: 150, width: 980}}>
-        <div style={{fontFamily: serif, fontSize: 118, lineHeight: 0.88, letterSpacing: '-0.055em'}}>
-          A dictionary is not
-          <br />
-          a <span style={{color: C.purpleDark}}>finished object.</span>
-        </div>
-        <div style={{fontFamily: sans, fontSize: 26, lineHeight: 1.45, color: C.paperMuted, width: 760, marginTop: 46}}>
-          Speakers can suggest words, corrections, definitions, dialect labels, and sources. The archive can improve without pretending every entry is final.
-        </div>
-      </div>
-
-      <div
-        style={{
-          position: 'absolute',
-          right: 80,
-          top: 150,
-          width: 670,
-          height: 700,
-          background: '#171512',
-          borderRadius: 42,
-          padding: 46,
-          boxShadow: '0 42px 100px rgba(23,21,18,.24)',
-          color: C.ink,
-          opacity: form,
-          translate: `${interpolate(form, [0, 1], [110, 0])}px 0`,
-          rotate: `${interpolate(form, [0, 1], [4, -1.5])}deg`,
-        }}
-      >
-        <div style={{fontFamily: sans, fontSize: 16, color: C.gold, letterSpacing: '.18em', textTransform: 'uppercase', fontWeight: 800}}>Community contribution</div>
-        <div style={{fontFamily: serif, fontSize: 62, lineHeight: 1, marginTop: 22}}>Add what the archive is missing.</div>
-        {['Word', 'Dialect', 'Definition / correction', 'Source'].map((label, i) => (
-          <div key={label} style={{marginTop: i === 0 ? 42 : 20}}>
-            <div style={{fontFamily: sans, fontSize: 14, color: C.muted, letterSpacing: '.12em', textTransform: 'uppercase'}}>{label}</div>
-            <div style={{height: 50, borderBottom: `1px solid ${C.line}`, fontFamily: serif, fontSize: 25, paddingTop: 10, color: i === 0 ? C.purple : C.inkDim}}>{i === 0 ? 'magayon' : ''}</div>
-          </div>
-        ))}
-        <div style={{position: 'absolute', left: 46, right: 46, bottom: 42, height: 70, borderRadius: 18, background: C.gold, color: C.paperInk, fontFamily: sans, fontSize: 18, fontWeight: 900, letterSpacing: '.12em', textTransform: 'uppercase', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>Submit with a source →</div>
-      </div>
-
-      <div
-        style={{
-          position: 'absolute',
-          right: 620,
-          bottom: 105,
-          padding: '18px 28px',
-          border: `4px solid ${C.rust}`,
-          color: C.rust,
-          fontFamily: sans,
-          fontSize: 28,
-          fontWeight: 950,
-          letterSpacing: '.12em',
-          textTransform: 'uppercase',
-          rotate: '-8deg',
-          opacity: stamp,
-          scale: interpolate(stamp, [0, 1], [1.8, 1]),
-        }}
-      >
-        sourced · reviewable · alive
+        {[0, 1, 2].map((i) => {
+          const activeIndex = track > -900 ? 0 : track > -2300 ? 1 : 2;
+          return <div key={i} style={{width: activeIndex === i ? 54 : 12, height: 8, borderRadius: 999, background: activeIndex === i ? C.purpleDark : '#CAC2B7'}} />;
+        })}
       </div>
       <Noise opacity={0.02} />
     </AbsoluteFill>
   );
 };
 
-const Scene07Final: React.FC = () => {
-  const frame = useCurrentFrame();
-  const {fps} = useVideoConfig();
-  const p = spring({frame, fps, config: {damping: 120, stiffness: 90, mass: 1.1}});
-  const copy = interpolate(frame, [34, 58], [0, 1], {...clamp, easing: ease});
-  const line = interpolate(frame, [54, 82], [0, 1], {...clamp, easing: ease});
+const archiveWords = [
+  ['magayon', 'beautiful'], ['padaba', 'love'], ['uran', 'rain'], ['oragon', 'resilient'],
+  ['aram', 'know'], ['bakal', 'buy'], ['harong', 'home'], ['aki', 'child'],
+  ['marhay', 'good'], ['dakul', 'many'], ['saro', 'one'], ['gayon', 'beauty'],
+  ['boses', 'voice'], ['taram', 'speak'], ['dalan', 'road'], ['dagat', 'sea'],
+];
+
+const Scene06Archive: React.FC = () => {
+  const f = useCurrentFrame();
+  const dark = interpolate(f, [0, 26], [100, 0], {...clamp, easing: ease});
+  const zoom = interpolate(f, [112, 150], [1, .72], {...clamp, easing: ease});
+  const dim = interpolate(f, [104, 146], [0, .58], clamp);
 
   return (
-    <AbsoluteFill style={{background: '#05070d', overflow: 'hidden'}}>
-      <Img
-        src={mayon}
-        style={{
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-          objectPosition: '50% 34%',
-          scale: interpolate(frame, [0, 160], [1.08, 1.02], clamp),
-        }}
-      />
-      <AbsoluteFill style={{background: 'linear-gradient(90deg, rgba(5,7,13,.94) 0%, rgba(5,7,13,.72) 48%, rgba(5,7,13,.34) 100%)'}} />
-      <AbsoluteFill style={{background: 'linear-gradient(0deg, rgba(5,7,13,.92), transparent 50%, rgba(5,7,13,.28))'}} />
-
-      <div style={{position: 'absolute', left: 78, top: 70}}>
-        <Eyebrow>The Bikol language archive</Eyebrow>
-      </div>
-
+    <AbsoluteFill style={{overflow: 'hidden'}}>
+      <AbsoluteFill style={{background: C.black, clipPath: `inset(${dark}% 0 0 0)`}} />
       <div
         style={{
           position: 'absolute',
-          left: 70,
-          top: 180,
-          opacity: p,
-          translate: `${interpolate(p, [0, 1], [-80, 0])}px 0`,
+          inset: -80,
+          display: 'grid',
+          gridTemplateColumns: 'repeat(4, 1fr)',
+          gridAutoRows: '230px',
+          gap: 18,
+          rotate: '-3deg',
+          scale: zoom,
+          translate: `0 ${interpolate(f, [0, 150], [42, -30], clamp)}px`,
         }}
       >
-        <BigWord size={220}>Bikol</BigWord>
-        <BigWord size={220} italic color={C.gold} style={{marginTop: 6}}>Dictionary</BigWord>
+        {archiveWords.map(([w, m], i) => {
+          const p = fade(f, 10 + i * 1.8, 32 + i * 1.8);
+          const highlight = i === 10;
+          return (
+            <div
+              key={`${w}-${i}`}
+              style={{
+                border: `1px solid ${highlight ? 'rgba(235,203,134,.75)' : C.line}`,
+                background: highlight ? '#2A2419' : C.raised,
+                borderRadius: 24,
+                padding: '28px 30px',
+                opacity: p,
+                translate: `0 ${interpolate(p, [0, 1], [40, 0])}px`,
+              }}
+            >
+              <div style={{fontFamily: serif, fontSize: 50, color: highlight ? C.gold : C.ink, letterSpacing: '-.03em'}}>{w}</div>
+              <div style={{fontFamily: sans, fontSize: 17, color: C.muted, marginTop: 10}}>{m}</div>
+              {highlight && (
+                <div style={{fontFamily: sans, fontSize: 12, color: C.gold, letterSpacing: '.17em', textTransform: 'uppercase', marginTop: 26}}>new contribution</div>
+              )}
+            </div>
+          );
+        })}
       </div>
+
+      <AbsoluteFill style={{background: `rgba(14,13,11,${dim})`}} />
 
       <div
         style={{
           position: 'absolute',
-          left: 82,
-          bottom: 185,
-          fontFamily: serif,
-          fontSize: 64,
-          lineHeight: 1,
-          color: C.ink,
-          opacity: copy,
+          left: 92,
+          right: 92,
+          top: 74,
+          display: 'flex',
+          justifyContent: 'space-between',
+          opacity: fade(f, 26, 48),
         }}
       >
-        Search it. Learn it.
-        <br />
-        <span style={{color: C.purple}}>Keep it alive.</span>
+        <Eyebrow>05 · KEEP IT ALIVE</Eyebrow>
+        <div style={{fontFamily: sans, fontSize: 17, color: C.muted, letterSpacing: '.17em'}}>community corrections · new words · sources</div>
       </div>
 
       <div
         style={{
           position: 'absolute',
-          left: 82,
-          right: 82,
-          bottom: 82,
-          height: 1,
-          background: `linear-gradient(90deg, ${C.gold} ${line * 100}%, rgba(245,241,232,.15) ${line * 100}%)`,
+          left: '50%',
+          top: '50%',
+          translate: '-50% -50%',
+          width: 1500,
+          textAlign: 'center',
+          opacity: fade(f, 58, 82),
+          scale: interpolate(f, [58, 150], [.96, 1.03], clamp),
         }}
-      />
-      <div style={{position: 'absolute', left: 82, bottom: 38, fontFamily: sans, fontSize: 18, color: C.inkDim, letterSpacing: '.12em'}}>bikoldictionary.app</div>
-      <div style={{position: 'absolute', right: 82, bottom: 38, fontFamily: sans, fontSize: 18, color: C.gold, letterSpacing: '.12em', textTransform: 'uppercase'}}>Free · open access · community-grown</div>
-      <Noise opacity={0.055} />
+      >
+        <div style={{fontFamily: serif, fontSize: 122, lineHeight: .93, letterSpacing: '-.055em', color: C.ink}}>
+          A dictionary stays alive
+          <br />
+          <span style={{color: C.purple, fontStyle: 'italic'}}>when people add to it.</span>
+        </div>
+      </div>
+      <Noise />
     </AbsoluteFill>
   );
 };
 
-const PurpleBridge: React.FC<{from: number; duration: number; direction?: 'left' | 'right'}> = ({from, duration, direction = 'left'}) => (
-  <Sequence from={from} durationInFrames={duration}>
-    <Bridge direction={direction} />
-  </Sequence>
-);
+const Scene07End: React.FC = () => {
+  const f = useCurrentFrame();
+  const reveal = interpolate(f, [0, 34], [3, 126], {...clamp, easing: ease});
+  const title = spring({frame: f - 18, fps: 30, config: {damping: 110, stiffness: 95}});
 
-const Bridge: React.FC<{direction: 'left' | 'right'}> = ({direction}) => {
-  const frame = useCurrentFrame();
-  const {durationInFrames} = useVideoConfig();
-  const p = interpolate(frame, [0, durationInFrames], [0, 1], {...clamp, easing: easeInOut});
-  const x = direction === 'left' ? interpolate(p, [0, 1], [-120, 120]) : interpolate(p, [0, 1], [120, -120]);
   return (
-    <AbsoluteFill style={{pointerEvents: 'none'}}>
+    <AbsoluteFill style={{overflow: 'hidden', background: C.night}}>
+      <div style={{position: 'absolute', inset: 0, clipPath: `circle(${reveal}% at 50% 50%)`}}>
+        <Img
+          src={mayon}
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            objectPosition: '50% 35%',
+            scale: interpolate(f, [0, 135], [1.14, 1.04], clamp),
+            opacity: .78,
+          }}
+        />
+        <AbsoluteFill style={{background: 'radial-gradient(ellipse at 50% 42%, rgba(8,9,13,.16), rgba(8,9,13,.92) 78%)'}} />
+      </div>
+
       <div
         style={{
           position: 'absolute',
-          top: -120,
-          bottom: -120,
-          left: `${x}%`,
-          width: '68%',
-          background: C.purple,
-          rotate: '8deg',
-          boxShadow: '0 0 120px rgba(169,134,198,.3)',
+          left: 80,
+          right: 80,
+          top: 72,
+          display: 'flex',
+          justifyContent: 'space-between',
+          opacity: fade(f, 20, 42),
         }}
-      />
+      >
+        <Eyebrow>THE BIKOL LANGUAGE ARCHIVE</Eyebrow>
+        <div style={{fontFamily: sans, fontSize: 16, color: C.ink2, letterSpacing: '.17em'}}>free · open access · community-built</div>
+      </div>
+
       <div
         style={{
           position: 'absolute',
-          top: -120,
-          bottom: -120,
-          left: `${x - 18}%`,
-          width: '12%',
-          background: C.gold,
-          rotate: '8deg',
-          opacity: 0.7,
+          left: 0,
+          right: 0,
+          top: 284,
+          textAlign: 'center',
+          opacity: title,
+          translate: `0 ${interpolate(title, [0, 1], [42, 0])}px`,
         }}
-      />
+      >
+        <div style={{fontFamily: serif, fontSize: 178, lineHeight: .86, letterSpacing: '-.065em', color: C.ink}}>
+          Bikol <span style={{fontStyle: 'italic', fontWeight: 400, color: C.gold}}>Dictionary</span>
+        </div>
+        <div style={{fontFamily: serif, fontSize: 52, color: C.ink2, marginTop: 38}}>
+          Search it. Learn it. Add to it.
+        </div>
+      </div>
+
+      <div
+        style={{
+          position: 'absolute',
+          left: 250,
+          right: 250,
+          bottom: 112,
+          height: 106,
+          borderRadius: 28,
+          background: 'rgba(16,15,13,.72)',
+          border: '1px solid rgba(255,255,255,.15)',
+          backdropFilter: 'blur(18px)',
+          display: 'flex',
+          alignItems: 'center',
+          padding: '0 32px',
+          opacity: fade(f, 54, 76),
+          boxShadow: '0 28px 80px rgba(0,0,0,.3)',
+        }}
+      >
+        <div style={{fontFamily: sans, fontSize: 30, color: C.muted, marginRight: 20}}>⌕</div>
+        <div style={{fontFamily: sans, fontSize: 38, color: C.ink, fontWeight: 600}}>magayon</div>
+        <div style={{marginLeft: 'auto', fontFamily: sans, fontSize: 15, letterSpacing: '.18em', textTransform: 'uppercase', color: C.gold}}>bikoldictionary.app</div>
+      </div>
+      <Noise opacity={0.05} />
     </AbsoluteFill>
   );
 };
 
 export const BikolArchive30: React.FC = () => {
   return (
-    <AbsoluteFill style={{background: C.bg}}>
-      <Sequence from={0} durationInFrames={110}><Scene01Hook /></Sequence>
-      <Sequence from={92} durationInFrames={140}><Scene02Search /></Sequence>
-      <Sequence from={214} durationInFrames={140}><Scene03Dialect /></Sequence>
-      <Sequence from={336} durationInFrames={158}><Scene04Transform /></Sequence>
-      <Sequence from={476} durationInFrames={167}><Scene05Practice /></Sequence>
-      <Sequence from={625} durationInFrames={130}><Scene06Community /></Sequence>
-      <Sequence from={737} durationInFrames={163}><Scene07Final /></Sequence>
-
-      <PurpleBridge from={100} duration={20} direction="left" />
-      <PurpleBridge from={224} duration={18} direction="right" />
-      <PurpleBridge from={346} duration={18} direction="left" />
-      <PurpleBridge from={486} duration={18} direction="right" />
-      <PurpleBridge from={635} duration={18} direction="left" />
-      <PurpleBridge from={745} duration={18} direction="right" />
+    <AbsoluteFill style={{background: C.black}}>
+      <Sequence from={0} durationInFrames={126}>
+        <Scene01Hook />
+      </Sequence>
+      <Sequence from={96} durationInFrames={172}>
+        <Scene02Search />
+      </Sequence>
+      <Sequence from={242} durationInFrames={152}>
+        <Scene03Dialect />
+      </Sequence>
+      <Sequence from={368} durationInFrames={170}>
+        <Scene04Conjugation />
+      </Sequence>
+      <Sequence from={510} durationInFrames={172}>
+        <Scene05Practice />
+      </Sequence>
+      <Sequence from={652} durationInFrames={152}>
+        <Scene06Archive />
+      </Sequence>
+      <Sequence from={770} durationInFrames={130}>
+        <Scene07End />
+      </Sequence>
     </AbsoluteFill>
   );
 };
