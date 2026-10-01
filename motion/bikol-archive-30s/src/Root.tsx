@@ -1,17 +1,18 @@
 import React from 'react';
-import {Composition, Sequence} from 'remotion';
-import {BikolArchive30V2} from './BikolArchive30V2';
-import {PracticeOverlay} from './PracticeOverlay';
+import {Audio} from '@remotion/media';
+import {Composition, Sequence, staticFile} from 'remotion';
 import {BikolArchive30Final as BikolArchive30Continuous} from './BikolArchive30Final';
 import {BikolArchive30V3} from './BikolArchive30V3';
+import {PracticeOverlay} from './PracticeOverlay';
 
-const BikolArchive30Final: React.FC = () => {
+const BikolArchive30Master: React.FC = () => {
   return (
     <>
-      <BikolArchive30V2 />
+      <BikolArchive30V3 />
       <Sequence from={510} durationInFrames={172}>
         <PracticeOverlay />
       </Sequence>
+      <Audio src={staticFile('audio/bikol-motion.wav')} volume={0.9} />
     </>
   );
 };
@@ -21,7 +22,7 @@ export const RemotionRoot: React.FC = () => {
     <>
       <Composition
         id="BikolArchive30"
-        component={BikolArchive30Final}
+        component={BikolArchive30Master}
         durationInFrames={900}
         fps={30}
         width={1920}
