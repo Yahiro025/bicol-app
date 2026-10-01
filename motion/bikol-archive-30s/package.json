@@ -1,0 +1,19 @@
+{
+  "name": "bikol-archive-motion",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "remotion studio src/index.ts --no-open",
+    "studio": "remotion studio src/index.ts --no-open",
+    "render": "remotion render src/index.ts BikolArchive30 out/bikol-archive-30s.mp4",
+    "still": "remotion still src/index.ts BikolArchive30 out/cover.png --frame=850"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.530",
+    "@remotion/google-fonts": "4.0.530",
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "remotion": "4.0.530"
+  }
+}
