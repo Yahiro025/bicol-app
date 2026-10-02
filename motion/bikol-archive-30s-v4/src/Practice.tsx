@@ -1,4 +1,36 @@
 import React from 'react';
 import {AbsoluteFill,interpolate,useCurrentFrame} from 'remotion';
 import {C,Noise,out,p,sans,serif} from './shared';
-export const Practice:React.FC=()=>{const f=useCurrentFrame();const enter=p(f,0,16),title=p(f,0,10),exit=out(f,118,137);const panels=[{n:'01',label:'FLASHCARD',big:'magayon',small:'beautiful',bg:'#EDE4D7'},{n:'02',label:'TRANSFORM',big:'bakal → nagbakal',small:'change the form',bg:'#1A1815'},{n:'03',label:'DIALOGUE',big:'Dios mabalos.',small:'practice a real exchange',bg:'#D7C2E5'}];return <AbsoluteFill style={{background:C.paper,overflow:'hidden',clipPath:`inset(0 ${100*(1-enter)}% 0 0)`}}><div style={{position:'absolute',left:58,top:48,fontFamily:sans,fontSize:15,fontWeight:700,letterSpacing:'.22em',color:C.purpleDeep,textTransform:'uppercase'}}>04 — Lookup is not learning</div><div style={{position:'absolute',left:58,top:98,right:58,display:'flex',alignItems:'flex-end',justifyContent:'space-between',opacity:title*exit}}><div style={{fontFamily:serif,fontSize:96,lineHeight:.9,letterSpacing:'-.06em',color:C.ink}}>Don’t just remember it.<br/><span style={{color:C.purpleDeep,fontStyle:'italic'}}>Use it.</span></div><div style={{fontFamily:sans,fontSize:16,color:'#756D62',maxWidth:380,lineHeight:1.5}}>Flashcards introduce the word. Transformation drills and dialogue force recall in context.</div></div><div style={{position:'absolute',left:58,right:58,bottom:52,top:320,display:'grid',gridTemplateColumns:'1.02fr 1.2fr .98fr',gap:14}}>{panels.map((card,i)=>{const pi=p(f,2+i*8,18+i*8),dark=i===1;return <div key={card.label} style={{background:card.bg,borderRadius:24,overflow:'hidden',position:'relative',border:dark?`1px solid ${C.line}`:'1px solid rgba(53,45,38,.12)',opacity:pi*exit,translate:`0 ${interpolate(pi,[0,1],[80,0])}px`}}><div style={{position:'absolute',left:28,top:26,fontFamily:sans,fontSize:14,fontWeight:700,letterSpacing:'.15em',color:dark?C.gold:'#6C6257'}}>{card.n} / {card.label}</div><div style={{position:'absolute',left:28,right:28,top:i===2?160:180,fontFamily:serif,fontSize:i===1?64:84,lineHeight:.95,letterSpacing:'-.055em',color:dark?C.cream:C.ink,fontWeight:600}}>{card.big}</div><div style={{position:'absolute',left:28,bottom:28,fontFamily:sans,fontSize:17,color:dark?C.muted:'#6C6257'}}>{card.small}</div>{i===0&&<div style={{position:'absolute',right:28,bottom:28,height:74,width:74,borderRadius:999,border:'1px solid #C8BBAA',display:'grid',placeItems:'center',fontFamily:serif,fontSize:30}}>↻</div>}{i===1&&<div style={{position:'absolute',right:24,top:24,width:110,height:110,borderRadius:999,border:`1px solid ${C.line}`,display:'grid',placeItems:'center',color:'#D9BFEA',fontFamily:serif,fontSize:38}}>03/05</div>}{i===2&&<div style={{position:'absolute',right:24,bottom:24,padding:'14px 18px',borderRadius:999,background:'#F5F0E7',fontFamily:sans,fontSize:14,fontWeight:700}}>reply →</div>}</div>})}</div><Noise light/></AbsoluteFill>};
+
+export const Practice:React.FC=()=>{
+  const f=useCurrentFrame();
+  const enter=p(f,0,16), title=p(f,0,12), exit=out(f,118,138);
+  const rows=[
+    {n:'01',label:'FLASHCARD',big:'magayon',sub:'beautiful',note:'recognize it',bg:'#EFE6D9',ink:C.ink,accent:C.purpleDeep,dir:-1},
+    {n:'02',label:'TRANSFORM',big:'bakal → nagbakal',sub:'change the form',note:'retrieve it',bg:C.night,ink:C.cream,accent:C.gold,dir:1},
+    {n:'03',label:'DIALOGUE',big:'Dios mabalos.',sub:'reply in context',note:'use it',bg:'#D8C1E6',ink:'#241F25',accent:'#6D4B83',dir:-1},
+  ];
+  return <AbsoluteFill style={{background:C.paper,overflow:'hidden',clipPath:`inset(0 ${100*(1-enter)}% 0 0)`}}>
+    <div style={{position:'absolute',left:58,top:42,fontFamily:sans,fontSize:14,fontWeight:700,letterSpacing:'.22em',color:C.purpleDeep,textTransform:'uppercase'}}>04 — Lookup is not learning</div>
+    <div style={{position:'absolute',left:58,right:58,top:86,height:190,display:'grid',gridTemplateColumns:'1.3fr .7fr',alignItems:'end',borderBottom:'1px solid #CFC4B5',paddingBottom:24,opacity:title*exit}}>
+      <div style={{fontFamily:serif,fontSize:92,lineHeight:.88,letterSpacing:'-.06em',color:C.ink}}>Don’t just remember it. <span style={{color:C.purpleDeep,fontStyle:'italic'}}>Use it.</span></div>
+      <div style={{fontFamily:sans,fontSize:15,lineHeight:1.5,color:'#736A60',justifySelf:'end',maxWidth:390}}>Recognition is only step one. Retrieval and context are what make the word usable.</div>
+    </div>
+
+    <div style={{position:'absolute',left:0,right:0,top:300,bottom:0}}>
+      {rows.map((row,i)=>{
+        const ri=p(f,4+i*8,20+i*8);
+        const h=(1080-300)/3;
+        return <div key={row.label} style={{position:'absolute',left:0,right:0,top:i*h,height:h,background:row.bg,borderTop:i===0?'none':`1px solid ${i===2?'rgba(39,31,40,.16)':C.line}`,display:'grid',gridTemplateColumns:'250px 1fr 300px',alignItems:'center',padding:'0 58px',opacity:ri*exit,translate:`${interpolate(ri,[0,1],[row.dir*130,0])}px 0`}}>
+          <div>
+            <div style={{fontFamily:sans,fontSize:13,fontWeight:700,letterSpacing:'.17em',color:row.accent}}>{row.n} / {row.label}</div>
+            <div style={{fontFamily:sans,fontSize:13,color:i===1?C.muted:'#776E63',marginTop:12}}>{row.sub}</div>
+          </div>
+          <div style={{fontFamily:serif,fontSize:i===1?82:96,lineHeight:.92,letterSpacing:'-.055em',color:row.ink,fontWeight:600}}>{row.big}</div>
+          <div style={{justifySelf:'end',fontFamily:serif,fontSize:34,fontStyle:'italic',color:row.accent}}>{row.note} →</div>
+        </div>;
+      })}
+    </div>
+    <Noise light/>
+  </AbsoluteFill>;
+};
