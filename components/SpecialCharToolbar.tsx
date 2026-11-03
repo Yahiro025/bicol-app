@@ -19,18 +19,35 @@ const CHAR_SECTIONS = [
   },
 ] as const;
 
-const BTN_CLASS = "w-8 h-8 flex items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 dark:hover:border-blue-700 hover:text-blue-600 dark:hover:text-blue-400 transition-all active:scale-90 text-sm font-bold";
-
 export default function SpecialCharToolbar({ onInsert }: { onInsert: (char: string) => void }) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       {CHAR_SECTIONS.map(({ label, chars }, si) => (
         <div key={label} className={si > 0 ? "mt-3" : ""}>
-          <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">{label}</p>
-          <div className="flex gap-1.5 flex-wrap">
+          <p
+            className="text-[10px] font-bold uppercase tracking-widest mb-1.5"
+            style={{ color: "var(--editorial-muted)" }}
+          >
+            {label}
+          </p>
+          <div className="flex gap-2 flex-wrap">
             {chars.map(({ char, label: cl, description }) => (
-              <button key={char} type="button" onClick={() => onInsert(char)} title={`${cl}: ${description}`} className={BTN_CLASS}>
-                {char}
+              <button
+                key={char}
+                type="button"
+                onClick={() => onInsert(char)}
+                title={`${cl}: ${description}`}
+                style={{
+                  backgroundColor: "var(--editorial-surface)",
+                  borderColor: "var(--editorial-border)",
+                  color: "var(--editorial-text)",
+                }}
+                className="min-w-11 min-h-11 px-2.5 py-1.5 flex flex-col items-center justify-center gap-0.5 rounded-xl border text-center transition-all duration-150 cursor-pointer active:scale-95 hover:border-[var(--editorial-accent)] hover:text-[var(--editorial-accent)] hover:bg-[var(--editorial-surface-raised)]"
+              >
+                <span className="text-base font-bold leading-none">{char}</span>
+                <span className="text-[9px] uppercase tracking-wider font-semibold opacity-80 leading-none">
+                  {cl}
+                </span>
               </button>
             ))}
           </div>

@@ -19,12 +19,12 @@ interface CategoryGridProps {
 
 const containerVariants = {
   hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.05 } },
+  visible: { opacity: 1, transition: { staggerChildren: 0.04 } },
 } as const;
 
 const itemVariants = {
-  hidden: { opacity: 0, scale: 0.95 },
-  visible: { opacity: 1, scale: 1, transition: { type: 'spring', stiffness: 300, damping: 25 } },
+  hidden: { opacity: 0, y: 10 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] } },
 } as const;
 
 export default function CategoryGrid({ categoryCounts, className }: CategoryGridProps) {
@@ -33,8 +33,8 @@ export default function CategoryGrid({ categoryCounts, className }: CategoryGrid
       variants={containerVariants}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, margin: "-50px" }}
-      className={`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 ${className}`}
+      viewport={{ once: true, margin: "-40px" }}
+      className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5 ${className ?? ''}`}
     >
       {categoryCounts.map(({ category, _count }) => {
         const meta = CATEGORY_META[category] || { icon: Book, color: "#6B6259" };
@@ -44,25 +44,45 @@ export default function CategoryGrid({ categoryCounts, className }: CategoryGrid
           <motion.div key={category} variants={itemVariants}>
             <Link
               href={`/browse?category=${encodeURIComponent(category)}`}
-              className="group p-8 backdrop-blur-sm border rounded-2xl hover:-translate-y-1 hover:shadow-2xl active:scale-[0.98] transition-all duration-300 flex flex-col items-center text-center space-y-4 relative overflow-hidden"
-              style={{ backgroundColor: 'var(--editorial-surface)', borderColor: 'var(--editorial-border)' }}
+              className="group flex items-center justify-between p-4 sm:p-5 rounded-2xl border transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--editorial-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--editorial-bg)]"
+              style={{
+                backgroundColor: 'var(--editorial-surface)',
+                borderColor: 'var(--editorial-border)',
+              }}
             >
-              <div 
-                className="p-4 rounded-2xl group-hover:scale-110 transition-all duration-300 shadow-inner border"
-                style={{ backgroundColor: 'var(--editorial-bg)', borderColor: 'var(--editorial-border)', color: 'var(--editorial-accent)' }}
-              >
-                <Icon size={32} />
+              <div className="flex items-center gap-3.5 min-w-0">
+                <div
+                  className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border transition-transform duration-200 group-hover:scale-105"
+                  style={{
+                    backgroundColor: 'var(--editorial-bg)',
+                    borderColor: 'var(--editorial-border)',
+                    color: 'var(--editorial-accent)',
+                  }}
+                >
+                  <Icon size={18} />
+                </div>
+                <h3
+                  className="font-bold text-base truncate tracking-tight group-hover:text-[var(--editorial-accent)] transition-colors"
+                  style={{
+                    fontFamily: 'var(--font-display)',
+                    color: 'var(--editorial-text)',
+                  }}
+                >
+                  {category}
+                </h3>
               </div>
-              <div>
-                <h3 className="font-display font-bold text-lg group-hover:opacity-80 transition-colors tracking-tight" style={{ color: 'var(--editorial-text)' }}>{category}</h3>
-                <p className="text-xs font-bold uppercase tracking-widest mt-1" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>{_count.bikol} words</p>
+              <div className="shrink-0 ml-3">
+                <span
+                  className="text-xs font-mono font-medium tabular-nums px-2.5 py-1 rounded-full border transition-colors group-hover:border-[var(--editorial-accent)]"
+                  style={{
+                    backgroundColor: 'var(--editorial-bg)',
+                    borderColor: 'var(--editorial-border)',
+                    color: 'var(--editorial-muted)',
+                  }}
+                >
+                  {_count.bikol.toLocaleString()} entries
+                </span>
               </div>
-              
-              {/* Subtle background glow on hover */}
-              <div 
-                className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity pointer-events-none"
-                style={{ background: 'radial-gradient(circle at center, var(--editorial-accent) 0%, transparent 70%)' }}
-              />
             </Link>
           </motion.div>
         );

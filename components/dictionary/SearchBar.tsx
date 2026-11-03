@@ -58,7 +58,22 @@ export default function SearchBar({ initialDictionary = [], className = '' }: Se
   const wrapperRef = useRef<HTMLDivElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
   const listRef = useRef<HTMLUListElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    const handleGlobalSlash = (e: KeyboardEvent) => {
+      const target = document.activeElement;
+      const tag = target?.tagName;
+      const isInput = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (target as HTMLElement)?.isContentEditable;
+      if (e.key === '/' && !isInput) {
+        e.preventDefault();
+        inputRef.current?.focus();
+      }
+    };
+    document.addEventListener('keydown', handleGlobalSlash);
+    return () => document.removeEventListener('keydown', handleGlobalSlash);
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -186,7 +201,7 @@ export default function SearchBar({ initialDictionary = [], className = '' }: Se
       <>
         {parts.map((part, i) =>
           regex.test(part) ? (
-            <mark key={i} className="rounded px-0.5" style={{ backgroundColor: 'rgba(212,168,69,0.22)', color: 'var(--editorial-accent)' }}>{part}</mark>
+            <mark key={i} className="rounded px-0.5" style={{ backgroundColor: 'var(--editorial-accent-glow)', color: 'var(--editorial-accent)' }}>{part}</mark>
           ) : (
             <span key={i}>{part}</span>
           )
@@ -213,6 +228,7 @@ export default function SearchBar({ initialDictionary = [], className = '' }: Se
           )}
         </div>
         <input
+          ref={inputRef}
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -226,8 +242,8 @@ export default function SearchBar({ initialDictionary = [], className = '' }: Se
           aria-expanded={isOpen}
           aria-controls="search-listbox"
           aria-activedescendant={selectedIndex >= 0 ? `search-option-${selectedIndex}` : undefined}
-          className={`w-full pl-12 pr-28 sm:pr-32 py-4 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 text-base sm:text-lg transition-all duration-300 ${
-            isFocused ? 'shadow-[0_0_30px_rgba(59,130,246,0.15)]' : ''
+          className={`w-full pl-12 pr-28 sm:pr-32 py-4 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[var(--editorial-accent)]/40 focus:border-[var(--editorial-accent)] text-base sm:text-lg transition-all duration-300 ${
+            isFocused ? 'shadow-[0_8px_30px_var(--editorial-accent-glow)]' : ''
           }`}
           style={{
             backgroundColor: isFocused ? 'var(--editorial-surface-raised)' : 'var(--editorial-surface)',
@@ -239,6 +255,18 @@ export default function SearchBar({ initialDictionary = [], className = '' }: Se
           placeholder="Search a Bikol or English word..."
           autoComplete="off"
         />
+        {!query && !isFocused && (
+          <kbd
+            className="hidden sm:inline-flex items-center justify-center absolute right-24 sm:right-28 pointer-events-none px-2 py-0.5 text-xs font-mono rounded border select-none opacity-60"
+            style={{
+              backgroundColor: 'var(--editorial-bg)',
+              borderColor: 'var(--editorial-border)',
+              color: 'var(--editorial-muted)',
+            }}
+          >
+            /
+          </kbd>
+        )}
         <Button 
           type="submit" 
           isLoading={isLoading}

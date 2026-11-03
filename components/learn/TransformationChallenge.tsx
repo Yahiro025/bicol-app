@@ -19,7 +19,7 @@ const SAMPLE_CHALLENGES: Challenge[] = [
     root: 'bakal',
     focusClass: 'ON',
     type: 'TENSE',
-    prompt: 'Change "Magbakal ka nin plato" to Past Tense',
+    prompt: 'Change "Magbakal ka nin plato" (Buy a plate) to Past Tense',
     target: 'past',
     answer: 'nagbakal',
     sentence: 'Nagbakal ka nin plato.'
@@ -28,7 +28,7 @@ const SAMPLE_CHALLENGES: Challenge[] = [
     root: 'hugas',
     focusClass: 'AN',
     type: 'FOCUS',
-    prompt: 'Change "Maghugas ka nin plato" to Object Focus',
+    prompt: 'Change "Maghugas ka nin plato" (Wash a plate — Actor Focus) to Object Focus',
     target: 'OBJECT_FOCUS',
     answer: 'hugasan',
     sentence: 'Hugasan mo an plato.'
@@ -37,7 +37,7 @@ const SAMPLE_CHALLENGES: Challenge[] = [
     root: 'apod',
     focusClass: 'ON',
     type: 'TENSE',
-    prompt: 'Change "Apodon mo siya" to Future Tense',
+    prompt: 'Change "Apodon mo siya" (Call him/her) to Future Tense',
     target: 'future',
     answer: 'aapodon',
     sentence: 'Aapodon mo siya.'
@@ -99,7 +99,7 @@ export default function TransformationChallenge({ onComplete, challenges: extern
         <h2 className="text-2xl font-bold mb-4" style={{ color: 'var(--editorial-text)', fontFamily: 'var(--font-display)' }}>{challenge.prompt}</h2>
         <div className="p-4 rounded-xl border" style={{ backgroundColor: 'var(--editorial-bg)', borderColor: 'var(--editorial-border)' }}>
           <p className="text-sm mb-2 uppercase tracking-tighter font-bold" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Target Pattern:</p>
-          <p className="text-lg italic" style={{ color: 'var(--editorial-text)' }}>"{challenge.sentence.replace(challenge.answer, '____')}"</p>
+          <p className="text-lg italic" style={{ color: 'var(--editorial-text)' }}>&ldquo;{challenge.sentence.replace(challenge.answer, '____')}&rdquo;</p>
         </div>
       </div>
 
@@ -113,7 +113,7 @@ export default function TransformationChallenge({ onComplete, challenges: extern
             if (isCorrect === false) setIsCorrect(null);
           }}
           placeholder="Type the verb or the full sentence..."
-          className={`w-full border rounded-xl px-4 py-3 focus:ring-2 outline-none transition-all ${
+          className={`w-full border rounded-xl px-4 py-3 focus:ring-2 outline-none transition-all placeholder:text-[var(--editorial-muted)]/60 ${
             isCorrect === false ? 'border-red-500/50 ring-1 ring-red-500/20' : 'focus:ring-[var(--editorial-accent)]'
           }`}
           style={{ backgroundColor: 'var(--editorial-bg)', borderColor: isCorrect === false ? undefined : 'var(--editorial-border)', color: 'var(--editorial-text)' }}
@@ -124,7 +124,7 @@ export default function TransformationChallenge({ onComplete, challenges: extern
         {!showAnswer && (
           <button
             type="submit"
-            className="w-full text-white font-bold py-3 rounded-xl transition-transform active:scale-95 shadow-lg" style={{ backgroundColor: 'var(--editorial-accent)', fontFamily: 'var(--font-body)' }}
+            className="w-full text-white font-bold py-3.5 rounded-xl transition-transform active:scale-95 shadow-lg" style={{ backgroundColor: 'var(--editorial-accent)', fontFamily: 'var(--font-body)' }}
           >
             Check Answer
           </button>
@@ -136,9 +136,9 @@ export default function TransformationChallenge({ onComplete, challenges: extern
           <button
             type="button"
             onClick={nextChallenge}
-            className="w-full font-bold py-3 rounded-xl transition-transform active:scale-95 shadow-lg" style={{ backgroundColor: 'var(--editorial-bg)', color: 'var(--editorial-text)', fontFamily: 'var(--font-body)', border: '1px solid var(--editorial-border)' }}
+            className="w-full font-bold py-3.5 rounded-xl transition-transform active:scale-95 shadow-lg" style={{ backgroundColor: 'var(--editorial-bg)', color: 'var(--editorial-text)', fontFamily: 'var(--font-body)', border: '1px solid var(--editorial-border)' }}
           >
-            {currentIdx + 1 < SAMPLE_CHALLENGES.length ? "Next Challenge" : "Finish Lesson"}
+            {currentIdx + 1 < challenges.length ? "Next Challenge" : "Finish Lesson"}
           </button>
         </div>
       )}
@@ -151,7 +151,7 @@ export default function TransformationChallenge({ onComplete, challenges: extern
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="mt-6 p-4 bg-green-900/20 border border-green-800/50 rounded-xl text-green-400 text-center"
+              className="mt-6 p-4 rounded-xl border text-center font-medium bg-emerald-500/10 border-emerald-600/30 text-emerald-800 dark:text-emerald-300"
             >
               Matíyag! (Correct) — <strong>{challenge.answer}</strong>
             </motion.div>
@@ -162,7 +162,7 @@ export default function TransformationChallenge({ onComplete, challenges: extern
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 10 }}
-              className="mt-6 p-4 bg-red-900/20 border border-red-800/50 rounded-xl text-red-400 text-center"
+              className="mt-6 p-4 rounded-xl border text-center font-medium bg-[var(--editorial-rust)]/10 border-[var(--editorial-rust)]/30 text-[var(--editorial-rust)]"
             >
               Puwede pa mapakarhay. Try again!
             </motion.div>
@@ -171,8 +171,8 @@ export default function TransformationChallenge({ onComplete, challenges: extern
       </div>
 
       <div className="mt-8 pt-6 flex justify-between items-center text-sm" style={{ borderTop: '1px solid var(--editorial-divider)', fontFamily: 'var(--font-body)' }}>
-        <span style={{ color: 'var(--editorial-muted)' }}>Root: <span className="font-mono" style={{ color: 'var(--editorial-accent)' }}>{challenge.root}</span></span>
-        <span style={{ color: 'var(--editorial-muted)' }}>Focus Class: <span className="font-mono" style={{ color: 'var(--editorial-accent-dim)' }}>{challenge.focusClass}</span></span>
+        <span style={{ color: 'var(--editorial-muted)' }}>Root: <span className="font-bold italic" style={{ color: 'var(--editorial-accent)', fontFamily: 'var(--font-display)' }}>{challenge.root}</span></span>
+        <span style={{ color: 'var(--editorial-muted)' }}>Focus Class: <span className="font-mono font-bold text-xs px-2 py-0.5 rounded border" style={{ color: 'var(--editorial-accent-dim)', borderColor: 'var(--editorial-border)', backgroundColor: 'var(--editorial-surface-sunken)' }}>{challenge.focusClass}</span></span>
       </div>
     </div>
   );

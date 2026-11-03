@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useRef, useCallback, useMemo } from "react";
+import React, { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Send, AlertCircle, CheckCircle2 } from "lucide-react";
+import { X, Send, AlertCircle, CheckCircle2, Edit3 } from "lucide-react";
 import SpecialCharToolbar from "./SpecialCharToolbar";
 import { POS_OPTIONS, DIALECT_OPTIONS } from "@/lib/form-options";
 
@@ -152,6 +152,17 @@ export default function SuggestEditModal({ isOpen, onClose, isNormalized, wordDa
     }
   };
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -162,7 +173,7 @@ export default function SuggestEditModal({ isOpen, onClose, isNormalized, wordDa
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-zinc-950/80 backdrop-blur-sm"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm"
           />
 
           {/* Modal Container */}
@@ -171,21 +182,50 @@ export default function SuggestEditModal({ isOpen, onClose, isNormalized, wordDa
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", duration: 0.4 }}
-            className="relative w-full max-w-lg bg-zinc-900 border border-zinc-800 rounded-3xl overflow-hidden shadow-2xl z-10 flex flex-col max-h-[90vh]"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="suggest-edit-title"
+            style={{
+              backgroundColor: "var(--editorial-surface-raised)",
+              borderColor: "var(--editorial-border)",
+              boxShadow: "var(--editorial-shadow)",
+            }}
+            className="relative w-full max-w-lg border rounded-3xl overflow-hidden shadow-2xl z-10 flex flex-col max-h-[90vh]"
           >
             {/* Header */}
-            <div className="px-6 py-5 border-b border-zinc-800 flex items-center justify-between sticky top-0 bg-zinc-900 z-10">
+            <div
+              className="px-6 py-5 border-b flex items-center justify-between sticky top-0 z-10"
+              style={{
+                backgroundColor: "var(--editorial-surface-raised)",
+                borderColor: "var(--editorial-border)",
+              }}
+            >
               <div>
-                <h3 className="text-xl font-black text-white flex items-center gap-2">
-                  <span>📝</span> Suggest an Edit
+                <h3
+                  id="suggest-edit-title"
+                  className="text-xl font-display font-black flex items-center gap-2"
+                  style={{ color: "var(--editorial-text)" }}
+                >
+                  <Edit3 className="w-5 h-5" style={{ color: "var(--editorial-accent)" }} />
+                  Suggest an Edit
                 </h3>
-                <p className="text-xs text-zinc-400 mt-1">
-                  Propose corrections for <span className="text-blue-400 font-bold">{wordData.bikol}</span>
+                <p className="text-xs mt-1" style={{ color: "var(--editorial-muted)" }}>
+                  Propose corrections for{" "}
+                  <span className="font-bold" style={{ color: "var(--editorial-accent)" }}>
+                    {wordData.bikol}
+                  </span>
                 </p>
               </div>
               <button
+                type="button"
                 onClick={onClose}
-                className="w-10 h-10 flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white rounded-full transition-colors"
+                aria-label="Close dialog"
+                style={{
+                  backgroundColor: "var(--editorial-surface)",
+                  borderColor: "var(--editorial-border)",
+                  color: "var(--editorial-muted)",
+                }}
+                className="w-10 h-10 flex items-center justify-center rounded-full border transition-all cursor-pointer hover:border-[var(--editorial-accent)] hover:text-[var(--editorial-text)] active:scale-95"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -199,16 +239,30 @@ export default function SuggestEditModal({ isOpen, onClose, isNormalized, wordDa
                   animate={{ opacity: 1, scale: 1 }}
                   className="py-12 text-center space-y-4"
                 >
-                  <div className="w-16 h-16 mx-auto bg-emerald-500/10 border border-emerald-500/20 rounded-full flex items-center justify-center">
-                    <CheckCircle2 className="w-8 h-8 text-emerald-400" />
+                  <div
+                    className="w-16 h-16 mx-auto rounded-full flex items-center justify-center border"
+                    style={{
+                      backgroundColor: "var(--editorial-surface)",
+                      borderColor: "var(--editorial-border)",
+                    }}
+                  >
+                    <CheckCircle2 className="w-8 h-8" style={{ color: "var(--editorial-accent)" }} />
                   </div>
-                  <h4 className="text-2xl font-black text-white">Thank You!</h4>
-                  <p className="text-sm text-zinc-400 max-w-sm mx-auto leading-relaxed">
+                  <h4 className="text-2xl font-display font-black" style={{ color: "var(--editorial-text)" }}>
+                    Thank You!
+                  </h4>
+                  <p className="text-sm max-w-sm mx-auto leading-relaxed" style={{ color: "var(--editorial-muted)" }}>
                     Your edit recommendation has been received. Our moderators will review and apply the changes if they are correct.
                   </p>
                   <button
+                    type="button"
                     onClick={onClose}
-                    className="px-6 py-3 bg-zinc-800 text-white font-bold rounded-xl hover:bg-zinc-700 transition-all active:scale-95"
+                    style={{
+                      backgroundColor: "var(--editorial-surface)",
+                      borderColor: "var(--editorial-border)",
+                      color: "var(--editorial-text)",
+                    }}
+                    className="px-6 py-3 font-bold rounded-xl border transition-all cursor-pointer active:scale-95 hover:bg-[var(--editorial-surface-sunken)]"
                   >
                     Close Window
                   </button>
@@ -217,24 +271,48 @@ export default function SuggestEditModal({ isOpen, onClose, isNormalized, wordDa
                 <form onSubmit={handleSubmit} className="space-y-5">
                   {/* Word */}
                   <div>
-                    <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Bikol Word</label>
+                    <label
+                      htmlFor="suggest-word"
+                      className="block text-xs font-bold uppercase tracking-wider mb-2"
+                      style={{ color: "var(--editorial-text-secondary)" }}
+                    >
+                      Bikol Word
+                    </label>
                     <input
+                      id="suggest-word"
                       ref={wordRef}
                       required
                       value={word}
                       onFocus={() => setActiveField("word")}
                       onChange={(e) => setWord(e.target.value)}
-                      className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+                      style={{
+                        backgroundColor: "var(--editorial-bg)",
+                        borderColor: "var(--editorial-border)",
+                        color: "var(--editorial-text)",
+                      }}
+                      className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--editorial-accent)]/40 focus:border-[var(--editorial-accent)] placeholder:text-[var(--editorial-muted)]/60 text-sm transition-all"
                     />
                   </div>
 
                   {/* Part of Speech */}
                   <div>
-                    <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Part of Speech</label>
+                    <label
+                      htmlFor="suggest-pos"
+                      className="block text-xs font-bold uppercase tracking-wider mb-2"
+                      style={{ color: "var(--editorial-text-secondary)" }}
+                    >
+                      Part of Speech
+                    </label>
                     <select
+                      id="suggest-pos"
                       value={pos}
                       onChange={(e) => setPos(e.target.value)}
-                      className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-white appearance-none cursor-pointer"
+                      style={{
+                        backgroundColor: "var(--editorial-bg)",
+                        borderColor: "var(--editorial-border)",
+                        color: "var(--editorial-text)",
+                      }}
+                      className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--editorial-accent)]/40 focus:border-[var(--editorial-accent)] text-sm transition-all appearance-none cursor-pointer"
                     >
                       {POS_OPTIONS.map((opt) => (
                         <option key={opt.value} value={opt.value}>
@@ -246,39 +324,75 @@ export default function SuggestEditModal({ isOpen, onClose, isNormalized, wordDa
 
                   {/* Definition */}
                   <div>
-                    <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Definition (English)</label>
+                    <label
+                      htmlFor="suggest-definition"
+                      className="block text-xs font-bold uppercase tracking-wider mb-2"
+                      style={{ color: "var(--editorial-text-secondary)" }}
+                    >
+                      Definition (English)
+                    </label>
                     <textarea
+                      id="suggest-definition"
                       ref={definitionRef}
                       required
                       rows={3}
                       value={definition}
                       onFocus={() => setActiveField("definition")}
                       onChange={(e) => setDefinition(e.target.value)}
-                      className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-white resize-y"
+                      style={{
+                        backgroundColor: "var(--editorial-bg)",
+                        borderColor: "var(--editorial-border)",
+                        color: "var(--editorial-text)",
+                      }}
+                      className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--editorial-accent)]/40 focus:border-[var(--editorial-accent)] placeholder:text-[var(--editorial-muted)]/60 resize-y text-sm transition-all"
                     />
                   </div>
 
                   {/* Tagalog Definition */}
                   <div>
-                    <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Definition (Tagalog)</label>
+                    <label
+                      htmlFor="suggest-tagalog"
+                      className="block text-xs font-bold uppercase tracking-wider mb-2"
+                      style={{ color: "var(--editorial-text-secondary)" }}
+                    >
+                      Definition (Tagalog)
+                    </label>
                     <textarea
+                      id="suggest-tagalog"
                       ref={tagalogRef}
                       rows={3}
                       value={tagalog}
                       onFocus={() => setActiveField("tagalog")}
                       onChange={(e) => setTagalog(e.target.value)}
-                      className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-white resize-y"
+                      style={{
+                        backgroundColor: "var(--editorial-bg)",
+                        borderColor: "var(--editorial-border)",
+                        color: "var(--editorial-text)",
+                      }}
+                      className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--editorial-accent)]/40 focus:border-[var(--editorial-accent)] placeholder:text-[var(--editorial-muted)]/60 resize-y text-sm transition-all"
                       placeholder="Ano ang kahulugan ng salita sa Tagalog?"
                     />
                   </div>
 
                   {/* Dialect */}
                   <div>
-                    <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Dialect</label>
+                    <label
+                      htmlFor="suggest-dialect"
+                      className="block text-xs font-bold uppercase tracking-wider mb-2"
+                      style={{ color: "var(--editorial-text-secondary)" }}
+                    >
+                      Dialect
+                    </label>
                     <select
+                      id="suggest-dialect"
                       value={dialect}
                       onChange={(e) => setDialect(e.target.value)}
-                      className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-white appearance-none cursor-pointer"
+                      style={{
+                        backgroundColor: "var(--editorial-bg)",
+                        borderColor: "var(--editorial-border)",
+                        color: "var(--editorial-text)",
+                      }}
+                      className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--editorial-accent)]/40 focus:border-[var(--editorial-accent)] text-sm transition-all appearance-none cursor-pointer"
                     >
                       {DIALECT_OPTIONS.map((d) => (
                         <option key={d} value={d}>
@@ -290,76 +404,140 @@ export default function SuggestEditModal({ isOpen, onClose, isNormalized, wordDa
 
                   {/* Pronunciation */}
                   <div>
-                    <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Pronunciation</label>
+                    <label
+                      htmlFor="suggest-pronunciation"
+                      className="block text-xs font-bold uppercase tracking-wider mb-2"
+                      style={{ color: "var(--editorial-text-secondary)" }}
+                    >
+                      Pronunciation
+                    </label>
                     <input
+                      id="suggest-pronunciation"
                       ref={pronunciationRef}
                       value={pronunciation}
                       onFocus={() => setActiveField("pronunciation")}
                       onChange={(e) => setPronunciation(e.target.value)}
-                      className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+                      style={{
+                        backgroundColor: "var(--editorial-bg)",
+                        borderColor: "var(--editorial-border)",
+                        color: "var(--editorial-text)",
+                      }}
+                      className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--editorial-accent)]/40 focus:border-[var(--editorial-accent)] placeholder:text-[var(--editorial-muted)]/60 text-sm transition-all"
                     />
                   </div>
 
                   {/* Example Sentence (Bikol) */}
                   <div>
-                    <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Example Sentence (Bikol)</label>
+                    <label
+                      htmlFor="suggest-example-bikol"
+                      className="block text-xs font-bold uppercase tracking-wider mb-2"
+                      style={{ color: "var(--editorial-text-secondary)" }}
+                    >
+                      Example Sentence (Bikol)
+                    </label>
                     <input
+                      id="suggest-example-bikol"
                       ref={exampleBikolRef}
                       value={exampleBikol}
                       onFocus={() => setActiveField("exampleBikol")}
                       onChange={(e) => setExampleBikol(e.target.value)}
-                      className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+                      style={{
+                        backgroundColor: "var(--editorial-bg)",
+                        borderColor: "var(--editorial-border)",
+                        color: "var(--editorial-text)",
+                      }}
+                      className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--editorial-accent)]/40 focus:border-[var(--editorial-accent)] placeholder:text-[var(--editorial-muted)]/60 text-sm transition-all"
                     />
                   </div>
 
                   {/* Example Sentence (English) */}
                   <div>
-                    <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Example Sentence (English)</label>
+                    <label
+                      htmlFor="suggest-example-english"
+                      className="block text-xs font-bold uppercase tracking-wider mb-2"
+                      style={{ color: "var(--editorial-text-secondary)" }}
+                    >
+                      Example Sentence (English)
+                    </label>
                     <input
+                      id="suggest-example-english"
                       ref={exampleEnglishRef}
                       value={exampleEnglish}
                       onFocus={() => setActiveField("exampleEnglish")}
                       onChange={(e) => setExampleEnglish(e.target.value)}
-                      className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+                      style={{
+                        backgroundColor: "var(--editorial-bg)",
+                        borderColor: "var(--editorial-border)",
+                        color: "var(--editorial-text)",
+                      }}
+                      className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--editorial-accent)]/40 focus:border-[var(--editorial-accent)] placeholder:text-[var(--editorial-muted)]/60 text-sm transition-all"
                     />
                   </div>
 
                   {/* Source */}
                   <div>
-                    <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Source / Reference</label>
+                    <label
+                      htmlFor="suggest-source"
+                      className="block text-xs font-bold uppercase tracking-wider mb-2"
+                      style={{ color: "var(--editorial-text-secondary)" }}
+                    >
+                      Source / Reference
+                    </label>
                     <input
+                      id="suggest-source"
                       value={source}
                       onChange={(e) => setSource(e.target.value)}
-                      className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+                      style={{
+                        backgroundColor: "var(--editorial-bg)",
+                        borderColor: "var(--editorial-border)",
+                        color: "var(--editorial-text)",
+                      }}
+                      className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--editorial-accent)]/40 focus:border-[var(--editorial-accent)] placeholder:text-[var(--editorial-muted)]/60 text-sm transition-all"
                       placeholder="e.g. Wiktionary, Native speaker in Albay"
                     />
                   </div>
 
                   {/* Reason for Edit */}
-                  <div className="border-t border-zinc-800 pt-4">
-                    <label className="block text-xs font-bold text-yellow-400 uppercase tracking-wider mb-2">
+                  <div className="border-t pt-4" style={{ borderColor: "var(--editorial-border)" }}>
+                    <label
+                      htmlFor="suggest-reason"
+                      className="block text-xs font-bold uppercase tracking-wider mb-2"
+                      style={{ color: "var(--editorial-accent)" }}
+                    >
                       Reason for correction (Required)
                     </label>
                     <textarea
+                      id="suggest-reason"
                       required
                       rows={2}
                       value={reason}
                       onChange={(e) => setReason(e.target.value)}
-                      className="w-full px-4 py-3 bg-zinc-800 border border-yellow-500/20 focus:border-yellow-500/40 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-500/50 text-white resize-y text-sm"
+                      style={{
+                        backgroundColor: "var(--editorial-bg)",
+                        borderColor: "var(--editorial-border)",
+                        color: "var(--editorial-text)",
+                      }}
+                      className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--editorial-accent)]/40 focus:border-[var(--editorial-accent)] placeholder:text-[var(--editorial-muted)]/60 resize-y text-sm transition-all"
                       placeholder="e.g. Corrected part of speech; fixed typo in example sentence translation."
                     />
                   </div>
 
                   {/* Special Char Toolbar */}
-                  <div className="pt-4 border-t border-zinc-800">
+                  <div className="pt-4 border-t" style={{ borderColor: "var(--editorial-border)" }}>
                     <SpecialCharToolbar onInsert={handleInsertChar} />
                   </div>
 
                   {/* Error Notification */}
                   {status === "error" && errorMessage && (
-                    <div className="flex items-start gap-2.5 p-4 bg-red-500/10 border border-red-500/20 rounded-xl">
-                      <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-                      <p className="text-xs text-red-400 font-medium">{errorMessage}</p>
+                    <div
+                      className="flex items-start gap-2.5 p-4 rounded-xl border"
+                      style={{
+                        backgroundColor: "rgba(185, 28, 28, 0.08)",
+                        borderColor: "rgba(185, 28, 28, 0.25)",
+                      }}
+                    >
+                      <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+                      <p className="text-xs text-red-700 dark:text-red-300 font-medium">{errorMessage}</p>
                     </div>
                   )}
 
@@ -369,14 +547,23 @@ export default function SuggestEditModal({ isOpen, onClose, isNormalized, wordDa
                       type="button"
                       onClick={onClose}
                       disabled={status === "loading"}
-                      className="flex-1 py-3.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold rounded-xl active:scale-95 transition-all text-sm disabled:opacity-55"
+                      style={{
+                        backgroundColor: "var(--editorial-surface)",
+                        borderColor: "var(--editorial-border)",
+                        color: "var(--editorial-text)",
+                      }}
+                      className="flex-1 py-3.5 font-bold rounded-xl border active:scale-95 transition-all text-sm cursor-pointer hover:bg-[var(--editorial-surface-sunken)] disabled:opacity-55"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
                       disabled={status === "loading"}
-                      className="flex-1 py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl active:scale-95 transition-all text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-600/10 disabled:opacity-55"
+                      style={{
+                        backgroundColor: "var(--editorial-accent)",
+                        color: "#FFFDF9",
+                      }}
+                      className="flex-1 py-3.5 font-bold rounded-xl active:scale-95 transition-all text-sm flex items-center justify-center gap-2 shadow-lg cursor-pointer hover:bg-[var(--editorial-accent-dim)] disabled:opacity-55"
                     >
                       {status === "loading" ? "Submitting..." : (
                         <>

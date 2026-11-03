@@ -74,6 +74,7 @@ export default function BrowseClient({
   const [words, setWords] = useState<Word[]>(initialWords);
   const [totalWords, setTotalWords] = useState(initialTotalWords);
   const [areFiltersVisible, setAreFiltersVisible] = useState(false);
+  const [showAllCategories, setShowAllCategories] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const langMode = useLanguageMode();
 
@@ -119,12 +120,14 @@ export default function BrowseClient({
     if (currentPage <= 1 || isLoading) return;
     const prev = currentPage - 1;
     fetchPage(prev);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleNextPage = () => {
     if (currentPage >= totalPages || isLoading) return;
     const next = currentPage + 1;
     fetchPage(next);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   useEffect(() => {
@@ -201,7 +204,8 @@ export default function BrowseClient({
           {query && (
             <button
               onClick={() => setQuery("")}
-              className="transition-colors p-1"
+              aria-label="Clear search query"
+              className="min-w-9 min-h-9 flex items-center justify-center rounded-lg hover:bg-[var(--editorial-surface-sunken)] transition-colors p-1"
               style={{ color: "var(--editorial-muted)" }}
             >
               ✕
@@ -306,6 +310,7 @@ export default function BrowseClient({
               Letter: {selectedLetter}
               <button
                 onClick={() => handleFilterClick("letter", selectedLetter)}
+                aria-label={`Remove letter filter ${selectedLetter}`}
                 style={{ color: "var(--editorial-accent)" }}
               >
                 ✕
@@ -325,6 +330,7 @@ export default function BrowseClient({
               {selectedCategory}
               <button
                 onClick={() => handleFilterClick("category", selectedCategory)}
+                aria-label={`Remove category filter ${selectedCategory}`}
                 style={{ color: "var(--editorial-accent)" }}
               >
                 ✕
@@ -376,7 +382,7 @@ export default function BrowseClient({
               <div className="flex flex-wrap gap-2 mb-8">
                 <button
                   onClick={() => handleFilterClick("letter", "")}
-                  className="px-5 h-10 rounded-xl flex items-center justify-center text-sm font-semibold transition-all duration-200 active:scale-95"
+                  className="w-11 h-11 min-w-11 min-h-11 px-5 rounded-xl flex items-center justify-center text-sm font-semibold transition-all duration-200 active:scale-95"
                   style={{
                     fontFamily: "var(--font-body)",
                     backgroundColor: !selectedLetter
@@ -394,7 +400,7 @@ export default function BrowseClient({
                   <button
                     key={l}
                     onClick={() => handleFilterClick("letter", l)}
-                    className="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-semibold transition-all duration-200 active:scale-95"
+                    className="w-11 h-11 min-w-11 min-h-11 rounded-xl flex items-center justify-center text-sm font-semibold transition-all duration-200 active:scale-95"
                     style={{
                       fontFamily: "var(--font-body)",
                       backgroundColor:
@@ -424,7 +430,7 @@ export default function BrowseClient({
                 Category
               </h3>
               <div className="flex flex-wrap gap-2">
-                {initialCategories.map((cat) => (
+                {(showAllCategories ? initialCategories : initialCategories.slice(0, 12)).map((cat) => (
                   <button
                     key={cat}
                     onClick={() => handleFilterClick("category", cat)}
@@ -446,6 +452,18 @@ export default function BrowseClient({
                   </button>
                 ))}
               </div>
+              {initialCategories.length > 12 && (
+                <button
+                  type="button"
+                  onClick={() => setShowAllCategories(!showAllCategories)}
+                  className="mt-4 text-xs font-semibold underline transition-colors px-1 py-1 block"
+                  style={{ color: "var(--editorial-accent)", fontFamily: "var(--font-body)" }}
+                >
+                  {showAllCategories
+                    ? "Show fewer categories"
+                    : `Show all ${initialCategories.length} categories`}
+                </button>
+              )}
             </div>
           </motion.div>
         )}
@@ -463,8 +481,14 @@ export default function BrowseClient({
               style={{ backgroundColor: "var(--editorial-bg)", opacity: 0.7 }}
             >
               <div className="relative">
-                <div className="w-12 h-12 border-4 border-blue-500/20 rounded-full animate-pulse" />
-                <div className="absolute inset-0 w-12 h-12 border-t-4 border-blue-500 rounded-full animate-spin" />
+                <div
+                  className="w-12 h-12 border-4 rounded-full animate-pulse"
+                  style={{ borderColor: "var(--editorial-border)" }}
+                />
+                <div
+                  className="absolute inset-0 w-12 h-12 border-4 border-transparent rounded-full animate-spin"
+                  style={{ borderTopColor: "var(--editorial-accent)" }}
+                />
               </div>
               <p
                 className="mt-4 text-[10px] font-bold uppercase tracking-[0.2em] animate-pulse"
@@ -603,29 +627,9 @@ export default function BrowseClient({
             onClick={handlePrevPage}
             disabled={currentPage <= 1 || isLoading}
             aria-label="Go to previous page"
-            className="px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--editorial-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--editorial-bg)]"
+            className="bg-[var(--editorial-surface)] text-[var(--editorial-text)] border border-[var(--editorial-border)] enabled:hover:bg-[var(--editorial-accent)] enabled:hover:text-[#FFFDF9] enabled:hover:border-[var(--editorial-accent)] min-h-11 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--editorial-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--editorial-bg)]"
             style={{
               fontFamily: "var(--font-body)",
-              backgroundColor: "var(--editorial-surface)",
-              color: "var(--editorial-text)",
-              border: "1px solid var(--editorial-border)",
-            }}
-            onMouseEnter={(e) => {
-              if (currentPage > 1 && !isLoading) {
-                (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                  "var(--editorial-accent)";
-                (e.currentTarget as HTMLButtonElement).style.color = "#fff";
-                (e.currentTarget as HTMLButtonElement).style.borderColor =
-                  "var(--editorial-accent)";
-              }
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                "var(--editorial-surface)";
-              (e.currentTarget as HTMLButtonElement).style.color =
-                "var(--editorial-text)";
-              (e.currentTarget as HTMLButtonElement).style.borderColor =
-                "var(--editorial-border)";
             }}
           >
             « Previous
@@ -646,29 +650,9 @@ export default function BrowseClient({
             onClick={handleNextPage}
             disabled={currentPage >= totalPages || isLoading}
             aria-label="Go to next page"
-            className="px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--editorial-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--editorial-bg)]"
+            className="bg-[var(--editorial-surface)] text-[var(--editorial-text)] border border-[var(--editorial-border)] enabled:hover:bg-[var(--editorial-accent)] enabled:hover:text-[#FFFDF9] enabled:hover:border-[var(--editorial-accent)] min-h-11 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--editorial-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--editorial-bg)]"
             style={{
               fontFamily: "var(--font-body)",
-              backgroundColor: "var(--editorial-surface)",
-              color: "var(--editorial-text)",
-              border: "1px solid var(--editorial-border)",
-            }}
-            onMouseEnter={(e) => {
-              if (currentPage < totalPages && !isLoading) {
-                (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                  "var(--editorial-accent)";
-                (e.currentTarget as HTMLButtonElement).style.color = "#fff";
-                (e.currentTarget as HTMLButtonElement).style.borderColor =
-                  "var(--editorial-accent)";
-              }
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                "var(--editorial-surface)";
-              (e.currentTarget as HTMLButtonElement).style.color =
-                "var(--editorial-text)";
-              (e.currentTarget as HTMLButtonElement).style.borderColor =
-                "var(--editorial-border)";
             }}
           >
             Next »

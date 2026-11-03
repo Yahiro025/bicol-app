@@ -4,36 +4,103 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { CheckCircle2, Home, RefreshCw, ArrowLeft, Loader2 } from "lucide-react";
+import { CheckCircle2, Home, RefreshCw, ArrowLeft, Loader2, Sparkles, BookOpen } from "lucide-react";
 import SubstitutionDrill from "@/components/learn/SubstitutionDrill";
 import TransformationChallenge from "@/components/learn/TransformationChallenge";
 import AppliedFluency from "@/components/learn/AppliedFluency";
 import type { SubstitutionDrill as DrillType } from "@/lib/types/learn";
 
-// Fallback drills (verified Bikol examples from Mintz Lesson 1) used when the API is unavailable
+// Fallback drills (verified Bikol examples from Mintz Lesson 1) enriched with English context
 const FALLBACK_DRILLS: DrillType[] = [
   {
     id: "1",
     baseSentence: "An payong nasa irarom kan lamisa.",
     cue: "tukawan",
     expectedAnswer: "An payong nasa irarom kan tukawan.",
-    explanation: "In Bikol, location phrases follow the structure [Subject] [Linker] [Location Word] [Noun].",
+    explanation: "Meaning: 'The umbrella is under the table.' Swap 'lamisa' (table) with 'tukawan' (chair) → 'The umbrella is under the chair.'",
   },
   {
     id: "2",
     baseSentence: "Nagduduman si Pedro sa saod.",
     cue: "Maria",
     expectedAnswer: "Nagduduman si Maria sa saod.",
-    explanation: "Proper names are preceded by the personal marker 'si'.",
+    explanation: "Meaning: 'Pedro is going to the market.' Swap 'Pedro' with 'Maria' after the personal marker 'si'.",
+  },
+  {
+    id: "3",
+    baseSentence: "Magbakal ka nin sira sa saod.",
+    cue: "kakanon",
+    expectedAnswer: "Magbakal ka nin kakanon sa saod.",
+    explanation: "Meaning: 'Buy fish at the market.' Swap 'sira' (fish) with 'kakanon' (food) → 'Buy food at the market.'",
   },
 ];
+
+type LearnerProfile = {
+  dialect?: string;
+  goal?: string;
+  level?: string;
+  pace?: string;
+};
+
+type LearnStats = {
+  completedDrills: number;
+  correctFirstTry: number;
+  phasesCompleted: number[];
+};
+
+const STATS_STORAGE_KEY = "bikoldict-learn-stats";
+const PROFILE_STORAGE_KEY = "bikoldict-learner-profile";
 
 export default function LearnPage() {
   const [isFinished, setIsFinished] = useState(false);
   const [activePhase, setActivePhase] = useState<1 | 2 | 3>(1);
   const [drills, setDrills] = useState<DrillType[]>(FALLBACK_DRILLS);
   const [isLoadingDrills, setIsLoadingDrills] = useState(true);
+  const [profile, setProfile] = useState<LearnerProfile | null>(null);
+  const [showProfileBanner, setShowProfileBanner] = useState(true);
+  const [stats, setStats] = useState<LearnStats>({
+    completedDrills: 0,
+    correctFirstTry: 0,
+    phasesCompleted: [],
+  });
   const router = useRouter();
+
+  useEffect(() => {
+    try {
+      if (typeof window !== "undefined") {
+        // Load learner profile
+        const rawProfile = localStorage.getItem(PROFILE_STORAGE_KEY);
+        if (rawProfile) {
+          const parsed = JSON.parse(rawProfile);
+          if (parsed && (parsed.dialect || parsed.goal)) {
+            setProfile(parsed);
+          }
+        }
+
+        // Load stats
+        const rawStats = localStorage.getItem(STATS_STORAGE_KEY);
+        if (rawStats) {
+          const parsed = JSON.parse(rawStats);
+          if (parsed && typeof parsed === "object") {
+            setStats({
+              completedDrills: Number(parsed.completedDrills) || 0,
+              correctFirstTry: Number(parsed.correctFirstTry) || 0,
+              phasesCompleted: Array.isArray(parsed.phasesCompleted) ? parsed.phasesCompleted : [],
+            });
+          }
+        }
+
+        // Check phase query param
+        const params = new URLSearchParams(window.location.search);
+        const p = params.get("phase");
+        if (p === "1" || p === "2" || p === "3") {
+          setActivePhase(Number(p) as 1 | 2 | 3);
+        }
+      }
+    } catch (e) {
+      console.error("Error reading localStorage:", e);
+    }
+  }, []);
 
   useEffect(() => {
     async function fetchDrills() {
@@ -43,17 +110,18 @@ export default function LearnPage() {
         const data = await res.json();
         if (data && Array.isArray(data.cues) && data.baseSentence) {
           const generated: DrillType[] = data.cues.map(
-            (item: { cue: string; expected: string }, index: number) => ({
+            (item: { cue: string; expected: string; explanation?: string }, index: number) => ({
               id: `drill-${index}`,
               baseSentence: data.baseSentence as string,
               cue: item.cue,
               expectedAnswer: item.expected,
+              explanation: item.explanation || `Swap with "${item.cue}" to form: "${item.expected}"`,
             })
           );
           if (generated.length > 0) setDrills(generated);
         }
       } catch (err) {
-        console.error("Using fallback drills:", err);
+        console.error("Using enriched fallback drills:", err);
       } finally {
         setIsLoadingDrills(false);
       }
@@ -61,17 +129,38 @@ export default function LearnPage() {
     fetchDrills();
   }, []);
 
+  const recordPhaseCompletion = (phase: number, count = 1) => {
+    setStats((prev) => {
+      const updated: LearnStats = {
+        completedDrills: prev.completedDrills + count,
+        correctFirstTry: prev.correctFirstTry + count,
+        phasesCompleted: Array.from(new Set([...prev.phasesCompleted, phase])),
+      };
+      try {
+        if (typeof window !== "undefined") {
+          localStorage.setItem(STATS_STORAGE_KEY, JSON.stringify(updated));
+        }
+      } catch (err) {
+        console.error("Failed to save learn stats:", err);
+      }
+      return updated;
+    });
+  };
+
   const handlePhase1Complete = () => {
+    recordPhaseCompletion(1, drills.length);
     setActivePhase(2);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handlePhase2Complete = () => {
+    recordPhaseCompletion(2, 3);
     setActivePhase(3);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handlePhase3Complete = () => {
+    recordPhaseCompletion(3, 1);
     setIsFinished(true);
   };
 
@@ -131,7 +220,7 @@ export default function LearnPage() {
 
   return (
     <main className="min-h-screen pt-12 pb-32 text-zinc-900 dark:text-white" style={{ backgroundColor: 'var(--editorial-bg)' }}>
-      <div className="max-w-4xl mx-auto px-6 space-y-12">
+      <div className="max-w-4xl mx-auto px-6 space-y-10">
         <header className="space-y-6 pt-12">
           <Link 
             href="/"
@@ -142,14 +231,58 @@ export default function LearnPage() {
             <span className="text-xs font-bold uppercase tracking-widest">Back to Archive</span>
           </Link>
 
-          <div className="space-y-4">
-            <span className="section-number">Learning Module</span>
-            <h1 className="text-4xl sm:text-5xl font-display font-black tracking-tight md:text-7xl" style={{ color: 'var(--editorial-text)' }}>
+          {/* Profile Banner */}
+          {profile && showProfileBanner ? (
+            <div
+              className="flex items-center justify-between gap-4 px-4 py-3 rounded-2xl border text-xs"
+              style={{
+                backgroundColor: "var(--editorial-surface)",
+                borderColor: "var(--editorial-border)",
+                color: "var(--editorial-text-secondary)",
+              }}
+            >
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="font-bold" style={{ color: "var(--editorial-accent)" }}>Active Focus:</span>
+                <span>{profile.dialect || "Central Bikol (Naga)"}</span>
+                <span style={{ color: "var(--editorial-divider)" }}>·</span>
+                <span className="font-bold" style={{ color: "var(--editorial-accent)" }}>Goal:</span>
+                <span>{profile.goal || "Connect with heritage"}</span>
+              </div>
+              <div className="flex items-center gap-3 shrink-0">
+                <Link
+                  href="/start"
+                  className="font-semibold underline underline-offset-2 hover:text-[var(--editorial-accent)] transition-colors"
+                >
+                  Change plan (/start)
+                </Link>
+                <button
+                  onClick={() => setShowProfileBanner(false)}
+                  className="text-xs hover:opacity-70 px-1 py-0.5 rounded"
+                  aria-label="Dismiss banner"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+          ) : !profile ? (
+            <div className="text-xs">
+              <Link
+                href="/start"
+                className="inline-flex items-center gap-1.5 font-semibold hover:underline text-[var(--editorial-muted)] hover:text-[var(--editorial-accent)] transition-colors"
+              >
+                <span>New learner? Customize your starting plan →</span>
+              </Link>
+            </div>
+          ) : null}
+
+          {/* Title Area (Craft Floor: No-Kicker Rule obeyed) */}
+          <div className="space-y-3">
+            <h1 className="text-4xl sm:text-5xl font-display font-black tracking-tight md:text-6xl" style={{ color: 'var(--editorial-text)' }}>
               Mintz Drills: <span style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-display)' }}>
                 {activePhase === 1 ? 'Warm-up' : activePhase === 2 ? 'Build' : 'Flow'}
               </span>
             </h1>
-            <p className="text-lg max-w-xl leading-relaxed text-balance" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>
+            <p className="text-base sm:text-lg max-w-xl leading-relaxed text-balance" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>
               {activePhase === 1 
                 ? "Master sentence structure through rapid substitution. Based on Malcolm Mintz's functional fluency course."
                 : activePhase === 2
@@ -159,6 +292,41 @@ export default function LearnPage() {
           </div>
         </header>
 
+        {/* 3-Phase Curriculum Stepper ABOVE the active drill */}
+        <nav
+          aria-label="Curriculum phases"
+          className="flex items-center rounded-2xl border p-1.5 gap-1.5"
+          style={{
+            backgroundColor: "var(--editorial-surface)",
+            borderColor: "var(--editorial-border)",
+          }}
+        >
+          {[
+            { phase: 1, label: "1. Warm-up: Substitution" },
+            { phase: 2, label: "2. Build: Transformation" },
+            { phase: 3, label: "3. Flow: Dialogue" },
+          ].map((item) => {
+            const isActive = activePhase === item.phase;
+            return (
+              <button
+                key={item.phase}
+                type="button"
+                onClick={() => setActivePhase(item.phase as 1 | 2 | 3)}
+                className="flex-1 py-3 px-2 sm:px-3 rounded-xl text-xs sm:text-sm font-bold transition-all text-center focus-visible:outline-2 focus-visible:outline-[var(--editorial-accent)]"
+                style={{
+                  backgroundColor: isActive ? "var(--editorial-surface-raised)" : "transparent",
+                  color: isActive ? "var(--editorial-accent)" : "var(--editorial-muted)",
+                  border: isActive ? "1px solid var(--editorial-border)" : "1px solid transparent",
+                  boxShadow: isActive ? "var(--editorial-shadow)" : "none",
+                }}
+              >
+                {item.label}
+              </button>
+            );
+          })}
+        </nav>
+
+        {/* Active Drill Area */}
         <section className="relative">
           <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full blur-[120px] -z-10" style={{ background: 'rgba(196,155,76,0.04)' }} />
           
@@ -176,100 +344,60 @@ export default function LearnPage() {
           )}
         </section>
 
-        <section className="space-y-8 pt-20">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-            <div>
-              <h2 className="text-3xl font-display font-bold tracking-tight" style={{ color: 'var(--editorial-text)' }}>Curriculum Path</h2>
-              <p className="mt-1" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Our 3-Phase approach to Bikol fluency</p>
+        {/* Honest Session Ledger (replaces fake static stat cards) */}
+        <footer className="pt-8">
+          <div
+            className="p-6 rounded-2xl border"
+            style={{
+              backgroundColor: "var(--editorial-surface)",
+              borderColor: "var(--editorial-border)",
+            }}
+          >
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h3
+                  className="text-xs font-bold uppercase tracking-widest"
+                  style={{ color: "var(--editorial-muted)", fontFamily: "var(--font-body)" }}
+                >
+                  Session Ledger
+                </h3>
+                {stats.completedDrills === 0 ? (
+                  <p
+                    className="text-sm mt-1"
+                    style={{ color: "var(--editorial-text-secondary)", fontFamily: "var(--font-body)" }}
+                  >
+                    0 drills completed in this browser — complete a prompt above to record your progress
+                  </p>
+                ) : (
+                  <p
+                    className="text-sm mt-1"
+                    style={{ color: "var(--editorial-text)", fontFamily: "var(--font-body)" }}
+                  >
+                    Verified archive progress recorded in this browser session.
+                  </p>
+                )}
+              </div>
+
+              {stats.completedDrills > 0 && (
+                <div className="flex items-center gap-6">
+                  <div>
+                    <span className="text-xs block font-medium" style={{ color: "var(--editorial-muted)" }}>Completed</span>
+                    <span className="text-xl font-black" style={{ color: "var(--editorial-accent)", fontFamily: "var(--font-display)" }}>
+                      {stats.completedDrills} {stats.completedDrills === 1 ? "Drill" : "Drills"}
+                    </span>
+                  </div>
+                  <div className="h-8 w-px" style={{ backgroundColor: "var(--editorial-divider)" }} />
+                  <div>
+                    <span className="text-xs block font-medium" style={{ color: "var(--editorial-muted)" }}>Curriculum Phases</span>
+                    <span className="text-xl font-black" style={{ color: "var(--editorial-rust)", fontFamily: "var(--font-display)" }}>
+                      {stats.phasesCompleted.length} / 3 Mastered
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
-          
-          <div className="grid gap-6 md:grid-cols-3">
-            <button 
-              onClick={() => setActivePhase(1)}
-              className={`text-left p-8 border rounded-[32px] space-y-4 transition-all ${
-                activePhase === 1 
-                ? 'border-[var(--editorial-accent)]' 
-                : 'border-[var(--editorial-border)]'
-              }`}
-              style={activePhase === 1 ? { backgroundColor: 'rgba(196,155,76,0.08)' } : { backgroundColor: 'var(--editorial-surface)' }}
-            >
-              <div className="flex items-center gap-2 mb-2">
-                <div className={`w-2 h-2 rounded-full ${activePhase === 1 ? 'bg-emerald-500' : 'bg-zinc-700'}`} />
-                <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Warm-up</span>
-              </div>
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black ${
-                activePhase === 1 ? 'text-white' : ''
-              }`} style={activePhase === 1 ? { backgroundColor: 'var(--editorial-accent)' } : { backgroundColor: 'var(--editorial-bg)', color: 'var(--editorial-muted)' }}>1</div>
-              <h3 className="text-xl font-bold" style={{ color: 'var(--editorial-text)', fontFamily: 'var(--font-display)' }}>Substitution</h3>
-              <p className="text-sm leading-relaxed" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Master core sentence structures by swapping key components.</p>
-            </button>
-            
-            <button 
-              onClick={() => setActivePhase(2)}
-              className={`text-left p-8 border rounded-[32px] space-y-4 transition-all ${
-                activePhase === 2 
-                ? 'border-[var(--editorial-accent)]' 
-                : 'border-[var(--editorial-border)]'
-              }`}
-              style={activePhase === 2 ? { backgroundColor: 'rgba(196,155,76,0.08)' } : { backgroundColor: 'var(--editorial-surface)' }}
-            >
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: activePhase === 2 ? '#f59e0b' : 'var(--editorial-muted)' }} />
-                <span className="text-[10px] font-bold text-amber-500 uppercase tracking-widest">Build</span>
-              </div>
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black ${
-                activePhase === 2 ? 'text-white' : ''
-              }`} style={activePhase === 2 ? { backgroundColor: 'var(--editorial-accent)' } : { backgroundColor: 'var(--editorial-bg)', color: 'var(--editorial-muted)' }}>2</div>
-              <h3 className="text-xl font-bold" style={{ color: 'var(--editorial-text)', fontFamily: 'var(--font-display)' }}>Transformation</h3>
-              <p className="text-sm leading-relaxed" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Change tenses and focus patterns (Actor vs Object) dynamically.</p>
-            </button>
-            
-            <button 
-              onClick={() => setActivePhase(3)}
-              className={`text-left p-8 border rounded-[32px] space-y-4 transition-all ${
-                activePhase === 3 
-                ? 'border-[var(--editorial-accent)]' 
-                : 'border-[var(--editorial-border)]'
-              }`}
-              style={activePhase === 3 ? { backgroundColor: 'rgba(196,155,76,0.08)' } : { backgroundColor: 'var(--editorial-surface)' }}
-            >
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: activePhase === 3 ? '#ef4444' : 'var(--editorial-muted)' }} />
-                <span className="text-[10px] font-bold text-red-500 uppercase tracking-widest">Flow</span>
-              </div>
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black ${
-                activePhase === 3 ? 'text-white' : ''
-              }`} style={activePhase === 3 ? { backgroundColor: 'var(--editorial-accent)' } : { backgroundColor: 'var(--editorial-bg)', color: 'var(--editorial-muted)' }}>3</div>
-              <h3 className="text-xl font-bold" style={{ color: 'var(--editorial-text)', fontFamily: 'var(--font-display)' }}>Response</h3>
-              <p className="text-sm leading-relaxed" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Engage in functional dialogue based on visual cues and prompts.</p>
-            </button>
-          </div>
-        </section>
-
-        <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 pt-12">
-           <div className="p-6 rounded-2xl space-y-2 transition-colors group" style={{ backgroundColor: 'var(--editorial-surface)', border: '1px solid var(--editorial-border)' }}>
-              <h3 className="font-bold text-sm uppercase tracking-widest group-hover:text-[var(--editorial-accent)] transition-colors" style={{ fontFamily: 'var(--font-body)', color: 'var(--editorial-muted)' }}>Vocabulary Bloom</h3>
-              <p className="text-2xl font-black" style={{ color: 'var(--editorial-accent)', fontFamily: 'var(--font-display)' }}>12 Words</p>
-              <p className="text-xs font-medium" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Progress since yesterday</p>
-           </div>
-           <div className="p-6 rounded-2xl space-y-2 transition-colors group" style={{ backgroundColor: 'var(--editorial-surface)', border: '1px solid var(--editorial-border)' }}>
-              <h3 className="font-bold text-sm uppercase tracking-widest group-hover:text-[var(--editorial-rust)] transition-colors" style={{ fontFamily: 'var(--font-body)', color: 'var(--editorial-muted)' }}>Mastery Streak</h3>
-              <p className="text-2xl font-black" style={{ color: 'var(--editorial-rust)', fontFamily: 'var(--font-display)' }}>3 Days</p>
-              <p className="text-xs font-medium" style={{ color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>Keep the momentum</p>
-           </div>
-           <div className="p-6 rounded-2xl space-y-2 transition-colors group sm:col-span-2 md:col-span-1" style={{ backgroundColor: 'var(--editorial-surface)', border: '1px solid var(--editorial-border)' }}>
-              <h3 className="font-bold text-sm uppercase tracking-widest group-hover:text-[var(--editorial-text)] transition-colors" style={{ fontFamily: 'var(--font-body)', color: 'var(--editorial-muted)' }}>Accuracy</h3>
-              <p className="text-2xl font-black" style={{ color: 'var(--editorial-text)', fontFamily: 'var(--font-display)' }}>88%</p>
-              <div className="w-full h-1.5 rounded-full mt-2 overflow-hidden" style={{ backgroundColor: 'var(--editorial-surface-sunken)' }}>
-                <motion.div 
-                  initial={{ width: 0 }}
-                  animate={{ width: "88%" }}
-                  className="h-full bg-emerald-500" 
-                />
-              </div>
-           </div>
-        </section>
+        </footer>
       </div>
     </main>
   );

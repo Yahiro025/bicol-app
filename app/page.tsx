@@ -50,6 +50,20 @@ export default async function HomePage() {
         <SearchBar initialDictionary={initialDictionary} className="w-full" />
       </HeroSection>
 
+      {/* ── Plate mount: crisp ledger edge and archive caption ── */}
+      <div className="rule-divider" />
+      <div className="max-w-6xl mx-auto px-6 py-3.5 flex items-baseline justify-between gap-6">
+        <span
+          className="text-xs italic text-[var(--editorial-muted)]"
+          style={{ fontFamily: "var(--font-display)" }}
+        >
+          An Diksiyonaryo kan Bikol
+        </span>
+        <span className="archival-label hidden sm:inline">
+          8 Regional Varieties · Mintz · Wiktionary · LearnBikol
+        </span>
+      </div>
+
       {/* ── Content Sections ── */}
       <div
         className="relative px-6 pb-32"
@@ -61,9 +75,8 @@ export default async function HomePage() {
             <section className="py-20">
               <div className="w-full max-w-4xl lg:max-w-5xl mx-auto">
                 <div className="flex flex-col items-center text-center mb-10">
-                  <span className="section-number">Featured Entry</span>
                   <h2
-                    className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight mt-3 text-[var(--editorial-text)]"
+                    className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-[var(--editorial-text)]"
                     style={{ fontFamily: "var(--font-display)" }}
                   >
                     Word of the Day
@@ -77,8 +90,7 @@ export default async function HomePage() {
 
           {/* ── Verb Conjugator Demo ── */}
           <section className="py-20">
-            <span className="section-number">Tool</span>
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mt-3 mb-10">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
               <div>
                 <h2
                   className="text-3xl sm:text-4xl font-black tracking-tight text-[var(--editorial-text)]"
@@ -109,8 +121,7 @@ export default async function HomePage() {
 
           {/* ── Categories ── */}
           <section className="py-20">
-            <span className="section-number">Browse</span>
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mt-3 mb-10">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
               <div>
                 <h2
                   className="text-3xl sm:text-4xl font-black tracking-tight text-[var(--editorial-text)]"
@@ -141,8 +152,7 @@ export default async function HomePage() {
 
           {/* ── Popular Words ── */}
           <section className="py-20">
-            <span className="section-number">Popular</span>
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mt-3 mb-10">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
               <div>
                 <h2
                   className="text-3xl sm:text-4xl font-black tracking-tight text-[var(--editorial-text)]"

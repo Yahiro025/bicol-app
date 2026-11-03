@@ -22,7 +22,14 @@ const FALLBACK_SCENARIOS: DialogueScenario[] = [
     goal: "Successfully purchase fish and vegetables after asking for the price.",
     difficulty: "beginner",
     visualCue: "ShoppingBag",
-    vocabulary: ["pira", "bakal", "sira", "gulay", "mahal", "barato"],
+    vocabulary: [
+      "pira · how much",
+      "bakal · buy",
+      "sira · fish",
+      "gulay · vegetables",
+      "mahal · expensive",
+      "barato · cheap",
+    ],
   },
   {
     id: "mock-2",
@@ -31,9 +38,45 @@ const FALLBACK_SCENARIOS: DialogueScenario[] = [
     goal: "Exchange greetings and ask how the family is doing.",
     difficulty: "beginner",
     visualCue: "Home",
-    vocabulary: ["marhay", "aga", "kumusta", "pamilya", "salamat", "duman"],
+    vocabulary: [
+      "marhay · good",
+      "aga · morning",
+      "kumusta · how are you",
+      "pamilya · family",
+      "salamat · thank you",
+      "duman · there",
+    ],
   },
 ];
+
+const VOCAB_GLOSS_DICT: Record<string, string> = {
+  pira: "how much",
+  bakal: "buy",
+  sira: "fish",
+  gulay: "vegetables",
+  mahal: "expensive",
+  barato: "cheap",
+  marhay: "good",
+  aga: "morning",
+  kumusta: "how are you",
+  pamilya: "family",
+  salamat: "thank you",
+  duman: "there",
+};
+
+function parseVocab(raw: string): { word: string; display: string } {
+  if (raw.includes("·")) {
+    const parts = raw.split("·");
+    const w = parts[0]?.trim() || raw;
+    return { word: w, display: raw };
+  }
+  const clean = raw.toLowerCase().trim();
+  const gloss = VOCAB_GLOSS_DICT[clean];
+  if (gloss) {
+    return { word: raw, display: `${raw} · ${gloss}` };
+  }
+  return { word: raw, display: raw };
+}
 
 const DIFFICULTY_MAP: Record<string, { color: string; label: string }> = {
   beginner: { color: 'bg-emerald-500', label: 'Low Energy' },
@@ -157,7 +200,7 @@ export default function AppliedFluency({ onComplete }: { onComplete: () => void 
         <div className="p-8 rounded-[32px] space-y-8" style={{ backgroundColor: 'var(--editorial-surface)', border: '1px solid var(--editorial-border)' }}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl flex items-center justify-center border" style={{ backgroundColor: 'rgba(196,155,76,0.1)', borderColor: 'rgba(196,155,76,0.2)' }}>
+              <div className="w-12 h-12 rounded-2xl flex items-center justify-center border" style={{ backgroundColor: 'var(--editorial-accent-glow)', borderColor: 'var(--editorial-border)' }}>
                 <ShieldCheck className="w-6 h-6" style={{ color: 'var(--editorial-accent)' }} />
               </div>
               <div>
@@ -276,12 +319,12 @@ export default function AppliedFluency({ onComplete }: { onComplete: () => void 
             ))}
           </AnimatePresence>
           {isLoading && (
-            <div className="flex justify-start">
-              <div className="p-4 rounded-2xl rounded-tl-none animate-pulse" style={{ backgroundColor: 'var(--editorial-surface)' }}>
-                <div className="flex gap-1">
-                  <div className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ backgroundColor: 'var(--editorial-muted)', animationDelay: '0ms' }} />
-                  <div className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ backgroundColor: 'var(--editorial-muted)', animationDelay: '150ms' }} />
-                  <div className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ backgroundColor: 'var(--editorial-muted)', animationDelay: '300ms' }} />
+            <div className="flex justify-start" role="status" aria-label="Partner is replying">
+              <div className="px-4 py-3.5 rounded-2xl rounded-tl-none border" style={{ backgroundColor: 'var(--editorial-surface)', borderColor: 'var(--editorial-border)' }}>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2 h-2 rounded-full archival-dot" style={{ backgroundColor: 'var(--editorial-accent)', animationDelay: '0ms' }} />
+                  <div className="w-2 h-2 rounded-full archival-dot" style={{ backgroundColor: 'var(--editorial-accent)', animationDelay: '200ms' }} />
+                  <div className="w-2 h-2 rounded-full archival-dot" style={{ backgroundColor: 'var(--editorial-accent)', animationDelay: '400ms' }} />
                 </div>
               </div>
             </div>
@@ -298,7 +341,7 @@ export default function AppliedFluency({ onComplete }: { onComplete: () => void 
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
               placeholder="Simbag sa Bikol..."
               disabled={isLoading || audit !== null}
-              className="w-full border rounded-2xl py-4 pl-6 pr-14 text-[var(--editorial-text)] placeholder:text-zinc-600 focus:outline-none focus:border-[var(--editorial-accent)] transition-colors disabled:opacity-50" style={{ backgroundColor: 'var(--editorial-bg)', borderColor: 'var(--editorial-border)' }}
+              className="w-full border rounded-2xl py-4 pl-6 pr-14 text-[var(--editorial-text)] placeholder:text-[var(--editorial-muted)]/60 focus:outline-none focus:border-[var(--editorial-accent)] transition-colors disabled:opacity-50" style={{ backgroundColor: 'var(--editorial-bg)', borderColor: 'var(--editorial-border)' }}
             />
             <button 
               onClick={handleSend}
@@ -309,11 +352,35 @@ export default function AppliedFluency({ onComplete }: { onComplete: () => void 
             </button>
           </div>
           <div className="mt-4 flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-            {selectedScenario.vocabulary.map((vocab, i) => (
-              <span key={i} className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest whitespace-nowrap" style={{ backgroundColor: 'rgba(196,155,76,0.08)', border: '1px solid var(--editorial-border)', color: 'var(--editorial-muted)', fontFamily: 'var(--font-body)' }}>
-                {vocab}
-              </span>
-            ))}
+            {selectedScenario.vocabulary.map((vocab, i) => {
+              const { word, display } = parseVocab(vocab);
+              return (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => {
+                    setInput((prev) => (prev.trim() ? `${prev.trim()} ${word}` : word));
+                  }}
+                  title={`Insert "${word}" into sentence`}
+                  className="px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all hover:border-[var(--editorial-accent)] hover:bg-[var(--editorial-accent-glow)] active:scale-95 flex items-center gap-1.5 cursor-pointer"
+                  style={{
+                    backgroundColor: 'var(--editorial-surface-raised)',
+                    border: '1px solid var(--editorial-border)',
+                    color: 'var(--editorial-text)',
+                    fontFamily: 'var(--font-body)',
+                  }}
+                >
+                  <span className="font-bold text-[var(--editorial-accent)]">
+                    {word}
+                  </span>
+                  {display.includes("·") && (
+                    <span className="text-[10px]" style={{ color: 'var(--editorial-muted)' }}>
+                      · {display.split("·")[1]?.trim()}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -329,10 +396,10 @@ export default function AppliedFluency({ onComplete }: { onComplete: () => void 
           className="text-left p-8 rounded-[32px] transition-all group relative overflow-hidden" style={{ backgroundColor: 'var(--editorial-surface)', border: '1px solid var(--editorial-border)' }}
         >
           <div className="absolute top-0 right-0 p-8 transition-colors">
-            <MessageSquare className="w-24 h-24" style={{ color: 'rgba(196,155,76,0.1)' }} />
+            <MessageSquare className="w-24 h-24" style={{ color: 'var(--editorial-accent-glow)' }} />
           </div>
           <div className="space-y-4 relative z-10">
-            <div className="w-12 h-12 rounded-2xl flex items-center justify-center border group-hover:scale-110 transition-transform" style={{ backgroundColor: 'rgba(196,155,76,0.1)', borderColor: 'rgba(196,155,76,0.2)' }}>
+            <div className="w-12 h-12 rounded-2xl flex items-center justify-center border group-hover:scale-110 transition-transform" style={{ backgroundColor: 'var(--editorial-accent-glow)', borderColor: 'var(--editorial-border)' }}>
               <MessageSquare className="w-6 h-6" style={{ color: 'var(--editorial-accent)' }} />
             </div>
             <div>

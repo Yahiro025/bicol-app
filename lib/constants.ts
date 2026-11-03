@@ -110,17 +110,17 @@ export const TENSE_ORDER = ['infinitive', 'past', 'progressive', 'future'];
 
 export const NAV_LINKS: NavLink[] = [
   { href: "/", label: "Home", icon: Home },
-  { href: "/browse", label: "Browse", icon: BookOpen },
-  { href: "/learn", label: "Learn", icon: GraduationCap },
-  { href: "/flashcards", label: "Study", icon: BookOpenCheck },
+  { href: "/browse", label: "Dictionary", icon: BookOpen },
+  { href: "/learn", label: "Drills", icon: GraduationCap },
+  { href: "/flashcards", label: "Flashcards", icon: BookOpenCheck },
   { href: "/contribute", label: "Contribute", icon: Send },
 ];
 
 const ZINC_BASE = "#a1a1aa";
 export const NAV_ICON_COLORS: Record<string, { base: string; active: string }> = {
-  "/":           { base: ZINC_BASE, active: "#3b82f6" },
-  "/browse":     { base: ZINC_BASE, active: "#10b981" },
-  "/learn":      { base: ZINC_BASE, active: "#f59e0b" },
-  "/flashcards": { base: ZINC_BASE, active: "#8b5cf6" },
-  "/contribute": { base: ZINC_BASE, active: "#14b8a6" },
+  "/":           { base: ZINC_BASE, active: "#A86420" },
+  "/browse":     { base: ZINC_BASE, active: "#9B4728" },
+  "/learn":      { base: ZINC_BASE, active: "#B87D2D" },
+  "/flashcards": { base: ZINC_BASE, active: "#864E16" },
+  "/contribute": { base: ZINC_BASE, active: "#C48735" },
 };

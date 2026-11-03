@@ -56,8 +56,6 @@ export default async function BrowsePage({
   return (
     <main className="min-h-screen p-8" style={{ backgroundColor: "var(--editorial-bg)" }}>
       <div className="max-w-6xl mx-auto">
-        {/* Section label + heading */}
-        <span className="section-number">Dictionary</span>
         <div className="flex items-center justify-between mt-3 mb-8 flex-wrap gap-4">
           <h1
             className="text-3xl sm:text-4xl font-black tracking-tight text-[var(--editorial-text)]"
@@ -67,11 +65,12 @@ export default async function BrowsePage({
           </h1>
           <Link
             href="/flashcards"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all active:scale-95"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all active:scale-95 hover:border-[var(--editorial-accent)] hover:text-[var(--editorial-text)]"
             style={{
               fontFamily: "var(--font-body)",
-              backgroundColor: "var(--editorial-accent)",
-              color: "#fff",
+              backgroundColor: "var(--editorial-surface)",
+              color: "var(--editorial-text-secondary)",
+              border: "1px solid var(--editorial-border)",
             }}
           >
             <BookOpen className="w-4 h-4" />
@@ -90,7 +89,7 @@ export default async function BrowsePage({
               border: "1px solid rgba(194,106,62,0.2)",
             }}
           >
-            Database Error: {dbError}
+            We couldn't reach the lexicon database right now. Showing cached entries where available — please refresh in a moment.
           </div>
         )}
 

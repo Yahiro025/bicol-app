@@ -29,7 +29,11 @@ export default function NavigationLoadingBar() {
           initial={{ width: "0%", opacity: 0 }}
           animate={{ width: "70%", opacity: 1, transition: { duration: 2, ease: "easeOut" } }}
           exit={{ width: "100%", opacity: 0, transition: { duration: 0.3, ease: "easeIn" } }}
-          className="fixed top-0 left-0 h-[3px] bg-gradient-to-r from-blue-500 to-purple-500 z-[100] shadow-[0_0_10px_rgba(59,130,246,0.5)]"
+          className="fixed top-0 left-0 h-[3px] z-[100]"
+          style={{
+            backgroundColor: "var(--editorial-accent)",
+            boxShadow: "0 0 12px var(--editorial-accent), 0 0 4px var(--editorial-accent-glow)",
+          }}
         />
       )}
     </AnimatePresence>

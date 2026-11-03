@@ -55,7 +55,7 @@ export default function MobileNav() {
       <button
         ref={hamburgerRef}
         onClick={open}
-        className="p-2 -mr-2 transition-colors rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--editorial-bg)]"
+        className="p-2 -mr-2 transition-colors rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--editorial-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--editorial-bg)]"
         style={{ color: 'var(--editorial-muted)' }}
         aria-label="Open navigation menu"
         aria-expanded={isOpen}
@@ -99,7 +99,7 @@ export default function MobileNav() {
                   <button
                     ref={closeButtonRef}
                     onClick={close}
-                    className="p-2 transition-colors rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--editorial-bg)]"
+                    className="p-2 transition-colors rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--editorial-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--editorial-bg)]"
                     style={{ color: 'var(--editorial-muted)' }}
                     aria-label="Close navigation menu"
                   >
@@ -118,7 +118,7 @@ export default function MobileNav() {
                           isActive ? "border" : "hover:bg-[var(--editorial-surface-sunken)]"
                         }`}
                         style={isActive
-                          ? { backgroundColor: 'rgba(124, 92, 146, 0.08)', color: 'var(--editorial-accent)', borderColor: 'rgba(124, 92, 146, 0.2)' }
+                          ? { backgroundColor: 'var(--editorial-accent-glow)', color: 'var(--editorial-accent)', borderColor: 'var(--editorial-border)' }
                           : { color: 'var(--editorial-text-secondary)' }
                         }
                       >

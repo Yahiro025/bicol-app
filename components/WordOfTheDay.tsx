@@ -1,12 +1,11 @@
 "use client";
 
 import Link from 'next/link';
-import { Star, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useLanguageMode } from '@/hooks/useLanguageMode';
 import { normalizePOS } from '@/lib/dictionary/lexicography';
 import { Springs } from '@/lib/motion';
-import BorderGlow from '@/components/ui/BorderGlow';
 
 interface WordOfTheDayProps {
   word: {
@@ -14,6 +13,8 @@ interface WordOfTheDayProps {
     english: string;
     tagalog?: string | null;
     pos?: string | null;
+    dialect?: string | null;
+    pronunciation?: string | null;
     example_bikol?: string | null;
     example_english?: string | null;
   };
@@ -26,82 +27,133 @@ export default function WordOfTheDay({ word, className }: WordOfTheDayProps) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
+      initial={{ opacity: 0, scale: 0.98 }}
       whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ once: true }}
       transition={Springs.heavy}
       className={`w-full ${className ?? ''}`}
     >
-      <BorderGlow
-        edgeSensitivity={30}
-        glowColor="215 90 70"
-        backgroundColor="linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #9333ea 100%)"
-        borderRadius={32}
-        glowRadius={44}
-        glowIntensity={1.0}
-        coneSpread={25}
-        animated={true}
-        colors={['#60a5fa', '#38bdf8', '#c084fc']}
-        className="w-full group transition-all duration-300 hover:scale-[1.01] active:scale-[0.98] shadow-2xl shadow-blue-500/20 hover:shadow-blue-500/40"
-        style={{ '--card-shadow': '0 25px 50px -12px rgba(37, 99, 235, 0.25)' } as React.CSSProperties}
+      <Link
+        href={`/word/${encodeURIComponent(word.bikol)}`}
+        className="group relative block rounded-3xl overflow-hidden transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--editorial-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--editorial-bg)]"
+        style={{
+          backgroundColor: 'var(--editorial-surface-raised)',
+          border: '1px solid var(--editorial-border)',
+          boxShadow: 'var(--editorial-shadow)',
+        }}
       >
-        <Link
-          href={`/word/${encodeURIComponent(word.bikol)}`}
-          className="relative p-6 sm:p-10 md:p-12 lg:p-14 block focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 rounded-[32px]"
+        {/* Subtle top-right warm volcanic radial wash */}
+        <div
+          className="pointer-events-none absolute inset-0 opacity-70 group-hover:opacity-100 transition-opacity duration-500"
+          style={{
+            background: 'radial-gradient(circle at top right, var(--editorial-accent-glow), transparent 65%)',
+          }}
+        />
+
+        {/* Specimen Header Bar */}
+        <div
+          className="relative z-10 flex items-center justify-between px-6 sm:px-10 py-4"
+          style={{ borderBottom: '1px solid var(--editorial-divider)' }}
         >
-          {/* Animated Background Element */}
-          <div className="pointer-events-none absolute top-0 right-0 p-8 sm:p-10 md:p-12 opacity-10 group-hover:scale-125 group-hover:opacity-20 group-hover:rotate-12 transition-all duration-700 ease-out">
-            <Star className="w-32 h-32 sm:w-40 sm:h-40 md:w-52 md:h-52 lg:w-60 lg:h-60" fill="white" />
+          <span className="archival-label tracking-widest">Featured Lexicon Specimen</span>
+          <div className="flex items-center gap-2">
+            {word.dialect && (
+              <span
+                className="px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider"
+                style={{
+                  backgroundColor: 'var(--editorial-surface)',
+                  color: 'var(--editorial-muted)',
+                  border: '1px solid var(--editorial-border)',
+                }}
+              >
+                {word.dialect}
+              </span>
+            )}
+            {word.pos && (
+              <span
+                className="px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider"
+                style={{
+                  backgroundColor: 'var(--editorial-accent-glow)',
+                  color: 'var(--editorial-accent)',
+                  border: '1px solid var(--editorial-border)',
+                }}
+              >
+                {normalizePOS(word.pos)}
+              </span>
+            )}
           </div>
+        </div>
 
-          <div className="relative z-10 space-y-8 md:space-y-10">
-            <div className="flex items-center gap-2 px-4 py-1.5 bg-white/20 backdrop-blur-md rounded-full w-fit text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-white border border-white/10 shadow-lg">
-              <Star size={13} fill="white" className="group-hover:animate-pulse" />
-              Word of the Day
-            </div>
-
-            <div>
-              <h2 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-display font-black text-white tracking-tighter mb-4 group-hover:translate-x-1 transition-transform duration-300">
+        {/* Specimen Content */}
+        <div className="relative z-10 p-6 sm:p-10 md:p-12 space-y-6 md:space-y-8">
+          <div>
+            <div className="flex flex-wrap items-baseline gap-4 mb-2">
+              <h2
+                className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight text-[var(--editorial-text)] group-hover:text-[var(--editorial-accent)] transition-colors"
+                style={{ fontFamily: 'var(--font-display)' }}
+              >
                 {word.bikol}
               </h2>
-              <div className="flex flex-col gap-3">
-                <div className="flex flex-wrap items-center gap-3 sm:gap-4">
-                  {word.pos && (
-                    <span className="px-2.5 py-1 bg-white/20 rounded text-[11px] sm:text-xs font-black text-white uppercase tracking-widest border border-white/10">
-                      {normalizePOS(word.pos)}
-                    </span>
-                  )}
-                  <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-white font-bold leading-tight">
-                    {displayText}
-                  </p>
-                </div>
-                {langMode === 'all' && word.tagalog && (
-                  <p className="text-sm sm:text-base text-white/75 italic font-medium">
-                    Tagalog: {word.tagalog}
-                  </p>
-                )}
-              </div>
+              {word.pronunciation && (
+                <span
+                  className="text-base sm:text-xl font-normal italic text-[var(--editorial-muted)]"
+                  style={{ fontFamily: 'var(--font-display)' }}
+                >
+                  /{word.pronunciation}/
+                </span>
+              )}
             </div>
 
-            {word.example_bikol && (
-              <div className="pt-8 md:pt-10 border-t border-white/15">
-                <p className="text-white/90 italic text-lg sm:text-xl md:text-2xl lg:text-3xl leading-relaxed font-medium">
-                  "{word.example_bikol}"
-                </p>
-                {word.example_english && (
-                  <p className="text-white/65 text-base sm:text-lg md:text-xl mt-2 font-medium">
-                    — {word.example_english}
-                  </p>
-                )}
-              </div>
+            <p
+              className="text-xl sm:text-2xl md:text-3xl font-semibold text-[var(--editorial-text-secondary)] leading-snug"
+              style={{ fontFamily: 'var(--font-body)' }}
+            >
+              {displayText}
+            </p>
+
+            {langMode === 'all' && word.tagalog && (
+              <p className="text-sm sm:text-base text-[var(--editorial-muted)] italic font-medium mt-2">
+                Tagalog: {word.tagalog}
+              </p>
             )}
-
-            <div className="flex items-center gap-3 text-white font-black text-sm sm:text-base pt-2 uppercase tracking-widest group">
-              View details <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform duration-300" />
-            </div>
           </div>
-        </Link>
-      </BorderGlow>
+
+          {/* Sunken Archival Quote Block */}
+          {word.example_bikol && (
+            <div
+              className="p-5 sm:p-6 rounded-2xl space-y-2"
+              style={{
+                backgroundColor: 'var(--editorial-surface)',
+                border: '1px solid var(--editorial-border)',
+              }}
+            >
+              <p
+                className="text-lg sm:text-xl md:text-2xl italic leading-relaxed text-[var(--editorial-text)]"
+                style={{ fontFamily: 'var(--font-display)' }}
+              >
+                &ldquo;{word.example_bikol}&rdquo;
+              </p>
+              {word.example_english && (
+                <p
+                  className="text-sm sm:text-base font-medium text-[var(--editorial-muted)]"
+                  style={{ fontFamily: 'var(--font-body)' }}
+                >
+                  — {word.example_english}
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Refined Footer Link */}
+          <div
+            className="pt-2 flex items-center gap-2 text-sm sm:text-base font-bold transition-colors"
+            style={{ color: 'var(--editorial-accent)', fontFamily: 'var(--font-body)' }}
+          >
+            <span>Inspect full lexical entry</span>
+            <ArrowRight size={18} className="group-hover:translate-x-1.5 transition-transform duration-200" />
+          </div>
+        </div>
+      </Link>
     </motion.div>
   );
 }

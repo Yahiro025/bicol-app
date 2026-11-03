@@ -67,12 +67,8 @@ export default function FlashcardsPage() {
           <span className="text-xs font-bold uppercase tracking-widest">Back to Archive</span>
         </Link>
 
-        {/* Header */}
+        {/* Header (No-Kicker Rule obeyed) */}
         <div className="space-y-4">
-          <div className="flex items-center gap-2">
-            <div className="h-px w-8" style={{ backgroundColor: 'var(--editorial-accent)' }} />
-            <span className="text-xs font-bold uppercase tracking-[0.3em]" style={{ color: 'var(--editorial-accent)' }}>Study Mode</span>
-          </div>
           <h1 className="text-4xl sm:text-5xl md:text-7xl font-display font-black tracking-tight">
             Flashcards
           </h1>
@@ -94,8 +90,8 @@ export default function FlashcardsPage() {
                 disabled={isLoading}
                 className="p-6 rounded-2xl border text-left transition-all disabled:opacity-50"
                 style={{
-                  backgroundColor: selectedTier === tier.limit && words.length > 0 ? 'rgba(196,155,76,0.08)' : 'var(--editorial-surface-raised)',
-                  borderColor: selectedTier === tier.limit && words.length > 0 ? 'rgba(196,155,76,0.35)' : 'var(--editorial-border)',
+                  backgroundColor: selectedTier === tier.limit && words.length > 0 ? 'var(--editorial-accent-glow)' : 'var(--editorial-surface-raised)',
+                  borderColor: selectedTier === tier.limit && words.length > 0 ? 'var(--editorial-accent)' : 'var(--editorial-border)',
                 }}
               >
                 <div className="text-2xl font-black" style={{ color: 'var(--editorial-accent)' }}>{tier.label}</div>
@@ -136,7 +132,7 @@ export default function FlashcardsPage() {
         {!isLoading && !error && words.length > 0 && (
           <div className="space-y-6">
             <div className="flex items-center gap-4 p-4 rounded-2xl" style={{ backgroundColor: 'var(--editorial-surface)', border: '1px solid var(--editorial-border)' }}>
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: 'rgba(196,155,76,0.1)' }}>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: 'var(--editorial-accent-glow)' }}>
                 <Shuffle className="w-5 h-5" style={{ color: 'var(--editorial-accent)' }} />
               </div>
               <div>
@@ -148,7 +144,7 @@ export default function FlashcardsPage() {
             <button
               onClick={() => setIsActive(true)}
               className="w-full py-5 font-bold rounded-2xl transition-all active:scale-[0.98] shadow-lg text-lg"
-              style={{ backgroundColor: 'var(--editorial-accent)', color: '#fff', boxShadow: '0 10px 30px -5px rgba(196,155,76,0.3)' }}
+              style={{ backgroundColor: 'var(--editorial-accent)', color: '#fff', boxShadow: '0 10px 30px -5px var(--editorial-accent-glow)' }}
             >
               Start Studying
             </button>

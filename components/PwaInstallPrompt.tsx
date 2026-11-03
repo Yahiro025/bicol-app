@@ -43,16 +43,8 @@ export default function PwaInstallPrompt() {
 
     window.addEventListener("beforeinstallprompt", handler);
 
-    // Show after a delay if no prompt fired yet
-    const timer = setTimeout(() => {
-      if (!deferredPromptRef.current && !isStandalone) {
-        setShowPrompt(true);
-      }
-    }, 5000);
-
     return () => {
       window.removeEventListener("beforeinstallprompt", handler);
-      clearTimeout(timer);
     };
   }, []);
 
@@ -103,7 +95,11 @@ export default function PwaInstallPrompt() {
               <div className="flex items-center gap-2 flex-shrink-0">
                 <button
                   onClick={handleInstall}
-                  className="px-4 py-2 bg-white text-blue-600 text-xs font-bold rounded-xl hover:bg-blue-50 transition-colors active:scale-95 flex items-center gap-1.5"
+                  className="px-4 py-2 text-xs font-bold rounded-xl transition-all active:scale-95 flex items-center gap-1.5 shadow-md"
+                  style={{
+                    backgroundColor: "var(--editorial-surface-raised)",
+                    color: "var(--editorial-accent)",
+                  }}
                 >
                   <Download className="w-3.5 h-3.5" />
                   Install
@@ -139,22 +135,34 @@ export default function PwaInstallPrompt() {
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 100, opacity: 0 }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="relative w-full max-w-sm bg-zinc-900 border border-zinc-800 rounded-[32px] p-8 shadow-2xl space-y-6"
+              className="relative w-full max-w-sm rounded-[32px] p-8 shadow-2xl space-y-6"
+              style={{
+                backgroundColor: "var(--editorial-surface-raised)",
+                borderColor: "var(--editorial-border)",
+                borderWidth: "1px",
+              }}
             >
               <button
                 onClick={dismiss}
-                className="absolute top-4 right-4 p-2 text-zinc-500 hover:text-zinc-300 transition-colors rounded-xl hover:bg-zinc-800"
+                className="absolute top-4 right-4 p-2 transition-colors rounded-xl"
+                style={{ color: "var(--editorial-muted)" }}
                 aria-label="Close"
               >
                 <X className="w-4 h-4" />
               </button>
 
               <div className="text-center space-y-3">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto">
-                  <Download className="w-8 h-8 text-white" />
+                <div
+                  className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto shadow-md"
+                  style={{
+                    backgroundColor: "var(--editorial-accent-glow)",
+                    border: "1px solid var(--editorial-border)",
+                  }}
+                >
+                  <Download className="w-8 h-8" style={{ color: "var(--editorial-accent)" }} />
                 </div>
-                <h3 className="text-xl font-bold text-white">Install BIKOL Dictionary</h3>
-                <p className="text-zinc-400 text-sm leading-relaxed">
+                <h3 className="text-xl font-bold" style={{ color: "var(--editorial-text)" }}>Install BIKOL Dictionary</h3>
+                <p className="text-sm leading-relaxed" style={{ color: "var(--editorial-muted)" }}>
                   Add to your home screen for instant access, offline support, and a full-screen experience — no app store needed.
                 </p>
               </div>
@@ -162,13 +170,18 @@ export default function PwaInstallPrompt() {
               <div className="grid gap-3">
                 <button
                   onClick={handleInstall}
-                  className="w-full py-4 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-blue-500/20"
+                  className="w-full py-4 text-white font-bold rounded-2xl transition-all active:scale-[0.98] shadow-lg"
+                  style={{
+                    backgroundColor: "var(--editorial-accent)",
+                    boxShadow: "0 10px 25px -5px var(--editorial-accent-glow)",
+                  }}
                 >
                   Install App
                 </button>
                 <button
                   onClick={dismiss}
-                  className="w-full py-3 text-zinc-500 hover:text-zinc-300 text-sm font-medium transition-colors"
+                  className="w-full py-3 text-sm font-medium transition-colors hover:opacity-80"
+                  style={{ color: "var(--editorial-muted)" }}
                 >
                   Maybe Later
                 </button>

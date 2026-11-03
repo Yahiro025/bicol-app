@@ -42,6 +42,20 @@ export function VerbConjugator({ rootWord, affixGroups }: VerbConjugatorProps) {
     return null;
   }
 
+  const getFocusExplanation = (focusType: string) => {
+    const upper = focusType.toUpperCase();
+    if (upper.includes('ACTOR')) {
+      return 'Actor Focus highlights who performs the action (e.g., the speaker or subject doing the verb).';
+    }
+    if (upper.includes('OBJECT')) {
+      return 'Object Focus highlights the direct object receiving the action.';
+    }
+    if (upper.includes('REFERENTIAL') || upper.includes('-AN')) {
+      return 'Referential Focus highlights the recipient, beneficiary, or location of the action.';
+    }
+    return 'Shows how the verb root transforms across completed, progressive, and contemplated aspects.';
+  };
+
   return (
     <div className="w-full max-w-2xl mx-auto space-y-6 py-4">
       {/* Affix Pair Selection (Tabs/Pills) */}
@@ -55,7 +69,7 @@ export function VerbConjugator({ rootWord, affixGroups }: VerbConjugatorProps) {
             className={cn(
               "relative px-5 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 outline-none min-h-[44px] flex items-center justify-center border",
               activeTab === index
-                ? "border-[var(--editorial-accent)] bg-[rgba(196,155,76,0.1)] shadow-sm"
+                ? "border-[var(--editorial-accent)] bg-[var(--editorial-accent-glow)] shadow-sm"
                 : "border-[var(--editorial-border)] hover:border-[var(--editorial-muted)] hover:text-[var(--editorial-text)] bg-transparent"
             )}
           >
@@ -64,7 +78,7 @@ export function VerbConjugator({ rootWord, affixGroups }: VerbConjugatorProps) {
               <motion.div
                 layoutId="active-tab-indicator"
                 className="absolute inset-0 rounded-xl"
-                style={{ background: 'rgba(196,155,76,0.1)' }}
+                style={{ background: 'var(--editorial-accent-glow)' }}
                 initial={false}
                 transition={springTransition}
               />
@@ -79,7 +93,7 @@ export function VerbConjugator({ rootWord, affixGroups }: VerbConjugatorProps) {
         initial={{ opacity: 0, x: -10 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
-        className="px-2 md:px-0"
+        className="px-2 md:px-0 space-y-1"
       >
         <p className="text-[10px] uppercase tracking-[0.2em] text-[var(--editorial-muted)] font-bold mb-1">
           Focus Category
@@ -90,6 +104,9 @@ export function VerbConjugator({ rootWord, affixGroups }: VerbConjugatorProps) {
              {currentGroup.focusType}
            </h3>
         </div>
+        <p className="text-xs text-[var(--editorial-muted)] pt-1" style={{ fontFamily: 'var(--font-body)' }}>
+          {getFocusExplanation(currentGroup.focusType)}
+        </p>
       </motion.div>
 
       {/* Conjugation Grid (Semantic Definition List) */}
@@ -149,7 +166,9 @@ export function VerbConjugator({ rootWord, affixGroups }: VerbConjugatorProps) {
         <p className="text-[11px] font-medium" style={{ color: 'var(--editorial-muted)' }}>
           ROOT WORD: <span className="tracking-wider font-bold ml-1" style={{ color: 'var(--editorial-accent)' }}>{rootWord.toUpperCase()}</span>
         </p>
-        <span className="text-[10px] font-mono" style={{ color: 'var(--editorial-muted)' }}>LEXICON ARCHIVE V1</span>
+        <span style={{ color: "var(--editorial-muted)", fontFamily: "var(--font-body)" }} className="text-xs">
+          Austronesian Aspect & Focus Paradigm
+        </span>
       </div>
     </div>
   );

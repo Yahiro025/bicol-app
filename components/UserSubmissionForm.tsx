@@ -168,18 +168,41 @@ export default function UserSubmissionForm() {
   // ─── Success state ─────────────────────────────────────────────────────────
   if (status === "success") {
     return (
-      <div className="w-full max-w-lg mx-auto bg-white dark:bg-zinc-900 border border-emerald-200 dark:border-emerald-900/30 rounded-3xl p-8 shadow-sm text-center space-y-4">
-        <div className="w-16 h-16 mx-auto bg-emerald-100 dark:bg-emerald-900/20 rounded-full flex items-center justify-center">
-          <CheckCircle2 className="w-8 h-8 text-emerald-500" />
+      <div
+        className="w-full max-w-lg mx-auto border rounded-3xl p-8 sm:p-10 text-center space-y-4"
+        style={{
+          backgroundColor: "var(--editorial-surface-raised)",
+          borderColor: "var(--editorial-border)",
+          boxShadow: "var(--editorial-shadow)",
+        }}
+      >
+        <div
+          className="w-16 h-16 mx-auto rounded-full flex items-center justify-center border"
+          style={{
+            backgroundColor: "var(--editorial-surface)",
+            borderColor: "var(--editorial-border)",
+          }}
+        >
+          <CheckCircle2 className="w-8 h-8" style={{ color: "var(--editorial-accent)" }} />
         </div>
-        <h3 className="text-2xl font-black text-zinc-900 dark:text-white">Thank You!</h3>
-        <p className="text-zinc-500 leading-relaxed">
-          Your word <strong className="text-blue-500">{submittedWord || "submission"}</strong> has
-          been sent for review. Our moderators will verify it and add it to the dictionary.
+        <h3 className="text-2xl font-display font-black" style={{ color: "var(--editorial-text)" }}>
+          Thank You!
+        </h3>
+        <p className="leading-relaxed" style={{ color: "var(--editorial-muted)", fontFamily: "var(--font-body)" }}>
+          Your word{" "}
+          <strong className="font-bold" style={{ color: "var(--editorial-accent)" }}>
+            {submittedWord || "submission"}
+          </strong>{" "}
+          has been sent for review. Our moderators will verify it and add it to the dictionary.
         </p>
         <button
           onClick={resetForm}
-          className="px-6 py-3 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-bold rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+          className="px-6 py-3 font-bold rounded-xl border transition-all cursor-pointer active:scale-95 hover:bg-[var(--editorial-surface-sunken)]"
+          style={{
+            backgroundColor: "var(--editorial-surface)",
+            borderColor: "var(--editorial-border)",
+            color: "var(--editorial-text)",
+          }}
         >
           Submit Another Word
         </button>
@@ -191,81 +214,136 @@ export default function UserSubmissionForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="w-full max-w-lg mx-auto bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-6 sm:p-8 shadow-sm"
+      className="w-full max-w-xl mx-auto border rounded-3xl p-6 sm:p-10"
+      style={{
+        backgroundColor: "var(--editorial-surface-raised)",
+        borderColor: "var(--editorial-border)",
+        boxShadow: "var(--editorial-shadow)",
+      }}
     >
-      <p className="text-sm text-zinc-500 mb-6">
+      <p className="text-sm mb-6" style={{ color: "var(--editorial-muted)" }}>
         Help grow the dictionary. Fields marked with{" "}
-        <span className="text-red-400 font-bold">*</span> are required.
+        <span className="font-bold" style={{ color: "var(--editorial-rust)" }}>*</span> are required.
       </p>
 
       <div className="space-y-5">
         {/* ── Bikol Word ── */}
         <div>
-          <label className="block text-sm font-bold text-zinc-500 mb-2 uppercase tracking-wide">
-            Bikol Word <span className="text-red-400">*</span>
-            <span className="ml-2 text-[10px] font-normal normal-case tracking-normal text-zinc-400">
+          <label
+            htmlFor="submission-word"
+            className="block text-sm font-bold mb-2 uppercase tracking-wide"
+            style={{ color: "var(--editorial-text-secondary)" }}
+          >
+            Bikol Word <span style={{ color: "var(--editorial-rust)" }}>*</span>
+            <span
+              className="ml-2 text-[10px] font-normal normal-case tracking-normal"
+              style={{ color: "var(--editorial-muted)" }}
+            >
               {charCount(formData.word)} chars
             </span>
           </label>
           <input
+            id="submission-word"
             ref={wordRef}
             required
             maxLength={100}
             value={formData.word}
             onFocus={() => setActiveField("word")}
             onChange={(e) => updateField("word", e.target.value)}
-            className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-zinc-900 dark:text-white placeholder-zinc-400 transition-all"
+            style={{
+              backgroundColor: "var(--editorial-bg)",
+              borderColor: "var(--editorial-border)",
+              color: "var(--editorial-text)",
+            }}
+            className="w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-[var(--editorial-accent)]/40 focus:border-[var(--editorial-accent)] placeholder:text-[var(--editorial-muted)]/60 transition-all"
             placeholder="e.g. Oragón"
           />
         </div>
 
         {/* ── English Definition ── */}
         <div>
-          <label className="block text-sm font-bold text-zinc-500 mb-2 uppercase tracking-wide">
-            Definition (English) <span className="text-red-400">*</span>
-            <span className="ml-2 text-[10px] font-normal normal-case tracking-normal text-zinc-400">
+          <label
+            htmlFor="submission-definition"
+            className="block text-sm font-bold mb-2 uppercase tracking-wide"
+            style={{ color: "var(--editorial-text-secondary)" }}
+          >
+            Definition (English) <span style={{ color: "var(--editorial-rust)" }}>*</span>
+            <span
+              className="ml-2 text-[10px] font-normal normal-case tracking-normal"
+              style={{ color: "var(--editorial-muted)" }}
+            >
               {charCount(formData.definition)} chars
             </span>
           </label>
           <textarea
+            id="submission-definition"
             ref={definitionRef as React.RefObject<HTMLTextAreaElement>}
             required
             maxLength={500}
             value={formData.definition}
             onFocus={() => setActiveField("definition")}
             onChange={(e) => updateField("definition", e.target.value)}
-            className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-zinc-900 dark:text-white placeholder-zinc-400 transition-all min-h-[80px] resize-y"
+            style={{
+              backgroundColor: "var(--editorial-bg)",
+              borderColor: "var(--editorial-border)",
+              color: "var(--editorial-text)",
+            }}
+            className="w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-[var(--editorial-accent)]/40 focus:border-[var(--editorial-accent)] placeholder:text-[var(--editorial-muted)]/60 transition-all min-h-[80px] resize-y"
             placeholder="What does the word mean in English?"
           />
         </div>
 
         {/* ── Tagalog Definition ── */}
         <div>
-          <label className="block text-sm font-bold text-zinc-500 mb-2 uppercase tracking-wide">
+          <label
+            htmlFor="submission-tagalog"
+            className="block text-sm font-bold mb-2 uppercase tracking-wide"
+            style={{ color: "var(--editorial-text-secondary)" }}
+          >
             Definition (Tagalog)
-            <span className="ml-2 text-[10px] font-normal normal-case tracking-normal text-zinc-400">
+            <span
+              className="ml-2 text-[10px] font-normal normal-case tracking-normal"
+              style={{ color: "var(--editorial-muted)" }}
+            >
               {charCount(formData.tagalog)} chars
             </span>
           </label>
           <textarea
+            id="submission-tagalog"
+            ref={tagalogRef}
             maxLength={500}
             value={formData.tagalog}
             onFocus={() => setActiveField("tagalog")}
             onChange={(e) => updateField("tagalog", e.target.value)}
-            className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-zinc-900 dark:text-white placeholder-zinc-400 transition-all min-h-[80px] resize-y"
+            style={{
+              backgroundColor: "var(--editorial-bg)",
+              borderColor: "var(--editorial-border)",
+              color: "var(--editorial-text)",
+            }}
+            className="w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-[var(--editorial-accent)]/40 focus:border-[var(--editorial-accent)] placeholder:text-[var(--editorial-muted)]/60 transition-all min-h-[80px] resize-y"
             placeholder="Ano ang kahulugan ng salita sa Tagalog? (e.g. Oragón = magaling, mahusay)"
           />
         </div>
 
         {/* ── Part of Speech ── */}
         <div>
-          <label className="block text-sm font-bold text-zinc-500 mb-2 uppercase tracking-wide">
+          <label
+            htmlFor="submission-pos"
+            className="block text-sm font-bold mb-2 uppercase tracking-wide"
+            style={{ color: "var(--editorial-text-secondary)" }}
+          >
             Part of Speech
           </label>
           <select
+            id="submission-pos"
             value={formData.pos}
             onChange={(e) => updateField("pos", e.target.value)}
-            className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-zinc-900 dark:text-white transition-all appearance-none cursor-pointer"
+            style={{
+              backgroundColor: "var(--editorial-bg)",
+              borderColor: "var(--editorial-border)",
+              color: "var(--editorial-text)",
+            }}
+            className="w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-[var(--editorial-accent)]/40 focus:border-[var(--editorial-accent)] transition-all appearance-none cursor-pointer"
           >
             {POS_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -277,13 +355,23 @@ export default function UserSubmissionForm() {
 
         {/* ── Dialect ── */}
         <div>
-          <label className="block text-sm font-bold text-zinc-500 mb-2 uppercase tracking-wide">
+          <label
+            htmlFor="submission-dialect"
+            className="block text-sm font-bold mb-2 uppercase tracking-wide"
+            style={{ color: "var(--editorial-text-secondary)" }}
+          >
             Dialect
           </label>
           <select
+            id="submission-dialect"
             value={formData.dialect}
             onChange={(e) => updateField("dialect", e.target.value)}
-            className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-zinc-900 dark:text-white transition-all appearance-none cursor-pointer"
+            style={{
+              backgroundColor: "var(--editorial-bg)",
+              borderColor: "var(--editorial-border)",
+              color: "var(--editorial-text)",
+            }}
+            className="w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-[var(--editorial-accent)]/40 focus:border-[var(--editorial-accent)] transition-all appearance-none cursor-pointer"
           >
             {DIALECT_OPTIONS.map((d) => (
               <option key={d} value={d}>
@@ -295,80 +383,135 @@ export default function UserSubmissionForm() {
 
         {/* ── Pronunciation ── */}
         <div>
-          <label className="block text-sm font-bold text-zinc-500 mb-2 uppercase tracking-wide">
+          <label
+            htmlFor="submission-pronunciation"
+            className="block text-sm font-bold mb-2 uppercase tracking-wide"
+            style={{ color: "var(--editorial-text-secondary)" }}
+          >
             Pronunciation
-            <span className="ml-2 text-[10px] font-normal normal-case tracking-normal text-zinc-400">
+            <span
+              className="ml-2 text-[10px] font-normal normal-case tracking-normal"
+              style={{ color: "var(--editorial-muted)" }}
+            >
               {charCount(formData.pronunciation)} chars
             </span>
           </label>
           <input
+            id="submission-pronunciation"
             ref={pronunciationRef}
             maxLength={200}
             value={formData.pronunciation}
             onFocus={() => setActiveField("pronunciation")}
             onChange={(e) => updateField("pronunciation", e.target.value)}
-            className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-zinc-900 dark:text-white placeholder-zinc-400 transition-all"
+            style={{
+              backgroundColor: "var(--editorial-bg)",
+              borderColor: "var(--editorial-border)",
+              color: "var(--editorial-text)",
+            }}
+            className="w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-[var(--editorial-accent)]/40 focus:border-[var(--editorial-accent)] placeholder:text-[var(--editorial-muted)]/60 transition-all"
             placeholder="e.g. o-ra-GON"
           />
         </div>
 
         {/* ── Example Sentence (Bikol) ── */}
         <div>
-          <label className="block text-sm font-bold text-zinc-500 mb-2 uppercase tracking-wide">
+          <label
+            htmlFor="submission-example-bikol"
+            className="block text-sm font-bold mb-2 uppercase tracking-wide"
+            style={{ color: "var(--editorial-text-secondary)" }}
+          >
             Example Sentence (Bikol)
-            <span className="ml-2 text-[10px] font-normal normal-case tracking-normal text-zinc-400">
+            <span
+              className="ml-2 text-[10px] font-normal normal-case tracking-normal"
+              style={{ color: "var(--editorial-muted)" }}
+            >
               {charCount(formData.exampleBikol)} chars
             </span>
           </label>
           <input
+            id="submission-example-bikol"
             ref={exampleBikolRef}
             maxLength={500}
             value={formData.exampleBikol}
             onFocus={() => setActiveField("example_bikol")}
             onChange={(e) => updateField("exampleBikol", e.target.value)}
-            className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-zinc-900 dark:text-white placeholder-zinc-400 transition-all"
+            style={{
+              backgroundColor: "var(--editorial-bg)",
+              borderColor: "var(--editorial-border)",
+              color: "var(--editorial-text)",
+            }}
+            className="w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-[var(--editorial-accent)]/40 focus:border-[var(--editorial-accent)] placeholder:text-[var(--editorial-muted)]/60 transition-all"
             placeholder="e.g. Oragón an lalaking iyan."
           />
         </div>
 
         {/* ── Example Sentence (English) ── */}
         <div>
-          <label className="block text-sm font-bold text-zinc-500 mb-2 uppercase tracking-wide">
+          <label
+            htmlFor="submission-example-english"
+            className="block text-sm font-bold mb-2 uppercase tracking-wide"
+            style={{ color: "var(--editorial-text-secondary)" }}
+          >
             Example Sentence (English)
-            <span className="ml-2 text-[10px] font-normal normal-case tracking-normal text-zinc-400">
+            <span
+              className="ml-2 text-[10px] font-normal normal-case tracking-normal"
+              style={{ color: "var(--editorial-muted)" }}
+            >
               {charCount(formData.exampleEnglish)} chars
             </span>
           </label>
           <input
+            id="submission-example-english"
             ref={exampleEnglishRef}
             maxLength={500}
             value={formData.exampleEnglish}
             onFocus={() => setActiveField("example_english")}
             onChange={(e) => updateField("exampleEnglish", e.target.value)}
-            className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-zinc-900 dark:text-white placeholder-zinc-400 transition-all"
+            style={{
+              backgroundColor: "var(--editorial-bg)",
+              borderColor: "var(--editorial-border)",
+              color: "var(--editorial-text)",
+            }}
+            className="w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-[var(--editorial-accent)]/40 focus:border-[var(--editorial-accent)] placeholder:text-[var(--editorial-muted)]/60 transition-all"
             placeholder="e.g. That man is excellent."
           />
         </div>
 
         {/* ── Source ── */}
         <div>
-          <label className="block text-sm font-bold text-zinc-500 mb-2 uppercase tracking-wide">
+          <label
+            htmlFor="submission-source"
+            className="block text-sm font-bold mb-2 uppercase tracking-wide"
+            style={{ color: "var(--editorial-text-secondary)" }}
+          >
             Source / Reference
           </label>
           <input
+            id="submission-source"
             maxLength={500}
             value={formData.source}
             onChange={(e) => updateField("source", e.target.value)}
-            className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-zinc-900 dark:text-white placeholder-zinc-400 transition-all"
+            style={{
+              backgroundColor: "var(--editorial-bg)",
+              borderColor: "var(--editorial-border)",
+              color: "var(--editorial-text)",
+            }}
+            className="w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-[var(--editorial-accent)]/40 focus:border-[var(--editorial-accent)] placeholder:text-[var(--editorial-muted)]/60 transition-all"
             placeholder="e.g. Heard in Naga City, or from a book/article"
           />
         </div>
 
         {/* ── Error message ── */}
         {status === "error" && errorMessage && (
-          <div className="flex items-start gap-2 p-4 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-900/20 rounded-2xl">
-            <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-red-600 dark:text-red-400 font-medium">
+          <div
+            className="flex items-start gap-2.5 p-4 rounded-2xl border"
+            style={{
+              backgroundColor: "rgba(185, 28, 28, 0.08)",
+              borderColor: "rgba(185, 28, 28, 0.25)",
+            }}
+          >
+            <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+            <p className="text-sm text-red-700 dark:text-red-300 font-medium">
               {errorMessage}
             </p>
           </div>
@@ -376,7 +519,7 @@ export default function UserSubmissionForm() {
       </div>
 
       {/* ── Special Character Toolbar ── */}
-      <div className="mt-6 pt-6 border-t border-zinc-200 dark:border-zinc-800">
+      <div className="mt-6 pt-6 border-t" style={{ borderColor: "var(--editorial-border)" }}>
         <SpecialCharToolbar onInsert={handleInsertChar} />
       </div>
 
@@ -384,7 +527,11 @@ export default function UserSubmissionForm() {
       <button
         type="submit"
         disabled={status === "loading"}
-        className="w-full mt-6 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-blue-500/20 flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
+        style={{
+          backgroundColor: "var(--editorial-accent)",
+          color: "#FFFDF9",
+        }}
+        className="w-full mt-6 py-4 font-bold rounded-2xl transition-all duration-200 active:scale-[0.98] shadow-lg flex justify-center items-center gap-2 cursor-pointer hover:bg-[var(--editorial-accent-dim)] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
       >
         {status === "loading" ? (
           <>
@@ -407,7 +554,7 @@ export default function UserSubmissionForm() {
         )}
       </button>
 
-      <p className="mt-4 text-center text-xs text-zinc-400 leading-relaxed">
+      <p className="mt-4 text-center text-xs leading-relaxed" style={{ color: "var(--editorial-muted)" }}>
         All submissions are reviewed by moderators before being added to the dictionary.
         Please ensure your entry is accurate and follows Bikol spelling conventions.
       </p>

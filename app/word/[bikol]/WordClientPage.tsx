@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Share2, Info, Book, BookOpen, ChevronRight, Home } from 'lucide-react';
+import { ArrowLeft, Share2, Info, Book, ChevronRight, Home, Globe, GraduationCap, PenLine, BookOpen } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { saveToHistory } from '@/lib/offline';
 import AudioPlayer from '@/components/AudioPlayer';
@@ -14,21 +14,20 @@ import { groupDefinitions } from '@/lib/dictionary/definitions';
 import type { WordDisplayData, AffixGroup } from '@/lib/types/word';
 import SuggestEditModal from '@/components/SuggestEditModal';
 
-
-const SOURCE_LABELS: Record<string, { label: string; icon: string; color: string }> = {
+const SOURCE_LABELS: Record<string, { label: string; icon: React.ComponentType<{ className?: string }>; color: string }> = {
   mintz_book: {
     label: 'Mintz Dictionary',
-    icon: '📖',
+    icon: BookOpen,
     color: 'border-[var(--editorial-border)]',
   },
   wiktionary: {
     label: 'Wiktionary',
-    icon: '🌐',
+    icon: Globe,
     color: 'border-[var(--editorial-border)]',
   },
   learnbikol: {
     label: 'LearnBikol.com',
-    icon: '🎓',
+    icon: GraduationCap,
     color: 'border-[var(--editorial-border)]',
   },
 };
@@ -36,6 +35,7 @@ const SOURCE_LABELS: Record<string, { label: string; icon: string; color: string
 function SourceBadge({ source, sourceUrl }: { source: string; sourceUrl?: string | null }) {
   const info = SOURCE_LABELS[source];
   if (!info) return null;
+  const IconComponent = info.icon;
 
   return (
     <span className={`inline-flex items-center gap-1.5 mt-2 px-2.5 py-1 rounded-full text-[11px] font-semibold border transition-all ${info.color}`}
@@ -44,7 +44,7 @@ function SourceBadge({ source, sourceUrl }: { source: string; sourceUrl?: string
         backgroundColor: 'var(--editorial-bg)',
         color: 'var(--editorial-muted)',
       }}>
-      <span>{info.icon}</span>
+      <IconComponent className="w-3.5 h-3.5" />
       <span>{info.label}</span>
       {sourceUrl && (
         <span className="opacity-60 hidden sm:inline">• {sourceUrl}</span>
@@ -92,8 +92,31 @@ function Breadcrumbs({ bikol, pos }: { bikol: string; pos: string | null }) {
 export default function WordClientPage({ word, isNormalized }: { word: WordDisplayData, isNormalized: boolean }) {
   const langMode = useLanguageMode();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const { bikol, pos, pronunciation, audio_url, etymology } = word;
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `Bikol Dictionary: ${bikol}`,
+          text: `Check out the definition of "${bikol}" on Bikol Dictionary.`,
+          url: window.location.href,
+        });
+        return;
+      } catch (err) {
+        if ((err as Error)?.name === 'AbortError') return;
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Clipboard copy failed:', err);
+    }
+  };
 
   const definitions: WordDisplayData['definitions'] = isNormalized
     ? groupDefinitions(word.definitions ?? [])
@@ -154,9 +177,6 @@ export default function WordClientPage({ word, isNormalized }: { word: WordDispl
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         className="max-w-4xl mx-auto space-y-8"
       >
-        {/* ─── Section Label ──────────────────────────────────────────── */}
-        <span className="section-number">Word Entry</span>
-
         {/* ─── Breadcrumb + Back Navigation ────────────────────────────── */}
         <div className="space-y-2 mt-3">
           <Breadcrumbs bikol={bikol} pos={pos} />
@@ -166,12 +186,16 @@ export default function WordClientPage({ word, isNormalized }: { word: WordDispl
               <ArrowLeft className="h-5 w-5" /> Back to Search
             </Link>
             <Link
-              href="/flashcards"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors active:scale-95"
-              style={{ fontFamily: 'var(--font-body)', backgroundColor: 'var(--editorial-accent)', color: '#fff' }}
+              href="/learn"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all active:scale-95 hover:border-[var(--editorial-accent)] hover:text-[var(--editorial-text)]"
+              style={{
+                fontFamily: 'var(--font-body)',
+                backgroundColor: 'var(--editorial-surface)',
+                color: 'var(--editorial-text-secondary)',
+                border: '1px solid var(--editorial-border)',
+              }}
             >
-              <BookOpen className="w-4 h-4" />
-              Study with Flashcards
+              Practice in Drills →
             </Link>
           </div>
         </div>
@@ -195,15 +219,19 @@ export default function WordClientPage({ word, isNormalized }: { word: WordDispl
                 }}>
                 {normalizePOS(pos) || 'Word'}{formatDialect(definitions[0]?.dialect) ? ` • ${formatDialect(definitions[0]?.dialect)}` : ''}
               </span>
-              <h2 className="text-4xl sm:text-6xl md:text-8xl font-black tracking-tighter mt-4" style={{ fontFamily: 'var(--font-display)', color: 'var(--editorial-text)' }}>{bikol}</h2>
+              <h1 className="text-4xl sm:text-6xl md:text-8xl font-black tracking-tighter mt-4" style={{ fontFamily: 'var(--font-display)', color: 'var(--editorial-text)' }}>{bikol}</h1>
               <div className="flex items-center gap-6 mt-4">
-                {pronunciation && <p className="text-2xl font-medium font-mono" style={{ color: 'var(--editorial-muted)' }}>/ {pronunciation} /</p>}
+                {pronunciation && (
+                  <p style={{ color: "var(--editorial-muted)", fontFamily: "var(--font-body)" }} className="text-xl sm:text-2xl font-normal tracking-wide">
+                    / {pronunciation} /
+                  </p>
+                )}
                 {audio_url && <AudioPlayer url={audio_url} />}
               </div>
             </div>
-            <div className="flex gap-3 flex-wrap">
+            <div className="flex gap-3 flex-wrap items-center">
               <button 
-                className="px-5 py-4 rounded-2xl hover:bg-zinc-200 dark:hover:bg-zinc-700 active:scale-95 transition-all flex items-center gap-2 font-semibold text-sm"
+                className="px-5 py-4 rounded-2xl hover:border-[var(--editorial-accent)] hover:text-[var(--editorial-text)] active:scale-95 transition-all flex items-center gap-2 font-semibold text-sm"
                 style={{
                   fontFamily: 'var(--font-body)',
                   backgroundColor: 'var(--editorial-bg)',
@@ -212,27 +240,36 @@ export default function WordClientPage({ word, isNormalized }: { word: WordDispl
                 }}
                 onClick={() => setIsEditModalOpen(true)}
               >
-                <span>📝</span>
+                <PenLine className="w-4 h-4" />
                 <span>Suggest Edit</span>
               </button>
-              <button 
-                className="p-4 rounded-2xl active:scale-90 transition-all"
-                style={{
-                  backgroundColor: 'var(--editorial-bg)',
-                  border: '1px solid var(--editorial-border)',
-                }}
-                onClick={() => {
-                  if (navigator.share) {
-                    navigator.share({
-                      title: `Bikol Dictionary: ${bikol}`,
-                      text: `Check out the definition of "${bikol}" on Bikol Dictionary.`,
-                      url: window.location.href,
-                    });
-                  }
-                }}
-              >
-                <Share2 className="h-6 w-6" style={{ color: 'var(--editorial-muted)' }} />
-              </button>
+              <div className="relative">
+                <button 
+                  aria-label={`Share ${bikol}`}
+                  className="min-w-11 min-h-11 p-4 rounded-2xl active:scale-90 transition-all flex items-center justify-center hover:border-[var(--editorial-accent)] hover:text-[var(--editorial-text)]"
+                  style={{
+                    backgroundColor: 'var(--editorial-bg)',
+                    border: '1px solid var(--editorial-border)',
+                  }}
+                  onClick={handleShare}
+                >
+                  <Share2 className="h-5 w-5" style={{ color: 'var(--editorial-muted)' }} />
+                </button>
+                {copied && (
+                  <div
+                    role="status"
+                    aria-live="polite"
+                    className="absolute -bottom-9 right-0 text-xs font-semibold px-2.5 py-1 rounded-lg shadow-md whitespace-nowrap z-20"
+                    style={{
+                      backgroundColor: 'var(--editorial-surface-raised)',
+                      color: 'var(--editorial-accent)',
+                      border: '1px solid var(--editorial-border)',
+                    }}
+                  >
+                    Link copied
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 

@@ -27,3 +27,5 @@ tests/
 .devin/
 .codebuffignore
 graphify-out
+.vercel
+.env.local

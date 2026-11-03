@@ -29,8 +29,10 @@ export default function AudioPlayer({ url }: AudioPlayerProps) {
       />
       <button
         onClick={togglePlay}
-        className="p-3 bg-primary/10 hover:bg-primary/20 text-primary rounded-full transition-all group"
-        title="Listen to pronunciation"
+        aria-label={isPlaying ? "Pause pronunciation" : "Listen to pronunciation"}
+        className="p-3 rounded-full transition-all group active:scale-95"
+        style={{ backgroundColor: "var(--editorial-accent-glow)", color: "var(--editorial-accent)" }}
+        title={isPlaying ? "Pause pronunciation" : "Listen to pronunciation"}
       >
         {isPlaying ? (
           <Pause className="h-5 w-5 fill-current" />
@@ -38,7 +40,7 @@ export default function AudioPlayer({ url }: AudioPlayerProps) {
           <Volume2 className="h-5 w-5 group-hover:scale-110 transition-transform" />
         )}
       </button>
-      <span className="text-xs font-bold text-zinc-400 uppercase tracking-widest">Listen</span>
+      <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "var(--editorial-muted)", fontFamily: "var(--font-body)" }}>Listen</span>
     </div>
   );
 }

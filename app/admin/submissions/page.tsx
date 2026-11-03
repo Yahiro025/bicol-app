@@ -89,10 +89,10 @@ function DiffRow({ label, original, proposed }: { label: string; original: strin
   }
 
   return (
-    <div className="grid grid-cols-[140px_1fr_1fr] gap-3 text-xs items-start py-2 bg-yellow-500/5 dark:bg-yellow-500/[0.02] border-l-2 border-yellow-500/40 pl-2 rounded-r-md">
-      <span className="font-bold text-yellow-600 dark:text-yellow-400 uppercase tracking-wider text-[10px] flex items-center gap-1 select-none">
+    <div className="grid grid-cols-[140px_1fr_1fr] gap-3 text-xs items-start py-2.5 px-3 rounded-lg bg-amber-500/5 border border-amber-500/25">
+      <span className="font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider text-[10px] flex items-center gap-1 select-none">
         {label}
-        <span className="text-[9px] bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 px-1 rounded font-normal font-sans">Changed</span>
+        <span className="text-[9px] bg-amber-500/10 text-amber-700 dark:text-amber-400 px-1 rounded font-normal font-sans">Changed</span>
       </span>
       <span className="text-red-600 dark:text-red-400/80 bg-red-500/5 px-2 py-1 rounded border border-red-500/10 break-words line-through">
         {norm(original) || "—"}
@@ -114,7 +114,7 @@ const SPINNER = (
   <motion.div
     animate={{ rotate: 360 }}
     transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
-    className="w-8 h-8 border-2 border-blue-500/20 border-t-blue-500 rounded-full"
+    className="w-8 h-8 border-2 border-[var(--editorial-accent)]/20 border-t-[var(--editorial-accent)] rounded-full"
   />
 );
 
@@ -463,7 +463,7 @@ export default function AdminSubmissionsPage() {
           className="w-full max-w-sm space-y-6"
         >
           <div className="text-center space-y-2">
-            <ShieldCheck className="w-12 h-12 mx-auto text-blue-500" />
+            <ShieldCheck className="w-12 h-12 mx-auto text-[var(--editorial-accent)]" />
             <h1 className="text-2xl font-black text-zinc-900 dark:text-white">
               Admin Access
             </h1>
@@ -479,7 +479,7 @@ export default function AdminSubmissionsPage() {
               setPasswordError("");
             }}
             placeholder="Password"
-            className="w-full px-5 py-3.5 bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-lg"
+            className="w-full px-5 py-3.5 bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-[var(--editorial-accent)]/40 focus:border-[var(--editorial-accent)] transition-all text-lg"
             autoFocus
           />
           {passwordError && (
@@ -490,7 +490,8 @@ export default function AdminSubmissionsPage() {
           <button
             type="submit"
             disabled={loginLoading}
-            className="w-full py-3.5 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-500 transition-colors active:scale-95 shadow-lg shadow-blue-500/20 disabled:opacity-50"
+            style={{ backgroundColor: "var(--editorial-accent)", color: "#FFFDF9" }}
+            className="w-full py-3.5 font-bold rounded-xl hover:bg-[var(--editorial-accent-dim)] transition-colors active:scale-95 shadow-lg disabled:opacity-50 cursor-pointer"
           >
             {loginLoading ? "Unlocking..." : "Unlock"}
           </button>
@@ -551,7 +552,7 @@ export default function AdminSubmissionsPage() {
               onClick={() => setFilter(f.key)}
               className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all ${
                 filter === f.key
-                  ? "bg-blue-500 text-white shadow-lg shadow-blue-500/20"
+                  ? "bg-[var(--editorial-accent)] text-white shadow-lg shadow-[var(--editorial-accent)]/20"
                   : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700"
               }`}
             >
@@ -632,7 +633,7 @@ export default function AdminSubmissionsPage() {
                     <div className="flex items-start justify-between gap-4">
                       <div className="space-y-1.5 flex-1 min-w-0">
                         <div className="flex flex-wrap items-center gap-2">
-                          <h3 className="text-xl font-bold text-blue-500 break-all">
+                          <h3 className="text-xl font-bold text-[var(--editorial-accent)] break-all">
                             {sub.word}
                           </h3>
                           {sub.pos && (
@@ -657,7 +658,7 @@ export default function AdminSubmissionsPage() {
                               </Link>
                               <button
                                 onClick={() => toggleCompare(sub)}
-                                className="text-[10px] uppercase tracking-widest font-black bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 px-2 py-1 rounded border border-blue-500/20 flex items-center gap-1 transition-colors"
+                                className="text-[10px] uppercase tracking-widest font-black bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 px-2 py-1 rounded border border-amber-500/25 flex items-center gap-1 transition-colors"
                               >
                                 <GitCompareArrows className="w-3 h-3" />
                                 <span>{expandedCompare.has(sub.id) ? "Hide Changes" : "Compare Changes"}</span>
@@ -681,7 +682,7 @@ export default function AdminSubmissionsPage() {
                             <span>🔊 {sub.pronunciation}</span>
                           )}
                           {sub.tagalog && (
-                            <span className="text-blue-500">
+                            <span className="text-[var(--editorial-accent)] font-medium">
                               🇵🇭 {sub.tagalog}
                             </span>
                           )}
@@ -743,7 +744,7 @@ export default function AdminSubmissionsPage() {
 
                               {originalsLoading.has(sub.id) ? (
                                 <div className="flex items-center gap-2 py-4 justify-center text-xs text-zinc-500">
-                                  <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }} className="w-3.5 h-3.5 border border-blue-500/20 border-t-blue-500 rounded-full" />
+                                  <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }} className="w-3.5 h-3.5 border border-[var(--editorial-accent)]/20 border-t-[var(--editorial-accent)] rounded-full" />
                                   <span>Fetching current database values...</span>
                                 </div>
                               ) : originals[sub.id] === null ? (
@@ -792,7 +793,7 @@ export default function AdminSubmissionsPage() {
                                 "normalized",
                               )
                             }
-                            className="p-2.5 bg-blue-500/10 text-blue-500 hover:bg-blue-500 hover:text-white rounded-xl transition-all active:scale-95 border border-blue-500/20"
+                            className="p-2.5 bg-amber-500/10 text-amber-700 dark:text-amber-400 hover:bg-amber-600 hover:text-white rounded-xl transition-all active:scale-95 border border-amber-500/25"
                             title="Approve to Normalized"
                           >
                             <Database className="w-5 h-5" />
@@ -853,14 +854,14 @@ export default function AdminSubmissionsPage() {
                           value={editForm[key]}
                           onChange={(e) => setEditForm({ ...editForm, [key]: e.target.value })}
                           placeholder={placeholder}
-                          className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm min-h-[60px]"
+                          className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--editorial-accent)]/40 focus:border-[var(--editorial-accent)] text-sm min-h-[60px]"
                         />
                       ) : (
                         <input
                           value={editForm[key]}
                           onChange={(e) => setEditForm({ ...editForm, [key]: e.target.value })}
                           placeholder={placeholder}
-                          className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                          className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--editorial-accent)]/40 focus:border-[var(--editorial-accent)] text-sm"
                         />
                       )}
                     </div>
@@ -876,7 +877,7 @@ export default function AdminSubmissionsPage() {
                             value={editForm.dialect}
                             onChange={(e) => setEditForm({ ...editForm, dialect: e.target.value })}
                             placeholder={dialectField!.placeholder}
-                            className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                            className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--editorial-accent)]/40 focus:border-[var(--editorial-accent)] text-sm"
                           />
                         </div>
                       </div>
@@ -903,7 +904,11 @@ export default function AdminSubmissionsPage() {
                 <button
                   onClick={handleEditSave}
                   disabled={editSaving}
-                  className="flex-1 py-2.5 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-500 transition-colors text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+                  style={{
+                    backgroundColor: "var(--editorial-accent)",
+                    color: "#FFFDF9",
+                  }}
+                  className="flex-1 py-2.5 font-bold rounded-xl hover:bg-[var(--editorial-accent-dim)] transition-colors text-sm flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
                 >
                   {editSaving ? (
                     "Saving..."

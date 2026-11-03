@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { BookOpen } from "lucide-react";
+import { BookOpen, Compass } from "lucide-react";
 
 interface HeroSectionProps {
   children: ReactNode;
@@ -62,15 +62,6 @@ export default function HeroSection({ children, wordCount }: HeroSectionProps) {
               "radial-gradient(circle at 50% 68%, rgba(196,122,80,0.08) 0%, transparent 45%)",
           }}
         />
-
-        {/* Scrim 4: Seamless bottom fade into editorial body background */}
-        <div
-          className="absolute bottom-0 inset-x-0 h-36 md:h-48 pointer-events-none"
-          style={{
-            background:
-              "linear-gradient(to bottom, transparent 0%, var(--editorial-bg) 100%)",
-          }}
-        />
       </div>
 
       {/* ── Content Layer (z-10) ── */}
@@ -81,16 +72,8 @@ export default function HeroSection({ children, wordCount }: HeroSectionProps) {
         variants={staggerContainer}
       >
         <div className="max-w-5xl mx-auto flex flex-col items-center text-center">
-          {/* Eyebrow badge */}
-          <motion.div variants={fadeUp} className="mb-6">
-            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/15 text-xs font-semibold uppercase tracking-[0.22em] text-amber-200/90 shadow-lg">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-              The Bikol Language Archive · An Diksiyonaryo kan Bikol
-            </div>
-          </motion.div>
-
           {/* Main Headline */}
-          <motion.div variants={fadeUpSlow} className="space-y-4 mb-8">
+          <motion.div variants={fadeUpSlow} className="space-y-5 mb-8">
             <h1
               className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter leading-[0.92] text-white drop-shadow-xl"
               style={{ fontFamily: "var(--font-display)" }}
@@ -104,7 +87,7 @@ export default function HeroSection({ children, wordCount }: HeroSectionProps) {
               className="text-base sm:text-lg md:text-xl text-slate-200/90 max-w-2xl mx-auto leading-relaxed drop-shadow font-normal"
               style={{ fontFamily: "var(--font-body)" }}
             >
-              A comprehensive lexicon of the Bikol language across five historical dialects — with verb conjugations, verified definitions, and AI-enhanced learning tools.
+              An Diksiyonaryo kan Bikol — A living lexicon across 8 regional varieties, complete with Austronesian verb conjugations, verified definitions, and Malcolm Mintz fluency drills.
             </p>
           </motion.div>
 
@@ -114,18 +97,16 @@ export default function HeroSection({ children, wordCount }: HeroSectionProps) {
               {children}
             </div>
 
-            {/* Quick Explore Chips */}
+            {/* Quick Explore Chips (≤4 decision items) */}
             <div className="flex flex-wrap items-center justify-center gap-2 mt-4 text-xs">
               <span className="text-white/60 font-medium mr-1 text-[11px] uppercase tracking-wider">
                 Try searching:
               </span>
               {[
-                { word: "bakal", hint: "buy" },
                 { word: "padaba", hint: "love" },
                 { word: "magayon", hint: "beautiful" },
-                { word: "uran", hint: "rain" },
                 { word: "oragon", hint: "resilient" },
-                { word: "aram", hint: "know" },
+                { word: "bakal", hint: "buy" },
               ].map(({ word, hint }) => (
                 <Link
                   key={word}
@@ -141,10 +122,10 @@ export default function HeroSection({ children, wordCount }: HeroSectionProps) {
             </div>
           </motion.div>
 
-          {/* Hallmark Stats & Directory link */}
+          {/* Hallmark Stats & Guided Entry / Directory links */}
           <motion.div
             variants={fadeUp}
-            className="flex flex-wrap items-center justify-center gap-8 sm:gap-14 pt-8 border-t border-white/15 w-full max-w-3xl mx-auto"
+            className="flex flex-wrap items-center justify-center gap-8 sm:gap-14 pt-8 border-t border-white/15 w-full max-w-4xl mx-auto"
           >
             <div className="text-center">
               <span
@@ -168,19 +149,32 @@ export default function HeroSection({ children, wordCount }: HeroSectionProps) {
                 className="text-3xl sm:text-4xl font-black text-white drop-shadow"
                 style={{ fontFamily: "var(--font-display)" }}
               >
-                5
+                8
               </span>
               <span
                 className="block text-[11px] tracking-[0.2em] uppercase text-amber-200/80 font-semibold mt-1"
                 style={{ fontFamily: "var(--font-body)" }}
               >
-                Bikol Dialects
+                Bikol Varieties
               </span>
             </div>
 
             <div className="w-px h-8 bg-white/20 hidden sm:block" />
 
-            <div className="text-center">
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <Link
+                href="/start"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-white transition-all group backdrop-blur-sm shadow-lg hover:scale-[1.02] active:scale-95"
+                style={{
+                  backgroundColor: "var(--editorial-accent)",
+                  boxShadow: "0 4px 20px -2px var(--editorial-accent-glow)",
+                  fontFamily: "var(--font-body)",
+                }}
+              >
+                <Compass className="w-4 h-4 text-amber-200" />
+                <span>New to Bikol? Start Guided Plan</span>
+                <span className="group-hover:translate-x-1 transition-transform">→</span>
+              </Link>
               <Link
                 href="/browse"
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.08] hover:bg-white/[0.16] border border-white/15 text-sm font-semibold text-white hover:text-amber-200 transition-all group backdrop-blur-sm shadow-md"
@@ -190,12 +184,6 @@ export default function HeroSection({ children, wordCount }: HeroSectionProps) {
                 <span>Browse Directory</span>
                 <span className="group-hover:translate-x-1 transition-transform">→</span>
               </Link>
-              <span
-                className="block text-[11px] tracking-[0.2em] uppercase text-white/60 font-medium mt-1"
-                style={{ fontFamily: "var(--font-body)" }}
-              >
-                Free & Open Access
-              </span>
             </div>
           </motion.div>
         </div>

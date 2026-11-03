@@ -21,9 +21,13 @@ export default function Footer() {
           </div>
 
           <div className="space-y-4">
-            <span className="section-number" style={{ fontFamily: "var(--font-body)" }}>Explore</span>
+            <h4 className="archival-label">Explore</h4>
             <nav className="space-y-2">
-              {[...NAV_LINKS, { href: FOOTER_LINK, label: "Frequency List" }].map(({ href, label }) => (
+              {[
+                ...NAV_LINKS,
+                { href: "/start", label: "Guided Start" },
+                { href: FOOTER_LINK, label: "Frequency List" },
+              ].map(({ href, label }) => (
                 <Link key={href} href={href} className="block text-sm font-medium transition-colors hover:text-[var(--editorial-accent)] w-fit" style={{ fontFamily: "var(--font-body)", color: "var(--editorial-muted)" }}>
                   {label}
                 </Link>
@@ -32,11 +36,11 @@ export default function Footer() {
           </div>
 
           <div className="space-y-4">
-            <span className="section-number" style={{ fontFamily: "var(--font-body)" }}>About</span>
+            <h4 className="archival-label">About</h4>
             <p className="text-sm leading-relaxed" style={{ fontFamily: "var(--font-body)", color: "var(--editorial-muted)" }}>
               Built with data from Malcolm Mintz&apos; Bikol Dictionary, Wiktionary, and LearnBikol.com. AI-enhanced with Groq for interactive learning.
             </p>
-            <Link href="/contribute" className="inline-flex items-center gap-1.5 text-sm font-semibold transition-colors hover:text-[var(--editorial-accent)]" style={{ fontFamily: "var(--font-body)", color: "var(--editorial-accent-dim)" }}>
+            <Link href="/contribute" className="inline-flex items-center gap-1.5 text-sm font-semibold transition-colors hover:text-[var(--editorial-accent)]" style={{ fontFamily: "var(--font-body)", color: "var(--editorial-accent)" }}>
               <BookOpen className="w-3.5 h-3.5" />
               Contribute a Word
             </Link>

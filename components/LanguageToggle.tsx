@@ -47,11 +47,14 @@ export default function LanguageToggle() {
       <AnimatePresence>
         {showToast && (
           <motion.div
+            role="status"
+            aria-live="polite"
             initial={{ opacity: 0, y: -5, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -5, scale: 0.95 }}
             transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-            className="absolute top-full mt-2 left-1/2 -translate-x-1/2 whitespace-nowrap px-3 py-1.5 bg-blue-600 text-white text-[10px] font-bold rounded-lg shadow-lg pointer-events-none z-50"
+            className="absolute top-full mt-2 left-1/2 -translate-x-1/2 whitespace-nowrap px-3 py-1.5 text-[10px] font-bold rounded-lg shadow-lg pointer-events-none z-50"
+            style={{ backgroundColor: "var(--editorial-text)", color: "var(--editorial-bg)" }}
           >
             {toastMessage}
           </motion.div>
@@ -65,6 +68,9 @@ export default function LanguageToggle() {
         {MODES.map((m) => (
           <motion.button
             key={m}
+            aria-pressed={mode === m}
+            aria-label={MODE_LABELS[m]}
+            title={MODE_LABELS[m]}
             whileTap={{ scale: 0.92 }}
             onClick={() => handleToggle(m)}
             className={`px-3 py-1 rounded-full text-[10px] font-black tracking-widest transition-all relative ${

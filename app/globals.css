@@ -1,107 +1,103 @@
- @import "tailwindcss";
+@import "tailwindcss";
 
 /* Use class-based dark mode (uses .dark class on <html> instead of prefers-color-scheme media query) */
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   THEME SYSTEM
-   Two palettes coexist: the legacy zinc/blue system and the editorial warm
-   archive system. New work should prefer the editorial variables.
+   THE MAYON FIELD ARCHIVE — AUTHORITATIVE DESIGN TOKENS
+   Single unified palette across Light Mode (Warm Abaca Parchment) and
+   Dark Mode (Volcanic Nocturne). Legacy aliases map directly to these tokens.
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* ── Legacy color tokens (kept for existing component compatibility) ────────── */
 :root {
-  --color-primary: #3b82f6;
-  --color-primary-hover: #2563eb;
-  --color-secondary: #a855f7;
-  --color-secondary-hover: #9333ea;
-  --color-accent: #0ea5e9;
-  --color-accent-hover: #0284c7;
-  --color-background: #ffffff;
-  --color-surface: #f4f4f5;
-  --color-border: #e4e4e7;
-  --color-text-main: #18181b;
-  --color-text-muted: #71717a;
-
-  /* Spacing scale (neuro-inclusive generous defaults) */
-  --space-card-padding: 1.75rem;
-  --space-section-gap: 6rem;
-  --space-content-max-width: 72rem;
-
-  /* Energy state colors */
-  --energy-low: #10b981;
-  --energy-moderate: #f59e0b;
-  --energy-high: #ef4444;
-
-  /* Sensory-safe feedback colors */
-  --feedback-success: #34d399;
-  --feedback-neutral: #94a3b8;
-  --feedback-highlight: #60a5fa;
-}
-
-/* ── Editorial / Literary Archive palette (light mode) ────────────────────── */
-:root {
-  --editorial-bg: #FAFAF8;
-  --editorial-surface: #F0EDE6;
+  /* ── Light Mode: Warm Abaca Parchment & Volcanic Ochre ─────────────────── */
+  --editorial-bg: #FAF7F2;
+  --editorial-surface: #F2ECE1;
   --editorial-surface-raised: #FFFDF9;
-  --editorial-surface-sunken: #E5E1D8;
-  --editorial-text: #1C1B19;
-  --editorial-text-secondary: #3D3B36;
-  --editorial-muted: #6B6760;
-  --editorial-accent: #7C5C92;
-  --editorial-accent-dim: #5A4270;
-  --editorial-rust: #9B5C3A;
-  --editorial-border: #D8D4C8;
-  --editorial-divider: #C8C4B8;
-  --editorial-shadow: 0 4px 24px -4px rgba(28, 27, 25, 0.08);
+  --editorial-surface-sunken: #E6DFD1;
+  --editorial-text: #1A1815;
+  --editorial-text-secondary: #3D3933;
+  --editorial-muted: #69635A;
+  --editorial-accent: #A86420;
+  --editorial-accent-dim: #864E16;
+  --editorial-rust: #9B4728;
+  --editorial-border: #DCD4C6;
+  --editorial-divider: #CCC2B2;
+  --editorial-shadow: 0 4px 24px -4px rgba(26, 24, 21, 0.07);
+  --editorial-accent-glow: rgba(168, 100, 32, 0.12);
 
   /* Display & body font stacks (loaded via next/font) */
   --font-display: var(--font-playfair), 'Cormorant Garamond', 'Georgia', serif;
   --font-body: var(--font-dm-sans), 'Inter', system-ui, sans-serif;
 
-  /* Accent glow for hero elements */
-  --editorial-accent-glow: rgba(124, 92, 146, 0.15);
+  /* ── Legacy aliases unified to the Editorial Archive system ────────────── */
+  --color-primary: var(--editorial-accent);
+  --color-primary-hover: var(--editorial-accent-dim);
+  --color-secondary: var(--editorial-rust);
+  --color-secondary-hover: #7D371D;
+  --color-accent: var(--editorial-accent);
+  --color-accent-hover: var(--editorial-accent-dim);
+  --color-background: var(--editorial-bg);
+  --color-surface: var(--editorial-surface);
+  --color-border: var(--editorial-border);
+  --color-text-main: var(--editorial-text);
+  --color-text-muted: var(--editorial-muted);
+
+  /* Spacing scale */
+  --space-card-padding: 1.75rem;
+  --space-section-gap: 5rem;
+  --space-content-max-width: 72rem;
+
+  /* Semantic feedback colors */
+  --energy-low: #15803d;
+  --energy-moderate: #b45309;
+  --energy-high: #b91c1c;
+  --feedback-success: #15803d;
+  --feedback-neutral: #69635A;
+  --feedback-highlight: #A86420;
 }
 
-/* ── Dark mode: Nocturne Archive palette ────────────────────────────────────
-   Deeper blacks with warm undertones, layered surfaces for depth,
-   and a refined gold accent system that feels like reading by lamplight.
-   ─────────────────────────────────────────────────────────────────────────── */
+/* ── Dark Mode: Volcanic Nocturne & Lamplight Gold ───────────────────────── */
 .dark {
-  /* Legacy overrides */
-  --color-background: #0c0c0a;
-  --color-surface: #18181b;
-  --color-border: #2a2a25;
-  --color-text-main: #f5f0e8;
-  --color-text-muted: #8a8780;
-
-  /* Editorial dark palette */
   --editorial-bg: #0E0D0B;
-  --editorial-surface: #161513;
-  --editorial-surface-raised: #1E1C18;
-  --editorial-surface-sunken: #111009;
-  --editorial-text: #F5F2EC;
-  --editorial-text-secondary: #D4CFC3;
-  --editorial-muted: #8A8780;
-  --editorial-accent: #A580C0;
-  --editorial-accent-dim: #8A68A8;
-  --editorial-rust: #C07A50;
-  --editorial-border: #2A2820;
-  --editorial-divider: #353228;
-  --editorial-shadow: 0 4px 32px -4px rgba(0, 0, 0, 0.5);
-  --editorial-accent-glow: rgba(165, 128, 192, 0.2);
+  --editorial-surface: #161411;
+  --editorial-surface-raised: #1F1C17;
+  --editorial-surface-sunken: #090807;
+  --editorial-text: #F5F1E8;
+  --editorial-text-secondary: #D5CEC0;
+  --editorial-muted: #969084;
+  --editorial-accent: #DDA04B;
+  --editorial-accent-dim: #C48735;
+  --editorial-rust: #D47A55;
+  --editorial-border: #2B2720;
+  --editorial-divider: #38332A;
+  --editorial-shadow: 0 8px 32px -4px rgba(0, 0, 0, 0.48);
+  --editorial-accent-glow: rgba(221, 160, 75, 0.16);
+
+  --color-background: var(--editorial-bg);
+  --color-surface: var(--editorial-surface);
+  --color-border: var(--editorial-border);
+  --color-text-main: var(--editorial-text);
+  --color-text-muted: var(--editorial-muted);
 }
 
-/* Base styles */
-body {
-  background-color: var(--color-background);
-  color: var(--color-text-main);
-  @apply antialiased selection:bg-blue-500/30;
-}
-
-/* Smooth scroll behavior */
+/* Base styles & browser surface theming */
 html {
   scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--editorial-divider) var(--editorial-bg);
+}
+
+body {
+  background-color: var(--editorial-bg);
+  color: var(--editorial-text);
+  caret-color: var(--editorial-accent);
+  @apply antialiased;
+}
+
+::selection {
+  background-color: var(--editorial-accent-glow);
+  color: var(--editorial-text);
 }
 
 /* Theme transition - activated only during toggle to avoid flash on load */
@@ -109,23 +105,16 @@ html.changing-theme,
 html.changing-theme *,
 html.changing-theme *::before,
 html.changing-theme *::after {
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease !important;
+  transition: background-color 0.25s cubic-bezier(0.25, 1, 0.5, 1),
+              color 0.25s cubic-bezier(0.25, 1, 0.5, 1),
+              border-color 0.25s cubic-bezier(0.25, 1, 0.5, 1),
+              box-shadow 0.25s cubic-bezier(0.25, 1, 0.5, 1) !important;
 }
 
-/* Hide scrollbar while keeping scroll functional */
-html {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE/Edge */
-}
-
-html::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
-}
-
-/* Custom scrollbar for scrollable containers */
+/* Custom scrollbar for root and scrollable containers */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
@@ -140,27 +129,17 @@ html::-webkit-scrollbar {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: var(--editorial-accent-dim);
-}
-
-/* Glass effect for cards and overlays */
-.glass-effect {
-  @apply bg-zinc-100/50 dark:bg-zinc-900/50 backdrop-blur-md border border-zinc-200 dark:border-zinc-800/50;
-}
-
-/* Responsive Bloom Elevation (respects motion multiplier) */
-.responsive-bloom {
-  transition: all 300ms ease-out;
-}
-
-.responsive-bloom:hover {
-  box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.1);
-  @apply -translate-y-1 border-blue-500/30;
+  background-color: var(--editorial-accent);
 }
 
 /* Focus utilities */
 .focus-ring {
-  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950;
+  outline: none;
+}
+
+.focus-ring:focus-visible {
+  outline: 2px solid var(--editorial-accent);
+  outline-offset: 2px;
 }
 
 /* Typography enhancements */
@@ -170,16 +149,16 @@ html::-webkit-scrollbar {
 
 /* ── Header glass effect (theme-aware) ──────────────────────────────────── */
 .header-glass {
-  background-color: rgba(250, 248, 245, 0.8);
+  background-color: rgba(250, 247, 242, 0.86);
   border-color: var(--editorial-border);
 }
 
 .dark .header-glass {
-  background-color: rgba(12, 12, 10, 0.75);
+  background-color: rgba(14, 13, 11, 0.84);
   border-color: var(--editorial-border);
 }
 
-/* ── Surface utilities (theme-aware) ───────────────────────────────────── */
+/* ── Surface utilities (theme-aware) ────────────────────────────────────── */
 .surface {
   background-color: var(--editorial-surface);
   border: 1px solid var(--editorial-border);
@@ -199,12 +178,15 @@ html::-webkit-scrollbar {
   border-radius: 1rem;
 }
 
-/* ── Card utilities - Resting Precision (respects motion multiplier) ─────── */
+/* ── Card utilities - Resting Precision ─────────────────────────────────── */
 .card-resting {
   background-color: var(--editorial-surface-raised);
   border: 1px solid var(--editorial-border);
-  border-radius: 1rem;
-  transition: all 200ms ease-out;
+  border-radius: 1.25rem;
+  box-shadow: var(--editorial-shadow);
+  transition: transform 240ms cubic-bezier(0.25, 1, 0.5, 1),
+              border-color 240ms cubic-bezier(0.25, 1, 0.5, 1),
+              box-shadow 240ms cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .dark .card-resting {
@@ -212,85 +194,21 @@ html::-webkit-scrollbar {
 }
 
 .card-resting:hover {
-  border-color: rgba(124, 92, 146, 0.35);
-  box-shadow: 0 20px 25px -5px rgba(124, 92, 146, 0.12);
-  transform: translateY(-0.25rem);
+  border-color: var(--editorial-accent);
+  box-shadow: 0 16px 32px -8px var(--editorial-accent-glow);
+  transform: translateY(-2px);
 }
 
-/* Custom Glow Utilities to bypass framework parser bugs */
+/* Subtle warm specimen glow */
 .glow-emerald-large {
-  box-shadow: 0 0 50px -12px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 12px 32px -8px rgba(21, 128, 61, 0.22);
 }
 
 .glow-emerald-small {
-  box-shadow: 0 0 50px -12px rgba(16, 185, 129, 0.15);
+  box-shadow: 0 8px 24px -6px rgba(21, 128, 61, 0.14);
 }
 
-.glow-emerald-tiny {
-  box-shadow: 0 0 50px -12px rgba(16, 185, 129, 0.1);
-}
-
-.glow-blue-hover:hover {
-  box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.1);
-}
-
-.glow-blue-selected {
-  box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.1);
-}
-
-.glow-blue-button:hover {
-  box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.2);
-}
-
-.glow-black-hover:hover {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-}
-
-/* Sanctuary breathing animation */
-@keyframes breathe {
-  0%, 100% { transform: scale(1); opacity: 0.8; }
-  50% { transform: scale(1.05); opacity: 1; }
-}
-
-@keyframes pulse-ring {
-  0% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.4); }
-  100% { box-shadow: 0 0 0 20px rgba(52, 211, 153, 0); }
-}
-
-.sanctuary-breathe {
-  animation: breathe 6s ease-in-out infinite;
-}
-
-.sanctuary-pulse {
-  animation: pulse-ring 3s ease-out infinite;
-}
-
-/* Respect OS-level motion preferences */
-@media (prefers-reduced-motion: reduce) {
-  .sanctuary-breathe,
-  .sanctuary-pulse {
-    animation: none;
-  }
-}
-
-/* ──────────────────────────────────────
-   Editorial / Literary Archive Utilities
-   ────────────────────────────────────── */
-
-/* Noise texture overlay */
-.noise-overlay::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  opacity: 0.035;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-  background-repeat: repeat;
-  background-size: 256px 256px;
-  pointer-events: none;
-  z-index: 1;
-}
-
-/* Thin rule divider */
+/* Editorial rule divider with 3rem volcanic ochre lead-in */
 .rule-divider {
   height: 1px;
   background: var(--editorial-divider);
@@ -303,17 +221,17 @@ html::-webkit-scrollbar {
   position: absolute;
   left: 0;
   top: 0;
-  width: 3rem;
-  height: 1px;
+  width: 3.5rem;
+  height: 2px;
   background: var(--editorial-accent);
 }
 
-/* Section number label */
-.section-number {
-  font-family: var(--font-display);
+/* Archival metadata label (not used as a heading kicker) */
+.archival-label {
+  font-family: var(--font-body);
   font-size: 0.6875rem;
   font-weight: 700;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--editorial-muted);
 }
@@ -322,4 +240,28 @@ html::-webkit-scrollbar {
 .hanging-indent {
   padding-left: 1.5em;
   text-indent: -1.5em;
+}
+
+/* Calm staggered typing pulse for AppliedFluency chat loader (replaces bounce-easing) */
+@keyframes archival-pulse {
+  0%, 100% { opacity: 0.25; transform: scale(0.92); }
+  50% { opacity: 0.95; transform: scale(1); }
+}
+
+.archival-dot {
+  animation: archival-pulse 1.4s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+}
+
+/* Respect OS-level motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .card-resting,
+  .card-resting:hover,
+  .archival-dot {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
 }
